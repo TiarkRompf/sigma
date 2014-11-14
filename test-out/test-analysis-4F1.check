@@ -1,0 +1,276 @@
+prog: {
+  Assign(n,Direct("N"))
+  Assign(i,Const(0))
+  Assign(r,Const(1))
+  While(Less(Ref(i),Ref(n)),{
+    Assign(i,Plus(Ref(i),Const(1)))
+    Assign(r,Times(Ref(r),Ref(i)))
+  })
+}
+val x0 = Map()
+val x1 = Map("val" -> "N")
+val x2 = Map("&n" -> x1)
+val x3 = Map("val" -> 0)
+val x4 = Map("&n" -> x1, "&i" -> x3)
+val x5 = Map("val" -> 1)
+val x6 = Map("&n" -> x1, "&i" -> x3, "&r" -> x5)
+val x9 = ("top",x8)
+starting spec loop with x6
+val x10 = 0 < "N"
+val x11 = Map("&n" -> x1, "&i" -> x5, "&r" -> x5)
+val x12 = x8 < 0
+val x13 = fixindex { x8 => x10 }
+val x14 = x13 < x8
+trip count:
+fixindex { x8 => 0 < "N" }
+
+lub(x6, x11) = ?
+lub_x7(x6,x6,x11)
+lub_x7_&n(x1,x1,x1)
+lub_x7_&i(x3,x3,x5)
+lub_x7_&i_val(0,0,1)
+checky checky
+0
+
+0
+
+1
+
+integer diff
+0
+
+1
+
+1
+
+confirmed iterative loop, d = 1
+val x15 = x8 + 1
+Set(("val",(x8,x15)))
+val x16 = Map("val" -> x8)
+val x17 = Map("val" -> x15)
+lub_x7_&r(x5,x5,x5)
+Set(("&n",(x1,x1)), ("&i",(x16,x17)), ("&r",(x5,x5)))
+val x18 = Map("&n" -> x1, "&i" -> x16, "&r" -> x5)
+val x19 = Map("&n" -> x1, "&i" -> x17, "&r" -> x5)
+lub(x6, x11) = x18
+starting spec loop with x18
+val x20 = x8 < "N"
+val x21 = Map("&n" -> x1, "&i" -> x17, "&r" -> x17)
+val x22 = "N" < x8
+trip count:
+"N"
+
+lub(x6, x21) = ?
+lub_x7(x6,x18,x21)
+lub_x7_&n(x1,x1,x1)
+lub_x7_&i(x3,x16,x17)
+lub_x7_&i_val(0,x8,x15)
+checky checky
+0
+
+x8
+
+x8 + 1
+
+val x23 = x8 * -1
+val x24 = x23 + 1
+integer diff
+x8
+
+x8 + 1
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x8,x15)))
+lub_x7_&r(x5,x5,x17)
+lub_x7_&r_val(1,1,x15)
+checky checky
+1
+
+1
+
+x8 + 1
+
+integer diff
+1
+
+x8 + 1
+
+x8
+
+confirmed iterative loop, d = x8
+val x25 = x8 * x8
+val x26 = x25 + 1
+val x27 = x25 + x8
+val x28 = x25 + x15
+Set(("val",(x26,x28)))
+val x29 = Map("val" -> x26)
+val x30 = Map("val" -> x28)
+Set(("&n",(x1,x1)), ("&i",(x16,x17)), ("&r",(x29,x30)))
+val x31 = Map("&n" -> x1, "&i" -> x16, "&r" -> x29)
+val x32 = Map("&n" -> x1, "&i" -> x17, "&r" -> x30)
+lub(x6, x21) = x31
+starting spec loop with x31
+val x33 = Map("&n" -> x1, "&i" -> x17, "&r" -> x29)
+val x34 = x8 * x25
+val x35 = x34 + x25
+val x36 = x34 + x28
+val x37 = Map("val" -> x36)
+val x38 = Map("&n" -> x1, "&i" -> x17, "&r" -> x37)
+trip count:
+"N"
+
+lub(x6, x38) = ?
+lub_x7(x6,x31,x38)
+lub_x7_&n(x1,x1,x1)
+lub_x7_&i(x3,x16,x17)
+lub_x7_&i_val(0,x8,x15)
+checky checky
+0
+
+x8
+
+x8 + 1
+
+integer diff
+x8
+
+x8 + 1
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x8,x15)))
+lub_x7_&r(x5,x29,x37)
+lub_x7_&r_val(1,x26,x36)
+checky checky
+1
+
+x8 * x8 + 1
+
+x8 * x8 * x8 + x8 * x8 + x8 + 1
+
+val x39 = x8 * x23
+val x40 = x39 + -1
+val x41 = x8 + x39
+val x42 = x25 + x41
+val x43 = x34 + x42
+integer diff
+x8 * x8 + 1
+
+x8 * x8 * x8 + x8 * x8 + x8 + 1
+
+x8 * x8 * x8 + x8 * x8 + x8 + x8 * x8 * -1
+
+poly: List(0, 1, 0, 1)
+giving up for term:
+x8 * x8 * x8 + x8 * x8 + x8 + x8 * x8 * -1
+
+recursive fun x7_&r_val (init 1)
+val x44 = x8 + -1
+val x45 = x7_&r_val(x44)
+val x46 = 0 < x8
+val x47 = if (x46) x45 else 1
+Set(("val",(x47,x36)))
+val x48 = Map("val" -> x47)
+Set(("&n",(x1,x1)), ("&i",(x16,x17)), ("&r",(x48,x37)))
+val x49 = Map("&n" -> x1, "&i" -> x16, "&r" -> x48)
+lub(x6, x38) = x49
+starting spec loop with x49
+val x50 = Map("&n" -> x1, "&i" -> x17, "&r" -> x48)
+val x51 = x45 * x8
+val x52 = x51 + x45
+val x53 = if (x46) x52 else x15
+val x54 = Map("val" -> x53)
+val x55 = Map("&n" -> x1, "&i" -> x17, "&r" -> x54)
+trip count:
+"N"
+
+lub(x6, x55) = ?
+lub_x7(x6,x49,x55)
+lub_x7_&n(x1,x1,x1)
+lub_x7_&i(x3,x16,x17)
+lub_x7_&i_val(0,x8,x15)
+checky checky
+0
+
+x8
+
+x8 + 1
+
+integer diff
+x8
+
+x8 + 1
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x8,x15)))
+lub_x7_&r(x5,x48,x54)
+lub_x7_&r_val(1,x47,x53)
+checky checky
+1
+
+if (0 < x8) x7_&r_val(x8 + -1) else 1
+
+if (0 < x8) x7_&r_val(x8 + -1) * x8 + x7_&r_val(x8 + -1) else x8 + 1
+
+val x56 = x45 * -1
+val x57 = if (x46) x56 else -1
+val x58 = x45 + x57
+val x59 = x51 + x58
+val x60 = x56 + 1
+val x61 = if (x46) x60 else 0
+val x62 = x8 + x61
+val x63 = if (x46) x51 else x8
+integer diff
+if (0 < x8) x7_&r_val(x8 + -1) else 1
+
+if (0 < x8) x7_&r_val(x8 + -1) * x8 + x7_&r_val(x8 + -1) else x8 + 1
+
+if (0 < x8) x7_&r_val(x8 + -1) * x8 else x8
+
+poly: List()
+giving up for term:
+if (0 < x8) x7_&r_val(x8 + -1) * x8 else x8
+
+recursive fun x7_&r_val (init 1)
+Set(("val",(x47,x53)))
+Set(("&n",(x1,x1)), ("&i",(x16,x17)), ("&r",(x48,x54)))
+lub(x6, x55) = x49
+val x7_&i_val = { x8 => x15 }
+val x7_&r_val = { x8 => x53 }
+val x64 = x7_&r_val(x8)
+val x65 = Map("val" -> x64)
+val x66 = Map("&n" -> x1, "&i" -> x17, "&r" -> x65)
+val x7 = { x8 => x66 }
+fixindex: "N"
+val x67 = "N" + -1
+val x68 = x7_&r_val(x67)
+val x69 = Map("val" -> x68)
+val x70 = Map("&n" -> x1, "&i" -> x1, "&r" -> x69)
+*** after loop x70 ***
+res: ()
+store: x70
+transformed: x70
+sched:
+val x67 = "N" + -1
+val x44 = x8 + -1
+val x46 = 0 < x8
+val x15 = x8 + 1
+val x45 = x7_&r_val(x44)
+val x51 = x45 * x8
+val x52 = x51 + x45
+val x53 = if (x46) x52 else x15
+val x7_&r_val = { x8 => x53 }
+val x68 = x7_&r_val(x67)
+val x69 = Map("val" -> x68)
+val x1 = Map("val" -> "N")
+val x70 = Map("&n" -> x1, "&i" -> x1, "&r" -> x69)
+term:
+val x7_&r_val = { x8 => if (0 < x8) x7_&r_val(x8 + -1) * x8 + x7_&r_val(x8 + -1) else x8 + 1 }
+Map("&n" -> Map("val" -> "N"), "&i" -> Map("val" -> "N"), "&r" -> Map("val" -> x7_&r_val("N" + -1)))
+
+----

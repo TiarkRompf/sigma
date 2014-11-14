@@ -1,0 +1,194 @@
+prog: {
+  Assign(x,New(X))
+  Put(Ref(x),Const(a),New(A))
+  Put(Get(Ref(x),Const(a)),Const(baz),Const(3))
+  While(Direct("input"),{
+    Put(Ref(x),Const(a),New(B))
+    Put(Get(Ref(x),Const(a)),Const(foo),Const(5))
+  })
+  Put(Get(Ref(x),Const(a)),Const(bar),Const(7))
+  Assign(xbar,Get(Get(Ref(x),Const(a)),Const(bar)))
+}
+val x0 = Map()
+val x1 = Map("top" -> Map())
+val x2 = Map("X" -> x1)
+val x3 = Map("val" -> (X,top))
+val x4 = Map("X" -> x1, "&x" -> x3)
+val x5 = Map("X" -> x1, "&x" -> x3, "A" -> x1)
+val x6 = Map("a" -> (A,top))
+val x7 = Map("top" -> x6)
+val x8 = Map("X" -> x7, "&x" -> x3)
+val x9 = Map("baz" -> 3)
+val x10 = Map("top" -> x9)
+val x11 = Map("X" -> x7, "&x" -> x3, "A" -> x10)
+val x14 = ("top",x13)
+starting spec loop with x11
+val x15 = ("B",x14)
+val x16 = x0 + (x13 -> Map())
+val x17 = Map("top" -> x16)
+val x18 = Map("X" -> x7, "&x" -> x3, "A" -> x10, "B" -> x17)
+val x19 = Map("a" -> x15)
+val x20 = Map("top" -> x19)
+val x21 = Map("X" -> x20, "&x" -> x3, "A" -> x10)
+val x22 = Map("foo" -> 5)
+val x23 = x0 + (x13 -> x22)
+val x24 = Map("top" -> x23)
+val x25 = Map("X" -> x20, "&x" -> x3, "A" -> x10, "B" -> x24)
+lub(x11, x25) = ?
+lub_x12(x11,x11,x25)
+lub_x12_X(x7,x7,x20)
+lub_x12_X_top(x6,x6,x19)
+lub_x12_X_top_a((A,top),(A,top),x15)
+(A,top)
+
+(A,top)
+
+("B",("top",x13))
+
+hit pair -- assume only 0 case differs (loop peeling)
+val x26 = x13 + -1
+val x27 = ("top",x26)
+val x28 = ("B",x27)
+val x29 = 0 < x13
+val x30 = if (x29) x28 else (A,top)
+val x31 = if (x29) x15 else (A,top)
+Set(("a",(x30,x31)))
+val x32 = Map("a" -> x30)
+val x33 = Map("a" -> x31)
+Set(("top",(x32,x33)))
+val x34 = Map("top" -> x32)
+val x35 = Map("top" -> x33)
+lub_x12_&x(x3,x3,x3)
+lub_x12_A(x10,x10,x10)
+lub_x12_B("undefined","undefined",x24)
+lub_x12_B_top("undefined","undefined",x23)
+recursive fun x12_B_top
+val x36 = x12_B_top(x26)
+val x37 = if (x29) x36 else "undefined"
+val x38 = x12_B_top(x13)
+val x39 = if (x29) x38 else "undefined"
+Set(("top",(x37,x39)))
+val x40 = Map("top" -> x37)
+val x41 = Map("top" -> x39)
+Set(("X",(x34,x35)), ("&x",(x3,x3)), ("A",(x10,x10)), ("B",(x40,x41)))
+val x42 = Map("X" -> x34, "&x" -> x3, "A" -> x10, "B" -> x40)
+val x43 = Map("X" -> x35, "&x" -> x3, "A" -> x10, "B" -> x41)
+lub(x11, x25) = x42
+starting spec loop with x42
+val x44 = x36 + (x13 -> Map())
+val x45 = if (x29) x44 else x16
+val x46 = Map("top" -> x45)
+val x47 = Map("X" -> x34, "&x" -> x3, "A" -> x10, "B" -> x46)
+val x48 = Map("X" -> x20, "&x" -> x3, "A" -> x10, "B" -> x40)
+val x49 = x36(x13)
+val x50 = if (x29) x49 else "undefined"
+val x51 = x49 + ("foo" -> 5)
+val x52 = if (x29) x51 else x22
+val x53 = x36 + (x13 -> x52)
+val x54 = x0 + (x13 -> x52)
+val x55 = x36 + (x13 -> x51)
+val x56 = if (x29) x55 else x23
+val x57 = Map("top" -> x56)
+val x58 = Map("X" -> x20, "&x" -> x3, "A" -> x10, "B" -> x57)
+lub(x11, x58) = ?
+lub_x12(x11,x42,x58)
+lub_x12_X(x7,x34,x20)
+lub_x12_X_top(x6,x32,x19)
+lub_x12_X_top_a((A,top),x30,x15)
+(A,top)
+
+if (0 < x13) ("B",("top",x13 + -1)) else (A,top)
+
+("B",("top",x13))
+
+hit pair -- assume only 0 case differs (loop peeling)
+Set(("a",(x30,x31)))
+Set(("top",(x32,x33)))
+lub_x12_&x(x3,x3,x3)
+lub_x12_A(x10,x10,x10)
+lub_x12_B("undefined",x40,x57)
+lub_x12_B_top("undefined",x37,x56)
+val x59 = x36 * -1
+val x60 = if (x29) x59 else "undefined"
+val x61 = x55 + x60
+val x62 = x23 + x60
+val x63 = x55 + x59
+val x64 = if (x29) x63 else "undefined"
+if (0 < x13) x12_B_top(x13 + -1) else "undefined"
+
+if (0 < x13) x12_B_top(x13 + -1) + (x13 -> x12_B_top(x13 + -1)(x13) + ("foo" -> 5)) else Map() + (x13 -> Map("foo" -> 5))
+
+if (0 < x13) x12_B_top(x13 + -1) + (x13 -> x12_B_top(x13 + -1)(x13) + ("foo" -> 5)) + x12_B_top(x13 + -1) * -1 else "undefined"
+
+poly: List()
+giving up: deriv List()
+recursive fun x12_B_top
+Set(("top",(x37,x39)))
+Set(("X",(x34,x35)), ("&x",(x3,x3)), ("A",(x10,x10)), ("B",(x40,x41)))
+lub(x11, x58) = x42
+val x12_X_top_a = { x13 => x15 }
+val x12_B_top = { x13 => x56 }
+val x65 = Map("top" -> x38)
+val x66 = Map("X" -> x20, "&x" -> x3, "A" -> x10, "B" -> x65)
+val x12 = { x13 => x66 }
+val x67 = fixindex(x13 => "input")
+fixindex: x67
+val x68 = ("top",x67)
+val x69 = ("B",x68)
+val x70 = Map("a" -> x69)
+val x71 = Map("top" -> x70)
+val x72 = x12_B_top(x67)
+val x73 = Map("top" -> x72)
+val x74 = Map("X" -> x71, "&x" -> x3, "A" -> x10, "B" -> x73)
+val x75 = fixindex(x13 => 0)
+val x76 = ("top",x75)
+val x77 = ("B",x76)
+val x78 = Map("a" -> x77)
+val x79 = Map("top" -> x78)
+val x80 = x12_B_top(x75)
+val x81 = Map("top" -> x80)
+val x82 = Map("X" -> x79, "&x" -> x3, "A" -> x10, "B" -> x81)
+*** after loop x82 ***
+val x83 = x80(x75)
+val x84 = x83 + ("bar" -> 7)
+val x85 = x80 + (x75 -> x84)
+val x86 = Map("top" -> x85)
+val x87 = Map("X" -> x79, "&x" -> x3, "A" -> x10, "B" -> x86)
+val x88 = x83("bar")
+val x89 = Map("val" -> 7)
+val x90 = Map("&x" -> x3, "&xbar" -> x89, "B" -> x86, "X" -> x79, "A" -> x10)
+res: ()
+store: x90
+transformed: x90
+sched:
+val x89 = Map("val" -> 7)
+val x75 = fixindex(x13 => 0)
+val x26 = x13 + -1
+val x29 = 0 < x13
+val x22 = Map("foo" -> 5)
+val x0 = Map()
+val x23 = x0 + (x13 -> x22)
+val x36 = x12_B_top(x26)
+val x49 = x36(x13)
+val x51 = x49 + ("foo" -> 5)
+val x55 = x36 + (x13 -> x51)
+val x56 = if (x29) x55 else x23
+val x12_B_top = { x13 => x56 }
+val x80 = x12_B_top(x75)
+val x83 = x80(x75)
+val x84 = x83 + ("bar" -> 7)
+val x85 = x80 + (x75 -> x84)
+val x86 = Map("top" -> x85)
+val x76 = ("top",x75)
+val x77 = ("B",x76)
+val x78 = Map("a" -> x77)
+val x79 = Map("top" -> x78)
+val x9 = Map("baz" -> 3)
+val x10 = Map("top" -> x9)
+val x3 = Map("val" -> (X,top))
+val x90 = Map("&x" -> x3, "&xbar" -> x89, "B" -> x86, "X" -> x79, "A" -> x10)
+term:
+val x12_B_top = { x13 => if (0 < x13) x12_B_top(x13 + -1) + (x13 -> x12_B_top(x13 + -1)(x13) + ("foo" -> 5)) else Map() + (x13 -> Map("foo" -> 5)) }
+Map("B" -> Map("top" -> x12_B_top(fixindex(x13 => 0)) + (fixindex(x13 => 0) -> x12_B_top(fixindex(x13 => 0))(fixindex(x13 => 0)) + ("bar" -> 7))), "X" -> Map("top" -> Map("a" -> ("B",("top",fixindex(x13 => 0))))), "A" -> Map("top" -> Map("baz" -> 3)), "&x" -> Map("val" -> (X,top)), "&xbar" -> Map("val" -> 7))
+
+----

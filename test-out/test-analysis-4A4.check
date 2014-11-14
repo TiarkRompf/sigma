@@ -1,0 +1,262 @@
+prog: {
+  Assign(x,Const(0))
+  Assign(y,Const(10))
+  Assign(a,New(A))
+  While(Less(Ref(x),Const(100)),{
+    Put(Ref(a),Ref(x),Times(Ref(x),Const(2)))
+    Assign(x,Plus(Ref(x),Const(1)))
+    Assign(y,Plus(Ref(y),Const(1)))
+  })
+  Assign(r,Ref(a))
+}
+val x0 = Map()
+val x1 = Map("val" -> 0)
+val x2 = Map("&x" -> x1)
+val x3 = Map("val" -> 10)
+val x4 = Map("&x" -> x1, "&y" -> x3)
+val x5 = Map("top" -> Map())
+val x6 = Map("&x" -> x1, "&y" -> x3, "A" -> x5)
+val x7 = Map("val" -> (A,top))
+val x8 = Map("&x" -> x1, "&y" -> x3, "A" -> x5, "&a" -> x7)
+val x11 = ("top",x10)
+starting spec loop with x8
+val x12 = Map(0 -> 0)
+val x13 = Map("top" -> x12)
+val x14 = Map("&x" -> x1, "&y" -> x3, "A" -> x13, "&a" -> x7)
+val x15 = Map("val" -> 1)
+val x16 = Map("&x" -> x15, "&y" -> x3, "A" -> x13, "&a" -> x7)
+val x17 = Map("val" -> 11)
+val x18 = Map("&x" -> x15, "&y" -> x17, "A" -> x13, "&a" -> x7)
+val x19 = x10 < 0
+val x20 = fixindex { x10 => 1 }
+val x21 = x20 < x10
+trip count:
+fixindex { x10 => 1 }
+
+lub(x8, x18) = ?
+lub_x9(x8,x8,x18)
+lub_x9_&x(x1,x1,x15)
+lub_x9_&x_val(0,0,1)
+checky checky
+0
+
+0
+
+1
+
+integer diff
+0
+
+1
+
+1
+
+confirmed iterative loop, d = 1
+val x22 = x10 + 1
+Set(("val",(x10,x22)))
+val x23 = Map("val" -> x10)
+val x24 = Map("val" -> x22)
+lub_x9_&y(x3,x3,x17)
+lub_x9_&y_val(10,10,11)
+checky checky
+10
+
+10
+
+11
+
+integer diff
+10
+
+11
+
+1
+
+confirmed iterative loop, d = 1
+val x25 = x10 + 10
+val x26 = x10 + 11
+Set(("val",(x25,x26)))
+val x27 = Map("val" -> x25)
+val x28 = Map("val" -> x26)
+lub_x9_A(x5,x5,x13)
+lub_x9_A_top(Map(),Map(),x12)
+lub_x9_A_top_0("undefined","undefined",0)
+checky checky
+"undefined"
+
+"undefined"
+
+0
+
+recursive fun x9_A_top_0 (init "undefined")
+val x29 = x10 + -1
+val x30 = x9_A_top_0(x29)
+val x31 = 0 < x10
+val x32 = if (x31) x30 else "undefined"
+Set((0,(x32,0)))
+val x33 = Map(0 -> x32)
+Set(("top",(x33,x12)))
+val x34 = Map("top" -> x33)
+lub_x9_&a(x7,x7,x7)
+Set(("&x",(x23,x24)), ("&y",(x27,x28)), ("A",(x34,x13)), ("&a",(x7,x7)))
+val x35 = Map("&x" -> x23, "&y" -> x27, "A" -> x34, "&a" -> x7)
+val x36 = Map("&x" -> x24, "&y" -> x28, "A" -> x13, "&a" -> x7)
+lub(x8, x18) = x35
+starting spec loop with x35
+val x37 = x10 < 100
+val x38 = x10 * 2
+val x39 = x33 + (x10 -> x38)
+val x40 = Map("top" -> x39)
+val x41 = Map("&x" -> x23, "&y" -> x27, "A" -> x40, "&a" -> x7)
+val x42 = Map("&x" -> x24, "&y" -> x27, "A" -> x40, "&a" -> x7)
+val x43 = Map("&x" -> x24, "&y" -> x28, "A" -> x40, "&a" -> x7)
+val x44 = 100 < x10
+trip count:
+100
+
+lub(x8, x43) = ?
+lub_x9(x8,x35,x43)
+lub_x9_&x(x1,x23,x24)
+lub_x9_&x_val(0,x10,x22)
+checky checky
+0
+
+x10
+
+x10 + 1
+
+val x45 = x10 * -1
+val x46 = x45 + 1
+integer diff
+x10
+
+x10 + 1
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x10,x22)))
+lub_x9_&y(x3,x27,x28)
+lub_x9_&y_val(10,x25,x26)
+checky checky
+10
+
+x10 + 10
+
+x10 + 11
+
+val x47 = x45 + -10
+integer diff
+x10 + 10
+
+x10 + 11
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x25,x26)))
+lub_x9_A(x5,x34,x40)
+lub_x9_A_top(Map(),x33,x39)
+Map()
+
+Map(0 -> if (0 < x10) x9_A_top_0(x10 + -1) else "undefined")
+
+Map(0 -> if (0 < x10) x9_A_top_0(x10 + -1) else "undefined") + (x10 -> x10 * 2)
+
+hit update at loop index -- assume collect
+val x48 = x9_A_top_x10 * 2
+val x49 = collect(x22) { x9_A_top_x10 => x48 }
+Set(("top",(x49,x49)))
+val x50 = Map("top" -> x49)
+lub_x9_&a(x7,x7,x7)
+Set(("&x",(x23,x24)), ("&y",(x27,x28)), ("A",(x50,x50)), ("&a",(x7,x7)))
+val x51 = Map("&x" -> x23, "&y" -> x27, "A" -> x50, "&a" -> x7)
+val x52 = Map("&x" -> x24, "&y" -> x28, "A" -> x50, "&a" -> x7)
+lub(x8, x43) = x51
+starting spec loop with x51
+val x53 = x49 + (x10 -> x38)
+val x54 = Map("top" -> x53)
+val x55 = Map("&x" -> x23, "&y" -> x27, "A" -> x54, "&a" -> x7)
+val x56 = Map("&x" -> x24, "&y" -> x27, "A" -> x54, "&a" -> x7)
+val x57 = Map("&x" -> x24, "&y" -> x28, "A" -> x54, "&a" -> x7)
+trip count:
+100
+
+lub(x8, x57) = ?
+lub_x9(x8,x51,x57)
+lub_x9_&x(x1,x23,x24)
+lub_x9_&x_val(0,x10,x22)
+checky checky
+0
+
+x10
+
+x10 + 1
+
+integer diff
+x10
+
+x10 + 1
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x10,x22)))
+lub_x9_&y(x3,x27,x28)
+lub_x9_&y_val(10,x25,x26)
+checky checky
+10
+
+x10 + 10
+
+x10 + 11
+
+integer diff
+x10 + 10
+
+x10 + 11
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x25,x26)))
+lub_x9_A(x5,x50,x54)
+lub_x9_A_top(Map(),x49,x53)
+Map()
+
+collect(x10 + 1) { x9_A_top_x10 => x9_A_top_x10 * 2 }
+
+collect(x10 + 1) { x9_A_top_x10 => x9_A_top_x10 * 2 } + (x10 -> x10 * 2)
+
+hit update at loop index -- assume collect
+Set(("top",(x49,x49)))
+lub_x9_&a(x7,x7,x7)
+Set(("&x",(x23,x24)), ("&y",(x27,x28)), ("A",(x50,x50)), ("&a",(x7,x7)))
+lub(x8, x57) = x51
+val x9_&x_val = { x10 => x22 }
+val x9_&y_val = { x10 => x26 }
+val x9_A_top = { x10 => x49 }
+val x9 = { x10 => x52 }
+fixindex: 100
+val x58 = Map("val" -> 100)
+val x59 = Map("val" -> 110)
+val x60 = collect(100) { x9_A_top_x10 => x48 }
+val x61 = Map("top" -> x60)
+val x62 = Map("&x" -> x58, "&y" -> x59, "A" -> x61, "&a" -> x7)
+*** after loop x62 ***
+val x63 = Map("&x" -> x58, "&y" -> x59, "&a" -> x7, "&r" -> x7, "A" -> x61)
+res: ()
+store: x63
+transformed: x63
+sched:
+val x48 = x9_A_top_x10 * 2
+val x60 = collect(100) { x9_A_top_x10 => x48 }
+val x61 = Map("top" -> x60)
+val x59 = Map("val" -> 110)
+val x58 = Map("val" -> 100)
+val x7 = Map("val" -> (A,top))
+val x63 = Map("&x" -> x58, "&y" -> x59, "&a" -> x7, "&r" -> x7, "A" -> x61)
+term:
+Map("&a" -> Map("val" -> (A,top)), "A" -> Map("top" -> collect(100) { x9_A_top_x10 => x9_A_top_x10 * 2 }), "&x" -> Map("val" -> 100), "&y" -> Map("val" -> 110), "&r" -> Map("val" -> (A,top)))
+
+----

@@ -1,0 +1,270 @@
+prog: {
+  Assign(i,Const(0))
+  Assign(z,New(A))
+  Assign(x,Ref(z))
+  Assign(y,New(B))
+  While(Less(Ref(i),Const(100)),{
+    Put(Ref(y),Const(head),Ref(i))
+    Put(Ref(y),Const(tail),Ref(x))
+    Assign(x,Ref(y))
+    Assign(i,Plus(Ref(i),Const(1)))
+  })
+  Put(Ref(y),Const(tail),Ref(z))
+  Put(Ref(y),Const(head),Const(7))
+}
+val x0 = Map()
+val x1 = Map("val" -> 0)
+val x2 = Map("&i" -> x1)
+val x3 = Map("top" -> Map())
+val x4 = Map("&i" -> x1, "A" -> x3)
+val x5 = Map("val" -> (A,top))
+val x6 = Map("&i" -> x1, "A" -> x3, "&z" -> x5)
+val x7 = Map("&i" -> x1, "A" -> x3, "&z" -> x5, "&x" -> x5)
+val x8 = Map("&x" -> x5, "B" -> x3, "&z" -> x5, "&i" -> x1, "A" -> x3)
+val x9 = Map("val" -> (B,top))
+val x10 = Map("&x" -> x5, "&y" -> x9, "B" -> x3, "&z" -> x5, "&i" -> x1, "A" -> x3)
+val x13 = ("top",x12)
+starting spec loop with x10
+val x14 = Map("head" -> 0)
+val x15 = Map("top" -> x14)
+val x16 = Map("&x" -> x5, "&y" -> x9, "B" -> x15, "&z" -> x5, "&i" -> x1, "A" -> x3)
+val x17 = Map("head" -> 0, "tail" -> (A,top))
+val x18 = Map("top" -> x17)
+val x19 = Map("&x" -> x5, "&y" -> x9, "B" -> x18, "&z" -> x5, "&i" -> x1, "A" -> x3)
+val x20 = Map("&x" -> x9, "&y" -> x9, "B" -> x18, "&z" -> x5, "&i" -> x1, "A" -> x3)
+val x21 = Map("val" -> 1)
+val x22 = Map("&x" -> x9, "&y" -> x9, "B" -> x18, "&z" -> x5, "&i" -> x21, "A" -> x3)
+lub(x10, x22) = ?
+lub_x11(x10,x10,x22)
+lub_x11_&x(x5,x5,x9)
+lub_x11_&x_val((A,top),(A,top),(B,top))
+(A,top)
+
+(A,top)
+
+(B,top)
+
+hit pair -- assume only 0 case differs (loop peeling)
+val x23 = x12 + -1
+val x24 = 0 < x12
+val x25 = if (x24) (B,top) else (A,top)
+Set(("val",(x25,x25)))
+val x26 = Map("val" -> x25)
+lub_x11_&y(x9,x9,x9)
+lub_x11_B(x3,x3,x18)
+lub_x11_B_top(Map(),Map(),x17)
+lub_x11_B_top_head("undefined","undefined",0)
+recursive fun x11_B_top_head
+val x27 = x11_B_top_head(x23)
+val x28 = if (x24) x27 else "undefined"
+val x29 = x11_B_top_head(x12)
+val x30 = if (x24) x29 else "undefined"
+lub_x11_B_top_tail("undefined","undefined",(A,top))
+"undefined"
+
+"undefined"
+
+(A,top)
+
+hit pair -- assume only 0 case differs (loop peeling)
+val x31 = if (x24) (A,top) else "undefined"
+Set(("head",(x28,x30)), ("tail",(x31,x31)))
+val x32 = Map("head" -> x28, "tail" -> x31)
+val x33 = Map("head" -> x30, "tail" -> x31)
+Set(("top",(x32,x33)))
+val x34 = Map("top" -> x32)
+val x35 = Map("top" -> x33)
+lub_x11_&z(x5,x5,x5)
+lub_x11_&i(x1,x1,x21)
+lub_x11_&i_val(0,0,1)
+0
+
+1
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x23,x12)))
+val x36 = Map("val" -> x23)
+val x37 = Map("val" -> x12)
+lub_x11_A(x3,x3,x3)
+Set(("&z",(x5,x5)), ("B",(x34,x35)), ("&y",(x9,x9)), ("&x",(x26,x26)), ("A",(x3,x3)), ("&i",(x36,x37)))
+val x38 = Map("&x" -> x26, "&y" -> x9, "B" -> x34, "&z" -> x5, "&i" -> x36, "A" -> x3)
+val x39 = Map("&x" -> x26, "&y" -> x9, "B" -> x35, "&z" -> x5, "&i" -> x37, "A" -> x3)
+lub(x10, x22) = x38
+starting spec loop with x38
+val x40 = x12 < 101
+val x41 = Map("head" -> x23, "tail" -> x31)
+val x42 = Map("top" -> x41)
+val x43 = Map("&x" -> x26, "&y" -> x9, "B" -> x42, "&z" -> x5, "&i" -> x36, "A" -> x3)
+val x44 = Map("head" -> x23, "tail" -> x25)
+val x45 = Map("top" -> x44)
+val x46 = Map("&x" -> x26, "&y" -> x9, "B" -> x45, "&z" -> x5, "&i" -> x36, "A" -> x3)
+val x47 = Map("&x" -> x9, "&y" -> x9, "B" -> x45, "&z" -> x5, "&i" -> x36, "A" -> x3)
+val x48 = Map("&x" -> x9, "&y" -> x9, "B" -> x45, "&z" -> x5, "&i" -> x37, "A" -> x3)
+lub(x10, x48) = ?
+lub_x11(x10,x38,x48)
+lub_x11_&x(x5,x26,x9)
+lub_x11_&x_val((A,top),x25,(B,top))
+(A,top)
+
+if (0 < x12) (B,top) else (A,top)
+
+(B,top)
+
+hit pair -- assume only 0 case differs (loop peeling)
+Set(("val",(x25,x25)))
+lub_x11_&y(x9,x9,x9)
+lub_x11_B(x3,x34,x45)
+lub_x11_B_top(Map(),x32,x44)
+lub_x11_B_top_head("undefined",x28,x23)
+val x49 = x27 * -1
+val x50 = if (x24) x49 else "undefined"
+val x51 = x49 + -1
+val x52 = if (x24) x51 else "undefined"
+val x53 = x12 + x52
+if (0 < x12) x11_B_top_head(x12 + -1) else "undefined"
+
+x12 + -1
+
+x12 + if (0 < x12) x11_B_top_head(x12 + -1) * -1 + -1 else "undefined"
+
+poly: List()
+giving up: deriv List()
+recursive fun x11_B_top_head
+lub_x11_B_top_tail("undefined",x31,x25)
+val x54 = (A,top) * -1
+val x55 = if (x24) x54 else "undefined"
+val x56 = x54 + (B,top)
+val x57 = if (x24) x56 else "undefined"
+val x58 = if (x24) 0 else "undefined"
+if (0 < x12) (A,top) else "undefined"
+
+if (0 < x12) (B,top) else (A,top)
+
+if (0 < x12) (A,top) * -1 + (B,top) else "undefined"
+
+poly: List()
+giving up: deriv List()
+recursive fun x11_B_top_tail
+val x59 = x11_B_top_tail(x23)
+val x60 = if (x24) x59 else "undefined"
+val x61 = x11_B_top_tail(x12)
+val x62 = if (x24) x61 else "undefined"
+Set(("head",(x28,x30)), ("tail",(x60,x62)))
+val x63 = Map("head" -> x28, "tail" -> x60)
+val x64 = Map("head" -> x30, "tail" -> x62)
+Set(("top",(x63,x64)))
+val x65 = Map("top" -> x63)
+val x66 = Map("top" -> x64)
+lub_x11_&z(x5,x5,x5)
+lub_x11_&i(x1,x36,x37)
+lub_x11_&i_val(0,x23,x12)
+val x67 = x12 * -1
+val x68 = x67 + 1
+x12 + -1
+
+x12
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x23,x12)))
+lub_x11_A(x3,x3,x3)
+Set(("&z",(x5,x5)), ("&y",(x9,x9)), ("&x",(x26,x26)), ("A",(x3,x3)), ("&i",(x36,x37)), ("B",(x65,x66)))
+val x69 = Map("&x" -> x26, "&y" -> x9, "B" -> x65, "&z" -> x5, "&i" -> x36, "A" -> x3)
+val x70 = Map("&x" -> x26, "&y" -> x9, "B" -> x66, "&z" -> x5, "&i" -> x37, "A" -> x3)
+lub(x10, x48) = x69
+starting spec loop with x69
+val x71 = Map("head" -> x23, "tail" -> x60)
+val x72 = Map("top" -> x71)
+val x73 = Map("&x" -> x26, "&y" -> x9, "B" -> x72, "&z" -> x5, "&i" -> x36, "A" -> x3)
+lub(x10, x48) = ?
+lub_x11(x10,x69,x48)
+lub_x11_&x(x5,x26,x9)
+lub_x11_&x_val((A,top),x25,(B,top))
+(A,top)
+
+if (0 < x12) (B,top) else (A,top)
+
+(B,top)
+
+hit pair -- assume only 0 case differs (loop peeling)
+Set(("val",(x25,x25)))
+lub_x11_&y(x9,x9,x9)
+lub_x11_B(x3,x65,x45)
+lub_x11_B_top(Map(),x63,x44)
+lub_x11_B_top_head("undefined",x28,x23)
+if (0 < x12) x11_B_top_head(x12 + -1) else "undefined"
+
+x12 + -1
+
+x12 + if (0 < x12) x11_B_top_head(x12 + -1) * -1 + -1 else "undefined"
+
+poly: List()
+giving up: deriv List()
+recursive fun x11_B_top_head
+lub_x11_B_top_tail("undefined",x60,x25)
+val x74 = x59 * -1
+val x75 = if (x24) x74 else "undefined"
+val x76 = x74 + (B,top)
+val x77 = if (x24) x76 else "undefined"
+val x78 = x74 + (A,top)
+val x79 = if (x24) x78 else "undefined"
+if (0 < x12) x11_B_top_tail(x12 + -1) else "undefined"
+
+if (0 < x12) (B,top) else (A,top)
+
+if (0 < x12) x11_B_top_tail(x12 + -1) * -1 + (B,top) else "undefined"
+
+poly: List()
+giving up: deriv List()
+recursive fun x11_B_top_tail
+Set(("head",(x28,x30)), ("tail",(x60,x62)))
+Set(("top",(x63,x64)))
+lub_x11_&z(x5,x5,x5)
+lub_x11_&i(x1,x36,x37)
+lub_x11_&i_val(0,x23,x12)
+x12 + -1
+
+x12
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x23,x12)))
+lub_x11_A(x3,x3,x3)
+Set(("&z",(x5,x5)), ("&y",(x9,x9)), ("&x",(x26,x26)), ("A",(x3,x3)), ("&i",(x36,x37)), ("B",(x65,x66)))
+lub(x10, x48) = x69
+val x11_&x_val = { x12 => (B,top) }
+val x11_B_top_head = { x12 => x23 }
+val x11_B_top_tail = { x12 => x25 }
+val x11_&i_val = { x12 => x12 }
+val x11 = { x12 => x48 }
+fixindex: 100
+val x80 = Map("head" -> 99, "tail" -> (B,top))
+val x81 = Map("top" -> x80)
+val x82 = Map("val" -> 100)
+val x83 = Map("&x" -> x9, "&y" -> x9, "B" -> x81, "&z" -> x5, "&i" -> x82, "A" -> x3)
+*** after loop x83 ***
+val x84 = Map("head" -> 99, "tail" -> (A,top))
+val x85 = Map("top" -> x84)
+val x86 = Map("&x" -> x9, "&y" -> x9, "B" -> x85, "&z" -> x5, "&i" -> x82, "A" -> x3)
+val x87 = Map("head" -> 7, "tail" -> (A,top))
+val x88 = Map("top" -> x87)
+val x89 = Map("&x" -> x9, "&y" -> x9, "B" -> x88, "&z" -> x5, "&i" -> x82, "A" -> x3)
+res: ()
+store: x89
+transformed: x89
+sched:
+val x87 = Map("head" -> 7, "tail" -> (A,top))
+val x88 = Map("top" -> x87)
+val x82 = Map("val" -> 100)
+val x9 = Map("val" -> (B,top))
+val x5 = Map("val" -> (A,top))
+val x3 = Map("top" -> Map())
+val x89 = Map("&x" -> x9, "&y" -> x9, "B" -> x88, "&z" -> x5, "&i" -> x82, "A" -> x3)
+term:
+Map("&i" -> Map("val" -> 100), "B" -> Map("top" -> Map("head" -> 7, "tail" -> (A,top))), "A" -> Map("top" -> Map()), "&x" -> Map("val" -> (B,top)), "&z" -> Map("val" -> (A,top)), "&y" -> Map("val" -> (B,top)))
+
+----
