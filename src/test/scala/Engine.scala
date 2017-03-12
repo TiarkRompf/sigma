@@ -249,7 +249,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
     }
 
 
-    // main transformer engine
+    // main IR rewriting engine
 
     object IRD extends DXForm {
       type From = GVal
