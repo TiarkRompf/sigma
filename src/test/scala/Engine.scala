@@ -294,6 +294,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       def termToString(p: GVal) = captureOutput(println(IRS_Term.scope(IRS_Term.pre(p))))
       def printTerm(p: GVal) = println(termToString(p))
 
+      // does a depend on b? potentially expensive
       def dependsOn(a: GVal, b: GVal) = schedule(a).exists(p => GRef(p._1) == b || syms(p._2).contains(b.toString))
 
       def mkey(f: GVal, x: GVal): GVal = x match {
@@ -325,7 +326,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
         if (env == env0) env else substTrans(env)
       }
 
-
+      // subst a -> b in term x. we perform hereditary substition, 
+      // i.e. normalize/optimize on the fly. of particular concern
+      // are conditionals (if/else)
       def subst(x: GVal, a: GVal, b: GVal): GVal = x match {
         case `a`                 => b
         case GConst(_)           => x
@@ -430,6 +433,13 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
         case _                   => x // TOOD
       }
 
+
+      // smart constructors
+
+      def const(x: Any) = x match {
+        case x: Double if x.toInt.toDouble == x => GConst(x.toInt)
+        case _ => GConst(x)
+      }      
       override def update(x: From, f: From, y: From): From = x match {
         case GConst("undefined") => update(dreflect(DMap(Map())),f,y) // f may be non-const
         //case GConst("undefined") => x 
@@ -480,10 +490,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
         case Def(DPair(u,v)) => select(select(x,u),v)
         case Def(DCollect(n,x,c)) => subst(c,GRef(x),f)// FIXME: check bounds!!
         case _ => super.select(x,f)
-      }
-      def const(x: Any) = x match {
-        case x: Double if x.toInt.toDouble == x => GConst(x.toInt)
-        case _ => GConst(x)
       }
       override def plus(x: From, y: From)            = (x,y) match {
         case (GConst(x:Int),GConst(y:Int))       => const(x+y)
@@ -584,7 +590,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
         // would return true, ergo condition is redundant.
         // This is a bit of a hack:
         case Def(DLess(GConst(a:Int),xx)) if { x match { 
-          case Def(DLess(`xx`, GConst(b:Int))) => a<b && y == const(1) case _ => false }} => x
+          case Def(DLess(`xx`, GConst(b:Int))) => a < b && y == const(1) case _ => false }} => x
         // Another, similar case: if (1<x6) u-x6 else u-1 = 
         // Here we extend to if (0<x6) u-x6 else u-1 in the hope that the condition
         // becomes redundant later
@@ -942,63 +948,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
             } catch {
               case `fail` =>
             }
-
-
-            if (false) d1 match {
-              // loop invariant stride, i.e. constant delta i.e. linear in loop index
-              case d if !IRD.dependsOn(d, n0) && d != const("undefined") => 
-                println(s"confirmed iterative loop, d = $d")
-                return (plus(a,times(plus(n0,const(-1)),d)),
-                 plus(a,times(n0,d)))
-              // piece-wise linear, e.g. if (n < 18) 1 else 0
-              case Def(DIf(Def(DLess(`n0`, up)), dx, dy))
-                if !IRD.dependsOn(up, n0) && !IRD.dependsOn(dx, n0) && !IRD.dependsOn(dy, n0) => 
-                val (u0,u1) = 
-                (plus(a,times(plus(n0,const(-1)),dx)),
-                 plus(a,times(n0,dx)))
-                val n0minusUp = plus(n0,times(up,const(-1)))
-                val (v0,v1) = 
-                (plus(times(plus(up,const(-1)),dx),times(plus(n0minusUp,const(-1)),dy)),
-                 plus(times(plus(up,const(-1)),dx),times(n0minusUp,dy)))
-                return (iff(less(n0,up), u0, v0), iff(less(n0,up), u1, v1))
-              case Def(DLess(`n0`, up)) // short cut
-                if !IRD.dependsOn(up, n0) => 
-                val (dx,dy) = (const(1),const(0))
-                val (u0,u1) = 
-                (plus(a,times(plus(n0,const(-1)),dx)),
-                 plus(a,times(n0,dx)))
-                val n0minusUp = plus(n0,times(up,const(-1)))
-                val (v0,v1) = 
-                (plus(times(plus(up,const(-1)),dx),times(plus(n0minusUp,const(-1)),dy)),
-                 plus(times(plus(up,const(-1)),dx),times(n0minusUp,dy)))
-                return (iff(less(n0,up), u0, v0), iff(less(n0,up), u1, v1))
-              // no simple structure
-              case d =>
-
-                val pp = poly(d1)
-                println("poly: " + pp)
-                pp match {
-                  case List(coeff0, coeff1) =>
-                    println(s"found 2nd order polynomial: f'($n0)=$coeff1*$n0+$coeff0 -> f($n0)=$coeff1*$n0/2($n0+1)+$coeff0*$n0")
-                    // c1 * n/2*(n+1) + c0 * n
-
-                    val r0 = plus(times(times(times(plus(n0,const(-1)),n0),const(0.5)), coeff1), times(plus(n0,const(-1)), coeff0))
-                    val r1 = plus(times(times(times(n0,plus(n0,const(1))),const(0.5)), coeff1), times(n0, coeff0))
-
-                    // sanity check that we get the same diff
-                    IRD.printTerm(r0)
-                    IRD.printTerm(r1)
-                    val dd = plus(r1,times(r0, const(-1)))
-                    IRD.printTerm(dd)
-                    val pp2 = poly(dd)
-                    println("poly2: " + pp2)
-                    assert(pp == pp2)
-
-                    return (plus(a,r0), plus(a,r1))
-                  case xx =>
-                    println(s"giving up: deriv $xx")
-                }
-              }
           }
 
           // fall-through case
