@@ -1,0 +1,51 @@
+prog: {
+  Assign(x,New(A))
+  If(Direct("input"),{
+    Put(Ref(x),Const(a),New(B))
+    Put(Get(Ref(x),Const(a)),Const(foo),Const(5))
+  },{
+    Put(Ref(x),Const(a),New(C))
+    Put(Get(Ref(x),Const(a)),Const(bar),Const(5))
+  })
+  Assign(foo,Get(Get(Ref(x),Const(a)),Const(foo)))
+  Assign(bar,Get(Get(Ref(x),Const(a)),Const(bar)))
+}
+val x0 = Map()
+val x1 = Map("top" -> Map())
+val x2 = Map("A" -> x1)
+val x3 = Map("val" -> (A,top))
+val x4 = Map("A" -> x1, "&x" -> x3)
+val x5 = Map("A" -> x1, "&x" -> x3, "B" -> x1)
+val x6 = Map("a" -> (B,top))
+val x7 = Map("top" -> x6)
+val x8 = Map("A" -> x7, "&x" -> x3)
+val x9 = Map("foo" -> 5)
+val x10 = Map("top" -> x9)
+val x11 = Map("A" -> x7, "&x" -> x3, "B" -> x10)
+val x12 = Map("A" -> x1, "&x" -> x3, "C" -> x1)
+val x13 = Map("a" -> (C,top))
+val x14 = Map("top" -> x13)
+val x15 = Map("A" -> x14, "&x" -> x3)
+val x16 = Map("bar" -> 5)
+val x17 = Map("top" -> x16)
+val x18 = Map("A" -> x14, "&x" -> x3, "C" -> x17)
+val x19 = Map("val" -> 5)
+val x20 = Map("A" -> x7, "&x" -> x3, "B" -> x10, "&foo" -> x19)
+val x21 = Map("val" -> "undefined")
+val x22 = Map("&x" -> x3, "B" -> x10, "A" -> x7, "&foo" -> x19, "&bar" -> x21)
+res: ()
+store: x22
+transformed: x22
+sched:
+val x21 = Map("val" -> "undefined")
+val x19 = Map("val" -> 5)
+val x9 = Map("foo" -> 5)
+val x10 = Map("top" -> x9)
+val x6 = Map("a" -> (B,top))
+val x7 = Map("top" -> x6)
+val x3 = Map("val" -> (A,top))
+val x22 = Map("&x" -> x3, "B" -> x10, "A" -> x7, "&foo" -> x19, "&bar" -> x21)
+term:
+Map("B" -> Map("top" -> Map("foo" -> 5)), "A" -> Map("top" -> Map("a" -> (B,top))), "&x" -> Map("val" -> (A,top)), "&bar" -> Map("val" -> "undefined"), "&foo" -> Map("val" -> 5))
+
+----

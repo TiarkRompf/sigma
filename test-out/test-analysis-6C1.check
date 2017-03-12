@@ -9,6 +9,10 @@ prog: {
     Assign(x,Ref(y))
     Assign(i,Plus(Ref(i),Const(1)))
   })
+  Assign(s,Const(0))
+  Assign(i,Get(Ref(x),Const(head)))
+  Assign(x,Get(Ref(x),Const(tail)))
+  Assign(s,Plus(Ref(s),Ref(i)))
 }
 val x0 = Map()
 val x1 = Map("val" -> 0)
@@ -305,11 +309,19 @@ val x112 = Map("top" -> x111)
 val x113 = Map("val" -> 100)
 val x114 = Map("&x" -> x110, "&y" -> x110, "B" -> x112, "&z" -> x5, "&i" -> x113, "A" -> x3)
 *** after loop x114 ***
+val x115 = Map("&x" -> x110, "&s" -> x1, "&y" -> x110, "B" -> x112, "&z" -> x5, "&i" -> x113, "A" -> x3)
+val x116 = Map("head" -> 99, "tail" -> (B,(top,98)))
+val x117 = Map("val" -> 99)
+val x118 = Map("&x" -> x110, "&s" -> x1, "&y" -> x110, "B" -> x112, "&z" -> x5, "&i" -> x117, "A" -> x3)
+val x119 = Map("val" -> (B,(top,98)))
+val x120 = Map("&x" -> x119, "&s" -> x1, "&y" -> x110, "B" -> x112, "&z" -> x5, "&i" -> x117, "A" -> x3)
+val x121 = Map("&x" -> x119, "&s" -> x117, "&y" -> x110, "B" -> x112, "&z" -> x5, "&i" -> x117, "A" -> x3)
 res: ()
-store: x114
-transformed: x114
+store: x121
+transformed: x121
 sched:
-val x113 = Map("val" -> 100)
+val x119 = Map("val" -> (B,(top,98)))
+val x117 = Map("val" -> 99)
 val x86 = x8_B_top_x9 + -1
 val x87 = ("top",x86)
 val x88 = ("B",x87)
@@ -321,8 +333,8 @@ val x112 = Map("top" -> x111)
 val x110 = Map("val" -> (B,(top,99)))
 val x5 = Map("val" -> (A,top))
 val x3 = Map("top" -> Map())
-val x114 = Map("&x" -> x110, "&y" -> x110, "B" -> x112, "&z" -> x5, "&i" -> x113, "A" -> x3)
+val x121 = Map("&x" -> x119, "&s" -> x117, "&y" -> x110, "B" -> x112, "&z" -> x5, "&i" -> x117, "A" -> x3)
 term:
-Map("&i" -> Map("val" -> 100), "B" -> Map("top" -> collect(100) { x8_B_top_x9 => Map("head" -> x8_B_top_x9, "tail" -> if (0 < x8_B_top_x9) ("B",("top",x8_B_top_x9 + -1)) else (A,top)) }), "A" -> Map("top" -> Map()), "&x" -> Map("val" -> (B,(top,99))), "&z" -> Map("val" -> (A,top)), "&y" -> Map("val" -> (B,(top,99))))
+Map("&i" -> Map("val" -> 99), "B" -> Map("top" -> collect(100) { x8_B_top_x9 => Map("head" -> x8_B_top_x9, "tail" -> if (0 < x8_B_top_x9) ("B",("top",x8_B_top_x9 + -1)) else (A,top)) }), "&s" -> Map("val" -> 99), "A" -> Map("top" -> Map()), "&x" -> Map("val" -> (B,(top,98))), "&z" -> Map("val" -> (A,top)), "&y" -> Map("val" -> (B,(top,99))))
 
 ----

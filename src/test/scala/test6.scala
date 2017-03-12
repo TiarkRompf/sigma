@@ -1,13 +1,13 @@
 package analysis
 
-class TestAnalysis6 extends FileDiffSuite {
+import Frontend._
+
+class TestAnalysis6 extends RunAndCheckSuite {
 
   val prefix = "test-out/test-analysis-6"
   // test store logic (1): build a linked list
 
-  test("B0") { withOutFileChecked(prefix+"B0") {
-    import Frontend._
-    Main.runAndCheck { // test3
+  testProg("B0") { // test3
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -44,7 +44,7 @@ class TestAnalysis6 extends FileDiffSuite {
   // back to simpler tests (compare to test3)
   // 3 and 4 should be different: alloc within the loop vs before
   
-    Main.runAndCheck { // test4
+  testProg("B1") { // test4
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -72,7 +72,7 @@ class TestAnalysis6 extends FileDiffSuite {
       """
     }
 
-    Main.runAndCheck { // test5
+  testProg("B2") { // test5
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -92,7 +92,6 @@ class TestAnalysis6 extends FileDiffSuite {
       )
       """
     }
-  }}
 
 
 
@@ -235,9 +234,7 @@ class TestAnalysis6 extends FileDiffSuite {
 
   // test store logic (2): build and traverse a linked list
 
-  test("B1") { withOutFileChecked(prefix+"B1") {
-  import Frontend._
-    Main.runAndCheck { // test3a
+  testProg("C1") { // test3a
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -273,12 +270,9 @@ class TestAnalysis6 extends FileDiffSuite {
         )
       """
     }
-  }}
 
 
-  test("B2") { withOutFileChecked(prefix+"B2") {
-    import Frontend._
-    Main.runAndCheck { //test3b
+  testProg("C2") { //test3b
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -354,6 +348,5 @@ class TestAnalysis6 extends FileDiffSuite {
       """
 */
     }
-  }}
 
 }

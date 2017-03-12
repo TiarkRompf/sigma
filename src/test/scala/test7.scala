@@ -1,14 +1,14 @@
 package analysis
 
-class TestAnalysis7 extends FileDiffSuite {
+import Frontend._
+
+class TestAnalysis7 extends RunAndCheckSuite {
 
   val prefix = "test-out/test-analysis-7"
 
-    // modify stuff after a loop
+  // modify stuff after a loop
 
-  test("C") { withOutFileChecked(prefix+"C") {
-    import Frontend._
-    Main.runAndCheck { //test6
+  testProg("C1") { //test6
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -35,13 +35,10 @@ class TestAnalysis7 extends FileDiffSuite {
         )
       """
     }
-  }}
 
-    // strong update for if
+  // strong update for if
 
-  test("D") { withOutFileChecked(prefix+"D") {
-    import Frontend._
-    Main.runAndCheck { //test7
+  testProg("D1") { //test7
       Block(List(
         Assign("x", New("A")),
         If(Direct(vref("input")),
@@ -68,7 +65,7 @@ class TestAnalysis7 extends FileDiffSuite {
         )
       """
     }
-    Main.runAndCheck { //test8
+  testProg("D2") { //test8
       Block(List(
         Assign("x", New("A")),
         Put(Ref("x"), Const("a"), New("A2")),
@@ -97,13 +94,10 @@ class TestAnalysis7 extends FileDiffSuite {
         )
       """
     }
-  }}
 
-    // update stuff allocated in a loop
+  // update stuff allocated in a loop
 
-  test("E") { withOutFileChecked(prefix+"E") {
-    import Frontend._
-    Main.runAndCheck { //test9
+  testProg("E1") { //test9
       Block(List(
         Assign("i", Const(0)),
         Assign("x", New("X")),
@@ -142,13 +136,10 @@ class TestAnalysis7 extends FileDiffSuite {
       )
       """
     }
-  }}
 
 
   // factorial: direct
-  test("F1") { withOutFileChecked(prefix+"F1") {
-    import Frontend._
-    Main.runAndCheck {
+  testProg("F1") {
       Block(List(
         Assign("n", Direct(vref("N"))),
         Assign("i", Const(0)),
@@ -170,7 +161,7 @@ class TestAnalysis7 extends FileDiffSuite {
         )
       """
     }
-  }}
+
 }
 
 // (to try: fac, first as while loop, then as recursive

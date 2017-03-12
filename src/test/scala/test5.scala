@@ -1,14 +1,14 @@
 package analysis
 
-class TestAnalysis5 extends FileDiffSuite {
+import Frontend._
+
+class TestAnalysis5 extends RunAndCheckSuite {
 
   val prefix = "test-out/test-analysis-5"
 
   // test arrays / computed index access
   //   first, some unit tests
-  test("A1") { withOutFileChecked(prefix+"A1") {
-    import Frontend._
-    Main.runAndCheck {
+  testProg("A1") {
       Block(List(
         Assign("x", Const(0)), // "input"
         Assign("a", New("A")),
@@ -22,11 +22,8 @@ class TestAnalysis5 extends FileDiffSuite {
         "&a" -> Map("val" -> (A,top)), 
         "&r" -> Map("val" -> (A,top)))"""   
     }    
-  }}
 
-  test("A2") { withOutFileChecked(prefix+"A2") {
-    import Frontend._
-    Main.runAndCheck {
+  testProg("A2") {
       Block(List(
         Assign("x", Const(0)), // "input"
         Assign("a", New("A")),
@@ -40,11 +37,8 @@ class TestAnalysis5 extends FileDiffSuite {
         "&a" -> Map("val" -> (A,top)), 
         "&r" -> Map("val" -> (A,top)))"""
     } 
-  }}
 
-  test("A3") { withOutFileChecked(prefix+"A3") {
-    import Frontend._
-    Main.runAndCheck {
+  testProg("A3") {
       Block(List(
         Assign("x", Const(0)),
         Assign("a", New("A")),
@@ -62,12 +56,9 @@ class TestAnalysis5 extends FileDiffSuite {
         "&a" -> Map("val" -> (A,top)), 
         "&r" -> Map("val" -> (A,top)))"""
     } 
-  }}
 
   //   update array at loop index
-  test("A4") { withOutFileChecked(prefix+"A4") {
-    import Frontend._
-    Main.runAndCheck {
+  testProg("A4") {
       Block(List(
         Assign("x", Const(0)),
         Assign("y", Const(10)),
@@ -91,5 +82,4 @@ class TestAnalysis5 extends FileDiffSuite {
       """
     }
 
-  }}
 }

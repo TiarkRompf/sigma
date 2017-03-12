@@ -1,14 +1,14 @@
 package analysis
 
-class TestAnalysis4 extends FileDiffSuite {
+import Frontend._
+
+class TestAnalysis4 extends RunAndCheckSuite {
 
   val prefix = "test-out/test-analysis-4"
 
   // test some integer computations
 
-  test("A1") { withOutFileChecked(prefix+"A1") {
-    import Frontend._
-    Main.runAndCheck {
+  testProg("A1") {
       Block(List(
         Assign("i", Const(0)),
         Assign("y", Const(0)),
@@ -27,11 +27,8 @@ class TestAnalysis4 extends FileDiffSuite {
         "&x" -> Map("val" -> 8)
       )"""
     }
-  }}
 
-  test("A2") { withOutFileChecked(prefix+"A2") {
-    import Frontend._
-    Main.runAndCheck {
+  testProg("A2") {
       Block(List(
         Assign("x", Const(900)), // input
         Assign("y", Const(0)),
@@ -60,11 +57,8 @@ class TestAnalysis4 extends FileDiffSuite {
         "&r"  -> Map("val" -> 0)
       )"""
 */
-  }}
 
-  test("A3") { withOutFileChecked(prefix+"A3") {
-    import Frontend._
-    Main.runAndCheck {
+  testProg("A3") {
       Block(List(
         Assign("x", Const(900)), // input
         Assign("z", Const(0)),
@@ -81,7 +75,6 @@ class TestAnalysis4 extends FileDiffSuite {
         "&r"  -> Map("val" -> 0)
       )"""
     }
-  }}
 
 /* XXX this one doesn't terminate??? --> investigate!
 
