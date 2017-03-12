@@ -27,7 +27,10 @@ class TestAnalysis4 extends FileDiffSuite {
         "&x" -> Map("val" -> 8)
       )"""
     }
+  }}
 
+  test("A2") { withOutFileChecked(prefix+"A2") {
+    import Frontend._
     Main.runAndCheck {
       Block(List(
         Assign("x", Const(900)), // input
@@ -57,8 +60,10 @@ class TestAnalysis4 extends FileDiffSuite {
         "&r"  -> Map("val" -> 0)
       )"""
 */
+  }}
 
-
+  test("A3") { withOutFileChecked(prefix+"A3") {
+    import Frontend._
     Main.runAndCheck {
       Block(List(
         Assign("x", Const(900)), // input
@@ -76,6 +81,7 @@ class TestAnalysis4 extends FileDiffSuite {
         "&r"  -> Map("val" -> 0)
       )"""
     }
+  }}
 
 /* XXX this one doesn't terminate??? --> investigate!
 
@@ -108,8 +114,8 @@ class TestAnalysis4 extends FileDiffSuite {
       )"""
     }
 */
-  }}
 }
+
 
 class TestAnalysis5 extends FileDiffSuite {
 
@@ -117,7 +123,7 @@ class TestAnalysis5 extends FileDiffSuite {
 
   // test arrays / computed index access
   //   first, some unit tests
-  test("A2") { withOutFileChecked(prefix+"A2") {
+  test("A1") { withOutFileChecked(prefix+"A1") {
     import Frontend._
     Main.runAndCheck {
       Block(List(
@@ -133,6 +139,10 @@ class TestAnalysis5 extends FileDiffSuite {
         "&a" -> Map("val" -> (A,top)), 
         "&r" -> Map("val" -> (A,top)))"""   
     }    
+  }}
+
+  test("A2") { withOutFileChecked(prefix+"A2") {
+    import Frontend._
     Main.runAndCheck {
       Block(List(
         Assign("x", Const(0)), // "input"

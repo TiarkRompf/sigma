@@ -1,0 +1,145 @@
+prog: {
+  Assign(x,Const(900))
+  Assign(y,Const(0))
+  While(Less(Const(0),Ref(x)),{
+    Assign(y,Plus(Ref(y),Const(1)))
+    Assign(x,Plus(Ref(x),Const(-1)))
+  })
+  Assign(r,Ref(x))
+}
+val x0 = Map()
+val x1 = Map("val" -> 900)
+val x2 = Map("&x" -> x1)
+val x3 = Map("val" -> 0)
+val x4 = Map("&x" -> x1, "&y" -> x3)
+val x7 = ("top",x6)
+starting spec loop with x4
+val x8 = Map("val" -> 1)
+val x9 = Map("&x" -> x1, "&y" -> x8)
+val x10 = Map("val" -> 899)
+val x11 = Map("&x" -> x10, "&y" -> x8)
+val x12 = x6 < 0
+val x13 = fixindex { x6 => 1 }
+val x14 = x13 < x6
+trip count:
+fixindex { x6 => 1 }
+
+lub(x4, x11) = ?
+lub_x5(x4,x4,x11)
+lub_x5_&x(x1,x1,x10)
+lub_x5_&x_val(900,900,899)
+checky checky
+900
+
+900
+
+899
+
+integer diff
+900
+
+899
+
+-1
+
+confirmed iterative loop, d = -1
+val x15 = x6 * -1
+val x16 = x15 + 900
+val x17 = x6 + 1
+val x18 = x15 + -1
+val x19 = x15 + 899
+Set(("val",(x16,x19)))
+val x20 = Map("val" -> x16)
+val x21 = Map("val" -> x19)
+lub_x5_&y(x3,x3,x8)
+lub_x5_&y_val(0,0,1)
+checky checky
+0
+
+0
+
+1
+
+integer diff
+0
+
+1
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x6,x17)))
+val x22 = Map("val" -> x6)
+val x23 = Map("val" -> x17)
+Set(("&x",(x20,x21)), ("&y",(x22,x23)))
+val x24 = Map("&x" -> x20, "&y" -> x22)
+val x25 = Map("&x" -> x21, "&y" -> x23)
+lub(x4, x11) = x24
+starting spec loop with x24
+val x26 = x6 < 900
+val x27 = Map("&x" -> x20, "&y" -> x23)
+val x28 = 900 < x6
+trip count:
+900
+
+lub(x4, x25) = ?
+lub_x5(x4,x24,x25)
+lub_x5_&x(x1,x20,x21)
+lub_x5_&x_val(900,x16,x19)
+checky checky
+900
+
+x6 * -1 + 900
+
+x6 * -1 + 899
+
+val x29 = x6 + -900
+val x30 = x6 + -1
+integer diff
+x6 * -1 + 900
+
+x6 * -1 + 899
+
+-1
+
+confirmed iterative loop, d = -1
+Set(("val",(x16,x19)))
+lub_x5_&y(x3,x22,x23)
+lub_x5_&y_val(0,x6,x17)
+checky checky
+0
+
+x6
+
+x6 + 1
+
+val x31 = x15 + 1
+integer diff
+x6
+
+x6 + 1
+
+1
+
+confirmed iterative loop, d = 1
+Set(("val",(x6,x17)))
+Set(("&x",(x20,x21)), ("&y",(x22,x23)))
+lub(x4, x25) = x24
+val x5_&x_val = { x6 => x19 }
+val x5_&y_val = { x6 => x17 }
+val x5 = { x6 => x25 }
+fixindex: 900
+val x32 = Map("&x" -> x3, "&y" -> x1)
+*** after loop x32 ***
+val x33 = Map("&x" -> x3, "&y" -> x1, "&r" -> x3)
+res: ()
+store: x33
+transformed: x33
+sched:
+val x3 = Map("val" -> 0)
+val x1 = Map("val" -> 900)
+val x33 = Map("&x" -> x3, "&y" -> x1, "&r" -> x3)
+term:
+Map("&x" -> Map("val" -> 0), "&y" -> Map("val" -> 900), "&r" -> Map("val" -> 0))
+
+----
