@@ -1,258 +1,233 @@
-prog: {
-  Assign(i,Const(0))
-  Assign(x,New(X))
-  Put(Ref(x),Const(a),New(A))
-  Put(Get(Ref(x),Const(a)),Const(baz),Const(3))
-  While(Less(Ref(i),Direct("COUNT")),{
-    Put(Ref(x),Const(a),New(B))
-    Put(Get(Ref(x),Const(a)),Const(foo),Const(5))
-    Assign(i,Plus(Ref(i),Const(1)))
-  })
-  Put(Get(Ref(x),Const(a)),Const(bar),Const(7))
-  Assign(xbar,Get(Get(Ref(x),Const(a)),Const(bar)))
-}
-val x0 = Map()
-val x1 = Map("val" -> 0)
-val x2 = Map("&i" -> x1)
-val x3 = Map("top" -> Map())
-val x4 = Map("&i" -> x1, "X" -> x3)
-val x5 = Map("val" -> (X,top))
-val x6 = Map("&i" -> x1, "X" -> x3, "&x" -> x5)
-val x7 = Map("&i" -> x1, "X" -> x3, "&x" -> x5, "A" -> x3)
-val x8 = Map("a" -> (A,top))
-val x9 = Map("top" -> x8)
-val x10 = Map("&i" -> x1, "X" -> x9, "&x" -> x5)
-val x11 = Map("baz" -> 3)
-val x12 = Map("top" -> x11)
-val x13 = Map("&i" -> x1, "X" -> x9, "&x" -> x5, "A" -> x12)
-val x16 = ("top",x15)
-starting spec loop with x13
-val x17 = 0 < "COUNT"
-val x18 = ("B",x16)
-val x19 = x0 + (x15 -> Map())
-val x20 = Map("top" -> x19)
-val x21 = Map("&x" -> x5, "B" -> x20, "X" -> x9, "&i" -> x1, "A" -> x12)
-val x22 = Map("a" -> x18)
-val x23 = Map("top" -> x22)
-val x24 = Map("&i" -> x1, "X" -> x23, "&x" -> x5, "A" -> x12)
-val x25 = Map("foo" -> 5)
-val x26 = x0 + (x15 -> x25)
-val x27 = Map("top" -> x26)
-val x28 = Map("&x" -> x5, "B" -> x27, "X" -> x23, "&i" -> x1, "A" -> x12)
-val x29 = Map("val" -> 1)
-val x30 = Map("&x" -> x5, "B" -> x27, "X" -> x23, "&i" -> x29, "A" -> x12)
-val x31 = x15 < 0
-val x32 = fixindex { x15 => x17 }
-val x33 = x32 < x15
-trip count:
-fixindex { x15 => 0 < "COUNT" }
-
-lub(x13, x30) = ?
-lub_x14(x13,x13,x30)
-lub_x14_&x(x5,x5,x5)
-lub_x14_B("undefined","undefined",x27)
-lub_x14_B_top("undefined","undefined",x26)
-"undefined"
-
-"undefined"
-
-Map() + (x15 -> Map("foo" -> 5))
-
-hit update at loop index -- assume collect
-val x34 = x15 + 1
-val x35 = collect(x34) { x14_B_top_x15 => x25 }
-Set(("top",(x35,x35)))
-val x36 = Map("top" -> x35)
-lub_x14_X(x9,x9,x23)
-lub_x14_X_top(x8,x8,x22)
-lub_x14_X_top_a((A,top),(A,top),x18)
-val x37 = "A" * -1
-val x38 = "top" * -1
-val x39 = (x37,x38)
-val x40 = x37 + "B"
-val x41 = x16 + x38
-val x42 = (x40,x41)
-(A,top)
-
-(A,top)
-
-("B",("top",x15))
-
-hit pair -- assume only 0 case differs (loop peeling)
-val x43 = x15 + -1
-val x44 = ("top",x43)
-val x45 = ("B",x44)
-val x46 = 0 < x15
-val x47 = if (x46) x45 else (A,top)
-val x48 = if (x46) x18 else (A,top)
-Set(("a",(x47,x48)))
-val x49 = Map("a" -> x47)
-val x50 = Map("a" -> x48)
-Set(("top",(x49,x50)))
-val x51 = Map("top" -> x49)
-val x52 = Map("top" -> x50)
-lub_x14_&i(x1,x1,x29)
-lub_x14_&i_val(0,0,1)
-checky checky
-0
-
-0
-
-1
-
-integer diff
-0
-
-1
-
-1
-
-confirmed iterative loop, d = 1
-Set(("val",(x15,x34)))
-val x53 = Map("val" -> x15)
-val x54 = Map("val" -> x34)
-lub_x14_A(x12,x12,x12)
-Set(("&i",(x53,x54)), ("A",(x12,x12)), ("B",(x36,x36)), ("X",(x51,x52)), ("&x",(x5,x5)))
-val x55 = Map("&x" -> x5, "B" -> x36, "X" -> x51, "&i" -> x53, "A" -> x12)
-val x56 = Map("&x" -> x5, "B" -> x36, "X" -> x52, "&i" -> x54, "A" -> x12)
-lub(x13, x30) = x55
-starting spec loop with x55
-val x57 = x15 < "COUNT"
-val x58 = x35 + (x15 -> Map())
-val x59 = Map("top" -> x58)
-val x60 = Map("&x" -> x5, "B" -> x59, "X" -> x51, "&i" -> x53, "A" -> x12)
-val x61 = Map("&x" -> x5, "B" -> x36, "X" -> x23, "&i" -> x53, "A" -> x12)
-val x62 = x35 + (x15 -> x25)
-val x63 = Map("top" -> x62)
-val x64 = Map("&x" -> x5, "B" -> x63, "X" -> x23, "&i" -> x53, "A" -> x12)
-val x65 = Map("&x" -> x5, "B" -> x63, "X" -> x23, "&i" -> x54, "A" -> x12)
-val x66 = "COUNT" < x15
-trip count:
-"COUNT"
-
-lub(x13, x65) = ?
-lub_x14(x13,x55,x65)
-lub_x14_&x(x5,x5,x5)
-lub_x14_B("undefined",x36,x63)
-lub_x14_B_top("undefined",x35,x62)
-"undefined"
-
-collect(x15 + 1) { x14_B_top_x15 => Map("foo" -> 5) }
-
-collect(x15 + 1) { x14_B_top_x15 => Map("foo" -> 5) } + (x15 -> Map("foo" -> 5))
-
-hit update at loop index -- assume collect
-Set(("top",(x35,x35)))
-lub_x14_X(x9,x51,x23)
-lub_x14_X_top(x8,x49,x22)
-lub_x14_X_top_a((A,top),x47,x18)
-val x67 = "B" * -1
-val x68 = x15 * -1
-val x69 = x68 + 1
-val x70 = (x38,x69)
-val x71 = (x67,x70)
-val x72 = if (x46) x71 else x39
-val x73 = x18 + x72
-(A,top)
-
-if (0 < x15) ("B",("top",x15 + -1)) else (A,top)
-
-("B",("top",x15))
-
-hit pair -- assume only 0 case differs (loop peeling)
-Set(("a",(x47,x48)))
-Set(("top",(x49,x50)))
-lub_x14_&i(x1,x53,x54)
-lub_x14_&i_val(0,x15,x34)
-checky checky
-0
-
-x15
-
-x15 + 1
-
-integer diff
-x15
-
-x15 + 1
-
-1
-
-confirmed iterative loop, d = 1
-Set(("val",(x15,x34)))
-lub_x14_A(x12,x12,x12)
-Set(("&i",(x53,x54)), ("A",(x12,x12)), ("B",(x36,x36)), ("X",(x51,x52)), ("&x",(x5,x5)))
-lub(x13, x65) = x55
-val x14_B_top = { x15 => x35 }
-val x74 = x14_X_top_a(x43)
-val x14_X_top_a = { x15 => x48 }
-val x14_&i_val = { x15 => x34 }
-val x14 = { x15 => x56 }
-fixindex: "COUNT"
-val x75 = "COUNT" + -1
-val x76 = collect("COUNT") { x14_B_top_x15 => x25 }
-val x77 = Map("top" -> x76)
-val x78 = 1 < "COUNT"
-val x79 = ("top",x75)
-val x80 = ("B",x79)
-val x81 = if (x78) x80 else (A,top)
-val x82 = Map("a" -> x81)
-val x83 = Map("top" -> x82)
-val x84 = Map("val" -> "COUNT")
-val x85 = Map("&x" -> x5, "B" -> x77, "X" -> x83, "&i" -> x84, "A" -> x12)
-*** after loop x85 ***
-val x86 = if (x78) 5 else "nil"
-val x87 = if (x78) "nil" else 3
-val x88 = Map("foo" -> x86, "baz" -> x87)
-val x89 = Map("foo" -> x86, "baz" -> x87, "bar" -> 7)
-val x90 = x76 + (x75 -> x89)
-val x91 = Map("top" -> x90)
-val x92 = Map("&x" -> x5, "B" -> x91, "X" -> x83, "&i" -> x84, "A" -> x12)
-val x93 = Map("top" -> x89)
-val x94 = Map("&x" -> x5, "B" -> x77, "X" -> x83, "&i" -> x84, "A" -> x93)
-val x95 = collect(1) { x14_B_top_x15 => x25 }
-val x96 = Map("foo" -> "nil", "baz" -> 3, "bar" -> 7)
-val x97 = x95 + (0 -> x96)
-val x98 = Map("top" -> x97)
-val x99 = Map("&x" -> x5, "B" -> x98, "X" -> x9, "&i" -> x29, "A" -> x12)
-val x100 = Map("foo" -> 5, "baz" -> "nil", "bar" -> 7)
-val x101 = x76 + (x75 -> x100)
-val x102 = if (x78) x101 else x76
-val x103 = Map("top" -> x102)
-val x104 = if (x78) "nil" else 7
-val x105 = Map("baz" -> 3, "foo" -> "nil", "bar" -> x104)
-val x106 = Map("top" -> x105)
-val x107 = Map("&x" -> x5, "B" -> x103, "X" -> x83, "&i" -> x84, "A" -> x106)
-val x108 = if (x78) 7 else "nil"
-val x109 = Map("foo" -> 5, "baz" -> "nil", "bar" -> x108)
-val x110 = Map("foo" -> 5, "baz" -> "nil", "bar" -> "nil")
-val x111 = Map("val" -> 7)
-val x112 = Map("&x" -> x5, "&xbar" -> x111, "B" -> x103, "X" -> x83, "&i" -> x84, "A" -> x106)
-res: ()
-store: x112
-transformed: x112
-sched:
-val x111 = Map("val" -> 7)
-val x78 = 1 < "COUNT"
-val x104 = if (x78) "nil" else 7
-val x105 = Map("baz" -> 3, "foo" -> "nil", "bar" -> x104)
-val x106 = Map("top" -> x105)
-val x100 = Map("foo" -> 5, "baz" -> "nil", "bar" -> 7)
-val x25 = Map("foo" -> 5)
-val x76 = collect("COUNT") { x14_B_top_x15 => x25 }
-val x75 = "COUNT" + -1
-val x101 = x76 + (x75 -> x100)
-val x102 = if (x78) x101 else x76
-val x103 = Map("top" -> x102)
-val x84 = Map("val" -> "COUNT")
-val x79 = ("top",x75)
-val x80 = ("B",x79)
-val x81 = if (x78) x80 else (A,top)
-val x82 = Map("a" -> x81)
-val x83 = Map("top" -> x82)
-val x5 = Map("val" -> (X,top))
-val x112 = Map("&x" -> x5, "&xbar" -> x111, "B" -> x103, "X" -> x83, "&i" -> x84, "A" -> x106)
-term:
-Map("&i" -> Map("val" -> "COUNT"), "B" -> Map("top" -> if (1 < "COUNT") collect("COUNT") { x14_B_top_x15 => Map("foo" -> 5) } + ("COUNT" + -1 -> Map("foo" -> 5, "baz" -> "nil", "bar" -> 7)) else collect("COUNT") { x14_B_top_x15 => Map("foo" -> 5) }), "X" -> Map("top" -> Map("a" -> if (1 < "COUNT") ("B",("top","COUNT" + -1)) else (A,top))), "A" -> Map("top" -> Map("baz" -> 3, "foo" -> "nil", "bar" -> if (1 < "COUNT") "nil" else 7)), "&x" -> Map("val" -> (X,top)), "&xbar" -> Map("val" -> 7))
-
-----
+# prog: {
+    Assign(i,Const(0))
+    Assign(x,New(X))
+    Put(Ref(x),Const(a),New(A))
+    Put(Get(Ref(x),Const(a)),Const(baz),Const(3))
+    While(Less(Ref(i),Direct("COUNT")),{
+      Put(Ref(x),Const(a),New(B))
+      Put(Get(Ref(x),Const(a)),Const(foo),Const(5))
+      Assign(i,Plus(Ref(i),Const(1)))
+    })
+    Put(Get(Ref(x),Const(a)),Const(bar),Const(7))
+    Assign(xbar,Get(Get(Ref(x),Const(a)),Const(bar)))
+  }
+# eval:
+  val x0 = Map()
+  val x1 = Map("val" -> 0)
+  val x2 = Map("&i" -> x1)
+  val x3 = Map("top" -> Map())
+  val x4 = Map("&i" -> x1, "X" -> x3)
+  val x5 = Map("val" -> (X,top))
+  val x6 = Map("&i" -> x1, "X" -> x3, "&x" -> x5)
+  val x7 = Map("&i" -> x1, "X" -> x3, "&x" -> x5, "A" -> x3)
+  val x8 = Map("a" -> (A,top))
+  val x9 = Map("top" -> x8)
+  val x10 = Map("&i" -> x1, "X" -> x9, "&x" -> x5)
+  val x11 = Map("baz" -> 3)
+  val x12 = Map("top" -> x11)
+  val x13 = Map("&i" -> x1, "X" -> x9, "&x" -> x5, "A" -> x12)
+  val x16 = ("top",x15)
+  starting spec loop with x13
+  val x17 = 0 < "COUNT"
+  val x18 = ("B",x16)
+  val x19 = x0 + (x15 -> Map())
+  val x20 = Map("top" -> x19)
+  val x21 = Map("&x" -> x5, "B" -> x20, "X" -> x9, "&i" -> x1, "A" -> x12)
+  val x22 = Map("a" -> x18)
+  val x23 = Map("top" -> x22)
+  val x24 = Map("&i" -> x1, "X" -> x23, "&x" -> x5, "A" -> x12)
+  val x25 = Map("foo" -> 5)
+  val x26 = x0 + (x15 -> x25)
+  val x27 = Map("top" -> x26)
+  val x28 = Map("&x" -> x5, "B" -> x27, "X" -> x23, "&i" -> x1, "A" -> x12)
+  val x29 = Map("val" -> 1)
+  val x30 = Map("&x" -> x5, "B" -> x27, "X" -> x23, "&i" -> x29, "A" -> x12)
+  val x31 = x15 < 0
+  val x32 = fixindex { x15 => x17 }
+  val x33 = x32 < x15
+  trip count:
+  fixindex { x15 => 0 < "COUNT" }
+  lub(x13, x30) = ?
+  lub_x14(x13,x13,x30)
+  lub_x14_&x(x5,x5,x5)
+  lub_x14_B("undefined","undefined",x27)
+  lub_x14_B_top("undefined","undefined",x26)
+  "undefined"
+  "undefined"
+  Map() + (x15 -> Map("foo" -> 5))
+  hit update at loop index -- assume collect
+  val x34 = x15 + 1
+  val x35 = collect(x34) { x14_B_top_x15 => x25 }
+  Set(("top",(x35,x35)))
+  val x36 = Map("top" -> x35)
+  lub_x14_X(x9,x9,x23)
+  lub_x14_X_top(x8,x8,x22)
+  lub_x14_X_top_a((A,top),(A,top),x18)
+  val x37 = "A" * -1
+  val x38 = "top" * -1
+  val x39 = (x37,x38)
+  val x40 = x37 + "B"
+  val x41 = x16 + x38
+  val x42 = (x40,x41)
+  (A,top)
+  (A,top)
+  ("B",("top",x15))
+  hit pair -- assume only 0 case differs (loop peeling)
+  val x43 = x15 + -1
+  val x44 = ("top",x43)
+  val x45 = ("B",x44)
+  val x46 = 0 < x15
+  val x47 = if (x46) x45 else (A,top)
+  val x48 = if (x46) x18 else (A,top)
+  Set(("a",(x47,x48)))
+  val x49 = Map("a" -> x47)
+  val x50 = Map("a" -> x48)
+  Set(("top",(x49,x50)))
+  val x51 = Map("top" -> x49)
+  val x52 = Map("top" -> x50)
+  lub_x14_&i(x1,x1,x29)
+  lub_x14_&i_val(0,0,1)
+  checky checky
+  0
+  0
+  1
+  integer diff
+  0
+  1
+  1
+  confirmed iterative loop, d = 1
+  Set(("val",(x15,x34)))
+  val x53 = Map("val" -> x15)
+  val x54 = Map("val" -> x34)
+  lub_x14_A(x12,x12,x12)
+  Set(("&i",(x53,x54)), ("A",(x12,x12)), ("B",(x36,x36)), ("X",(x51,x52)), ("&x",(x5,x5)))
+  val x55 = Map("&x" -> x5, "B" -> x36, "X" -> x51, "&i" -> x53, "A" -> x12)
+  val x56 = Map("&x" -> x5, "B" -> x36, "X" -> x52, "&i" -> x54, "A" -> x12)
+  lub(x13, x30) = x55
+  starting spec loop with x55
+  val x57 = x15 < "COUNT"
+  val x58 = x35 + (x15 -> Map())
+  val x59 = Map("top" -> x58)
+  val x60 = Map("&x" -> x5, "B" -> x59, "X" -> x51, "&i" -> x53, "A" -> x12)
+  val x61 = Map("&x" -> x5, "B" -> x36, "X" -> x23, "&i" -> x53, "A" -> x12)
+  val x62 = x35 + (x15 -> x25)
+  val x63 = Map("top" -> x62)
+  val x64 = Map("&x" -> x5, "B" -> x63, "X" -> x23, "&i" -> x53, "A" -> x12)
+  val x65 = Map("&x" -> x5, "B" -> x63, "X" -> x23, "&i" -> x54, "A" -> x12)
+  val x66 = "COUNT" < x15
+  trip count:
+  "COUNT"
+  lub(x13, x65) = ?
+  lub_x14(x13,x55,x65)
+  lub_x14_&x(x5,x5,x5)
+  lub_x14_B("undefined",x36,x63)
+  lub_x14_B_top("undefined",x35,x62)
+  "undefined"
+  collect(x15 + 1) { x14_B_top_x15 => Map("foo" -> 5) }
+  collect(x15 + 1) { x14_B_top_x15 => Map("foo" -> 5) } + (x15 -> Map("foo" -> 5))
+  hit update at loop index -- assume collect
+  Set(("top",(x35,x35)))
+  lub_x14_X(x9,x51,x23)
+  lub_x14_X_top(x8,x49,x22)
+  lub_x14_X_top_a((A,top),x47,x18)
+  val x67 = "B" * -1
+  val x68 = x15 * -1
+  val x69 = x68 + 1
+  val x70 = (x38,x69)
+  val x71 = (x67,x70)
+  val x72 = if (x46) x71 else x39
+  val x73 = x18 + x72
+  (A,top)
+  if (0 < x15) ("B",("top",x15 + -1)) else (A,top)
+  ("B",("top",x15))
+  hit pair -- assume only 0 case differs (loop peeling)
+  Set(("a",(x47,x48)))
+  Set(("top",(x49,x50)))
+  lub_x14_&i(x1,x53,x54)
+  lub_x14_&i_val(0,x15,x34)
+  checky checky
+  0
+  x15
+  x15 + 1
+  integer diff
+  x15
+  x15 + 1
+  1
+  confirmed iterative loop, d = 1
+  Set(("val",(x15,x34)))
+  lub_x14_A(x12,x12,x12)
+  Set(("&i",(x53,x54)), ("A",(x12,x12)), ("B",(x36,x36)), ("X",(x51,x52)), ("&x",(x5,x5)))
+  lub(x13, x65) = x55
+  val x14_B_top = { x15 => x35 }
+  val x74 = x14_X_top_a(x43)
+  val x14_X_top_a = { x15 => x48 }
+  val x14_&i_val = { x15 => x34 }
+  val x14 = { x15 => x56 }
+  fixindex: "COUNT"
+  val x75 = "COUNT" + -1
+  val x76 = collect("COUNT") { x14_B_top_x15 => x25 }
+  val x77 = Map("top" -> x76)
+  val x78 = 1 < "COUNT"
+  val x79 = ("top",x75)
+  val x80 = ("B",x79)
+  val x81 = if (x78) x80 else (A,top)
+  val x82 = Map("a" -> x81)
+  val x83 = Map("top" -> x82)
+  val x84 = Map("val" -> "COUNT")
+  val x85 = Map("&x" -> x5, "B" -> x77, "X" -> x83, "&i" -> x84, "A" -> x12)
+  *** after loop x85 ***
+  val x86 = if (x78) 5 else "nil"
+  val x87 = if (x78) "nil" else 3
+  val x88 = Map("foo" -> x86, "baz" -> x87)
+  val x89 = Map("foo" -> x86, "baz" -> x87, "bar" -> 7)
+  val x90 = x76 + (x75 -> x89)
+  val x91 = Map("top" -> x90)
+  val x92 = Map("&x" -> x5, "B" -> x91, "X" -> x83, "&i" -> x84, "A" -> x12)
+  val x93 = Map("top" -> x89)
+  val x94 = Map("&x" -> x5, "B" -> x77, "X" -> x83, "&i" -> x84, "A" -> x93)
+  val x95 = collect(1) { x14_B_top_x15 => x25 }
+  val x96 = Map("foo" -> "nil", "baz" -> 3, "bar" -> 7)
+  val x97 = x95 + (0 -> x96)
+  val x98 = Map("top" -> x97)
+  val x99 = Map("&x" -> x5, "B" -> x98, "X" -> x9, "&i" -> x29, "A" -> x12)
+  val x100 = Map("foo" -> 5, "baz" -> "nil", "bar" -> 7)
+  val x101 = x76 + (x75 -> x100)
+  val x102 = if (x78) x101 else x76
+  val x103 = Map("top" -> x102)
+  val x104 = if (x78) "nil" else 7
+  val x105 = Map("baz" -> 3, "foo" -> "nil", "bar" -> x104)
+  val x106 = Map("top" -> x105)
+  val x107 = Map("&x" -> x5, "B" -> x103, "X" -> x83, "&i" -> x84, "A" -> x106)
+  val x108 = if (x78) 7 else "nil"
+  val x109 = Map("foo" -> 5, "baz" -> "nil", "bar" -> x108)
+  val x110 = Map("foo" -> 5, "baz" -> "nil", "bar" -> "nil")
+  val x111 = Map("val" -> 7)
+  val x112 = Map("&x" -> x5, "&xbar" -> x111, "B" -> x103, "X" -> x83, "&i" -> x84, "A" -> x106)
+# result:
+  res: ()
+  store: x112
+  transformed: x112
+  ## sched:
+    val x111 = Map("val" -> 7)
+    val x78 = 1 < "COUNT"
+    val x104 = if (x78) "nil" else 7
+    val x105 = Map("baz" -> 3, "foo" -> "nil", "bar" -> x104)
+    val x106 = Map("top" -> x105)
+    val x100 = Map("foo" -> 5, "baz" -> "nil", "bar" -> 7)
+    val x25 = Map("foo" -> 5)
+    val x76 = collect("COUNT") { x14_B_top_x15 => x25 }
+    val x75 = "COUNT" + -1
+    val x101 = x76 + (x75 -> x100)
+    val x102 = if (x78) x101 else x76
+    val x103 = Map("top" -> x102)
+    val x84 = Map("val" -> "COUNT")
+    val x79 = ("top",x75)
+    val x80 = ("B",x79)
+    val x81 = if (x78) x80 else (A,top)
+    val x82 = Map("a" -> x81)
+    val x83 = Map("top" -> x82)
+    val x5 = Map("val" -> (X,top))
+    val x112 = Map("&x" -> x5, "&xbar" -> x111, "B" -> x103, "X" -> x83, "&i" -> x84, "A" -> x106)
+  ## term:
+    Map("&i" -> Map("val" -> "COUNT"), "B" -> Map("top" -> if (1 < "COUNT") collect("COUNT") { x14_B_top_x15 => Map("foo" -> 5) } + ("COUNT" + -1 -> Map("foo" -> 5, "baz" -> "nil", "bar" -> 7)) else collect("COUNT") { x14_B_top_x15 => Map("foo" -> 5) }), "X" -> Map("top" -> Map("a" -> if (1 < "COUNT") ("B",("top","COUNT" + -1)) else (A,top))), "A" -> Map("top" -> Map("baz" -> 3, "foo" -> "nil", "bar" -> if (1 < "COUNT") "nil" else 7)), "&x" -> Map("val" -> (X,top)), "&xbar" -> Map("val" -> 7))
+# done

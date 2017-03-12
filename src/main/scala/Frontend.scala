@@ -277,21 +277,27 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
     def run(testProg: Exp): Unit = runAndCheck(testProg)("")
 
     def runAndCheck(testProg: Exp)(want: Any): Unit = {
-      println("prog: " + testProg)
+      println("# prog: " + testProg)
       store = store0
       itvec = itvec0
       varCount = varCount0
       globalDefs = globalDefs0
       rebuildGlobalDefsCache()
+
+      println("# eval:")
       val res = eval(testProg)
+      
+      println("# result:")
       println("res: " + res)
       println("store: " + store)
       val store2 = store//IR.iterateAll(store)
       println("transformed: " + store2)
+
+      println("## sched:")
       val sched = IR.schedule(store2)
-      println("sched:")
       sched.foreach(IR.printStm)
-      println("term:")
+
+      println("## term:")
       val out = IR.termToString(store2)
       println(out)
 
@@ -301,6 +307,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
         assert(clean(want.toString) == clean(out)) //sanitize...
 
       //store.printBounds
-      println("----")
+      println("# done")
     }
   }

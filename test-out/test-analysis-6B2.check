@@ -1,163 +1,140 @@
-prog: {
-  Assign(i,Const(0))
-  Assign(z,New(A))
-  Assign(x,Ref(z))
-  While(Less(Ref(i),Const(100)),{
-    Put(Ref(x),Const(head),Ref(i))
-    Assign(i,Plus(Ref(i),Const(1)))
-  })
-}
-val x0 = Map()
-val x1 = Map("val" -> 0)
-val x2 = Map("&i" -> x1)
-val x3 = Map("top" -> Map())
-val x4 = Map("&i" -> x1, "A" -> x3)
-val x5 = Map("val" -> (A,top))
-val x6 = Map("&i" -> x1, "A" -> x3, "&z" -> x5)
-val x7 = Map("&i" -> x1, "A" -> x3, "&z" -> x5, "&x" -> x5)
-val x10 = ("top",x9)
-starting spec loop with x7
-val x11 = Map("head" -> 0)
-val x12 = Map("top" -> x11)
-val x13 = Map("&i" -> x1, "A" -> x12, "&z" -> x5, "&x" -> x5)
-val x14 = Map("val" -> 1)
-val x15 = Map("&i" -> x14, "A" -> x12, "&z" -> x5, "&x" -> x5)
-val x16 = x9 < 0
-val x17 = fixindex { x9 => 1 }
-val x18 = x17 < x9
-trip count:
-fixindex { x9 => 1 }
-
-lub(x7, x15) = ?
-lub_x8(x7,x7,x15)
-lub_x8_&i(x1,x1,x14)
-lub_x8_&i_val(0,0,1)
-checky checky
-0
-
-0
-
-1
-
-integer diff
-0
-
-1
-
-1
-
-confirmed iterative loop, d = 1
-val x19 = x9 + 1
-Set(("val",(x9,x19)))
-val x20 = Map("val" -> x9)
-val x21 = Map("val" -> x19)
-lub_x8_A(x3,x3,x12)
-lub_x8_A_top(Map(),Map(),x11)
-lub_x8_A_top_head("undefined","undefined",0)
-checky checky
-"undefined"
-
-"undefined"
-
-0
-
-recursive fun x8_A_top_head (init "undefined")
-val x22 = x9 + -1
-val x23 = x8_A_top_head(x22)
-val x24 = 0 < x9
-val x25 = if (x24) x23 else "undefined"
-Set(("head",(x25,0)))
-val x26 = Map("head" -> x25)
-Set(("top",(x26,x11)))
-val x27 = Map("top" -> x26)
-lub_x8_&z(x5,x5,x5)
-lub_x8_&x(x5,x5,x5)
-Set(("&i",(x20,x21)), ("A",(x27,x12)), ("&z",(x5,x5)), ("&x",(x5,x5)))
-val x28 = Map("&i" -> x20, "A" -> x27, "&z" -> x5, "&x" -> x5)
-val x29 = Map("&i" -> x21, "A" -> x12, "&z" -> x5, "&x" -> x5)
-lub(x7, x15) = x28
-starting spec loop with x28
-val x30 = x9 < 100
-val x31 = Map("head" -> x9)
-val x32 = Map("top" -> x31)
-val x33 = Map("&i" -> x20, "A" -> x32, "&z" -> x5, "&x" -> x5)
-val x34 = Map("&i" -> x21, "A" -> x32, "&z" -> x5, "&x" -> x5)
-val x35 = 100 < x9
-trip count:
-100
-
-lub(x7, x34) = ?
-lub_x8(x7,x28,x34)
-lub_x8_&i(x1,x20,x21)
-lub_x8_&i_val(0,x9,x19)
-checky checky
-0
-
-x9
-
-x9 + 1
-
-val x36 = x9 * -1
-val x37 = x36 + 1
-integer diff
-x9
-
-x9 + 1
-
-1
-
-confirmed iterative loop, d = 1
-Set(("val",(x9,x19)))
-lub_x8_A(x3,x27,x32)
-lub_x8_A_top(Map(),x26,x31)
-lub_x8_A_top_head("undefined",x25,x9)
-checky checky
-"undefined"
-
-if (0 < x9) x8_A_top_head(x9 + -1) else "undefined"
-
-x9
-
-val x38 = x23 * -1
-val x39 = if (x24) x38 else "undefined"
-val x40 = x9 + x39
-integer diff
-if (0 < x9) x8_A_top_head(x9 + -1) else "undefined"
-
-x9
-
-x9 + if (0 < x9) x8_A_top_head(x9 + -1) * -1 else "undefined"
-
-poly: List()
-giving up for term:
-x9 + if (0 < x9) x8_A_top_head(x9 + -1) * -1 else "undefined"
-
-recursive fun x8_A_top_head (init "undefined")
-Set(("head",(x25,x9)))
-Set(("top",(x26,x31)))
-lub_x8_&z(x5,x5,x5)
-lub_x8_&x(x5,x5,x5)
-Set(("&i",(x20,x21)), ("A",(x27,x32)), ("&z",(x5,x5)), ("&x",(x5,x5)))
-lub(x7, x34) = x28
-val x8_&i_val = { x9 => x19 }
-val x8_A_top_head = { x9 => x9 }
-val x8 = { x9 => x34 }
-fixindex: 100
-val x41 = Map("val" -> 100)
-val x42 = Map("head" -> 99)
-val x43 = Map("top" -> x42)
-val x44 = Map("&i" -> x41, "A" -> x43, "&z" -> x5, "&x" -> x5)
-*** after loop x44 ***
-res: ()
-store: x44
-transformed: x44
-sched:
-val x42 = Map("head" -> 99)
-val x43 = Map("top" -> x42)
-val x41 = Map("val" -> 100)
-val x5 = Map("val" -> (A,top))
-val x44 = Map("&i" -> x41, "A" -> x43, "&z" -> x5, "&x" -> x5)
-term:
-Map("&i" -> Map("val" -> 100), "A" -> Map("top" -> Map("head" -> 99)), "&z" -> Map("val" -> (A,top)), "&x" -> Map("val" -> (A,top)))
-
-----
+# prog: {
+    Assign(i,Const(0))
+    Assign(z,New(A))
+    Assign(x,Ref(z))
+    While(Less(Ref(i),Const(100)),{
+      Put(Ref(x),Const(head),Ref(i))
+      Assign(i,Plus(Ref(i),Const(1)))
+    })
+  }
+# eval:
+  val x0 = Map()
+  val x1 = Map("val" -> 0)
+  val x2 = Map("&i" -> x1)
+  val x3 = Map("top" -> Map())
+  val x4 = Map("&i" -> x1, "A" -> x3)
+  val x5 = Map("val" -> (A,top))
+  val x6 = Map("&i" -> x1, "A" -> x3, "&z" -> x5)
+  val x7 = Map("&i" -> x1, "A" -> x3, "&z" -> x5, "&x" -> x5)
+  val x10 = ("top",x9)
+  starting spec loop with x7
+  val x11 = Map("head" -> 0)
+  val x12 = Map("top" -> x11)
+  val x13 = Map("&i" -> x1, "A" -> x12, "&z" -> x5, "&x" -> x5)
+  val x14 = Map("val" -> 1)
+  val x15 = Map("&i" -> x14, "A" -> x12, "&z" -> x5, "&x" -> x5)
+  val x16 = x9 < 0
+  val x17 = fixindex { x9 => 1 }
+  val x18 = x17 < x9
+  trip count:
+  fixindex { x9 => 1 }
+  lub(x7, x15) = ?
+  lub_x8(x7,x7,x15)
+  lub_x8_&i(x1,x1,x14)
+  lub_x8_&i_val(0,0,1)
+  checky checky
+  0
+  0
+  1
+  integer diff
+  0
+  1
+  1
+  confirmed iterative loop, d = 1
+  val x19 = x9 + 1
+  Set(("val",(x9,x19)))
+  val x20 = Map("val" -> x9)
+  val x21 = Map("val" -> x19)
+  lub_x8_A(x3,x3,x12)
+  lub_x8_A_top(Map(),Map(),x11)
+  lub_x8_A_top_head("undefined","undefined",0)
+  checky checky
+  "undefined"
+  "undefined"
+  0
+  recursive fun x8_A_top_head (init "undefined")
+  val x22 = x9 + -1
+  val x23 = x8_A_top_head(x22)
+  val x24 = 0 < x9
+  val x25 = if (x24) x23 else "undefined"
+  Set(("head",(x25,0)))
+  val x26 = Map("head" -> x25)
+  Set(("top",(x26,x11)))
+  val x27 = Map("top" -> x26)
+  lub_x8_&z(x5,x5,x5)
+  lub_x8_&x(x5,x5,x5)
+  Set(("&i",(x20,x21)), ("A",(x27,x12)), ("&z",(x5,x5)), ("&x",(x5,x5)))
+  val x28 = Map("&i" -> x20, "A" -> x27, "&z" -> x5, "&x" -> x5)
+  val x29 = Map("&i" -> x21, "A" -> x12, "&z" -> x5, "&x" -> x5)
+  lub(x7, x15) = x28
+  starting spec loop with x28
+  val x30 = x9 < 100
+  val x31 = Map("head" -> x9)
+  val x32 = Map("top" -> x31)
+  val x33 = Map("&i" -> x20, "A" -> x32, "&z" -> x5, "&x" -> x5)
+  val x34 = Map("&i" -> x21, "A" -> x32, "&z" -> x5, "&x" -> x5)
+  val x35 = 100 < x9
+  trip count:
+  100
+  lub(x7, x34) = ?
+  lub_x8(x7,x28,x34)
+  lub_x8_&i(x1,x20,x21)
+  lub_x8_&i_val(0,x9,x19)
+  checky checky
+  0
+  x9
+  x9 + 1
+  val x36 = x9 * -1
+  val x37 = x36 + 1
+  integer diff
+  x9
+  x9 + 1
+  1
+  confirmed iterative loop, d = 1
+  Set(("val",(x9,x19)))
+  lub_x8_A(x3,x27,x32)
+  lub_x8_A_top(Map(),x26,x31)
+  lub_x8_A_top_head("undefined",x25,x9)
+  checky checky
+  "undefined"
+  if (0 < x9) x8_A_top_head(x9 + -1) else "undefined"
+  x9
+  val x38 = x23 * -1
+  val x39 = if (x24) x38 else "undefined"
+  val x40 = x9 + x39
+  integer diff
+  if (0 < x9) x8_A_top_head(x9 + -1) else "undefined"
+  x9
+  x9 + if (0 < x9) x8_A_top_head(x9 + -1) * -1 else "undefined"
+  poly: List()
+  giving up for term:
+  x9 + if (0 < x9) x8_A_top_head(x9 + -1) * -1 else "undefined"
+  recursive fun x8_A_top_head (init "undefined")
+  Set(("head",(x25,x9)))
+  Set(("top",(x26,x31)))
+  lub_x8_&z(x5,x5,x5)
+  lub_x8_&x(x5,x5,x5)
+  Set(("&i",(x20,x21)), ("A",(x27,x32)), ("&z",(x5,x5)), ("&x",(x5,x5)))
+  lub(x7, x34) = x28
+  val x8_&i_val = { x9 => x19 }
+  val x8_A_top_head = { x9 => x9 }
+  val x8 = { x9 => x34 }
+  fixindex: 100
+  val x41 = Map("val" -> 100)
+  val x42 = Map("head" -> 99)
+  val x43 = Map("top" -> x42)
+  val x44 = Map("&i" -> x41, "A" -> x43, "&z" -> x5, "&x" -> x5)
+  *** after loop x44 ***
+# result:
+  res: ()
+  store: x44
+  transformed: x44
+  ## sched:
+    val x42 = Map("head" -> 99)
+    val x43 = Map("top" -> x42)
+    val x41 = Map("val" -> 100)
+    val x5 = Map("val" -> (A,top))
+    val x44 = Map("&i" -> x41, "A" -> x43, "&z" -> x5, "&x" -> x5)
+  ## term:
+    Map("&i" -> Map("val" -> 100), "A" -> Map("top" -> Map("head" -> 99)), "&z" -> Map("val" -> (A,top)), "&x" -> Map("val" -> (A,top)))
+# done

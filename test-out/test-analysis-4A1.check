@@ -1,145 +1,120 @@
-prog: {
-  Assign(i,Const(0))
-  Assign(y,Const(0))
-  Assign(x,Const(8))
-  While(Less(Ref(i),Const(100)),{
-    Assign(x,Const(7))
-    Assign(x,Plus(Ref(x),Const(1)))
-    Assign(y,Plus(Ref(y),Const(1)))
-    Assign(i,Plus(Ref(i),Const(1)))
-  })
-}
-val x0 = Map()
-val x1 = Map("val" -> 0)
-val x2 = Map("&i" -> x1)
-val x3 = Map("&i" -> x1, "&y" -> x1)
-val x4 = Map("val" -> 8)
-val x5 = Map("&i" -> x1, "&y" -> x1, "&x" -> x4)
-val x8 = ("top",x7)
-starting spec loop with x5
-val x9 = Map("val" -> 7)
-val x10 = Map("&i" -> x1, "&y" -> x1, "&x" -> x9)
-val x11 = Map("val" -> 1)
-val x12 = Map("&i" -> x1, "&y" -> x11, "&x" -> x4)
-val x13 = Map("&i" -> x11, "&y" -> x11, "&x" -> x4)
-val x14 = x7 < 0
-val x15 = fixindex { x7 => 1 }
-val x16 = x15 < x7
-trip count:
-fixindex { x7 => 1 }
-
-lub(x5, x13) = ?
-lub_x6(x5,x5,x13)
-lub_x6_&i(x1,x1,x11)
-lub_x6_&i_val(0,0,1)
-checky checky
-0
-
-0
-
-1
-
-integer diff
-0
-
-1
-
-1
-
-confirmed iterative loop, d = 1
-val x17 = x7 + 1
-Set(("val",(x7,x17)))
-val x18 = Map("val" -> x7)
-val x19 = Map("val" -> x17)
-lub_x6_&y(x1,x1,x11)
-lub_x6_&y_val(0,0,1)
-checky checky
-0
-
-0
-
-1
-
-integer diff
-0
-
-1
-
-1
-
-confirmed iterative loop, d = 1
-Set(("val",(x7,x17)))
-lub_x6_&x(x4,x4,x4)
-Set(("&i",(x18,x19)), ("&y",(x18,x19)), ("&x",(x4,x4)))
-val x20 = Map("&i" -> x18, "&y" -> x18, "&x" -> x4)
-val x21 = Map("&i" -> x19, "&y" -> x19, "&x" -> x4)
-lub(x5, x13) = x20
-starting spec loop with x20
-val x22 = x7 < 100
-val x23 = Map("&i" -> x18, "&y" -> x18, "&x" -> x9)
-val x24 = Map("&i" -> x18, "&y" -> x19, "&x" -> x4)
-val x25 = 100 < x7
-trip count:
-100
-
-lub(x5, x21) = ?
-lub_x6(x5,x20,x21)
-lub_x6_&i(x1,x18,x19)
-lub_x6_&i_val(0,x7,x17)
-checky checky
-0
-
-x7
-
-x7 + 1
-
-val x26 = x7 * -1
-val x27 = x26 + 1
-integer diff
-x7
-
-x7 + 1
-
-1
-
-confirmed iterative loop, d = 1
-Set(("val",(x7,x17)))
-lub_x6_&y(x1,x18,x19)
-lub_x6_&y_val(0,x7,x17)
-checky checky
-0
-
-x7
-
-x7 + 1
-
-integer diff
-x7
-
-x7 + 1
-
-1
-
-confirmed iterative loop, d = 1
-Set(("val",(x7,x17)))
-lub_x6_&x(x4,x4,x4)
-Set(("&i",(x18,x19)), ("&y",(x18,x19)), ("&x",(x4,x4)))
-lub(x5, x21) = x20
-val x6_&i_val = { x7 => x17 }
-val x6_&y_val = { x7 => x17 }
-val x6 = { x7 => x21 }
-fixindex: 100
-val x28 = Map("val" -> 100)
-val x29 = Map("&i" -> x28, "&y" -> x28, "&x" -> x4)
-*** after loop x29 ***
-res: ()
-store: x29
-transformed: x29
-sched:
-val x28 = Map("val" -> 100)
-val x4 = Map("val" -> 8)
-val x29 = Map("&i" -> x28, "&y" -> x28, "&x" -> x4)
-term:
-Map("&i" -> Map("val" -> 100), "&y" -> Map("val" -> 100), "&x" -> Map("val" -> 8))
-
-----
+# prog: {
+    Assign(i,Const(0))
+    Assign(y,Const(0))
+    Assign(x,Const(8))
+    While(Less(Ref(i),Const(100)),{
+      Assign(x,Const(7))
+      Assign(x,Plus(Ref(x),Const(1)))
+      Assign(y,Plus(Ref(y),Const(1)))
+      Assign(i,Plus(Ref(i),Const(1)))
+    })
+  }
+# eval:
+  val x0 = Map()
+  val x1 = Map("val" -> 0)
+  val x2 = Map("&i" -> x1)
+  val x3 = Map("&i" -> x1, "&y" -> x1)
+  val x4 = Map("val" -> 8)
+  val x5 = Map("&i" -> x1, "&y" -> x1, "&x" -> x4)
+  val x8 = ("top",x7)
+  starting spec loop with x5
+  val x9 = Map("val" -> 7)
+  val x10 = Map("&i" -> x1, "&y" -> x1, "&x" -> x9)
+  val x11 = Map("val" -> 1)
+  val x12 = Map("&i" -> x1, "&y" -> x11, "&x" -> x4)
+  val x13 = Map("&i" -> x11, "&y" -> x11, "&x" -> x4)
+  val x14 = x7 < 0
+  val x15 = fixindex { x7 => 1 }
+  val x16 = x15 < x7
+  trip count:
+  fixindex { x7 => 1 }
+  lub(x5, x13) = ?
+  lub_x6(x5,x5,x13)
+  lub_x6_&i(x1,x1,x11)
+  lub_x6_&i_val(0,0,1)
+  checky checky
+  0
+  0
+  1
+  integer diff
+  0
+  1
+  1
+  confirmed iterative loop, d = 1
+  val x17 = x7 + 1
+  Set(("val",(x7,x17)))
+  val x18 = Map("val" -> x7)
+  val x19 = Map("val" -> x17)
+  lub_x6_&y(x1,x1,x11)
+  lub_x6_&y_val(0,0,1)
+  checky checky
+  0
+  0
+  1
+  integer diff
+  0
+  1
+  1
+  confirmed iterative loop, d = 1
+  Set(("val",(x7,x17)))
+  lub_x6_&x(x4,x4,x4)
+  Set(("&i",(x18,x19)), ("&y",(x18,x19)), ("&x",(x4,x4)))
+  val x20 = Map("&i" -> x18, "&y" -> x18, "&x" -> x4)
+  val x21 = Map("&i" -> x19, "&y" -> x19, "&x" -> x4)
+  lub(x5, x13) = x20
+  starting spec loop with x20
+  val x22 = x7 < 100
+  val x23 = Map("&i" -> x18, "&y" -> x18, "&x" -> x9)
+  val x24 = Map("&i" -> x18, "&y" -> x19, "&x" -> x4)
+  val x25 = 100 < x7
+  trip count:
+  100
+  lub(x5, x21) = ?
+  lub_x6(x5,x20,x21)
+  lub_x6_&i(x1,x18,x19)
+  lub_x6_&i_val(0,x7,x17)
+  checky checky
+  0
+  x7
+  x7 + 1
+  val x26 = x7 * -1
+  val x27 = x26 + 1
+  integer diff
+  x7
+  x7 + 1
+  1
+  confirmed iterative loop, d = 1
+  Set(("val",(x7,x17)))
+  lub_x6_&y(x1,x18,x19)
+  lub_x6_&y_val(0,x7,x17)
+  checky checky
+  0
+  x7
+  x7 + 1
+  integer diff
+  x7
+  x7 + 1
+  1
+  confirmed iterative loop, d = 1
+  Set(("val",(x7,x17)))
+  lub_x6_&x(x4,x4,x4)
+  Set(("&i",(x18,x19)), ("&y",(x18,x19)), ("&x",(x4,x4)))
+  lub(x5, x21) = x20
+  val x6_&i_val = { x7 => x17 }
+  val x6_&y_val = { x7 => x17 }
+  val x6 = { x7 => x21 }
+  fixindex: 100
+  val x28 = Map("val" -> 100)
+  val x29 = Map("&i" -> x28, "&y" -> x28, "&x" -> x4)
+  *** after loop x29 ***
+# result:
+  res: ()
+  store: x29
+  transformed: x29
+  ## sched:
+    val x28 = Map("val" -> 100)
+    val x4 = Map("val" -> 8)
+    val x29 = Map("&i" -> x28, "&y" -> x28, "&x" -> x4)
+  ## term:
+    Map("&i" -> Map("val" -> 100), "&y" -> Map("val" -> 100), "&x" -> Map("val" -> 8))
+# done
