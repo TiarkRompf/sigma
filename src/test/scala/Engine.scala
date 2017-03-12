@@ -178,6 +178,46 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       def other(s: String)                         = post(next.other(s))
     }
 
+
+
+    // state: reflect/reify
+
+    val varCount0 = 0
+    var varCount = varCount0
+
+    val globalDefs0 = Nil 
+    var globalDefs: List[(String,Def)] = globalDefs0
+
+    var globalDefsRhs: Map[String,Def] = Map()
+    var globalDefsLhs: Map[Def,String] = Map()
+
+    def rebuildGlobalDefsCache() = { globalDefsRhs = globalDefs.reverse.toMap; globalDefsLhs = globalDefs.reverse.map(kv => (kv._2,kv._1)).toMap }
+
+    def freshVar = { varCount += 1; "x"+(varCount - 1) }
+
+    def reflect(x: String, s: String): String = { println(s"val $x = $s"); x }
+
+    def reflect(s: String): String = { val x = freshVar; println(s"val $x = $s"); x }
+    def reify(x: => String): String = captureOutputResult(x)._1
+
+    def findDefinition(s: String): Option[Def] = globalDefsRhs.get(s)
+      //globalDefs.reverse.collectFirst { case (`s`,d) => d }
+
+    def dreflect(x0: => String, s: Def): GVal = globalDefsLhs.get(s).map(GRef).getOrElse {
+      val x = x0; 
+      globalDefs = (x->s)::globalDefs
+      globalDefsRhs = globalDefsRhs + (x->s)
+      globalDefsLhs = globalDefsLhs + (s->x)
+      println(s"val $x = $s")
+      GRef(x)
+    }
+    //globalDefs.collect { case (k,`s`) => GRef(k) }.headOption getOrElse { 
+    //val x = x0; globalDefs = globalDefs :+ (x->s); println(s"val $x = $s"); GRef(x) }
+    def dreflect(s: Def): GVal = dreflect(freshVar,s)
+
+
+    // pretty printing
+
     object IRS extends DXForm {
       type From = String
       type To = String
@@ -207,6 +247,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       }
       override def iff(c: From, x: From, y: From) = post(next.iff(pre(c),preBlock(x),preBlock(y)))
     }
+
+
+    // main transformer engine
 
     object IRD extends DXForm {
       type From = GVal
@@ -982,40 +1025,5 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
     }
 
-
-    // reflect/reify
-
-    val varCount0 = 0
-    var varCount = varCount0
-
-    val globalDefs0 = Nil 
-    var globalDefs: List[(String,Def)] = globalDefs0
-
-    var globalDefsRhs: Map[String,Def] = Map()
-    var globalDefsLhs: Map[Def,String] = Map()
-
-    def rebuildGlobalDefsCache() = { globalDefsRhs = globalDefs.reverse.toMap; globalDefsLhs = globalDefs.reverse.map(kv => (kv._2,kv._1)).toMap }
-
-    def freshVar = { varCount += 1; "x"+(varCount - 1) }
-
-    def reflect(x: String, s: String): String = { println(s"val $x = $s"); x }
-
-    def reflect(s: String): String = { val x = freshVar; println(s"val $x = $s"); x }
-    def reify(x: => String): String = captureOutputResult(x)._1
-
-    def findDefinition(s: String): Option[Def] = globalDefsRhs.get(s)
-      //globalDefs.reverse.collectFirst { case (`s`,d) => d }
-
-    def dreflect(x0: => String, s: Def): GVal = globalDefsLhs.get(s).map(GRef).getOrElse {
-      val x = x0; 
-      globalDefs = (x->s)::globalDefs
-      globalDefsRhs = globalDefsRhs + (x->s)
-      globalDefsLhs = globalDefsLhs + (s->x)
-      println(s"val $x = $s")
-      GRef(x)
-    }
-      //globalDefs.collect { case (k,`s`) => GRef(k) }.headOption getOrElse { 
-      //val x = x0; globalDefs = globalDefs :+ (x->s); println(s"val $x = $s"); GRef(x) }
-    def dreflect(s: Def): GVal = dreflect(freshVar,s)
 
   }
