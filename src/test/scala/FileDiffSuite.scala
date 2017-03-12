@@ -4,7 +4,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 import org.scalatest._
 
 
-trait FileDiffSuite extends Suite {
+trait FileDiffSuite extends FunSuite {
   
   def withOutFile(name: String)(func: => Unit): Unit = {
     val file = new File(name)

@@ -245,7 +245,7 @@ class TestAnalysis4v1 extends FileDiffSuite {
         globalDefs.filter(p=>st contains p._1) // TODO: opt
       def schedule(x: GVal) = {
         val start = x match { case GRef(s) => List(s) case _ => Nil }
-        val xx = scala.virtualization.lms.util.GraphUtil.stronglyConnectedComponents[(String,Def)](deps(start), t => deps(syms(t._2)))
+        val xx = GraphUtil.stronglyConnectedComponents[(String,Def)](deps(start), t => deps(syms(t._2)))
         xx.flatten.reverse
       }
 
@@ -1092,7 +1092,7 @@ class TestAnalysis4v1 extends FileDiffSuite {
       def clean(s: String) = s.replaceAll("\"","").replaceAll("\n","").replaceAll(" +","")
 
       if (want != "")
-        expect(clean(want.toString))(clean(out)) //sanitize...
+        assert(clean(want.toString) === clean(out)) //sanitize...
 
       //store.printBounds
       println("----")
@@ -1101,7 +1101,7 @@ class TestAnalysis4v1 extends FileDiffSuite {
 
   // test some integer computations
 
-  def testA = withOutFileChecked(prefix+"A") {
+  test("A") { withOutFileChecked(prefix+"A") {
     import Test1._
     Test1.runAndCheck {
       Block(List(
@@ -1151,12 +1151,12 @@ class TestAnalysis4v1 extends FileDiffSuite {
         "&z2" -> Map("val" -> 1220850)
       )"""
     }
-  }
+  }}
 
   // test arrays / computed index access
 
   //   first, some unit tests
-  def testA2 = withOutFileChecked(prefix+"A2") {
+  test("A2") { withOutFileChecked(prefix+"A2") {
     import Test1._
     Test1.runAndCheck {
       Block(List(
@@ -1186,9 +1186,9 @@ class TestAnalysis4v1 extends FileDiffSuite {
         "&a" -> Map("val" -> (A,top)), 
         "&r" -> Map("val" -> (A,top)))"""
     } 
-  }
+  }}
 
-  def testA3 = withOutFileChecked(prefix+"A3") {
+  test("A3") { withOutFileChecked(prefix+"A3") {
     import Test1._
     Test1.runAndCheck {
       Block(List(
@@ -1208,10 +1208,10 @@ class TestAnalysis4v1 extends FileDiffSuite {
         "&a" -> Map("val" -> (A,top)), 
         "&r" -> Map("val" -> (A,top)))"""
     } 
-  }
+  }}
 
   //   update array at loop index
-  def testA4 = withOutFileChecked(prefix+"A4") {
+  test("A4") { withOutFileChecked(prefix+"A4") {
     import Test1._
     Test1.runAndCheck {
       Block(List(
@@ -1242,11 +1242,11 @@ class TestAnalysis4v1 extends FileDiffSuite {
       )
       """
     }
-  }
+  }}
 
   // test store logic (1): build a linked list
 
-  def testB = withOutFileChecked(prefix+"B") {
+  test("B") { withOutFileChecked(prefix+"B") {
     import Test1._
     Test1.runAndCheck { // test3
       Block(List(
@@ -1333,7 +1333,7 @@ class TestAnalysis4v1 extends FileDiffSuite {
       )
       """
     }
-  }
+  }}
 
 
 
@@ -1476,7 +1476,7 @@ class TestAnalysis4v1 extends FileDiffSuite {
 
   // test store logic (2): build and traverse a linked list
 
-  def testB1 = withOutFileChecked(prefix+"B1") {
+  test("B1") { withOutFileChecked(prefix+"B1") {
   import Test1._
     Test1.runAndCheck { // test3a
       Block(List(
@@ -1520,10 +1520,10 @@ class TestAnalysis4v1 extends FileDiffSuite {
         )
       """
     }
-  }
+  }}
 
 
-  def testB2 = withOutFileChecked(prefix+"B2") {
+  test("B2") { withOutFileChecked(prefix+"B2") {
     import Test1._
     Test1.runAndCheck { //test3b
       Block(List(
@@ -1577,7 +1577,7 @@ class TestAnalysis4v1 extends FileDiffSuite {
         )
       """
     }
-  }
+  }}
 
 
 
@@ -1589,7 +1589,7 @@ class TestAnalysis4v1 extends FileDiffSuite {
 
     // modify stuff after a loop
 
-  def testC = withOutFileChecked(prefix+"C") {
+  test("C") { withOutFileChecked(prefix+"C") {
     import Test1._
     Test1.runAndCheck { //test6
       Block(List(
@@ -1618,11 +1618,11 @@ class TestAnalysis4v1 extends FileDiffSuite {
         )
       """
     }
-  }
+  }}
 
     // strong update for if
 
-  def testD = withOutFileChecked(prefix+"D") {
+  test("D") { withOutFileChecked(prefix+"D") {
     import Test1._
     Test1.run { //test7
       Block(List(
@@ -1660,11 +1660,11 @@ class TestAnalysis4v1 extends FileDiffSuite {
         Assign("xbar", Get(Get(Ref("x"), Const("a")), Const("bar"))) // should still yield 7!
       ))
     }
-  }
+  }}
 
     // update stuff allocated in a loop
 
-  def testE = withOutFileChecked(prefix+"E") {
+  test("E") { withOutFileChecked(prefix+"E") {
     import Test1._
     Test1.run { //test9
       Block(List(
@@ -1681,7 +1681,7 @@ class TestAnalysis4v1 extends FileDiffSuite {
         Assign("xbar", Get(Get(Ref("x"), Const("a")), Const("bar"))) // should still yield 7!
       ))
     }
-  }
+  }}
 
 }
 
