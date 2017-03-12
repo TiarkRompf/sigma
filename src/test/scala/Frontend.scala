@@ -192,15 +192,21 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           // TODO: need to worry about boundary cases!
           val next = subst(afterB,cv,const(1))
 
+          // generalize init/next based on previous values
+          // and current observation
           println(s"lub($before, $next) = ?")
 
           val (initNew,nextNew) = lub(before, init, next)(loop,n0)
 
           println(s"lub($before, $next) = $initNew")
-          if (init != initNew) { init = initNew; iter } else {
 
-            //store = lubfun(before, afterB)(loop,n0)
+          // are we done or do we need another iteration?
+          if (init != initNew) { init = initNew; iter } else {
+            // no further information was gained: go ahead
+            // and generate the final (set of) recursive 
+            // functions, or closed forms.
             store = lubfun(before, nextNew)(loop,n0)
+
             // XXX why not just nextNew ??? 
             // need to define functions that are called from nextNew
             //store = nextNew
