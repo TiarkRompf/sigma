@@ -6,7 +6,7 @@ class TestAnalysis4 extends FileDiffSuite {
 
   // test some integer computations
 
-  test("A") { withOutFileChecked(prefix+"A") {
+  test("A1") { withOutFileChecked(prefix+"A1") {
     import Frontend._
     Main.runAndCheck {
       Block(List(
@@ -36,9 +36,9 @@ class TestAnalysis4 extends FileDiffSuite {
 //          If(Less(Ref("y"),Const(17)), 
 //            Block(List(
               Assign("y", Plus(Ref("y"), Const(1)))
-//            )),
+,//            )),
 //            Block(Nil)
-,//          ),
+//          ),
           Assign("x", Plus(Ref("x"), Const(-1)))
         ))),
         Assign("r", Ref("x"))
@@ -109,6 +109,11 @@ class TestAnalysis4 extends FileDiffSuite {
     }
 */
   }}
+}
+
+class TestAnalysis5 extends FileDiffSuite {
+
+  val prefix = "test-out/test-analysis-5"
 
   // test arrays / computed index access
   //   first, some unit tests
@@ -194,10 +199,15 @@ class TestAnalysis4 extends FileDiffSuite {
     }
 
   }}
+}
 
+
+class TestAnalysis6 extends FileDiffSuite {
+
+  val prefix = "test-out/test-analysis-6"
   // test store logic (1): build a linked list
 
-  test("B") { withOutFileChecked(prefix+"B") {
+  test("B0") { withOutFileChecked(prefix+"B0") {
     import Frontend._
     Main.runAndCheck { // test3
       Block(List(
@@ -548,13 +558,14 @@ class TestAnalysis4 extends FileDiffSuite {
     }
   }}
 
+}
 
 
 
-    // (to try: fac, first as while loop, then as recursive
-    // function with defunctionalized continuations in store)
 
+class TestAnalysis7 extends FileDiffSuite {
 
+  val prefix = "test-out/test-analysis-7"
 
     // modify stuff after a loop
 
@@ -725,6 +736,8 @@ class TestAnalysis4 extends FileDiffSuite {
   }}
 }
 
+// (to try: fac, first as while loop, then as recursive
+// function with defunctionalized continuations in store)
 
 
 /*
