@@ -7,8 +7,8 @@ class TestAnalysis4 extends FileDiffSuite {
   // test some integer computations
 
   test("A") { withOutFileChecked(prefix+"A") {
-    import Test1._
-    Test1.runAndCheck {
+    import Frontend._
+    Main.runAndCheck {
       Block(List(
         Assign("i", Const(0)),
         Assign("y", Const(0)),
@@ -28,7 +28,7 @@ class TestAnalysis4 extends FileDiffSuite {
       )"""
     }
 
-    Test1.runAndCheck {
+    Main.runAndCheck {
       Block(List(
         Assign("x", Const(900)), // input
         Assign("y", Const(0)),
@@ -59,7 +59,7 @@ class TestAnalysis4 extends FileDiffSuite {
 */
 
 
-    Test1.runAndCheck {
+    Main.runAndCheck {
       Block(List(
         Assign("x", Const(900)), // input
         Assign("z", Const(0)),
@@ -79,7 +79,7 @@ class TestAnalysis4 extends FileDiffSuite {
 
 /* XXX this one doesn't terminate??? --> investigate!
 
-    Test1.runAndCheck {
+    Main.runAndCheck {
       Block(List(
         Assign("x", Const(900)), // input
         Assign("y", Const(0)),
@@ -113,8 +113,8 @@ class TestAnalysis4 extends FileDiffSuite {
   // test arrays / computed index access
   //   first, some unit tests
   test("A2") { withOutFileChecked(prefix+"A2") {
-    import Test1._
-    Test1.runAndCheck {
+    import Frontend._
+    Main.runAndCheck {
       Block(List(
         Assign("x", Const(0)), // "input"
         Assign("a", New("A")),
@@ -128,7 +128,7 @@ class TestAnalysis4 extends FileDiffSuite {
         "&a" -> Map("val" -> (A,top)), 
         "&r" -> Map("val" -> (A,top)))"""   
     }    
-    Test1.runAndCheck {
+    Main.runAndCheck {
       Block(List(
         Assign("x", Const(0)), // "input"
         Assign("a", New("A")),
@@ -145,8 +145,8 @@ class TestAnalysis4 extends FileDiffSuite {
   }}
 
   test("A3") { withOutFileChecked(prefix+"A3") {
-    import Test1._
-    Test1.runAndCheck {
+    import Frontend._
+    Main.runAndCheck {
       Block(List(
         Assign("x", Const(0)),
         Assign("a", New("A")),
@@ -168,8 +168,8 @@ class TestAnalysis4 extends FileDiffSuite {
 
   //   update array at loop index
   test("A4") { withOutFileChecked(prefix+"A4") {
-    import Test1._
-    Test1.runAndCheck {
+    import Frontend._
+    Main.runAndCheck {
       Block(List(
         Assign("x", Const(0)),
         Assign("y", Const(10)),
@@ -198,8 +198,8 @@ class TestAnalysis4 extends FileDiffSuite {
   // test store logic (1): build a linked list
 
   test("B") { withOutFileChecked(prefix+"B") {
-    import Test1._
-    Test1.runAndCheck { // test3
+    import Frontend._
+    Main.runAndCheck { // test3
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -236,7 +236,7 @@ class TestAnalysis4 extends FileDiffSuite {
   // back to simpler tests (compare to test3)
   // 3 and 4 should be different: alloc within the loop vs before
   
-    Test1.runAndCheck { // test4
+    Main.runAndCheck { // test4
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -264,7 +264,7 @@ class TestAnalysis4 extends FileDiffSuite {
       """
     }
 
-    Test1.runAndCheck { // test5
+    Main.runAndCheck { // test5
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -428,8 +428,8 @@ class TestAnalysis4 extends FileDiffSuite {
   // test store logic (2): build and traverse a linked list
 
   test("B1") { withOutFileChecked(prefix+"B1") {
-  import Test1._
-    Test1.runAndCheck { // test3a
+  import Frontend._
+    Main.runAndCheck { // test3a
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -469,8 +469,8 @@ class TestAnalysis4 extends FileDiffSuite {
 
 
   test("B2") { withOutFileChecked(prefix+"B2") {
-    import Test1._
-    Test1.runAndCheck { //test3b
+    import Frontend._
+    Main.runAndCheck { //test3b
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -559,8 +559,8 @@ class TestAnalysis4 extends FileDiffSuite {
     // modify stuff after a loop
 
   test("C") { withOutFileChecked(prefix+"C") {
-    import Test1._
-    Test1.runAndCheck { //test6
+    import Frontend._
+    Main.runAndCheck { //test6
       Block(List(
         Assign("i", Const(0)),
         Assign("z", New("A")),
@@ -592,8 +592,8 @@ class TestAnalysis4 extends FileDiffSuite {
     // strong update for if
 
   test("D") { withOutFileChecked(prefix+"D") {
-    import Test1._
-    Test1.runAndCheck { //test7
+    import Frontend._
+    Main.runAndCheck { //test7
       Block(List(
         Assign("x", New("A")),
         If(Direct(vref("input")),
@@ -620,7 +620,7 @@ class TestAnalysis4 extends FileDiffSuite {
         )
       """
     }
-    Test1.runAndCheck { //test8
+    Main.runAndCheck { //test8
       Block(List(
         Assign("x", New("A")),
         Put(Ref("x"), Const("a"), New("A2")),
@@ -654,8 +654,8 @@ class TestAnalysis4 extends FileDiffSuite {
     // update stuff allocated in a loop
 
   test("E") { withOutFileChecked(prefix+"E") {
-    import Test1._
-    Test1.runAndCheck { //test9
+    import Frontend._
+    Main.runAndCheck { //test9
       Block(List(
         Assign("i", Const(0)),
         Assign("x", New("X")),
@@ -699,8 +699,8 @@ class TestAnalysis4 extends FileDiffSuite {
 
   // factorial: direct
   test("F1") { withOutFileChecked(prefix+"F1") {
-    import Test1._
-    Test1.runAndCheck {
+    import Frontend._
+    Main.runAndCheck {
       Block(List(
         Assign("n", Direct(vref("N"))),
         Assign("i", Const(0)),

@@ -22,6 +22,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       do we need arbitrary jumps? at least loops with
       several exits (no problem: just take fixindex
       of a different condition / cf. gated ssa).
+  - normal and abnormal termination
+      we need assert() to signal verification failures
 */
 
   object Test1 {
@@ -1035,6 +1037,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       //val x = x0; globalDefs = globalDefs :+ (x->s); println(s"val $x = $s"); GRef(x) }
     def dreflect(s: Def): GVal = dreflect(freshVar,s)
 
+  }
+
+  object Frontend {
+    import Test1._
 
     // *** input language Exp
 
@@ -1268,7 +1274,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       case Block(xs) => xs map eval reduceLeft ((a,b) => b)
     }
 
+  }
 
+  object Main {
+    import Test1._
+    import Frontend._
     // *** run and test
 
     def run(testProg: Exp): Unit = runAndCheck(testProg)("")
