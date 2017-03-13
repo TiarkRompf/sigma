@@ -25,186 +25,161 @@
   val x9 = Map("val" -> (B,top))
   val x10 = Map("&x" -> x5, "&y" -> x9, "B" -> x3, "&z" -> x5, "&i" -> x1, "A" -> x3)
   val x13 = ("top",x12)
-  starting spec loop with x10
-  val x14 = Map("head" -> 0)
-  val x15 = Map("top" -> x14)
-  val x16 = Map("&x" -> x5, "&y" -> x9, "B" -> x15, "&z" -> x5, "&i" -> x1, "A" -> x3)
-  val x17 = Map("head" -> 0, "tail" -> (A,top))
-  val x18 = Map("top" -> x17)
-  val x19 = Map("&x" -> x5, "&y" -> x9, "B" -> x18, "&z" -> x5, "&i" -> x1, "A" -> x3)
-  val x20 = Map("&x" -> x9, "&y" -> x9, "B" -> x18, "&z" -> x5, "&i" -> x1, "A" -> x3)
-  val x21 = Map("val" -> 1)
-  val x22 = Map("&x" -> x9, "&y" -> x9, "B" -> x18, "&z" -> x5, "&i" -> x21, "A" -> x3)
-  val x23 = x12 < 0
-  val x24 = fixindex { x12 => 1 }
-  val x25 = x24 < x12
-  trip count:
-  fixindex { x12 => 1 }
-  lub(x10, x22) = ?
-  lub_x11(x10,x10,x22)
-  lub_x11_&x(x5,x5,x9)
-  lub_x11_&x_val((A,top),(A,top),(B,top))
-  val x26 = "A" * -1
-  val x27 = "top" * -1
-  val x28 = (x26,x27)
-  val x29 = x26 + "B"
-  val x30 = (x29,0)
-  (A,top)
-  (A,top)
-  (B,top)
-  hit pair -- assume only 0 case differs (loop peeling)
-  val x31 = x12 + -1
-  val x32 = 0 < x12
-  val x33 = if (x32) (B,top) else (A,top)
-  Set(("val",(x33,x33)))
-  val x34 = Map("val" -> x33)
-  lub_x11_&y(x9,x9,x9)
-  lub_x11_B(x3,x3,x18)
-  lub_x11_B_top(Map(),Map(),x17)
-  lub_x11_B_top_head("undefined","undefined",0)
-  checky checky
-  "undefined"
-  "undefined"
-  0
-  recursive fun x11_B_top_head (init "undefined")
-  val x35 = x11_B_top_head(x31)
-  val x36 = if (x32) x35 else "undefined"
-  lub_x11_B_top_tail("undefined","undefined",(A,top))
-  checky checky
-  "undefined"
-  "undefined"
-  (A,top)
-  recursive fun x11_B_top_tail (init "undefined")
-  val x37 = x11_B_top_tail(x31)
-  val x38 = if (x32) x37 else "undefined"
-  Set(("head",(x36,0)), ("tail",(x38,(A,top))))
-  val x39 = Map("head" -> x36, "tail" -> x38)
-  Set(("top",(x39,x17)))
-  val x40 = Map("top" -> x39)
-  lub_x11_&z(x5,x5,x5)
-  lub_x11_&i(x1,x1,x21)
-  lub_x11_&i_val(0,0,1)
-  checky checky
-  0
-  0
-  1
-  integer diff
-  0
-  1
-  1
-  confirmed iterative loop, d = 1
-  val x41 = x12 + 1
-  Set(("val",(x12,x41)))
-  val x42 = Map("val" -> x12)
-  val x43 = Map("val" -> x41)
-  lub_x11_A(x3,x3,x3)
-  Set(("&z",(x5,x5)), ("B",(x40,x18)), ("&y",(x9,x9)), ("A",(x3,x3)), ("&i",(x42,x43)), ("&x",(x34,x34)))
-  val x44 = Map("&x" -> x34, "&y" -> x9, "B" -> x40, "&z" -> x5, "&i" -> x42, "A" -> x3)
-  val x45 = Map("&x" -> x34, "&y" -> x9, "B" -> x18, "&z" -> x5, "&i" -> x43, "A" -> x3)
-  lub(x10, x22) = x44
-  starting spec loop with x44
-  val x46 = x12 < 100
-  val x47 = Map("head" -> x12, "tail" -> x38)
-  val x48 = Map("top" -> x47)
-  val x49 = Map("&x" -> x34, "&y" -> x9, "B" -> x48, "&z" -> x5, "&i" -> x42, "A" -> x3)
-  val x50 = Map("head" -> x12, "tail" -> x33)
-  val x51 = Map("top" -> x50)
-  val x52 = Map("&x" -> x34, "&y" -> x9, "B" -> x51, "&z" -> x5, "&i" -> x42, "A" -> x3)
-  val x53 = Map("&x" -> x9, "&y" -> x9, "B" -> x51, "&z" -> x5, "&i" -> x42, "A" -> x3)
-  val x54 = Map("&x" -> x9, "&y" -> x9, "B" -> x51, "&z" -> x5, "&i" -> x43, "A" -> x3)
-  val x55 = 100 < x12
-  trip count:
-  100
-  lub(x10, x54) = ?
-  lub_x11(x10,x44,x54)
-  lub_x11_&x(x5,x34,x9)
-  lub_x11_&x_val((A,top),x33,(B,top))
-  val x56 = "B" * -1
-  val x57 = (x56,x27)
-  val x58 = if (x32) x57 else x28
-  val x59 = if (x32) (0,0) else x30
-  (A,top)
-  if (0 < x12) (B,top) else (A,top)
-  (B,top)
-  hit pair -- assume only 0 case differs (loop peeling)
-  Set(("val",(x33,x33)))
-  lub_x11_&y(x9,x9,x9)
-  lub_x11_B(x3,x40,x51)
-  lub_x11_B_top(Map(),x39,x50)
-  lub_x11_B_top_head("undefined",x36,x12)
-  checky checky
-  "undefined"
-  if (0 < x12) x11_B_top_head(x12 + -1) else "undefined"
-  x12
-  val x60 = x35 * -1
-  val x61 = if (x32) x60 else "undefined"
-  val x62 = x12 + x61
-  integer diff
-  if (0 < x12) x11_B_top_head(x12 + -1) else "undefined"
-  x12
-  x12 + if (0 < x12) x11_B_top_head(x12 + -1) * -1 else "undefined"
-  poly: List()
-  giving up for term:
-  x12 + if (0 < x12) x11_B_top_head(x12 + -1) * -1 else "undefined"
-  recursive fun x11_B_top_head (init "undefined")
-  lub_x11_B_top_tail("undefined",x38,x33)
-  checky checky
-  "undefined"
-  if (0 < x12) x11_B_top_tail(x12 + -1) else "undefined"
-  if (0 < x12) (B,top) else (A,top)
-  val x63 = x37 * -1
-  val x64 = if (x32) x63 else "undefined"
-  val x65 = x63 + (B,top)
-  val x66 = if (x32) x65 else "undefined"
-  val x67 = x63 + (A,top)
-  val x68 = if (x32) x67 else "undefined"
-  integer diff
-  if (0 < x12) x11_B_top_tail(x12 + -1) else "undefined"
-  if (0 < x12) (B,top) else (A,top)
-  if (0 < x12) x11_B_top_tail(x12 + -1) * -1 + (B,top) else "undefined"
-  poly: List()
-  giving up for term:
-  if (0 < x12) x11_B_top_tail(x12 + -1) * -1 + (B,top) else "undefined"
-  recursive fun x11_B_top_tail (init "undefined")
-  Set(("head",(x36,x12)), ("tail",(x38,x33)))
-  Set(("top",(x39,x50)))
-  lub_x11_&z(x5,x5,x5)
-  lub_x11_&i(x1,x42,x43)
-  lub_x11_&i_val(0,x12,x41)
-  checky checky
-  0
-  x12
-  x12 + 1
-  val x69 = x12 * -1
-  val x70 = x69 + 1
-  integer diff
-  x12
-  x12 + 1
-  1
-  confirmed iterative loop, d = 1
-  Set(("val",(x12,x41)))
-  lub_x11_A(x3,x3,x3)
-  Set(("&z",(x5,x5)), ("&y",(x9,x9)), ("B",(x40,x51)), ("A",(x3,x3)), ("&i",(x42,x43)), ("&x",(x34,x34)))
-  val x71 = Map("&x" -> x34, "&y" -> x9, "B" -> x51, "&z" -> x5, "&i" -> x43, "A" -> x3)
-  lub(x10, x54) = x44
-  val x72 = x11_&x_val(x31)
-  val x11_&x_val = { x12 => x33 }
-  val x11_B_top_head = { x12 => x12 }
-  val x11_B_top_tail = { x12 => x33 }
-  val x11_&i_val = { x12 => x41 }
-  val x11 = { x12 => x71 }
-  fixindex: 100
-  val x73 = Map("head" -> 99, "tail" -> (B,top))
-  val x74 = Map("top" -> x73)
-  val x75 = Map("val" -> 100)
-  val x76 = Map("&x" -> x9, "&y" -> x9, "B" -> x74, "&z" -> x5, "&i" -> x75, "A" -> x3)
-  *** after loop x76 ***
-  val x77 = Map("head" -> 99, "tail" -> (A,top))
-  val x78 = Map("top" -> x77)
-  val x79 = Map("&x" -> x9, "&y" -> x9, "B" -> x78, "&z" -> x5, "&i" -> x75, "A" -> x3)
-  val x80 = Map("head" -> 7, "tail" -> (A,top))
-  val x81 = Map("top" -> x80)
-  val x82 = Map("&x" -> x9, "&y" -> x9, "B" -> x81, "&z" -> x5, "&i" -> x75, "A" -> x3)
+  begin loop f(n)=x11(x12), iteration vector x13 {
+    ## iteration 0, f(0)=Map("&i" -> Map("val" -> 0), "B" -> Map("top" -> Map()), "A" -> Map("top" -> Map()), "&x" -> Map("val" -> (A,top)), "&z" -> Map("val" -> (A,top)), "&y" -> Map("val" -> (B,top)))
+      , f(n)=Map("&i" -> Map("val" -> 0), "B" -> Map("top" -> Map()), "A" -> Map("top" -> Map()), "&x" -> Map("val" -> (A,top)), "&z" -> Map("val" -> (A,top)), "&y" -> Map("val" -> (B,top)))
+      val x14 = Map("head" -> 0)
+      val x15 = Map("top" -> x14)
+      val x16 = Map("&x" -> x5, "&y" -> x9, "B" -> x15, "&z" -> x5, "&i" -> x1, "A" -> x3)
+      val x17 = Map("head" -> 0, "tail" -> (A,top))
+      val x18 = Map("top" -> x17)
+      val x19 = Map("&x" -> x5, "&y" -> x9, "B" -> x18, "&z" -> x5, "&i" -> x1, "A" -> x3)
+      val x20 = Map("&x" -> x9, "&y" -> x9, "B" -> x18, "&z" -> x5, "&i" -> x1, "A" -> x3)
+      val x21 = Map("val" -> 1)
+      val x22 = Map("&x" -> x9, "&y" -> x9, "B" -> x18, "&z" -> x5, "&i" -> x21, "A" -> x3)
+      val x23 = x12 < 0
+      val x24 = fixindex { x12 => 1 }
+      val x25 = x24 < x12
+      trip count: fixindex { x12 => 1 }
+      state after loop x22
+      approx f(0)=x10, f(n)=x10, f(n+1)=g(n)=x22) = {
+        lub_x11(x10,x10,x22)
+        lub_x11_&x(x5,x5,x9)
+        lub_x11_&x_val((A,top),(A,top),(B,top))
+        val x26 = "A" * -1
+        val x27 = "top" * -1
+        val x28 = (x26,x27)
+        val x29 = x26 + "B"
+        val x30 = (x29,0)
+        (A,top)
+        (A,top)
+        (B,top)
+        hit pair -- assume only 0 case differs (loop peeling)
+        val x31 = x12 + -1
+        val x32 = 0 < x12
+        val x33 = if (x32) (B,top) else (A,top)
+        Set(("val",(x33,x33)))
+        val x34 = Map("val" -> x33)
+        lub_x11_&y(x9,x9,x9)
+        lub_x11_B(x3,x3,x18)
+        lub_x11_B_top(Map(),Map(),x17)
+        lub_x11_B_top_head("undefined","undefined",0)
+        numerical diff 0 - "undefined" = {
+        } = "undefined"
+        recursive fun x11_B_top_head (init "undefined")
+        val x35 = x11_B_top_head(x31)
+        val x36 = if (x32) x35 else "undefined"
+        lub_x11_B_top_tail("undefined","undefined",(A,top))
+        numerical diff (A,top) - "undefined" = {
+        } = "undefined"
+        recursive fun x11_B_top_tail (init "undefined")
+        val x37 = x11_B_top_tail(x31)
+        val x38 = if (x32) x37 else "undefined"
+        Set(("head",(x36,0)), ("tail",(x38,(A,top))))
+        val x39 = Map("head" -> x36, "tail" -> x38)
+        Set(("top",(x39,x17)))
+        val x40 = Map("top" -> x39)
+        lub_x11_&z(x5,x5,x5)
+        lub_x11_&i(x1,x1,x21)
+        lub_x11_&i_val(0,0,1)
+        numerical diff 1 - 0 = {
+        } = 1
+        confirmed iterative loop, d = 1
+        val x41 = x12 + 1
+        Set(("val",(x12,x41)))
+        val x42 = Map("val" -> x12)
+        val x43 = Map("val" -> x41)
+        lub_x11_A(x3,x3,x3)
+        Set(("&z",(x5,x5)), ("B",(x40,x18)), ("&y",(x9,x9)), ("A",(x3,x3)), ("&i",(x42,x43)), ("&x",(x34,x34)))
+        val x44 = Map("&x" -> x34, "&y" -> x9, "B" -> x40, "&z" -> x5, "&i" -> x42, "A" -> x3)
+        val x45 = Map("&x" -> x34, "&y" -> x9, "B" -> x18, "&z" -> x5, "&i" -> x43, "A" -> x3)
+      } -> f(n)=x44, f(n+1)=g(n)=x45
+    ## iteration 1, f(0)=Map("&i" -> Map("val" -> 0), "B" -> Map("top" -> Map()), "A" -> Map("top" -> Map()), "&x" -> Map("val" -> (A,top)), "&z" -> Map("val" -> (A,top)), "&y" -> Map("val" -> (B,top)))
+      , f(n)=Map("&i" -> Map("val" -> x12), "B" -> Map("top" -> Map("head" -> if (0 < x12) x11_B_top_head(x12 + -1) else "undefined", "tail" -> if (0 < x12) x11_B_top_tail(x12 + -1) else "undefined")), "A" -> Map("top" -> Map()), "&x" -> Map("val" -> if (0 < x12) (B,top) else (A,top)), "&z" -> Map("val" -> (A,top)), "&y" -> Map("val" -> (B,top)))
+      val x46 = x12 < 100
+      val x47 = Map("head" -> x12, "tail" -> x38)
+      val x48 = Map("top" -> x47)
+      val x49 = Map("&x" -> x34, "&y" -> x9, "B" -> x48, "&z" -> x5, "&i" -> x42, "A" -> x3)
+      val x50 = Map("head" -> x12, "tail" -> x33)
+      val x51 = Map("top" -> x50)
+      val x52 = Map("&x" -> x34, "&y" -> x9, "B" -> x51, "&z" -> x5, "&i" -> x42, "A" -> x3)
+      val x53 = Map("&x" -> x9, "&y" -> x9, "B" -> x51, "&z" -> x5, "&i" -> x42, "A" -> x3)
+      val x54 = Map("&x" -> x9, "&y" -> x9, "B" -> x51, "&z" -> x5, "&i" -> x43, "A" -> x3)
+      val x55 = 100 < x12
+      trip count: 100
+      state after loop x54
+      approx f(0)=x10, f(n)=x44, f(n+1)=g(n)=x54) = {
+        lub_x11(x10,x44,x54)
+        lub_x11_&x(x5,x34,x9)
+        lub_x11_&x_val((A,top),x33,(B,top))
+        val x56 = "B" * -1
+        val x57 = (x56,x27)
+        val x58 = if (x32) x57 else x28
+        val x59 = if (x32) (0,0) else x30
+        (A,top)
+        if (0 < x12) (B,top) else (A,top)
+        (B,top)
+        hit pair -- assume only 0 case differs (loop peeling)
+        Set(("val",(x33,x33)))
+        lub_x11_&y(x9,x9,x9)
+        lub_x11_B(x3,x40,x51)
+        lub_x11_B_top(Map(),x39,x50)
+        lub_x11_B_top_head("undefined",x36,x12)
+        numerical diff x12 - x36 = {
+          val x60 = x35 * -1
+          val x61 = if (x32) x60 else "undefined"
+          val x62 = x12 + x61
+        } = x12 + if (0 < x12) x11_B_top_head(x12 + -1) * -1 else "undefined"
+        poly: List()
+        giving up for term:
+        x12 + if (0 < x12) x11_B_top_head(x12 + -1) * -1 else "undefined"
+        recursive fun x11_B_top_head (init "undefined")
+        lub_x11_B_top_tail("undefined",x38,x33)
+        numerical diff x33 - x38 = {
+          val x63 = x37 * -1
+          val x64 = if (x32) x63 else "undefined"
+          val x65 = x63 + (B,top)
+          val x66 = if (x32) x65 else "undefined"
+          val x67 = x63 + (A,top)
+          val x68 = if (x32) x67 else "undefined"
+        } = if (0 < x12) x11_B_top_tail(x12 + -1) * -1 + (B,top) else "undefined"
+        poly: List()
+        giving up for term:
+        if (0 < x12) x11_B_top_tail(x12 + -1) * -1 + (B,top) else "undefined"
+        recursive fun x11_B_top_tail (init "undefined")
+        Set(("head",(x36,x12)), ("tail",(x38,x33)))
+        Set(("top",(x39,x50)))
+        lub_x11_&z(x5,x5,x5)
+        lub_x11_&i(x1,x42,x43)
+        lub_x11_&i_val(0,x12,x41)
+        numerical diff x41 - x12 = {
+          val x69 = x12 * -1
+          val x70 = x69 + 1
+        } = 1
+        confirmed iterative loop, d = 1
+        Set(("val",(x12,x41)))
+        lub_x11_A(x3,x3,x3)
+        Set(("&z",(x5,x5)), ("&y",(x9,x9)), ("B",(x40,x51)), ("A",(x3,x3)), ("&i",(x42,x43)), ("&x",(x34,x34)))
+        val x71 = Map("&x" -> x34, "&y" -> x9, "B" -> x51, "&z" -> x5, "&i" -> x43, "A" -> x3)
+      } -> f(n)=x44, f(n+1)=g(n)=x71
+      val x72 = x11_&x_val(x31)
+      val x11_&x_val = { x12 => x33 }
+      val x11_B_top_head = { x12 => x12 }
+      val x11_B_top_tail = { x12 => x33 }
+      val x11_&i_val = { x12 => x41 }
+      val x11 = { x12 => x71 }
+      fixindex: 100
+      val x73 = Map("head" -> 99, "tail" -> (B,top))
+      val x74 = Map("top" -> x73)
+      val x75 = Map("val" -> 100)
+      val x76 = Map("&x" -> x9, "&y" -> x9, "B" -> x74, "&z" -> x5, "&i" -> x75, "A" -> x3)
+    } end loop x11, trip count 100, state x76
+    val x77 = Map("head" -> 99, "tail" -> (A,top))
+    val x78 = Map("top" -> x77)
+    val x79 = Map("&x" -> x9, "&y" -> x9, "B" -> x78, "&z" -> x5, "&i" -> x75, "A" -> x3)
+    val x80 = Map("head" -> 7, "tail" -> (A,top))
+    val x81 = Map("top" -> x80)
+    val x82 = Map("&x" -> x9, "&y" -> x9, "B" -> x81, "&z" -> x5, "&i" -> x75, "A" -> x3)
 # result:
   res: ()
   store: x82

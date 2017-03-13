@@ -17,114 +17,97 @@
   val x6 = Map("&i" -> x1, "A" -> x3, "&z" -> x5)
   val x7 = Map("&i" -> x1, "A" -> x3, "&z" -> x5, "&x" -> x5)
   val x10 = ("top",x9)
-  starting spec loop with x7
-  val x11 = Map("head" -> 0)
-  val x12 = Map("top" -> x11)
-  val x13 = Map("&i" -> x1, "A" -> x12, "&z" -> x5, "&x" -> x5)
-  val x14 = Map("val" -> 1)
-  val x15 = Map("&i" -> x14, "A" -> x12, "&z" -> x5, "&x" -> x5)
-  val x16 = x9 < 0
-  val x17 = fixindex { x9 => 1 }
-  val x18 = x17 < x9
-  trip count:
-  fixindex { x9 => 1 }
-  lub(x7, x15) = ?
-  lub_x8(x7,x7,x15)
-  lub_x8_&i(x1,x1,x14)
-  lub_x8_&i_val(0,0,1)
-  checky checky
-  0
-  0
-  1
-  integer diff
-  0
-  1
-  1
-  confirmed iterative loop, d = 1
-  val x19 = x9 + 1
-  Set(("val",(x9,x19)))
-  val x20 = Map("val" -> x9)
-  val x21 = Map("val" -> x19)
-  lub_x8_A(x3,x3,x12)
-  lub_x8_A_top(Map(),Map(),x11)
-  lub_x8_A_top_head("undefined","undefined",0)
-  checky checky
-  "undefined"
-  "undefined"
-  0
-  recursive fun x8_A_top_head (init "undefined")
-  val x22 = x9 + -1
-  val x23 = x8_A_top_head(x22)
-  val x24 = 0 < x9
-  val x25 = if (x24) x23 else "undefined"
-  Set(("head",(x25,0)))
-  val x26 = Map("head" -> x25)
-  Set(("top",(x26,x11)))
-  val x27 = Map("top" -> x26)
-  lub_x8_&z(x5,x5,x5)
-  lub_x8_&x(x5,x5,x5)
-  Set(("&i",(x20,x21)), ("A",(x27,x12)), ("&z",(x5,x5)), ("&x",(x5,x5)))
-  val x28 = Map("&i" -> x20, "A" -> x27, "&z" -> x5, "&x" -> x5)
-  val x29 = Map("&i" -> x21, "A" -> x12, "&z" -> x5, "&x" -> x5)
-  lub(x7, x15) = x28
-  starting spec loop with x28
-  val x30 = x9 < 100
-  val x31 = Map("head" -> x9)
-  val x32 = Map("top" -> x31)
-  val x33 = Map("&i" -> x20, "A" -> x32, "&z" -> x5, "&x" -> x5)
-  val x34 = Map("&i" -> x21, "A" -> x32, "&z" -> x5, "&x" -> x5)
-  val x35 = 100 < x9
-  trip count:
-  100
-  lub(x7, x34) = ?
-  lub_x8(x7,x28,x34)
-  lub_x8_&i(x1,x20,x21)
-  lub_x8_&i_val(0,x9,x19)
-  checky checky
-  0
-  x9
-  x9 + 1
-  val x36 = x9 * -1
-  val x37 = x36 + 1
-  integer diff
-  x9
-  x9 + 1
-  1
-  confirmed iterative loop, d = 1
-  Set(("val",(x9,x19)))
-  lub_x8_A(x3,x27,x32)
-  lub_x8_A_top(Map(),x26,x31)
-  lub_x8_A_top_head("undefined",x25,x9)
-  checky checky
-  "undefined"
-  if (0 < x9) x8_A_top_head(x9 + -1) else "undefined"
-  x9
-  val x38 = x23 * -1
-  val x39 = if (x24) x38 else "undefined"
-  val x40 = x9 + x39
-  integer diff
-  if (0 < x9) x8_A_top_head(x9 + -1) else "undefined"
-  x9
-  x9 + if (0 < x9) x8_A_top_head(x9 + -1) * -1 else "undefined"
-  poly: List()
-  giving up for term:
-  x9 + if (0 < x9) x8_A_top_head(x9 + -1) * -1 else "undefined"
-  recursive fun x8_A_top_head (init "undefined")
-  Set(("head",(x25,x9)))
-  Set(("top",(x26,x31)))
-  lub_x8_&z(x5,x5,x5)
-  lub_x8_&x(x5,x5,x5)
-  Set(("&i",(x20,x21)), ("A",(x27,x32)), ("&z",(x5,x5)), ("&x",(x5,x5)))
-  lub(x7, x34) = x28
-  val x8_&i_val = { x9 => x19 }
-  val x8_A_top_head = { x9 => x9 }
-  val x8 = { x9 => x34 }
-  fixindex: 100
-  val x41 = Map("val" -> 100)
-  val x42 = Map("head" -> 99)
-  val x43 = Map("top" -> x42)
-  val x44 = Map("&i" -> x41, "A" -> x43, "&z" -> x5, "&x" -> x5)
-  *** after loop x44 ***
+  begin loop f(n)=x8(x9), iteration vector x10 {
+    ## iteration 0, f(0)=Map("&i" -> Map("val" -> 0), "A" -> Map("top" -> Map()), "&z" -> Map("val" -> (A,top)), "&x" -> Map("val" -> (A,top)))
+      , f(n)=Map("&i" -> Map("val" -> 0), "A" -> Map("top" -> Map()), "&z" -> Map("val" -> (A,top)), "&x" -> Map("val" -> (A,top)))
+      val x11 = Map("head" -> 0)
+      val x12 = Map("top" -> x11)
+      val x13 = Map("&i" -> x1, "A" -> x12, "&z" -> x5, "&x" -> x5)
+      val x14 = Map("val" -> 1)
+      val x15 = Map("&i" -> x14, "A" -> x12, "&z" -> x5, "&x" -> x5)
+      val x16 = x9 < 0
+      val x17 = fixindex { x9 => 1 }
+      val x18 = x17 < x9
+      trip count: fixindex { x9 => 1 }
+      state after loop x15
+      approx f(0)=x7, f(n)=x7, f(n+1)=g(n)=x15) = {
+        lub_x8(x7,x7,x15)
+        lub_x8_&i(x1,x1,x14)
+        lub_x8_&i_val(0,0,1)
+        numerical diff 1 - 0 = {
+        } = 1
+        confirmed iterative loop, d = 1
+        val x19 = x9 + 1
+        Set(("val",(x9,x19)))
+        val x20 = Map("val" -> x9)
+        val x21 = Map("val" -> x19)
+        lub_x8_A(x3,x3,x12)
+        lub_x8_A_top(Map(),Map(),x11)
+        lub_x8_A_top_head("undefined","undefined",0)
+        numerical diff 0 - "undefined" = {
+        } = "undefined"
+        recursive fun x8_A_top_head (init "undefined")
+        val x22 = x9 + -1
+        val x23 = x8_A_top_head(x22)
+        val x24 = 0 < x9
+        val x25 = if (x24) x23 else "undefined"
+        Set(("head",(x25,0)))
+        val x26 = Map("head" -> x25)
+        Set(("top",(x26,x11)))
+        val x27 = Map("top" -> x26)
+        lub_x8_&z(x5,x5,x5)
+        lub_x8_&x(x5,x5,x5)
+        Set(("&i",(x20,x21)), ("A",(x27,x12)), ("&z",(x5,x5)), ("&x",(x5,x5)))
+        val x28 = Map("&i" -> x20, "A" -> x27, "&z" -> x5, "&x" -> x5)
+        val x29 = Map("&i" -> x21, "A" -> x12, "&z" -> x5, "&x" -> x5)
+      } -> f(n)=x28, f(n+1)=g(n)=x29
+    ## iteration 1, f(0)=Map("&i" -> Map("val" -> 0), "A" -> Map("top" -> Map()), "&z" -> Map("val" -> (A,top)), "&x" -> Map("val" -> (A,top)))
+      , f(n)=Map("&i" -> Map("val" -> x9), "A" -> Map("top" -> Map("head" -> if (0 < x9) x8_A_top_head(x9 + -1) else "undefined")), "&z" -> Map("val" -> (A,top)), "&x" -> Map("val" -> (A,top)))
+      val x30 = x9 < 100
+      val x31 = Map("head" -> x9)
+      val x32 = Map("top" -> x31)
+      val x33 = Map("&i" -> x20, "A" -> x32, "&z" -> x5, "&x" -> x5)
+      val x34 = Map("&i" -> x21, "A" -> x32, "&z" -> x5, "&x" -> x5)
+      val x35 = 100 < x9
+      trip count: 100
+      state after loop x34
+      approx f(0)=x7, f(n)=x28, f(n+1)=g(n)=x34) = {
+        lub_x8(x7,x28,x34)
+        lub_x8_&i(x1,x20,x21)
+        lub_x8_&i_val(0,x9,x19)
+        numerical diff x19 - x9 = {
+          val x36 = x9 * -1
+          val x37 = x36 + 1
+        } = 1
+        confirmed iterative loop, d = 1
+        Set(("val",(x9,x19)))
+        lub_x8_A(x3,x27,x32)
+        lub_x8_A_top(Map(),x26,x31)
+        lub_x8_A_top_head("undefined",x25,x9)
+        numerical diff x9 - x25 = {
+          val x38 = x23 * -1
+          val x39 = if (x24) x38 else "undefined"
+          val x40 = x9 + x39
+        } = x9 + if (0 < x9) x8_A_top_head(x9 + -1) * -1 else "undefined"
+        poly: List()
+        giving up for term:
+        x9 + if (0 < x9) x8_A_top_head(x9 + -1) * -1 else "undefined"
+        recursive fun x8_A_top_head (init "undefined")
+        Set(("head",(x25,x9)))
+        Set(("top",(x26,x31)))
+        lub_x8_&z(x5,x5,x5)
+        lub_x8_&x(x5,x5,x5)
+        Set(("&i",(x20,x21)), ("A",(x27,x32)), ("&z",(x5,x5)), ("&x",(x5,x5)))
+      } -> f(n)=x28, f(n+1)=g(n)=x34
+      val x8_&i_val = { x9 => x19 }
+      val x8_A_top_head = { x9 => x9 }
+      val x8 = { x9 => x34 }
+      fixindex: 100
+      val x41 = Map("val" -> 100)
+      val x42 = Map("head" -> 99)
+      val x43 = Map("top" -> x42)
+      val x44 = Map("&i" -> x41, "A" -> x43, "&z" -> x5, "&x" -> x5)
+    } end loop x8, trip count 100, state x44
 # result:
   res: ()
   store: x44

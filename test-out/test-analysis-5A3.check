@@ -20,69 +20,60 @@
   val x8 = Map("top" -> x7)
   val x9 = Map("&x" -> x1, "A" -> x8, "&a" -> x5)
   val x12 = ("top",x11)
-  starting spec loop with x9
-  val x13 = Map("val" -> 1)
-  val x14 = Map("&x" -> x13, "A" -> x8, "&a" -> x5)
-  val x15 = x11 < 0
-  val x16 = fixindex { x11 => 1 }
-  val x17 = x16 < x11
-  trip count:
-  fixindex { x11 => 1 }
-  lub(x9, x14) = ?
-  lub_x10(x9,x9,x14)
-  lub_x10_&x(x1,x1,x13)
-  lub_x10_&x_val(0,0,1)
-  checky checky
-  0
-  0
-  1
-  integer diff
-  0
-  1
-  1
-  confirmed iterative loop, d = 1
-  val x18 = x11 + 1
-  Set(("val",(x11,x18)))
-  val x19 = Map("val" -> x11)
-  val x20 = Map("val" -> x18)
-  lub_x10_A(x8,x8,x8)
-  lub_x10_&a(x5,x5,x5)
-  Set(("&x",(x19,x20)), ("A",(x8,x8)), ("&a",(x5,x5)))
-  val x21 = Map("&x" -> x19, "A" -> x8, "&a" -> x5)
-  val x22 = Map("&x" -> x20, "A" -> x8, "&a" -> x5)
-  lub(x9, x14) = x21
-  starting spec loop with x21
-  val x23 = x11 < 100
-  val x24 = 100 < x11
-  trip count:
-  100
-  lub(x9, x22) = ?
-  lub_x10(x9,x21,x22)
-  lub_x10_&x(x1,x19,x20)
-  lub_x10_&x_val(0,x11,x18)
-  checky checky
-  0
-  x11
-  x11 + 1
-  val x25 = x11 * -1
-  val x26 = x25 + 1
-  integer diff
-  x11
-  x11 + 1
-  1
-  confirmed iterative loop, d = 1
-  Set(("val",(x11,x18)))
-  lub_x10_A(x8,x8,x8)
-  lub_x10_&a(x5,x5,x5)
-  Set(("&x",(x19,x20)), ("A",(x8,x8)), ("&a",(x5,x5)))
-  lub(x9, x22) = x21
-  val x10_&x_val = { x11 => x18 }
-  val x10 = { x11 => x22 }
-  fixindex: 100
-  val x27 = Map("val" -> 100)
-  val x28 = Map("&x" -> x27, "A" -> x8, "&a" -> x5)
-  *** after loop x28 ***
-  val x29 = Map("&x" -> x27, "A" -> x8, "&a" -> x5, "&r" -> x5)
+  begin loop f(n)=x10(x11), iteration vector x12 {
+    ## iteration 0, f(0)=Map("&x" -> Map("val" -> 0), "A" -> Map("top" -> Map("field" -> 7)), "&a" -> Map("val" -> (A,top)))
+      , f(n)=Map("&x" -> Map("val" -> 0), "A" -> Map("top" -> Map("field" -> 7)), "&a" -> Map("val" -> (A,top)))
+      val x13 = Map("val" -> 1)
+      val x14 = Map("&x" -> x13, "A" -> x8, "&a" -> x5)
+      val x15 = x11 < 0
+      val x16 = fixindex { x11 => 1 }
+      val x17 = x16 < x11
+      trip count: fixindex { x11 => 1 }
+      state after loop x14
+      approx f(0)=x9, f(n)=x9, f(n+1)=g(n)=x14) = {
+        lub_x10(x9,x9,x14)
+        lub_x10_&x(x1,x1,x13)
+        lub_x10_&x_val(0,0,1)
+        numerical diff 1 - 0 = {
+        } = 1
+        confirmed iterative loop, d = 1
+        val x18 = x11 + 1
+        Set(("val",(x11,x18)))
+        val x19 = Map("val" -> x11)
+        val x20 = Map("val" -> x18)
+        lub_x10_A(x8,x8,x8)
+        lub_x10_&a(x5,x5,x5)
+        Set(("&x",(x19,x20)), ("A",(x8,x8)), ("&a",(x5,x5)))
+        val x21 = Map("&x" -> x19, "A" -> x8, "&a" -> x5)
+        val x22 = Map("&x" -> x20, "A" -> x8, "&a" -> x5)
+      } -> f(n)=x21, f(n+1)=g(n)=x22
+    ## iteration 1, f(0)=Map("&x" -> Map("val" -> 0), "A" -> Map("top" -> Map("field" -> 7)), "&a" -> Map("val" -> (A,top)))
+      , f(n)=Map("&x" -> Map("val" -> x11), "A" -> Map("top" -> Map("field" -> 7)), "&a" -> Map("val" -> (A,top)))
+      val x23 = x11 < 100
+      val x24 = 100 < x11
+      trip count: 100
+      state after loop x22
+      approx f(0)=x9, f(n)=x21, f(n+1)=g(n)=x22) = {
+        lub_x10(x9,x21,x22)
+        lub_x10_&x(x1,x19,x20)
+        lub_x10_&x_val(0,x11,x18)
+        numerical diff x18 - x11 = {
+          val x25 = x11 * -1
+          val x26 = x25 + 1
+        } = 1
+        confirmed iterative loop, d = 1
+        Set(("val",(x11,x18)))
+        lub_x10_A(x8,x8,x8)
+        lub_x10_&a(x5,x5,x5)
+        Set(("&x",(x19,x20)), ("A",(x8,x8)), ("&a",(x5,x5)))
+      } -> f(n)=x21, f(n+1)=g(n)=x22
+      val x10_&x_val = { x11 => x18 }
+      val x10 = { x11 => x22 }
+      fixindex: 100
+      val x27 = Map("val" -> 100)
+      val x28 = Map("&x" -> x27, "A" -> x8, "&a" -> x5)
+    } end loop x10, trip count 100, state x28
+    val x29 = Map("&x" -> x27, "A" -> x8, "&a" -> x5, "&r" -> x5)
 # result:
   res: ()
   store: x29

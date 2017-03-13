@@ -159,11 +159,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
         itvec = pair(itvec,n0)
 
-
         var init = before
         var path = Nil: List[GVal]
+
+        println(s"begin loop f(n)=$loop($n0), iteration vector $itvec {")
+
+        var iterCount = 0
         def iter: GVal = {
-          println(s"starting spec loop with $init")
+          println(s"## iteration $iterCount, f(0)=${termToString(before)}, f(n)=${termToString(init)}")
           assert(!path.contains(init), "hitting recursion: "+(init::path))
           path = init::path
 
@@ -182,10 +185,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           store = subst(store,less(n0,const(0)),const(0)) // 0 <= i
           store = subst(store,less(fixindex(n0.toString, cv),n0),const(0)) // i <= n-1
 
-          println("trip count:")
-          IRD.printTerm(fixindex(n0.toString, cv))
+          println("trip count: "+termToString(fixindex(n0.toString, cv)))
 
           val afterB = store
+
+          println(s"state after loop $afterB")
 
           //val next = IR.iff(cv,afterB,afterC)
           // inside the loop we know the check succeeded.
@@ -194,14 +198,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
           // generalize init/next based on previous values
           // and current observation
-          println(s"lub($before, $next) = ?")
+          println(s"approx f(0)=$before, f(n)=$init, f(n+1)=g(n)=$next) = {")
 
           val (initNew,nextNew) = lub(before, init, next)(loop,n0)
 
-          println(s"lub($before, $next) = $initNew")
+          println(s"} -> f(n)=$initNew, f(n+1)=g(n)=$nextNew")
 
           // are we done or do we need another iteration?
-          if (init != initNew) { init = initNew; iter } else {
+          if (init != initNew) { init = initNew; iterCount += 1; iter } else {
             // no further information was gained: go ahead
             // and generate the final (set of) recursive 
             // functions, or closed forms.
@@ -259,7 +263,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
         itvec = saveit
         
-        println(s"*** after loop $store ***")
+        println(s"} end loop $loop, trip count $nX, state $store")
 
         IR.const(())
 

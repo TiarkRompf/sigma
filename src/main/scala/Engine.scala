@@ -815,11 +815,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           // TODO: case for alloc in loop -- x(0)=(A,1), x(i>0)=(B,(1,i))
           // (trying to handle this one above...)
 
-          println("checky checky")
-          IRD.printTerm(a)
-          IRD.printTerm(b0)
-          IRD.printTerm(b1)
-
+          println(s"numerical diff $b1 - $b0 = {")
 
           // look at numeric difference. see if symbolic values before/after are generalized in a corresponding way.
           // widen: compute new symbolic val before from symbolic val after (e.g. closed form)
@@ -828,11 +824,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           //val b1 = iff(less(const(0), n0), b, a)
           val d1 = plus(b1,times(b0,const(-1)))
 
+          println("} = " + IRD.termToString(d1))
+
           if (d1 != const("undefined")) { // do we have an integer?
-            println("integer diff")
-            IRD.printTerm(b0)
-            IRD.printTerm(b1)
-            IRD.printTerm(d1)
 
             def deriv(x: GVal): GVal = x match { // not used!
               case GConst(_) => const(0)
