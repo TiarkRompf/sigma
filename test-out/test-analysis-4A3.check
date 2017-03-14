@@ -148,25 +148,47 @@
         Set(("val",(x47,x52)))
         Set(("&x",(x19,x20)), ("&z",(x60,x61)))
       } -> f(x6)=x62, f(x6+1)=x63
-      done
-      val x5_&x_val = { x6 => x18 }
-      val x5_&x = { x6 => x20 }
-      val x5_&z_val = { x6 => x52 }
-      val x5_&z = { x6 => x61 }
-      val x5 = { x6 => x63 }
-      fixindex: 900
-      val x72 = Map("val" -> 405450)
-      val x73 = Map("&x" -> x3, "&z" -> x72)
-    } end loop x5, trip count 900, state x73
-    val x74 = Map("&x" -> x3, "&z" -> x72, "&r" -> x3)
+      create function def f(n) = x5(x6) {
+        val x72 = 0 < x6
+        val x73 = x14 + 1
+        val x74 = x42 + 0.5
+        val x75 = x40 + -0.5
+        val x76 = x40 + x75
+        val x77 = x44 + x76
+        val x78 = x21 + -900
+        val x79 = x21 + 0.5
+        val x80 = x42 + x79
+        val x81 = x42 + x21
+        val x82 = x40 + x81
+        val x83 = x40 + x82
+        val x84 = x44 + x83
+        val x85 = Map("val" -> x84)
+        val x86 = Map("&x" -> x19, "&z" -> x85)
+        val x87 = if (x72) x15 else 900
+        val x88 = Map("val" -> x87)
+        val x89 = if (x72) x84 else 0
+        val x90 = Map("val" -> x89)
+        val x91 = Map("&x" -> x88, "&z" -> x90)
+        val x92 = x5_&x_val(x35)
+        val x5_&x_val = { x6 => x87 }
+        val x5_&x = { x6 => x88 }
+        val x93 = x5_&z_val(x35)
+        val x5_&z_val = { x6 => x89 }
+        val x5_&z = { x6 => x90 }
+        val x5 = { x6 => x91 }
+      }
+      val x94 = Map("val" -> 405450)
+      val x95 = Map("&x" -> x3, "&z" -> x94)
+    } end loop x5, trip count 900, state x95
+    val x96 = Map("&x" -> x3, "&z" -> x94, "&r" -> x3)
 # result:
   res: ()
-  store: x74
-  transformed: x74
+  store: x96
+  transformed: x96
   ## sched:
-    val x72 = Map("val" -> 405450)
+    val x94 = Map("val" -> 405450)
     val x3 = Map("val" -> 0)
-    val x74 = Map("&x" -> x3, "&z" -> x72, "&r" -> x3)
+    val x96 = Map("&x" -> x3, "&z" -> x94, "&r" -> x3)
   ## term:
     Map("&x" -> Map("val" -> 0), "&z" -> Map("val" -> 405450), "&r" -> Map("val" -> 0))
 # done

@@ -80,24 +80,32 @@
         Set(("val",(x6,x17)))
         Set(("&x",(x20,x21)), ("&y",(x22,x23)))
       } -> f(x6)=x24, f(x6+1)=x25
-      done
-      val x5_&x_val = { x6 => x19 }
-      val x5_&x = { x6 => x21 }
-      val x5_&y_val = { x6 => x17 }
-      val x5_&y = { x6 => x23 }
-      val x5 = { x6 => x25 }
-      fixindex: 900
-      val x32 = Map("&x" -> x3, "&y" -> x1)
-    } end loop x5, trip count 900, state x32
-    val x33 = Map("&x" -> x3, "&y" -> x1, "&r" -> x3)
+      create function def f(n) = x5(x6) {
+        val x32 = 0 < x6
+        val x33 = if (x32) x16 else 900
+        val x34 = Map("val" -> x33)
+        val x35 = if (x32) x6 else 0
+        val x36 = Map("val" -> x35)
+        val x37 = Map("&x" -> x34, "&y" -> x36)
+        val x38 = x5_&x_val(x30)
+        val x5_&x_val = { x6 => x33 }
+        val x5_&x = { x6 => x34 }
+        val x39 = x5_&y_val(x30)
+        val x5_&y_val = { x6 => x35 }
+        val x5_&y = { x6 => x36 }
+        val x5 = { x6 => x37 }
+      }
+      val x40 = Map("&x" -> x3, "&y" -> x1)
+    } end loop x5, trip count 900, state x40
+    val x41 = Map("&x" -> x3, "&y" -> x1, "&r" -> x3)
 # result:
   res: ()
-  store: x33
-  transformed: x33
+  store: x41
+  transformed: x41
   ## sched:
     val x3 = Map("val" -> 0)
     val x1 = Map("val" -> 900)
-    val x33 = Map("&x" -> x3, "&y" -> x1, "&r" -> x3)
+    val x41 = Map("&x" -> x3, "&y" -> x1, "&r" -> x3)
   ## term:
     Map("&x" -> Map("val" -> 0), "&y" -> Map("val" -> 900), "&r" -> Map("val" -> 0))
 # done

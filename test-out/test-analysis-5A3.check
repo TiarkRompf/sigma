@@ -66,30 +66,36 @@
         lub_x10_&a(x5,x5,x5)
         Set(("&x",(x19,x20)), ("A",(x8,x8)), ("&a",(x5,x5)))
       } -> f(x11)=x21, f(x11+1)=x22
-      done
-      val x10_&x_val = { x11 => x18 }
-      val x10_&x = { x11 => x20 }
-      val x10_A_top_field = { x11 => 7 }
-      val x10_A_top = { x11 => x7 }
-      val x10_A = { x11 => x8 }
-      val x10_&a_val = { x11 => (A,top) }
-      val x10_&a = { x11 => x5 }
-      val x10 = { x11 => x22 }
-      fixindex: 100
-      val x27 = Map("val" -> 100)
-      val x28 = Map("&x" -> x27, "A" -> x8, "&a" -> x5)
-    } end loop x10, trip count 100, state x28
-    val x29 = Map("&x" -> x27, "A" -> x8, "&a" -> x5, "&r" -> x5)
+      create function def f(n) = x10(x11) {
+        val x27 = 0 < x11
+        val x28 = x11 + -1
+        val x29 = if (x27) x11 else 0
+        val x30 = Map("val" -> x29)
+        val x31 = Map("&x" -> x30, "A" -> x8, "&a" -> x5)
+        val x32 = x10_&x_val(x28)
+        val x10_&x_val = { x11 => x29 }
+        val x10_&x = { x11 => x30 }
+        val x10_A_top_field = { x11 => 7 }
+        val x10_A_top = { x11 => x7 }
+        val x10_A = { x11 => x8 }
+        val x10_&a_val = { x11 => (A,top) }
+        val x10_&a = { x11 => x5 }
+        val x10 = { x11 => x31 }
+      }
+      val x33 = Map("val" -> 100)
+      val x34 = Map("&x" -> x33, "A" -> x8, "&a" -> x5)
+    } end loop x10, trip count 100, state x34
+    val x35 = Map("&x" -> x33, "A" -> x8, "&a" -> x5, "&r" -> x5)
 # result:
   res: ()
-  store: x29
-  transformed: x29
+  store: x35
+  transformed: x35
   ## sched:
-    val x27 = Map("val" -> 100)
+    val x33 = Map("val" -> 100)
     val x7 = Map("field" -> 7)
     val x8 = Map("top" -> x7)
     val x5 = Map("val" -> (A,top))
-    val x29 = Map("&x" -> x27, "A" -> x8, "&a" -> x5, "&r" -> x5)
+    val x35 = Map("&x" -> x33, "A" -> x8, "&a" -> x5, "&r" -> x5)
   ## term:
     Map("&x" -> Map("val" -> 100), "A" -> Map("top" -> Map("field" -> 7)), "&a" -> Map("val" -> (A,top)), "&r" -> Map("val" -> (A,top)))
 # done

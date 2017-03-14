@@ -80,26 +80,33 @@
         lub_x6_&x(x4,x4,x4)
         Set(("&i",(x18,x19)), ("&y",(x18,x19)), ("&x",(x4,x4)))
       } -> f(x7)=x20, f(x7+1)=x21
-      done
-      val x6_&i_val = { x7 => x17 }
-      val x6_&i = { x7 => x19 }
-      val x6_&y_val = { x7 => x17 }
-      val x6_&y = { x7 => x19 }
-      val x6_&x_val = { x7 => 8 }
-      val x6_&x = { x7 => x4 }
-      val x6 = { x7 => x21 }
-      fixindex: 100
-      val x28 = Map("val" -> 100)
-      val x29 = Map("&i" -> x28, "&y" -> x28, "&x" -> x4)
-    } end loop x6, trip count 100, state x29
+      create function def f(n) = x6(x7) {
+        val x28 = 0 < x7
+        val x29 = x7 + -1
+        val x30 = if (x28) x7 else 0
+        val x31 = Map("val" -> x30)
+        val x32 = Map("&i" -> x31, "&y" -> x31, "&x" -> x4)
+        val x33 = x6_&i_val(x29)
+        val x6_&i_val = { x7 => x30 }
+        val x6_&i = { x7 => x31 }
+        val x34 = x6_&y_val(x29)
+        val x6_&y_val = { x7 => x30 }
+        val x6_&y = { x7 => x31 }
+        val x6_&x_val = { x7 => 8 }
+        val x6_&x = { x7 => x4 }
+        val x6 = { x7 => x32 }
+      }
+      val x35 = Map("val" -> 100)
+      val x36 = Map("&i" -> x35, "&y" -> x35, "&x" -> x4)
+    } end loop x6, trip count 100, state x36
 # result:
   res: ()
-  store: x29
-  transformed: x29
+  store: x36
+  transformed: x36
   ## sched:
-    val x28 = Map("val" -> 100)
+    val x35 = Map("val" -> 100)
     val x4 = Map("val" -> 8)
-    val x29 = Map("&i" -> x28, "&y" -> x28, "&x" -> x4)
+    val x36 = Map("&i" -> x35, "&y" -> x35, "&x" -> x4)
   ## term:
     Map("&i" -> Map("val" -> 100), "&y" -> Map("val" -> 100), "&x" -> Map("val" -> 8))
 # done

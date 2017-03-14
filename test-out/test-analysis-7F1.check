@@ -133,24 +133,21 @@
         giving up for term:
         x8 * x8 * x8 * 0.5 + x8 * x8 * 0.5 + x8 * x8 * -0.5 + x8 * -0.5 + x8 + x8 * x8 * -0.5 + x8 * 0.5
         recursive fun x7_&r_val (init 1)
-        val x65 = x7_&r_val(x25)
-        val x66 = 0 < x8
-        val x67 = if (x66) x65 else 1
-        Set(("val",(x67,x55)))
-        val x68 = Map("val" -> x67)
-        Set(("&n",(x1,x1)), ("&i",(x16,x17)), ("&r",(x68,x56)))
-        val x69 = Map("&n" -> x1, "&i" -> x16, "&r" -> x68)
-      } -> f(x8)=x69, f(x8+1)=x57
-    ## iteration 3, f(0)=x6, f(x8)=x69
-      val x70 = Map("&n" -> x1, "&i" -> x17, "&r" -> x68)
-      val x71 = x65 * x8
-      val x72 = x71 + x65
-      val x73 = if (x66) x72 else x15
-      val x74 = Map("val" -> x73)
-      val x75 = Map("&n" -> x1, "&i" -> x17, "&r" -> x74)
+        val x65 = x7_&r_val(x8)
+        Set(("val",(x65,x55)))
+        val x66 = Map("val" -> x65)
+        Set(("&n",(x1,x1)), ("&i",(x16,x17)), ("&r",(x66,x56)))
+        val x67 = Map("&n" -> x1, "&i" -> x16, "&r" -> x66)
+      } -> f(x8)=x67, f(x8+1)=x57
+    ## iteration 3, f(0)=x6, f(x8)=x67
+      val x68 = Map("&n" -> x1, "&i" -> x17, "&r" -> x66)
+      val x69 = x65 * x8
+      val x70 = x69 + x65
+      val x71 = Map("val" -> x70)
+      val x72 = Map("&n" -> x1, "&i" -> x17, "&r" -> x71)
       trip count: "N"
-      approx f(0)=x6, f(x8)=x69, f(x8+1)=x75) = {
-        lub_x7(x6,x69,x75)
+      approx f(0)=x6, f(x8)=x67, f(x8+1)=x72) = {
+        lub_x7(x6,x67,x72)
         lub_x7_&n(x1,x1,x1)
         lub_x7_&i(x3,x16,x17)
         lub_x7_&i_val(0,x8,x15)
@@ -159,61 +156,66 @@
         poly: List(1)
         confirmed iterative loop, d = 1
         Set(("val",(x8,x15)))
-        lub_x7_&r(x5,x68,x74)
-        lub_x7_&r_val(1,x67,x73)
-        numerical diff d=f(x8+1)-f(x8) = if (0 < x8) x7_&r_val(x8 + -1) * x8 + x7_&r_val(x8 + -1) else x8 + 1 - if (0 < x8) x7_&r_val(x8 + -1) else 1 = {
-          val x76 = x65 * -1
-          val x77 = if (x66) x76 else -1
-          val x78 = x65 + x77
-          val x79 = x71 + x78
-          val x80 = x76 + 1
-          val x81 = if (x66) x80 else 0
-          val x82 = x8 + x81
-          val x83 = if (x66) x71 else x8
-        } = if (0 < x8) x7_&r_val(x8 + -1) * x8 else x8
+        lub_x7_&r(x5,x66,x71)
+        lub_x7_&r_val(1,x65,x70)
+        numerical diff d=f(x8+1)-f(x8) = x7_&r_val(x8) * x8 + x7_&r_val(x8) - x7_&r_val(x8) = {
+          val x73 = x65 * -1
+        } = x7_&r_val(x8) * x8
         poly: List()
         giving up for term:
-        if (0 < x8) x7_&r_val(x8 + -1) * x8 else x8
+        x7_&r_val(x8) * x8
         recursive fun x7_&r_val (init 1)
-        Set(("val",(x67,x73)))
-        Set(("&n",(x1,x1)), ("&i",(x16,x17)), ("&r",(x68,x74)))
-      } -> f(x8)=x69, f(x8+1)=x75
-      done
-      val x7_&n_val = { x8 => "N" }
-      val x7_&n = { x8 => x1 }
-      val x7_&i_val = { x8 => x15 }
-      val x7_&i = { x8 => x17 }
-      val x7_&r_val = { x8 => x73 }
-      val x84 = x7_&r_val(x8)
-      val x85 = Map("val" -> x84)
-      val x7_&r = { x8 => x85 }
-      val x86 = Map("&n" -> x1, "&i" -> x17, "&r" -> x85)
-      val x7 = { x8 => x86 }
-      fixindex: "N"
-      val x87 = "N" + -1
-      val x88 = x7_&r_val(x87)
+        Set(("val",(x65,x70)))
+        Set(("&n",(x1,x1)), ("&i",(x16,x17)), ("&r",(x66,x71)))
+      } -> f(x8)=x67, f(x8+1)=x72
+      create function def f(n) = x7(x8) {
+        val x74 = 0 < x8
+        val x75 = x7_&r_val(x25)
+        val x76 = x75 * x8
+        val x77 = x75 * -1
+        val x78 = x76 + x77
+        val x79 = Map("val" -> x76)
+        val x80 = Map("&n" -> x1, "&i" -> x16, "&r" -> x79)
+        val x81 = if (x74) x8 else 0
+        val x82 = Map("val" -> x81)
+        val x83 = if (x74) x76 else 1
+        val x84 = Map("val" -> x83)
+        val x85 = Map("&n" -> x1, "&i" -> x82, "&r" -> x84)
+        val x7_&n_val = { x8 => "N" }
+        val x7_&n = { x8 => x1 }
+        val x86 = x7_&i_val(x25)
+        val x7_&i_val = { x8 => x81 }
+        val x7_&i = { x8 => x82 }
+        val x7_&r_val = { x8 => x83 }
+        val x7_&r = { x8 => x66 }
+        val x87 = Map("&n" -> x1, "&i" -> x82, "&r" -> x66)
+        val x7 = { x8 => x87 }
+      }
+      val x88 = if (x10) "N" else 0
       val x89 = Map("val" -> x88)
-      val x90 = Map("&n" -> x1, "&i" -> x1, "&r" -> x89)
-    } end loop x7, trip count "N", state x90
+      val x90 = x7_&r_val("N")
+      val x91 = Map("val" -> x90)
+      val x92 = Map("&n" -> x1, "&i" -> x89, "&r" -> x91)
+    } end loop x7, trip count "N", state x92
 # result:
   res: ()
-  store: x90
-  transformed: x90
+  store: x92
+  transformed: x92
   ## sched:
-    val x87 = "N" + -1
     val x25 = x8 + -1
-    val x66 = 0 < x8
-    val x15 = x8 + 1
-    val x65 = x7_&r_val(x25)
-    val x71 = x65 * x8
-    val x72 = x71 + x65
-    val x73 = if (x66) x72 else x15
-    val x7_&r_val = { x8 => x73 }
-    val x88 = x7_&r_val(x87)
+    val x74 = 0 < x8
+    val x75 = x7_&r_val(x25)
+    val x76 = x75 * x8
+    val x83 = if (x74) x76 else 1
+    val x7_&r_val = { x8 => x83 }
+    val x90 = x7_&r_val("N")
+    val x91 = Map("val" -> x90)
+    val x10 = 0 < "N"
+    val x88 = if (x10) "N" else 0
     val x89 = Map("val" -> x88)
     val x1 = Map("val" -> "N")
-    val x90 = Map("&n" -> x1, "&i" -> x1, "&r" -> x89)
+    val x92 = Map("&n" -> x1, "&i" -> x89, "&r" -> x91)
   ## term:
-    val x7_&r_val = { x8 => if (0 < x8) x7_&r_val(x8 + -1) * x8 + x7_&r_val(x8 + -1) else x8 + 1 }
-    Map("&n" -> Map("val" -> "N"), "&i" -> Map("val" -> "N"), "&r" -> Map("val" -> x7_&r_val("N" + -1)))
+    val x7_&r_val = { x8 => if (0 < x8) x7_&r_val(x8 + -1) * x8 else 1 }
+    Map("&n" -> Map("val" -> "N"), "&i" -> Map("val" -> if (0 < "N") "N" else 0), "&r" -> Map("val" -> x7_&r_val("N")))
 # done

@@ -194,7 +194,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
           //val next = IR.iff(cv,afterB,afterC)
           // inside the loop we know the check succeeded.
-          // TODO: need to worry about boundary cases!
           val next = subst(afterB,cv,const(1))
 
           // generalize init/next based on previous values
@@ -210,35 +209,58 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
             // no further information was gained: go ahead
             // and generate the final (set of) recursive 
             // functions, or closed forms.
-            println(s"done")
+            println(s"create function def f(n) = $loop($n0) {")
+
+            // given f(n+1) = nextNew, derive formula for f(n)
+            val body = iff(less(const(0),n0),
+                          subst(nextNew,n0,plus(n0,const(-1))),
+                          before)
+
+            // Note that body should be the same as initNew,
+            // except when we're giving up and generating
+            // a recursive function. In that case, init would
+            // have an infinite loop and body contains the
+            // loop body unfolded once.
+
+            // Note that currently, body also may include
+            // explicit checks like if (0 < n0) n0 else 0.
+            // These could be optimized to just n0 if we had
+            // a contract that such functions can only be
+            // called with argument >= 0.
+
+            /*if (initNew != body) {
+              println(s"init: $loop = {$n0 => ${termToString(initNew)}}")
+              println(s"body: $loop = {$n0 => ${termToString(body)}}")
+            }*/
 
             // create function definition, which we call below
-            lubfun(initNew, nextNew)(loop,n0)
+            lubfun(loop,n0,body)
+
+            println("}")
 
             // compute trip count
-            val nX = fixindex(n0.toString, cv) // TODO: check this ...
-            println(s"fixindex: $nX")
+            val nX = fixindex(n0.toString, cv)
 
             // invoke computed function at trip count
-            // TODO: if (0 < nX) loop(nX-1) else before ??
-            store = call(loop,plus(nX,const(-1)))
+            store = call(loop,nX)
 
             // A note about the intended semantics:
-            // Is elem 0 the value after 0 iterations,
-            // or the value computed in iteration 0?
-            // The analogy of modeling values computed in
-            // loops as arrays indexed by iteration would
+            // Elem i is the value _after i iterations_,
+            // i.e. the value _before iteration i_.
+            // An alternative, based on the analogy of 
+            // modeling values computed in loops
+            // as arrays indexed by iteration count would
             // suggest the meaning 'computed in iteration i'.
-            // Conceptually, the value before the loop has 
-            // index -1. But we never reach it because
-            // we do proper index handling after the loop.
-            // and pick element n-1.
-
-            // It may seem unintuitive that f(i) = i+1 for a
-            // simple counting loop.
+            // This also works. We would change the default
+            // recursive case to call f(n-1) directly, then
+            // use nextNew as the body without modification,
+            // and finally select nX - 1.
+            // With this model, we'd have f(i) = i+1 for a
+            // simple counting loop, which is somewhat
+            // less intuitive.
             // On the other hand, for dynamic allocations, 
-            // we get f(i) = new A_i, which makes a lot of
-            // sense.
+            // we'd get f(i) = new A_i, which makes sense
+            // intuitively.
 
 
             // wrap up

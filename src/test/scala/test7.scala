@@ -98,6 +98,8 @@ class TestAnalysis7 extends RunAndCheckSuite {
   // update stuff allocated in a loop
 
   testProg("E1") { //test9
+    If(Less(Direct(vref("COUNT")),Const(0)),
+      Block(Nil),
       Block(List(
         Assign("i", Const(0)),
         Assign("x", New("X")),
@@ -112,8 +114,32 @@ class TestAnalysis7 extends RunAndCheckSuite {
         ),
         Put(Get(Ref("x"), Const("a")), Const("bar"), Const(7)), // this is not a strong update, because 1.a may be one of two allocs
         Assign("xbar", Get(Get(Ref("x"), Const("a")), Const("bar"))) // should still yield 7!
-      ))
+      )))
     } {
+      """
+      if(COUNT < 0) Map() else
+      Map(
+        "&i" -> Map("val" -> if (0 < "COUNT") "COUNT" else 0), 
+        "B"  -> if(0 < COUNT) Map("top" -> 
+          if (1 < "COUNT") 
+            collect("COUNT") { x15_B_top_x16 => Map("foo" -> 5) } 
+            + ("COUNT" + -1 -> Map("foo" -> 5, "baz" -> "nil", "bar" -> 7)) 
+          else 
+            collect("COUNT") { x15_B_top_x16 => Map("foo" -> 5) }
+        ) else nil, 
+        "X"  -> Map("top" -> Map("a" -> 
+          if(0<COUNT){ if (1 < "COUNT") 
+            ("B",("top","COUNT" + -1)) 
+          else 
+            (A,top) } else (A,top)
+        )), 
+        "A"  -> Map("top" -> Map("baz" -> 3, "foo" -> "nil", "bar" -> if(0<COUNT){ if (1 < "COUNT") "nil" else 7 } else 7)), 
+        "&x" -> Map("val" -> (X,top)), 
+        "&xbar" -> Map("val" -> 7)
+      )
+      """
+/*
+      Note: above is more complicated that we'd like. should optimize (at least) to:
       """
       Map(
         "&i" -> Map("val" -> "COUNT"), 
@@ -135,7 +161,7 @@ class TestAnalysis7 extends RunAndCheckSuite {
         "&xbar" -> Map("val" -> 7)
       )
       """
-    }
+*/    }
 
 
   // factorial: direct
@@ -153,15 +179,15 @@ class TestAnalysis7 extends RunAndCheckSuite {
       ))
     } {
       """
-        val x7_&r_val = { x8 => if (0 < x8) x7_&r_val(x8 + -1) * x8 + x7_&r_val(x8 + -1) else x8 + 1 }
+        val x7_&r_val = { x8 => if (0 < x8) x7_&r_val(x8 + -1) * x8 else 1 }
         Map(
           "&n" -> Map("val" -> "N"), 
-          "&i" -> Map("val" -> "N"), 
-          "&r" -> Map("val" -> x7_&r_val("N" + -1))
+          "&i" -> Map("val" -> if (0 < "N") "N" else 0), 
+          "&r" -> Map("val" -> x7_&r_val("N"))
         )
       """
+      // Note: formula for &i should be optimized if we assumed that N >= 0
     }
-
 }
 
 // (to try: fac, first as while loop, then as recursive

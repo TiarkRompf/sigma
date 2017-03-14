@@ -934,27 +934,25 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           // fall-through case
           println(s"recursive fun $fsym (init $a)")
 
-          def wrapZero(x: GVal): GVal = iff(less(const(0), n0), x, a)
+          def wrapZero(x: GVal): GVal = x//iff(less(const(0), n0), x, a)
 
-          (wrapZero(call(fsym,plus(n0,const(-1)))),
+          (wrapZero(call(fsym,plus(n0,const(0)))),
            b1)//wrapZero(call(fsym,n0)))
       }
 
 
       // generate function definitions for recursive functions (even if not required)
 
-      // a: before loop, b: after loop iter, 
+      // b: loop body
 
-      def lubfun(a: GVal, b: GVal)(fsym: GVal, n0: GVal): GVal = (a,b) match {
-        //case (a,b) if a == b => a
-        case (_, Def(DMap(m2))) => 
-          val m = (m2.keys) map { k => k -> lubfun(select(a,k),select(b,k))(mkey(fsym,k),n0) }
+      def lubfun(fsym: GVal, n0: GVal, b: GVal): GVal = b match {
+        case Def(DMap(m2)) => 
+          val m = (m2.keys) map { k => k -> lubfun(mkey(fsym,k),n0,select(b,k)) }
           val b1 = map(m.toMap)
-          fun(fsym.toString, n0.toString, b1) 
+          fun(fsym.toString, n0.toString, b1)
           call(fsym,n0)
         case _ => 
-          val b1 = b // iff(less(const(0),n0), b, a) // explicit zero case. needed??
-          fun(fsym.toString, n0.toString, b1) 
+          fun(fsym.toString, n0.toString, b) 
           call(fsym,n0)
       }
 
