@@ -10,12 +10,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
   TODO -- WORK IN PROGRESS
 
   TODO/DONE: 
-  - switch to optimistic? (done) 
+  + switch to optimistic? (done) 
       can we even talk about opt/pess here? 
       yes, see testProg1c: indirect store updates in
       loops rely on the address being loop invariant
-  - make sense of inequalities/recurrences (mostly done)
-  - allocations in loops: treat as arrays
+  + make sense of inequalities/recurrences (mostly done)
+  + allocations in loops: treat as arrays
       if we're storing the address, the loop variable
       may escape. is that a problem? (skolemize?)
   - towards lancet integration: unstructured control flow

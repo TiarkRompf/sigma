@@ -831,13 +831,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
               case _ => Nil // marker: not a simple polynomial
             }
 
-            /*if (!IRD.dependsOn(d1, b0)) { // prevent self loops
-              val nX = mkey(fsym,n0)
-              println(s"assume sum")
-              val r = sum(n0, nX.toString, subst(d1,n0,nX))
-              return (r, r)
-            }*/
-
             /*
               piecewise composition, multiple intervals.
 
@@ -897,7 +890,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
                   case List(coeff0, coeff1) =>
                     println(s"found 2nd order polynomial: f'($n0)=$coeff1*$n0+$coeff0 -> f($n0)=$coeff1*$n0/2($n0+1)+$coeff0*$n0")
 
-                    // f(n) = c1 * n/2*(n+1) + c0 * n + ul   <--- ul not added here but later below
+                    // f(n) = c1 * n/2*(n+1) + c0 * n + ul   <--- ul not added here but below
                     def eval(nX: GVal) = 
                       plus(times(times(times(nX,plus(nX,const(-1))),const(0.5)), coeff1), times(nX, coeff0))
 
