@@ -11,7 +11,7 @@ trait RunAndCheckSuite extends FileDiffSuite {
       val out = Main.runAndCheck { block }
       def clean(s: String) = s.replaceAll("\"","").replaceAll("\n","").replaceAll(" +","")
       if (want != "")
-        assert(clean(want.toString) === clean(out)) //sanitize...
+        assert(clean(out) === clean(want.toString)) //sanitize...
     }}
 
 }

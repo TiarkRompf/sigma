@@ -223,42 +223,30 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
             // TODO: if (0 < nX) loop(nX-1) else before ??
             store = call(loop,plus(nX,const(-1)))
 
+            // A note about the intended semantics:
+            // Is elem 0 the value after 0 iterations,
+            // or the value computed in iteration 0?
+            // The analogy of modeling values computed in
+            // loops as arrays indexed by iteration would
+            // suggest the meaning 'computed in iteration i'.
+            // Conceptually, the value before the loop has 
+            // index -1. But we never reach it because
+            // we do proper index handling after the loop.
+            // and pick element n-1.
+
+            // It may seem unintuitive that f(i) = i+1 for a
+            // simple counting loop.
+            // On the other hand, for dynamic allocations, 
+            // we get f(i) = new A_i, which makes a lot of
+            // sense.
+
+
             // wrap up
             itvec = saveit
             
             println(s"} end loop $loop, trip count $nX, state $store")
 
             IR.const(())
-
-            // TODO: clarify intended semantics!
-            // Is elem 0 the value after 0 iterations,
-            // or the value computed in iteration 0?
-            // The analogy of modeling values computed in
-            // loops as arrays indexed by iteration would
-            // suggest the meaning 'computed in iteration i'.
-            // But then the value before the loop has index -1.
-            // Need to investigate whether this is a problem.
-            // It seems like we can avoid referring to -1
-            // by proper index handling after the loop.
-
-            // store at this point describes result *after* iteration i
-            //  1 + (if (0<x) f(x-1) else 0)  =   if (0<x) f(x-1) + 1 else 1
-            // but what we want for the function body:
-            //  if (0<x) f(x-1) + 1 else 0
-            // we rely on propagation of conditions to get there:
-
-            //store = iff(less(const(0), n0), store, before)
-
-            // The alternative would be to make f(i) denote
-            // the computed element in iteration i, and then pick
-            // element n-1 after the loop.
-            // It may seem unintuitive that f(i) = i+1 for a
-            // simple counting loop and we might want to fix
-            // it up with rewriting.
-            // On the other hand, for dynamic allocations, 
-            // we get f(i) = new A_i, which makes a lot of
-            // sense.
-            //store = init
           }
         }
 
