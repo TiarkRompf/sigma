@@ -15,8 +15,8 @@
   val x4 = Map("&x" -> x1, "&z" -> x3)
   val x7 = ("top",x6)
   begin loop f(n)=x5(x6), iteration vector x7 {
-    ## iteration 0, f(0)=Map("&x" -> Map("val" -> 900), "&z" -> Map("val" -> 0))
-      , f(n)=Map("&x" -> Map("val" -> 900), "&z" -> Map("val" -> 0))
+    initial assumption: f(0)=x4, f(x6)=x4, f(x6+1)=x4
+    ## iteration 0, f(0)=x4, f(x6)=x4
       val x8 = Map("&x" -> x1, "&z" -> x1)
       val x9 = Map("val" -> 899)
       val x10 = Map("&x" -> x9, "&z" -> x1)
@@ -24,13 +24,13 @@
       val x12 = fixindex { x6 => 1 }
       val x13 = x12 < x6
       trip count: fixindex { x6 => 1 }
-      state after loop x10
-      approx f(0)=x4, f(n)=x4, f(n+1)=g(n)=x10) = {
+      approx f(0)=x4, f(x6)=x4, f(x6+1)=x10) = {
         lub_x5(x4,x4,x10)
         lub_x5_&x(x1,x1,x9)
         lub_x5_&x_val(900,900,899)
-        numerical diff 899 - 900 = {
+        numerical diff d=f(x6+1)-f(x6) = 899 - 900 = {
         } = -1
+        poly: List(-1)
         confirmed iterative loop, d = -1
         val x14 = x6 * -1
         val x15 = x14 + 900
@@ -42,8 +42,9 @@
         val x20 = Map("val" -> x18)
         lub_x5_&z(x3,x3,x1)
         lub_x5_&z_val(0,0,900)
-        numerical diff 900 - 0 = {
+        numerical diff d=f(x6+1)-f(x6) = 900 - 0 = {
         } = 900
+        poly: List(900)
         confirmed iterative loop, d = 900
         val x21 = x6 * 900
         val x22 = x21 + 900
@@ -53,9 +54,8 @@
         Set(("&x",(x19,x20)), ("&z",(x23,x24)))
         val x25 = Map("&x" -> x19, "&z" -> x23)
         val x26 = Map("&x" -> x20, "&z" -> x24)
-      } -> f(n)=x25, f(n+1)=g(n)=x26
-    ## iteration 1, f(0)=Map("&x" -> Map("val" -> 900), "&z" -> Map("val" -> 0))
-      , f(n)=Map("&x" -> Map("val" -> x6 * -1 + 900), "&z" -> Map("val" -> x6 * 900))
+      } -> f(x6)=x25, f(x6+1)=x26
+    ## iteration 1, f(0)=x4, f(x6)=x25
       val x27 = x6 < 900
       val x28 = x6 * 899
       val x29 = x28 + 900
@@ -64,20 +64,20 @@
       val x32 = Map("&x" -> x20, "&z" -> x30)
       val x33 = 900 < x6
       trip count: 900
-      state after loop x32
-      approx f(0)=x4, f(n)=x25, f(n+1)=g(n)=x32) = {
+      approx f(0)=x4, f(x6)=x25, f(x6+1)=x32) = {
         lub_x5(x4,x25,x32)
         lub_x5_&x(x1,x19,x20)
         lub_x5_&x_val(900,x15,x18)
-        numerical diff x18 - x15 = {
+        numerical diff d=f(x6+1)-f(x6) = x6 * -1 + 899 - x6 * -1 + 900 = {
           val x34 = x6 + -900
           val x35 = x6 + -1
         } = -1
+        poly: List(-1)
         confirmed iterative loop, d = -1
         Set(("val",(x15,x18)))
         lub_x5_&z(x3,x23,x30)
         lub_x5_&z_val(0,x21,x29)
-        numerical diff x29 - x21 = {
+        numerical diff d=f(x6+1)-f(x6) = x6 * 899 + 900 - x6 * 900 = {
           val x36 = x6 * -900
           val x37 = x36 + 900
         } = x6 * -1 + 900
@@ -115,27 +115,26 @@
         Set(("&x",(x19,x20)), ("&z",(x60,x61)))
         val x62 = Map("&x" -> x19, "&z" -> x60)
         val x63 = Map("&x" -> x20, "&z" -> x61)
-      } -> f(n)=x62, f(n+1)=g(n)=x63
-    ## iteration 2, f(0)=Map("&x" -> Map("val" -> 900), "&z" -> Map("val" -> 0))
-      , f(n)=Map("&x" -> Map("val" -> x6 * -1 + 900), "&z" -> Map("val" -> x6 * x6 * -0.5 + x6 * 0.5 + x6 * 900))
+      } -> f(x6)=x62, f(x6+1)=x63
+    ## iteration 2, f(0)=x4, f(x6)=x62
       val x64 = x40 + x29
       val x65 = x44 + x64
       val x66 = Map("val" -> x65)
       val x67 = Map("&x" -> x19, "&z" -> x66)
       val x68 = Map("&x" -> x20, "&z" -> x66)
       trip count: 900
-      state after loop x68
-      approx f(0)=x4, f(n)=x62, f(n+1)=g(n)=x68) = {
+      approx f(0)=x4, f(x6)=x62, f(x6+1)=x68) = {
         lub_x5(x4,x62,x68)
         lub_x5_&x(x1,x19,x20)
         lub_x5_&x_val(900,x15,x18)
-        numerical diff x18 - x15 = {
+        numerical diff d=f(x6+1)-f(x6) = x6 * -1 + 899 - x6 * -1 + 900 = {
         } = -1
+        poly: List(-1)
         confirmed iterative loop, d = -1
         Set(("val",(x15,x18)))
         lub_x5_&z(x3,x60,x66)
         lub_x5_&z_val(0,x47,x65)
-        numerical diff x65 - x47 = {
+        numerical diff d=f(x6+1)-f(x6) = x6 * x6 * -0.5 + x6 * 0.5 + x6 * 899 + 900 - x6 * x6 * -0.5 + x6 * 0.5 + x6 * 900 = {
           val x69 = x28 + x56
           val x70 = x40 + x69
           val x71 = x44 + x70
@@ -148,9 +147,12 @@
         poly2: List(900, -1)
         Set(("val",(x47,x52)))
         Set(("&x",(x19,x20)), ("&z",(x60,x61)))
-      } -> f(n)=x62, f(n+1)=g(n)=x63
+      } -> f(x6)=x62, f(x6+1)=x63
+      done
       val x5_&x_val = { x6 => x18 }
+      val x5_&x = { x6 => x20 }
       val x5_&z_val = { x6 => x52 }
+      val x5_&z = { x6 => x61 }
       val x5 = { x6 => x63 }
       fixindex: 900
       val x72 = Map("val" -> 405450)

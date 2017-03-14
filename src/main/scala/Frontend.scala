@@ -28,6 +28,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
   object Frontend {
     import Test1._
+    import Approx._
 
     // *** input language Exp
 
@@ -159,14 +160,16 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
         itvec = pair(itvec,n0)
 
+        println(s"begin loop f(n)=$loop($n0), iteration vector $itvec {")
+
+        println(s"initial assumption: f(0)=$before, f($n0)=$before, f($n0+1)=$before")
+
         var init = before
         var path = Nil: List[GVal]
 
-        println(s"begin loop f(n)=$loop($n0), iteration vector $itvec {")
-
         var iterCount = 0
         def iter: GVal = {
-          println(s"## iteration $iterCount, f(0)=${termToString(before)}, f(n)=${termToString(init)}")
+          println(s"## iteration $iterCount, f(0)=$before, f($n0)=$init")
           assert(!path.contains(init), "hitting recursion: "+(init::path))
           path = init::path
 
@@ -189,8 +192,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
           val afterB = store
 
-          println(s"state after loop $afterB")
-
           //val next = IR.iff(cv,afterB,afterC)
           // inside the loop we know the check succeeded.
           // TODO: need to worry about boundary cases!
@@ -198,22 +199,36 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
           // generalize init/next based on previous values
           // and current observation
-          println(s"approx f(0)=$before, f(n)=$init, f(n+1)=g(n)=$next) = {")
+          println(s"approx f(0)=$before, f($n0)=$init, f($n0+1)=$next) = {")
 
           val (initNew,nextNew) = lub(before, init, next)(loop,n0)
 
-          println(s"} -> f(n)=$initNew, f(n+1)=g(n)=$nextNew")
+          println(s"} -> f($n0)=$initNew, f($n0+1)=$nextNew")
 
           // are we done or do we need another iteration?
           if (init != initNew) { init = initNew; iterCount += 1; iter } else {
             // no further information was gained: go ahead
             // and generate the final (set of) recursive 
             // functions, or closed forms.
-            store = lubfun(before, nextNew)(loop,n0)
+            println(s"done")
 
-            // XXX why not just nextNew ??? 
-            // need to define functions that are called from nextNew
-            //store = nextNew
+            // create function definition, which we call below
+            lubfun(initNew, nextNew)(loop,n0)
+
+            // compute trip count
+            val nX = fixindex(n0.toString, cv) // TODO: check this ...
+            println(s"fixindex: $nX")
+
+            // invoke computed function at trip count
+            // TODO: if (0 < nX) loop(nX-1) else before ??
+            store = call(loop,plus(nX,const(-1)))
+
+            // wrap up
+            itvec = saveit
+            
+            println(s"} end loop $loop, trip count $nX, state $store")
+
+            IR.const(())
 
             // TODO: clarify intended semantics!
             // Is elem 0 the value after 0 iterations,
@@ -244,28 +259,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
             // we get f(i) = new A_i, which makes a lot of
             // sense.
             //store = init
-            cv
           }
         }
 
-        val cv = iter
-
-        if (findDefinition(loop.toString) == None) // ensure we have a top-level function
-          fun(loop.toString, n0.toString, store)
-
-        val nX = fixindex(n0.toString, cv) // TODO: check this ...
-        println(s"fixindex: $nX")
-
-        // TODO: if (0 < nX) !
-        store = call(loop,plus(nX,const(-1)))
-        //val cv1 = eval(c)
-        //store = subst(store,cv1,const(0)) // assertFalse
-
-        itvec = saveit
-        
-        println(s"} end loop $loop, trip count $nX, state $store")
-
-        IR.const(())
+        iter
 
       case Block(Nil) => IR.const(())
       case Block(xs) => xs map eval reduceLeft ((a,b) => b)
@@ -278,9 +275,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
     import Frontend._
     // *** run and test
 
-    def run(testProg: Exp): Unit = runAndCheck(testProg)("")
+    def run(testProg: Exp): Unit = runAndCheck(testProg)
 
-    def runAndCheck(testProg: Exp)(want: Any): Unit = {
+    def runAndCheck(testProg: Exp): String = {
       println("# prog: " + testProg)
       store = store0
       itvec = itvec0
@@ -305,12 +302,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       val out = IR.termToString(store2)
       println(out)
 
-      def clean(s: String) = s.replaceAll("\"","").replaceAll("\n","").replaceAll(" +","")
-
-      if (want != "")
-        assert(clean(want.toString) == clean(out)) //sanitize...
-
-      //store.printBounds
       println("# done")
+      out
     }
   }

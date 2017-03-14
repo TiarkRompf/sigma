@@ -291,7 +291,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       }
 
       def printStm(p: (String,Def)) = println(s"val ${p._1} = ${p._2}")
-      def termToString(p: GVal) = captureOutput(println(IRS_Term.scope(IRS_Term.pre(p))))
+      def termToString(p: GVal) = captureOutput(print(IRS_Term.scope(IRS_Term.pre(p))))
       def printTerm(p: GVal) = println(termToString(p))
 
       // does a depend on b? potentially expensive
@@ -735,9 +735,25 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           dreflect(f,next.fun(f,x,pre(y))) // reuse fun sym (don't call super)
       }
 
+    }
+  }
 
-      // *** lub computation for while loops
 
+  // *** polynomial approximation / lub computation for while loops
+
+  object Approx {
+    import Test1._
+    import IRD._
+
+      // 1) if the type is non-primitive (i.e. Map), break into components
+      // 2) when updating a structure at the loop index: assume we're building an array
+      // 3) for primitives: compute diff d = f(n+1) - f(n)
+      //    a) if expression for d is defined piecewise (i.e. if (n < c) ...), break into segments
+      //    b) for each segment: 
+      //         identify polynomial degree of d
+      //         integrate (with starting value f(0) = a) to derive new formula for f(n) and f(n+1))
+
+      // signature:
       // a: value before loop. b0: value before iteration. b1: value after iteration. 
       // returns: new values before,after
       def lub(a: GVal, b0: GVal, b1: GVal)(fsym: GVal, n0: GVal): (GVal, GVal) = { println(s"lub_$fsym($a,$b0,$b1)"); (a,b0,b1) } match {
@@ -755,38 +771,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           println(s"hit update at loop index -- assume collect")
           val r = collect(plus(n0,const(1)), nX.toString, subst(y,n0,nX))
           (r, r)
-        case (a,b0, Def(DMap(m2))) if false /*disable*/=> // allocation!
-          IRD.printTerm(a)
-          IRD.printTerm(b0)
-          IRD.printTerm(b1)
-          println(s"hit map -- assume only 0 case differs (loop peeling)")
-          val b0X = subst(b1,n0,plus(n0,const(-1)))
-          (iff(less(const(0),n0),b0X,a), iff(less(const(0),n0),b1,a))
-        case (a,Def(DIf(c0,x0,y0)),Def(DIf(c1,x1,y1))) if c0 == c1 && false /*disable*/=>
-          // loop unswitching: treat branches separately
-          // TODO: presumably the condition needs to fulfill some conditions for this to be valid - which?
-          // simplest case: c < n, n < c
-
-          print(s"break down if b0: "); IRD.printTerm(b0)
-          print(s"break down if b1: "); IRD.printTerm(b1)
-
-          val (zx0,zx1) = lub(a,x0,x1)(GRef(fsym.toString+"_+"+c1),n0)
-          val (zy0,zy1) = lub(a,y0,y1)(GRef(fsym.toString+"_-"+c1),n0)
-
-          (iff(c0, zx0, zy0), iff(c1, zx1, zy1))
-        case _ if !IRD.dependsOn(b1, n0) && false /*disable*/=> 
-          // value after the loop does not depend on loop index (but differs from val before loop).
-          // we're probably in the first iteration, with a and b constants.
-          // widen: assume a linear correspondence, with d = b - a
-          val d = plus(b1,times(b0,const(-1))) // TODO: proper diff operator
-          println(s"try iterative loop, d = $d")
-          //(iff(less(const(0), n0), plus(a,times(plus(n0,const(-1)),d)), a),
-          // iff(less(const(0), n0), plus(a,times(n0,d)), a))
-          (plus(a,times(plus(n0,const(-1)),d)),
-           plus(a,times(n0,d)))
         case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_])) 
           if !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] => // XXX diff op should take precedence
-          // example: (A,1), (B,(1,i)) TODO: safe??
+          // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
           IRD.printTerm(a)
           IRD.printTerm(b0)
           IRD.printTerm(b1)
@@ -796,7 +783,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
         case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(`n0`,u1)),b10,b20)))
           // dual example: (B,(1,i)),(A,1)
-          if !dependsOn(u1,n0) =>
+          if !dependsOn(u1,n0) => // test 6C2
           IRD.printTerm(a)
           IRD.printTerm(b0)
           IRD.printTerm(b1)
@@ -815,7 +802,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           // TODO: case for alloc in loop -- x(0)=(A,1), x(i>0)=(B,(1,i))
           // (trying to handle this one above...)
 
-          println(s"numerical diff $b1 - $b0 = {")
+          println(s"numerical diff d=f($n0+1)-f($n0) = ${IRD.termToString(b1)} - ${IRD.termToString(b0)} = {")
 
           // look at numeric difference. see if symbolic values before/after are generalized in a corresponding way.
           // widen: compute new symbolic val before from symbolic val after (e.g. closed form)
@@ -827,14 +814,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           println("} = " + IRD.termToString(d1))
 
           if (d1 != const("undefined")) { // do we have an integer?
-
-            def deriv(x: GVal): GVal = x match { // not used!
-              case GConst(_) => const(0)
-              case `n0` => const(1)
-              case Def(DPlus(a,b)) => plus(deriv(a),deriv(b))
-              case Def(DTimes(a,b)) => plus(times(a,deriv(b)),times(deriv(a),b)) // not accurate in discrete calculus?
-              case _ => GRef(s"d$x/d$n0")
-            }
 
             def poly(x: GVal): List[GVal] = x match {
               case `n0` => List(const(0),const(1))
@@ -871,16 +850,17 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
             */
             val fail = new Exception
             def break(ulo: GVal, nlo: GVal, nhi: GVal, d: GVal): (GVal,GVal,GVal) = d match {
+              // XX now handled in poly case below
               // loop invariant stride, i.e. constant delta i.e. linear in loop index
-              case d if !IRD.dependsOn(d, n0) && d != const("undefined") => 
-                println(s"confirmed iterative loop, d = $d")
-                // before: ul + n * d
-                // after:  ul + (n+1) * d
-                val dn = plus(n0,times(nlo,const(-1)))
-                val dh = plus(nhi,times(nlo,const(-1)))
-                (plus(ulo,times(dn,d)),
-                 plus(ulo,times(plus(dn,const(1)),d)),
-                 plus(ulo,times(dh,d)))
+              // case d if !IRD.dependsOn(d, n0) && d != const("undefined") => 
+              //   println(s"confirmed iterative loop, d = $d")
+              //   // before: ul + n * d
+              //   // after:  ul + (n+1) * d
+              //   val dn = plus(n0,times(nlo,const(-1)))
+              //   val dh = plus(nhi,times(nlo,const(-1)))
+              //   (plus(ulo,times(dn,d)),
+              //    plus(ulo,times(plus(dn,const(1)),d)),
+              //    plus(ulo,times(dh,d)))
               // piece-wise linear, e.g. if (n < 18) 1 else 0
               case Def(DIf(Def(DLess(`n0`, up)), dx, dy))
                 if !IRD.dependsOn(up, n0) =>
@@ -898,19 +878,26 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
                 val (u0,u1,uhi) = break(ulo,nlo,up,const(1))
                 val (v0,v1,vhi) = break(uhi,up,nhi,const(0))
                 (iff(less(n0,up), u0, v0), iff(less(n0,up), u1, v1), vhi)
-              // lower bounded case, atm only (0 < n) 1 else 0
-              //case Def(DIf(Def(DLess(GConst(0), `n0`)), dx, dy)) =>
-                // always true
-                //break(ulo,nlo,nhi,dx)
               case _ => 
 
                 val pp = poly(d)
                 println("poly: " + pp)
                 pp match {
+                  case List(coeff0) =>
+                    val d = coeff0
+                    println(s"confirmed iterative loop, d = $d")
+                    // before: ul + n * d
+                    // after:  ul + (n+1) * d
+                    val dn = plus(n0,times(nlo,const(-1)))
+                    val dh = plus(nhi,times(nlo,const(-1)))
+                    (plus(ulo,times(dn,d)),
+                     plus(ulo,times(plus(dn,const(1)),d)),
+                     plus(ulo,times(dh,d)))
+
                   case List(coeff0, coeff1) =>
                     println(s"found 2nd order polynomial: f'($n0)=$coeff1*$n0+$coeff0 -> f($n0)=$coeff1*$n0/2($n0+1)+$coeff0*$n0")
 
-                    // f(n) = c1 * n/2*(n+1) + c0 * n
+                    // f(n) = c1 * n/2*(n+1) + c0 * n + ul   <--- ul not added here but later below
                     def eval(nX: GVal) = 
                       plus(times(times(times(nX,plus(nX,const(-1))),const(0.5)), coeff1), times(nX, coeff0))
 
@@ -953,20 +940,23 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
            b1)//wrapZero(call(fsym,n0)))
       }
 
-      // generate function calls for recursive functions
+
+      // generate function definitions for recursive functions (even if not required)
+
+      // a: before loop, b: after loop iter, 
 
       def lubfun(a: GVal, b: GVal)(fsym: GVal, n0: GVal): GVal = (a,b) match {
-        case (a,b) if a == b => a
+        //case (a,b) if a == b => a
         case (_, Def(DMap(m2))) => 
           val m = (m2.keys) map { k => k -> lubfun(select(a,k),select(b,k))(mkey(fsym,k),n0) }
-          map(m.toMap)
+          val b1 = map(m.toMap)
+          fun(fsym.toString, n0.toString, b1) 
+          call(fsym,n0)
         case _ => 
           val b1 = b // iff(less(const(0),n0), b, a) // explicit zero case. needed??
           fun(fsym.toString, n0.toString, b1) 
           call(fsym,n0)
       }
-
-    }
 
 
   }

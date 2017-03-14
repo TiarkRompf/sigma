@@ -21,21 +21,21 @@
   val x9 = Map("&x" -> x1, "A" -> x8, "&a" -> x5)
   val x12 = ("top",x11)
   begin loop f(n)=x10(x11), iteration vector x12 {
-    ## iteration 0, f(0)=Map("&x" -> Map("val" -> 0), "A" -> Map("top" -> Map("field" -> 7)), "&a" -> Map("val" -> (A,top)))
-      , f(n)=Map("&x" -> Map("val" -> 0), "A" -> Map("top" -> Map("field" -> 7)), "&a" -> Map("val" -> (A,top)))
+    initial assumption: f(0)=x9, f(x11)=x9, f(x11+1)=x9
+    ## iteration 0, f(0)=x9, f(x11)=x9
       val x13 = Map("val" -> 1)
       val x14 = Map("&x" -> x13, "A" -> x8, "&a" -> x5)
       val x15 = x11 < 0
       val x16 = fixindex { x11 => 1 }
       val x17 = x16 < x11
       trip count: fixindex { x11 => 1 }
-      state after loop x14
-      approx f(0)=x9, f(n)=x9, f(n+1)=g(n)=x14) = {
+      approx f(0)=x9, f(x11)=x9, f(x11+1)=x14) = {
         lub_x10(x9,x9,x14)
         lub_x10_&x(x1,x1,x13)
         lub_x10_&x_val(0,0,1)
-        numerical diff 1 - 0 = {
+        numerical diff d=f(x11+1)-f(x11) = 1 - 0 = {
         } = 1
+        poly: List(1)
         confirmed iterative loop, d = 1
         val x18 = x11 + 1
         Set(("val",(x11,x18)))
@@ -46,28 +46,34 @@
         Set(("&x",(x19,x20)), ("A",(x8,x8)), ("&a",(x5,x5)))
         val x21 = Map("&x" -> x19, "A" -> x8, "&a" -> x5)
         val x22 = Map("&x" -> x20, "A" -> x8, "&a" -> x5)
-      } -> f(n)=x21, f(n+1)=g(n)=x22
-    ## iteration 1, f(0)=Map("&x" -> Map("val" -> 0), "A" -> Map("top" -> Map("field" -> 7)), "&a" -> Map("val" -> (A,top)))
-      , f(n)=Map("&x" -> Map("val" -> x11), "A" -> Map("top" -> Map("field" -> 7)), "&a" -> Map("val" -> (A,top)))
+      } -> f(x11)=x21, f(x11+1)=x22
+    ## iteration 1, f(0)=x9, f(x11)=x21
       val x23 = x11 < 100
       val x24 = 100 < x11
       trip count: 100
-      state after loop x22
-      approx f(0)=x9, f(n)=x21, f(n+1)=g(n)=x22) = {
+      approx f(0)=x9, f(x11)=x21, f(x11+1)=x22) = {
         lub_x10(x9,x21,x22)
         lub_x10_&x(x1,x19,x20)
         lub_x10_&x_val(0,x11,x18)
-        numerical diff x18 - x11 = {
+        numerical diff d=f(x11+1)-f(x11) = x11 + 1 - x11 = {
           val x25 = x11 * -1
           val x26 = x25 + 1
         } = 1
+        poly: List(1)
         confirmed iterative loop, d = 1
         Set(("val",(x11,x18)))
         lub_x10_A(x8,x8,x8)
         lub_x10_&a(x5,x5,x5)
         Set(("&x",(x19,x20)), ("A",(x8,x8)), ("&a",(x5,x5)))
-      } -> f(n)=x21, f(n+1)=g(n)=x22
+      } -> f(x11)=x21, f(x11+1)=x22
+      done
       val x10_&x_val = { x11 => x18 }
+      val x10_&x = { x11 => x20 }
+      val x10_A_top_field = { x11 => 7 }
+      val x10_A_top = { x11 => x7 }
+      val x10_A = { x11 => x8 }
+      val x10_&a_val = { x11 => (A,top) }
+      val x10_&a = { x11 => x5 }
       val x10 = { x11 => x22 }
       fixindex: 100
       val x27 = Map("val" -> 100)

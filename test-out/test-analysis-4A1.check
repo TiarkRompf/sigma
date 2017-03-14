@@ -18,8 +18,8 @@
   val x5 = Map("&i" -> x1, "&y" -> x1, "&x" -> x4)
   val x8 = ("top",x7)
   begin loop f(n)=x6(x7), iteration vector x8 {
-    ## iteration 0, f(0)=Map("&i" -> Map("val" -> 0), "&y" -> Map("val" -> 0), "&x" -> Map("val" -> 8))
-      , f(n)=Map("&i" -> Map("val" -> 0), "&y" -> Map("val" -> 0), "&x" -> Map("val" -> 8))
+    initial assumption: f(0)=x5, f(x7)=x5, f(x7+1)=x5
+    ## iteration 0, f(0)=x5, f(x7)=x5
       val x9 = Map("val" -> 7)
       val x10 = Map("&i" -> x1, "&y" -> x1, "&x" -> x9)
       val x11 = Map("val" -> 1)
@@ -29,13 +29,13 @@
       val x15 = fixindex { x7 => 1 }
       val x16 = x15 < x7
       trip count: fixindex { x7 => 1 }
-      state after loop x13
-      approx f(0)=x5, f(n)=x5, f(n+1)=g(n)=x13) = {
+      approx f(0)=x5, f(x7)=x5, f(x7+1)=x13) = {
         lub_x6(x5,x5,x13)
         lub_x6_&i(x1,x1,x11)
         lub_x6_&i_val(0,0,1)
-        numerical diff 1 - 0 = {
+        numerical diff d=f(x7+1)-f(x7) = 1 - 0 = {
         } = 1
+        poly: List(1)
         confirmed iterative loop, d = 1
         val x17 = x7 + 1
         Set(("val",(x7,x17)))
@@ -43,44 +43,50 @@
         val x19 = Map("val" -> x17)
         lub_x6_&y(x1,x1,x11)
         lub_x6_&y_val(0,0,1)
-        numerical diff 1 - 0 = {
+        numerical diff d=f(x7+1)-f(x7) = 1 - 0 = {
         } = 1
+        poly: List(1)
         confirmed iterative loop, d = 1
         Set(("val",(x7,x17)))
         lub_x6_&x(x4,x4,x4)
         Set(("&i",(x18,x19)), ("&y",(x18,x19)), ("&x",(x4,x4)))
         val x20 = Map("&i" -> x18, "&y" -> x18, "&x" -> x4)
         val x21 = Map("&i" -> x19, "&y" -> x19, "&x" -> x4)
-      } -> f(n)=x20, f(n+1)=g(n)=x21
-    ## iteration 1, f(0)=Map("&i" -> Map("val" -> 0), "&y" -> Map("val" -> 0), "&x" -> Map("val" -> 8))
-      , f(n)=Map("&i" -> Map("val" -> x7), "&y" -> Map("val" -> x7), "&x" -> Map("val" -> 8))
+      } -> f(x7)=x20, f(x7+1)=x21
+    ## iteration 1, f(0)=x5, f(x7)=x20
       val x22 = x7 < 100
       val x23 = Map("&i" -> x18, "&y" -> x18, "&x" -> x9)
       val x24 = Map("&i" -> x18, "&y" -> x19, "&x" -> x4)
       val x25 = 100 < x7
       trip count: 100
-      state after loop x21
-      approx f(0)=x5, f(n)=x20, f(n+1)=g(n)=x21) = {
+      approx f(0)=x5, f(x7)=x20, f(x7+1)=x21) = {
         lub_x6(x5,x20,x21)
         lub_x6_&i(x1,x18,x19)
         lub_x6_&i_val(0,x7,x17)
-        numerical diff x17 - x7 = {
+        numerical diff d=f(x7+1)-f(x7) = x7 + 1 - x7 = {
           val x26 = x7 * -1
           val x27 = x26 + 1
         } = 1
+        poly: List(1)
         confirmed iterative loop, d = 1
         Set(("val",(x7,x17)))
         lub_x6_&y(x1,x18,x19)
         lub_x6_&y_val(0,x7,x17)
-        numerical diff x17 - x7 = {
+        numerical diff d=f(x7+1)-f(x7) = x7 + 1 - x7 = {
         } = 1
+        poly: List(1)
         confirmed iterative loop, d = 1
         Set(("val",(x7,x17)))
         lub_x6_&x(x4,x4,x4)
         Set(("&i",(x18,x19)), ("&y",(x18,x19)), ("&x",(x4,x4)))
-      } -> f(n)=x20, f(n+1)=g(n)=x21
+      } -> f(x7)=x20, f(x7+1)=x21
+      done
       val x6_&i_val = { x7 => x17 }
+      val x6_&i = { x7 => x19 }
       val x6_&y_val = { x7 => x17 }
+      val x6_&y = { x7 => x19 }
+      val x6_&x_val = { x7 => 8 }
+      val x6_&x = { x7 => x4 }
       val x6 = { x7 => x21 }
       fixindex: 100
       val x28 = Map("val" -> 100)
