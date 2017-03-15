@@ -1,12 +1,21 @@
 package analysis
 
-import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutputStream}
+import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundException,ByteArrayOutputStream}
 
 
   object Util {
 
     // *** util
 
+    def readFile(name: String): String = try {
+      val buf = new Array[Byte](new File(name).length().toInt)
+      val fis = new FileInputStream(name)
+      fis.read(buf)
+      fis.close()
+      new String(buf)
+    } catch {
+      case _: FileNotFoundException => ""
+    }
     def captureOutput(func: => Unit): String = {
       val bstream = new ByteArrayOutputStream
       withOutput(new PrintStream(bstream))(func)

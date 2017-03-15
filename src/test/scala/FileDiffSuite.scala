@@ -83,12 +83,16 @@ trait FileDiffSuite extends FunSuite {
     case _: FileNotFoundException => ""
   }
   def writeFile(name: String, content: String) {
-    val out = new java.io.PrintWriter(new File(name))
+    val file = new File(name)
+    file.getParentFile.mkdirs()
+    val out = new java.io.PrintWriter(file)
     out.write(content)
     out.close()
   }
   def writeFileIndented(name: String, content: String) {
-    val out = new java.io.PrintWriter(new File(name))
+    val file = new File(name)
+    file.getParentFile.mkdirs()
+    val out = new java.io.PrintWriter(file)
     printIndented(content)(out)
     out.close()
   }
