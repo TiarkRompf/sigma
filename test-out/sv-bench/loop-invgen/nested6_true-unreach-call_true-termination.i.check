@@ -1,0 +1,33 @@
+loop-invgen/nested6_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5caa839c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7ef0162c
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4d916211
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6e731061
+{
+  t_int ijkn
+  (op_assign k TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@66cdc850)
+  (op_assign n TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1872f3d3)
+  if (op_not (op_bracketedPrimary (op_lessThan n 1000000)))
+  return 0
+  else
+  {}
+  if (op_equals k n)
+  {
+  }
+  else
+  {
+    goto END
+  }
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@5e358b26
+  END:
+  return 0
+}

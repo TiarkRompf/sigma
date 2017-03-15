@@ -1,0 +1,35 @@
+loop-lit/cggmp2005b_true-unreach-call_true-termination.c.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@743ee7bd
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6a51480b
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@38039b91
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@29ae6098
+{
+  t_int ijk
+  (op_assign i 0)
+  (op_assign k 9)
+  (op_assign j (op_minus 100))
+  while (op_lessEqual i 100)
+  {
+    (op_assign i (op_plus i 1))
+    while (op_lessThan j 20)
+    {
+      (op_assign j (op_plus i j))
+    }
+    (op_assign k 4)
+    while (op_lessEqual k 3)
+    {
+      (op_assign k (op_plus k 1))
+    }
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2aae691f
+  return 0
+}

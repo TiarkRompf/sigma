@@ -1,0 +1,52 @@
+loop-invgen/large_const_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6f4949f6
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5cd4889
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@792c647c
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@48dece4c
+{
+  t_int c1 = 4000
+  t_int c2 = 2000
+  t_int c3 = 10000
+  t_int nv
+  t_int ikj
+  (op_assign n TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6dfd3858)
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 0 n) (op_lessThan n 10))))
+  return 0
+  else
+  {}
+  (op_assign k 0)
+  (op_assign i 0)
+  while (op_lessThan i n)
+  {
+    (op_postFixIncr i)
+    (op_assign v TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@29bbc6e)
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 0 v) (op_lessThan n 2))))
+    return 0
+    else
+    {}
+    if (op_equals v 0)
+    (op_plusAssign k c1)
+    else
+    if (op_equals v 1)
+    (op_plusAssign k c2)
+    else
+    (op_plusAssign k c3)
+  }
+  (op_assign j 0)
+  while (op_lessThan j n)
+  {
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@180e27c5
+    (op_postFixIncr j)
+    (op_postFixDecr k)
+  }
+  return 0
+}

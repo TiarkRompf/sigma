@@ -1,0 +1,34 @@
+loop-invgen/NetBSD_loop_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3d99927c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5bf08714
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1dc23415
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5b991bb7
+{
+  t_int MAXPATHLEN
+  t_int pathbuf_off
+  t_int bound_off
+  t_int glob2_p_off
+  t_int glob2_pathbuf_off
+  t_int glob2_pathlim_off
+  (op_assign MAXPATHLEN TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2a6268ca)
+  if (op_logicalAnd (op_greaterThan MAXPATHLEN 0) (op_lessThan MAXPATHLEN 2147483647))
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@757592b5
+  else
+  goto END
+  (op_assign pathbuf_off 0)
+  (op_assign bound_off (op_minus (op_plus pathbuf_off (op_bracketedPrimary (op_plus MAXPATHLEN 1))) 1))
+  (op_assign glob2_pathbuf_off pathbuf_off)
+  (op_assign glob2_pathlim_off bound_off)
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@799b6292
+  END:
+  return 0
+}

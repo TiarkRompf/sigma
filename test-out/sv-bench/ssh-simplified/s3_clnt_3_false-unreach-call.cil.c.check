@@ -1,0 +1,863 @@
+ssh-simplified/s3_clnt_3_false-unreach-call.cil.c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@103f6f2f
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@16ce315
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@466c48d7
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7e6a484a
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@15c706bf
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@73d53b59
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@57dbef04
+{
+  t_int s__info_callback = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7b5fd5ad
+  t_int s__in_handshake = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5680c687
+  t_int s__state
+  t_int s__new_session
+  t_int s__server
+  t_int s__version = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@c5520fd
+  t_int s__type
+  t_int s__init_num
+  t_int s__bbio = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@47e4dbc
+  t_int s__wbio = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1891223
+  t_int s__hit = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@51ed486b
+  t_int s__rwstate
+  t_int s__init_buf___0 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@741ad863
+  t_int s__debug = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@27f78f1
+  t_int s__shutdown
+  t_int s__ctx__info_callback = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4bae7a97
+  t_int s__ctx__stats__sess_connect_renegotiate = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@703bcd99
+  t_int s__ctx__stats__sess_connect = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@52c0da3d
+  t_int s__ctx__stats__sess_hit = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2b019864
+  t_int s__ctx__stats__sess_connect_good = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@13432551
+  t_int s__s3__change_cipher_spec
+  t_int s__s3__flags = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3dba75a5
+  t_int s__s3__delay_buf_pop_ret
+  t_int s__s3__tmp__cert_req = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@69ff411d
+  t_int s__s3__tmp__new_compression = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4e1a26fe
+  t_int s__s3__tmp__reuse_message = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4479fbc1
+  t_int s__s3__tmp__new_cipher = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2a00a9b6
+  t_int s__s3__tmp__new_cipher__algorithms = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@39e4e242
+  t_int s__s3__tmp__next_state___0
+  t_int s__s3__tmp__new_compression__id = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@26d60e56
+  t_int s__session__cipher
+  t_int s__session__compress_meth
+  t_int buf
+  t_unspecified tmp
+  t_unspecified l
+  t_int num1 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2d7a4ebe
+  t_int cb
+  t_int ret
+  t_int new_state
+  t_int state
+  t_int skip
+  t_int tmp___0
+  t_int tmp___1 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2980fbe
+  t_int tmp___2 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1cf00b5d
+  t_int tmp___3 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a42022b
+  t_int tmp___4 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7532a263
+  t_int tmp___5 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3715a684
+  t_int tmp___6 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2ba3e9d8
+  t_int tmp___7 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@316ae5dd
+  t_int tmp___8 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@512b6829
+  t_int tmp___9 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4b90d50e
+  t_int blastFlag
+  t_int __cil_tmp55
+  t_void __cil_tmp56
+  t_unspecified __cil_tmp57
+  t_unspecified __cil_tmp58 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7f49188d
+  t_void __cil_tmp59
+  t_unspecified __cil_tmp60
+  t_unspecified __cil_tmp61
+  t_unspecified __cil_tmp62
+  t_unspecified __cil_tmp63
+  t_unspecified __cil_tmp64
+  t_unspecified __cil_tmp65 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@19eb5eb4
+  t_unspecified __cil_tmp66
+  t_unspecified __cil_tmp67
+  t_unspecified __cil_tmp68
+  t_unspecified __cil_tmp69
+  t_unspecified __cil_tmp70 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@130b0780
+  t_unspecified __cil_tmp71
+  t_unspecified __cil_tmp72
+  t_unspecified __cil_tmp73
+  t_unspecified __cil_tmp74
+  {
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@5efe984a
+    (op_assign s__state initial_state)
+    (op_assign blastFlag 0)
+    (op_assign tmp TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@69447e68)
+    (op_assign cb 0)
+    (op_assign ret (op_minus 1))
+    (op_assign skip 0)
+    (op_assign tmp___0 0)
+    if (op_notequals s__info_callback 0)
+    {
+      (op_assign cb s__info_callback)
+    }
+    else
+    {
+      if (op_notequals s__ctx__info_callback 0)
+      {
+        (op_assign cb s__ctx__info_callback)
+      }
+      else
+      {}
+    }
+    (op_postFixIncr s__in_handshake)
+    if (op_plus tmp___1 12288)
+    {
+      if (op_plus tmp___2 16384)
+      {
+      }
+      else
+      {}
+    }
+    else
+    {}
+    {
+      while 1
+      {
+        while_0_continue:
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2a99830a
+        (op_assign state s__state)
+        if (op_equals s__state 12292)
+        {
+          goto switch_1_12292
+        }
+        else
+        {
+          if (op_equals s__state 16384)
+          {
+            goto switch_1_16384
+          }
+          else
+          {
+            if (op_equals s__state 4096)
+            {
+              goto switch_1_4096
+            }
+            else
+            {
+              if (op_equals s__state 20480)
+              {
+                goto switch_1_20480
+              }
+              else
+              {
+                if (op_equals s__state 4099)
+                {
+                  goto switch_1_4099
+                }
+                else
+                {
+                  if (op_equals s__state 4368)
+                  {
+                    goto switch_1_4368
+                  }
+                  else
+                  {
+                    if (op_equals s__state 4369)
+                    {
+                      goto switch_1_4369
+                    }
+                    else
+                    {
+                      if (op_equals s__state 4384)
+                      {
+                        goto switch_1_4384
+                      }
+                      else
+                      {
+                        if (op_equals s__state 4385)
+                        {
+                          goto switch_1_4385
+                        }
+                        else
+                        {
+                          if (op_equals s__state 4400)
+                          {
+                            goto switch_1_4400
+                          }
+                          else
+                          {
+                            if (op_equals s__state 4401)
+                            {
+                              goto switch_1_4401
+                            }
+                            else
+                            {
+                              if (op_equals s__state 4416)
+                              {
+                                goto switch_1_4416
+                              }
+                              else
+                              {
+                                if (op_equals s__state 4417)
+                                {
+                                  goto switch_1_4417
+                                }
+                                else
+                                {
+                                  if (op_equals s__state 4432)
+                                  {
+                                    goto switch_1_4432
+                                  }
+                                  else
+                                  {
+                                    if (op_equals s__state 4433)
+                                    {
+                                      goto switch_1_4433
+                                    }
+                                    else
+                                    {
+                                      if (op_equals s__state 4448)
+                                      {
+                                        goto switch_1_4448
+                                      }
+                                      else
+                                      {
+                                        if (op_equals s__state 4449)
+                                        {
+                                          goto switch_1_4449
+                                        }
+                                        else
+                                        {
+                                          if (op_equals s__state 4464)
+                                          {
+                                            goto switch_1_4464
+                                          }
+                                          else
+                                          {
+                                            if (op_equals s__state 4465)
+                                            {
+                                              goto switch_1_4465
+                                            }
+                                            else
+                                            {
+                                              if (op_equals s__state 4466)
+                                              {
+                                                goto switch_1_4466
+                                              }
+                                              else
+                                              {
+                                                if (op_equals s__state 4467)
+                                                {
+                                                  goto switch_1_4467
+                                                }
+                                                else
+                                                {
+                                                  if (op_equals s__state 4480)
+                                                  {
+                                                    goto switch_1_4480
+                                                  }
+                                                  else
+                                                  {
+                                                    if (op_equals s__state 4481)
+                                                    {
+                                                      goto switch_1_4481
+                                                    }
+                                                    else
+                                                    {
+                                                      if (op_equals s__state 4496)
+                                                      {
+                                                        goto switch_1_4496
+                                                      }
+                                                      else
+                                                      {
+                                                        if (op_equals s__state 4497)
+                                                        {
+                                                          goto switch_1_4497
+                                                        }
+                                                        else
+                                                        {
+                                                          if (op_equals s__state 4512)
+                                                          {
+                                                            goto switch_1_4512
+                                                          }
+                                                          else
+                                                          {
+                                                            if (op_equals s__state 4513)
+                                                            {
+                                                              goto switch_1_4513
+                                                            }
+                                                            else
+                                                            {
+                                                              if (op_equals s__state 4528)
+                                                              {
+                                                                goto switch_1_4528
+                                                              }
+                                                              else
+                                                              {
+                                                                if (op_equals s__state 4529)
+                                                                {
+                                                                  goto switch_1_4529
+                                                                }
+                                                                else
+                                                                {
+                                                                  if (op_equals s__state 4560)
+                                                                  {
+                                                                    goto switch_1_4560
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                    if (op_equals s__state 4561)
+                                                                    {
+                                                                      goto switch_1_4561
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                      if (op_equals s__state 4352)
+                                                                      {
+                                                                        goto switch_1_4352
+                                                                      }
+                                                                      else
+                                                                      {
+                                                                        if (op_equals s__state 3)
+                                                                        {
+                                                                          goto switch_1_3
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                          goto switch_1_default
+                                                                          if 0
+                                                                          {
+                                                                            switch_1_12292:
+                                                                            (op_assign s__new_session 1)
+                                                                            (op_assign s__state 4096)
+                                                                            (op_postFixIncr s__ctx__stats__sess_connect_renegotiate)
+                                                                            switch_1_16384:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@61e5b6de
+                                                                            switch_1_4096:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@4bf34e60
+                                                                            switch_1_20480:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@18ece48
+                                                                            switch_1_4099:
+                                                                            (op_assign s__server 0)
+                                                                            if (op_notequals cb 0)
+                                                                            {
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            {
+                                                                              (op_assign __cil_tmp55 (op_plus s__version 65280))
+                                                                              if (op_notequals __cil_tmp55 768)
+                                                                              {
+                                                                                (op_assign ret (op_minus 1))
+                                                                                goto end
+                                                                              }
+                                                                              else
+                                                                              {}
+                                                                            }
+                                                                            (op_assign s__type 4096)
+                                                                            {
+                                                                              (op_assign __cil_tmp56 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@67e98ca0)
+                                                                              (op_assign __cil_tmp57 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@2bf695c5)
+                                                                              (op_assign __cil_tmp58 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@7aa75e95)
+                                                                              if (op_equals __cil_tmp58 __cil_tmp57)
+                                                                              {
+                                                                                (op_assign buf TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@dac3307)
+                                                                                {
+                                                                                  (op_assign __cil_tmp59 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@260b329e)
+                                                                                  (op_assign __cil_tmp60 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@39ccd327)
+                                                                                  (op_assign __cil_tmp61 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@795f617d)
+                                                                                  if (op_equals __cil_tmp61 __cil_tmp60)
+                                                                                  {
+                                                                                    (op_assign ret (op_minus 1))
+                                                                                    goto end
+                                                                                  }
+                                                                                  else
+                                                                                  {}
+                                                                                }
+                                                                                if (op_not tmp___3)
+                                                                                {
+                                                                                  (op_assign ret (op_minus 1))
+                                                                                  goto end
+                                                                                }
+                                                                                else
+                                                                                {}
+                                                                                (op_assign s__init_buf___0 buf)
+                                                                              }
+                                                                              else
+                                                                              {}
+                                                                            }
+                                                                            if (op_not tmp___4)
+                                                                            {
+                                                                              (op_assign ret (op_minus 1))
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            if (op_not tmp___5)
+                                                                            {
+                                                                              (op_assign ret (op_minus 1))
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            (op_assign s__state 4368)
+                                                                            (op_postFixIncr s__ctx__stats__sess_connect)
+                                                                            (op_assign s__init_num 0)
+                                                                            goto switch_1_break
+                                                                            switch_1_4368:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@1507515a
+                                                                            switch_1_4369:
+                                                                            (op_assign s__shutdown 0)
+                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6ae70ea6)
+                                                                            if (op_equals blastFlag 0)
+                                                                            {
+                                                                              (op_assign blastFlag 1)
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            if (op_lessEqual ret 0)
+                                                                            {
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            (op_assign s__state 4384)
+                                                                            (op_assign s__init_num 0)
+                                                                            {
+                                                                              (op_assign __cil_tmp62 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@356dbd36)
+                                                                              (op_assign __cil_tmp63 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@37bb766f)
+                                                                              if (op_notequals __cil_tmp63 __cil_tmp62)
+                                                                              {
+                                                                              }
+                                                                              else
+                                                                              {}
+                                                                            }
+                                                                            goto switch_1_break
+                                                                            switch_1_4384:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@18197c43
+                                                                            switch_1_4385:
+                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4ad9d3d8)
+                                                                            if (op_equals blastFlag 1)
+                                                                            {
+                                                                              (op_assign blastFlag 2)
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                              if (op_equals blastFlag 4)
+                                                                              {
+                                                                                (op_assign blastFlag 5)
+                                                                              }
+                                                                              else
+                                                                              {}
+                                                                            }
+                                                                            if (op_lessEqual ret 0)
+                                                                            {
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            if s__hit
+                                                                            {
+                                                                              (op_assign s__state 4560)
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                              (op_assign s__state 4400)
+                                                                            }
+                                                                            (op_assign s__init_num 0)
+                                                                            goto switch_1_break
+                                                                            switch_1_4400:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@128553b8
+                                                                            switch_1_4401:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@7e614789
+                                                                            {
+                                                                              (op_assign __cil_tmp64 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@2d49d762)
+                                                                              if (op_plus __cil_tmp64 256UL)
+                                                                              {
+                                                                                (op_assign skip 1)
+                                                                              }
+                                                                              else
+                                                                              {
+                                                                                (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@298a9600)
+                                                                                if (op_equals blastFlag 2)
+                                                                                {
+                                                                                  (op_assign blastFlag 3)
+                                                                                }
+                                                                                else
+                                                                                {}
+                                                                                if (op_lessEqual ret 0)
+                                                                                {
+                                                                                  goto end
+                                                                                }
+                                                                                else
+                                                                                {}
+                                                                              }
+                                                                            }
+                                                                            (op_assign s__state 4416)
+                                                                            (op_assign s__init_num 0)
+                                                                            goto switch_1_break
+                                                                            switch_1_4416:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@112a181a
+                                                                            switch_1_4417:
+                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@650358b9)
+                                                                            if (op_equals blastFlag 3)
+                                                                            {
+                                                                              (op_assign blastFlag 4)
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            if (op_lessEqual ret 0)
+                                                                            {
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            (op_assign s__state 4432)
+                                                                            (op_assign s__init_num 0)
+                                                                            if (op_not tmp___6)
+                                                                            {
+                                                                              (op_assign ret (op_minus 1))
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            goto switch_1_break
+                                                                            switch_1_4432:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@61271bc
+                                                                            switch_1_4433:
+                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7b55dde8)
+                                                                            if (op_equals blastFlag 4)
+                                                                            {
+                                                                              goto ERROR
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            if (op_lessEqual ret 0)
+                                                                            {
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            (op_assign s__state 4448)
+                                                                            (op_assign s__init_num 0)
+                                                                            goto switch_1_break
+                                                                            switch_1_4448:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@3a7ef050
+                                                                            switch_1_4449:
+                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4547b136)
+                                                                            if (op_lessEqual ret 0)
+                                                                            {
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            if s__s3__tmp__cert_req
+                                                                            {
+                                                                              (op_assign s__state 4464)
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                              (op_assign s__state 4480)
+                                                                            }
+                                                                            (op_assign s__init_num 0)
+                                                                            goto switch_1_break
+                                                                            switch_1_4464:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@504db7b3
+                                                                            switch_1_4465:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@5228acf
+                                                                            switch_1_4466:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@4893064b
+                                                                            switch_1_4467:
+                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3025c06e)
+                                                                            if (op_lessEqual ret 0)
+                                                                            {
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            (op_assign s__state 4480)
+                                                                            (op_assign s__init_num 0)
+                                                                            goto switch_1_break
+                                                                            switch_1_4480:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@d6819f6
+                                                                            switch_1_4481:
+                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1c0d8e66)
+                                                                            if (op_lessEqual ret 0)
+                                                                            {
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            (op_assign l TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@4c7c62f2)
+                                                                            if (op_equals s__s3__tmp__cert_req 1)
+                                                                            {
+                                                                              (op_assign s__state 4496)
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                              (op_assign s__state 4512)
+                                                                              (op_assign s__s3__change_cipher_spec 0)
+                                                                            }
+                                                                            (op_assign s__init_num 0)
+                                                                            goto switch_1_break
+                                                                            switch_1_4496:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@5244fda3
+                                                                            switch_1_4497:
+                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1f2ef9b4)
+                                                                            if (op_lessEqual ret 0)
+                                                                            {
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            (op_assign s__state 4512)
+                                                                            (op_assign s__init_num 0)
+                                                                            (op_assign s__s3__change_cipher_spec 0)
+                                                                            goto switch_1_break
+                                                                            switch_1_4512:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@6fa02a89
+                                                                            switch_1_4513:
+                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4064be7d)
+                                                                            if (op_lessEqual ret 0)
+                                                                            {
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            (op_assign s__state 4528)
+                                                                            (op_assign s__init_num 0)
+                                                                            (op_assign s__session__cipher s__s3__tmp__new_cipher)
+                                                                            if (op_equals s__s3__tmp__new_compression 0)
+                                                                            {
+                                                                              (op_assign s__session__compress_meth 0)
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                              (op_assign s__session__compress_meth s__s3__tmp__new_compression__id)
+                                                                            }
+                                                                            if (op_not tmp___7)
+                                                                            {
+                                                                              (op_assign ret (op_minus 1))
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            if (op_not tmp___8)
+                                                                            {
+                                                                              (op_assign ret (op_minus 1))
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            goto switch_1_break
+                                                                            switch_1_4528:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@35b8ea37
+                                                                            switch_1_4529:
+                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5db3466d)
+                                                                            if (op_lessEqual ret 0)
+                                                                            {
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            (op_assign s__state 4352)
+                                                                            (op_assign __cil_tmp65 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@3329db30)
+                                                                            (op_assign __cil_tmp66 (op_minus __cil_tmp65 5))
+                                                                            (op_assign s__s3__flags TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@565b1c7e)
+                                                                            if s__hit
+                                                                            {
+                                                                              (op_assign s__s3__tmp__next_state___0 3)
+                                                                              {
+                                                                                (op_assign __cil_tmp67 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@24c0bdd0)
+                                                                                if (op_plus __cil_tmp67 2L)
+                                                                                {
+                                                                                  (op_assign s__state 3)
+                                                                                  (op_assign __cil_tmp68 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@6387070b)
+                                                                                  (op_assign __cil_tmp69 (op_multiply __cil_tmp68 4L))
+                                                                                  (op_assign s__s3__flags TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@1e0aa010)
+                                                                                  (op_assign s__s3__delay_buf_pop_ret 0)
+                                                                                }
+                                                                                else
+                                                                                {}
+                                                                              }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                              (op_assign s__s3__tmp__next_state___0 4560)
+                                                                            }
+                                                                            (op_assign s__init_num 0)
+                                                                            goto switch_1_break
+                                                                            switch_1_4560:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@10bcf743
+                                                                            switch_1_4561:
+                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3133e6b9)
+                                                                            if (op_lessEqual ret 0)
+                                                                            {
+                                                                              goto end
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            if s__hit
+                                                                            {
+                                                                              (op_assign s__state 4512)
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                              (op_assign s__state 3)
+                                                                            }
+                                                                            (op_assign s__init_num 0)
+                                                                            goto switch_1_break
+                                                                            switch_1_4352:
+                                                                            {
+                                                                              (op_assign __cil_tmp70 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@6ad710cb)
+                                                                              if (op_greaterThan __cil_tmp70 0L)
+                                                                              {
+                                                                                (op_assign s__rwstate 2)
+                                                                                (op_assign __cil_tmp71 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@219627a1)
+                                                                                (op_assign num1 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@5667da3f)
+                                                                                {
+                                                                                  (op_assign __cil_tmp72 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@784ff864)
+                                                                                  if (op_lessEqual __cil_tmp72 0L)
+                                                                                  {
+                                                                                    (op_assign ret (op_minus 1))
+                                                                                    goto end
+                                                                                  }
+                                                                                  else
+                                                                                  {}
+                                                                                }
+                                                                                (op_assign s__rwstate 1)
+                                                                              }
+                                                                              else
+                                                                              {}
+                                                                            }
+                                                                            (op_assign s__state s__s3__tmp__next_state___0)
+                                                                            goto switch_1_break
+                                                                            switch_1_3:
+                                                                            if (op_notequals s__init_buf___0 0)
+                                                                            {
+                                                                              (op_assign s__init_buf___0 0)
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            {
+                                                                              (op_assign __cil_tmp73 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@2a4ceeee)
+                                                                              (op_assign __cil_tmp74 (op_plus __cil_tmp73 4L))
+                                                                              if (op_not __cil_tmp74)
+                                                                              {
+                                                                              }
+                                                                              else
+                                                                              {}
+                                                                            }
+                                                                            (op_assign s__init_num 0)
+                                                                            (op_assign s__new_session 0)
+                                                                            if s__hit
+                                                                            {
+                                                                              (op_postFixIncr s__ctx__stats__sess_hit)
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            (op_assign ret 1)
+                                                                            (op_postFixIncr s__ctx__stats__sess_connect_good)
+                                                                            if (op_notequals cb 0)
+                                                                            {
+                                                                            }
+                                                                            else
+                                                                            {}
+                                                                            goto end
+                                                                            switch_1_default:
+                                                                            (op_assign ret (op_minus 1))
+                                                                            goto end
+                                                                          }
+                                                                          else
+                                                                          {
+                                                                            switch_1_break:
+                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@3af76f29
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        if (op_not s__s3__tmp__reuse_message)
+        {
+          if (op_not skip)
+          {
+            if s__debug
+            {
+              (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5229fc6a)
+              if (op_lessEqual ret 0)
+              {
+                goto end
+              }
+              else
+              {}
+            }
+            else
+            {}
+            if (op_notequals cb 0)
+            {
+              if (op_notequals s__state state)
+              {
+                (op_assign new_state s__state)
+                (op_assign s__state state)
+                (op_assign s__state new_state)
+              }
+              else
+              {}
+            }
+            else
+            {}
+          }
+          else
+          {}
+        }
+        else
+        {}
+        (op_assign skip 0)
+      }
+      while_0_break:
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@55a2a293
+    }
+    end:
+    (op_postFixDecr s__in_handshake)
+    if (op_notequals cb 0)
+    {
+    }
+    else
+    {}
+    return (op_bracketedPrimary ret)
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@18d40d57
+    return (op_bracketedPrimary (op_minus 1))
+  }
+}
+{
+  t_int s
+  {
+    {
+      (op_assign s 12292)
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@19dba743
+    }
+    return (op_bracketedPrimary 0)
+  }
+}

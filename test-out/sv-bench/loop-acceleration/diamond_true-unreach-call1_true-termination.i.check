@@ -1,0 +1,29 @@
+loop-acceleration/diamond_true-unreach-call1_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@921d99a
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@17b168aa
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3c4d4d5c
+  }
+  else
+  {}
+  return (exp null)
+}
+{
+  t_int x = 0
+  t_int y = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5b9b6401
+  while (op_lessThan x 99)
+  {
+    if (op_equals (op_modulo y 2) 0)
+    {
+      (op_plusAssign x 2)
+    }
+    else
+    {
+      (op_postFixIncr x)
+    }
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5cf18be1
+}

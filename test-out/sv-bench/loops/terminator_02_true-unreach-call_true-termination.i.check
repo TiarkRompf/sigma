@@ -1,0 +1,51 @@
+loops/terminator_02_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7fb8923b
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4924c79e
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@d881774
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4ecd0b9c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@75df6134
+{
+  t_int x = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1aa84026
+  t_int y = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5756c7b0
+  t_int z = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@71e1a72d
+  if (op_not (op_bracketedPrimary (op_lessThan x 100)))
+  return 0
+  else
+  {}
+  if (op_not (op_bracketedPrimary (op_greaterThan x (op_minus 100))))
+  return 0
+  else
+  {}
+  if (op_not (op_bracketedPrimary (op_lessThan z 100)))
+  return 0
+  else
+  {}
+  if (op_not (op_bracketedPrimary (op_greaterThan z (op_minus 100))))
+  return 0
+  else
+  {}
+  while (op_logicalAnd (op_lessThan x 100) (op_lessThan 100 z))
+  {
+    t_bool tmp = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7fb9aee4
+    if tmp
+    {
+      (op_postFixIncr x)
+    }
+    else
+    {
+      (op_postFixDecr x)
+      (op_postFixDecr z)
+    }
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@27487845
+  return 0
+}

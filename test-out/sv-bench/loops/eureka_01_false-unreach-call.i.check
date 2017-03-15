@@ -1,0 +1,39 @@
+loops/eureka_01_false-unreach-call.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@125bcd9c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@11d6cb11
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@38db8a2f
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5be5502c
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@179e51e1
+{
+  t_int nodecount = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@30378e40
+  t_int edgecount = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5459e09b
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 0 nodecount) (op_lessEqual nodecount 4))))
+  return 0
+  else
+  {}
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 0 edgecount) (op_lessEqual edgecount 19))))
+  return 0
+  else
+  {}
+  t_int source = 0
+  t_int Source = (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTInitializerList@25ccbe0c)
+  t_int Dest = (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTInitializerList@40b8e20d)
+  t_int Weight = (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTInitializerList@4cf131d4)
+  t_int distance
+  t_int xy
+  t_int ij
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@57374de9
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@17cba5dd
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@106495a3
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@555e69ea
+  return 0
+}

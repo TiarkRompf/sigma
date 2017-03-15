@@ -1,0 +1,78 @@
+loops/n.c24_false-unreach-call.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@758d539
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@194f9030
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4be92c03
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4d08a8f4
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@cb84d71
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@691392c6
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6b9822d3
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@63df685c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2dc27293
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@58b2404f
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@72967f30
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6a9374b6
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@547bc59d
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1e015765
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5f2fc46a
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2ee83dfd
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@24b55290
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@301b831c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@11360de1
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7edecdef
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@70f13176
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1c9e5f17
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3de60060
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@35df0386
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4c5ceeca
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@22d466b1
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2f3c978b
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@62b272d9
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4933fafb
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@48d3fc82
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@318badc
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@724d24dc
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@247fec4c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@739f23ad
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3597b958
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2ee700f2
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@75a184ee
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7fa953bc
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@77fc7868
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@618a06f5
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@18f568de
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2df4eccf
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@395fee21
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@853ea51
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3b53c01d
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@314bd12c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@77231fc2
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@60b57215
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@45c31536
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2a6e7e13
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@45dcb993
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@eb25ee7
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@530580a2
+{
+  return TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a42f237
+}
+{
+  (op_assign (op_star x) TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2a72d2cd)
+  return (op_star x)
+}
+{
+  t_int ijretoffsettmp_cnttel_dataklen
+  t_char x
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@362be402
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@495462f5
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@541ae2a2
+  return 1
+}

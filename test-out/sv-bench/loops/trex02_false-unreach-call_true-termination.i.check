@@ -1,0 +1,30 @@
+loops/trex02_false-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6558c5da
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3dc6952b
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2e31cd5b
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1a854f2e
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@39d03fb1
+{
+  (op_postFixDecr x)
+}
+{
+  (op_assign x TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@30b68a6d)
+  while (op_greaterThan x 0)
+  {
+    t_bool c = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@10cdd235
+    if c
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2081033d
+    else
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@18949d2b
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1c7599b6
+}

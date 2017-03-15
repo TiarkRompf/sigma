@@ -1,0 +1,33 @@
+loops/trex03_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@323397fa
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@64cc9b2a
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@617d90a8
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2dd32fa6
+{
+  t_int x1 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3f1f1a1x2 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3642f3ex3 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@e91172a
+  t_int d1 = 1d2 = 1d3 = 1
+  t_bool c1 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3a0bb741c2 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@36fb2558
+  while (op_logicalAnd (op_logicalAnd (op_greaterThan x1 0) (op_greaterThan x2 0)) (op_greaterThan x3 0))
+  {
+    if c1
+    (op_assign x1 (op_minus x1 d1))
+    else
+    if c2
+    (op_assign x2 (op_minus x2 d2))
+    else
+    (op_assign x3 (op_minus x3 d3))
+    (op_assign c1 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1444e166)
+    (op_assign c2 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@126a9c83)
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@753c8030
+  return 0
+}

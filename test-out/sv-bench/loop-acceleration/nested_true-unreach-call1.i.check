@@ -1,0 +1,26 @@
+loop-acceleration/nested_true-unreach-call1.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@763f3c5d
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@45897dea
+  }
+  else
+  {}
+  return (exp null)
+}
+{
+  t_int x = 0
+  t_int y = 0
+  while (op_lessThan x 0x0fffffff)
+  {
+    (op_assign y 0)
+    while (op_lessThan y 10)
+    {
+      (op_postFixIncr y)
+    }
+    (op_postFixIncr x)
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6e38834e
+}

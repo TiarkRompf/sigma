@@ -1,0 +1,29 @@
+loops/eureka_01_true-unreach-call.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@68a13b1f
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@58dec4d4
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7c3f0a86
+{
+  t_int nodecount = 5
+  t_int edgecount = 20
+  t_int source = 0
+  t_int Source = (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTInitializerList@11f629bb)
+  t_int Dest = (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTInitializerList@70ee8159)
+  t_int Weight = (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTInitializerList@5eb803f4)
+  t_int distance
+  t_int xy
+  t_int ij
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@5ad7599f
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@7a4c188f
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@7e2cbad6
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@6015a144
+  return 0
+}

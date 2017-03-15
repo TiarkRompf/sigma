@@ -1,0 +1,20 @@
+loop-invgen/id_build_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5a328afc
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@30198074
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@8f3172
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2479c2f4
+{
+  t_int offsetlengthnlen = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6ad2c9ed
+  t_int ij
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@1634eee3
+  return 0
+}

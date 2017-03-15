@@ -1,0 +1,32 @@
+loop-invgen/up_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1e2af661
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1f46d911
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7b62edb0
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@228c1815
+{
+  t_int n
+  t_int i = 0
+  t_int k = 0
+  (op_assign n TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6bdc6bdb)
+  while (op_lessThan i n)
+  {
+    (op_postFixIncr i)
+    (op_postFixIncr k)
+  }
+  t_int j = 0
+  while (op_lessThan j n)
+  {
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@427bb9e0
+    (op_postFixIncr j)
+    (op_postFixDecr k)
+  }
+}

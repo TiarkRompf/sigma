@@ -1,0 +1,24 @@
+loops/eureka_05_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@ee1778
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1a7cef8a
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@11d0c19
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4ccf92ff
+{
+  t_int lhrhitemp
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@3c6a09c9
+}
+{
+  t_int arrayi
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@4117b171
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2883008e
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@186b270b
+}

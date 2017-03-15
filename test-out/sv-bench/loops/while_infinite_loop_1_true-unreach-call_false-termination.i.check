@@ -1,0 +1,20 @@
+loops/while_infinite_loop_1_true-unreach-call_false-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@56620f3f
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3e4a4934
+  }
+  else
+  {}
+  return (exp null)
+}
+{
+  t_int x = 0
+  while 1
+  {
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4abfb70b
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1a15bfc9
+}

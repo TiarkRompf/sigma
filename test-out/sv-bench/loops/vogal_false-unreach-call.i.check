@@ -1,0 +1,34 @@
+loops/vogal_false-unreach-call.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@68ed8039
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6e552815
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@55df5a05
+{
+  t_char string_entradavetor_vogais = (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTInitializerList@7964ef65)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@7d8c4438
+  t_int ijconttam_stringn_caracter
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@3adede1c
+  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@157ea430) '\0')
+  (op_assign n_caracter 0)
+  while (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@4b3f6e3d) '\0')
+  (op_postFixIncr n_caracter)
+  (op_assign cont 0)
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@548d5ee6
+  (op_assign i 0)
+  t_int cont_aux = 0
+  while (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@186f5455) '\0')
+  {
+    stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@78502c4c
+    (op_postFixIncr i)
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@482eebfd
+  return 0
+}

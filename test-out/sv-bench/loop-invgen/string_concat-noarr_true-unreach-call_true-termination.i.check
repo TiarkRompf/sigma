@@ -1,0 +1,42 @@
+loop-invgen/string_concat-noarr_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@27aa2827
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@41ef79d7
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3417c762
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@40fb124c
+{
+  t_int ij
+  L0:
+  (op_assign i 0)
+  L1:
+  while (op_logicalAnd TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3666f164 (op_lessThan i 1000000))
+  {
+    (op_postFixIncr i)
+  }
+  if (op_greaterEqual i 100)
+  STUCK:
+  goto STUCK
+  else
+  {}
+  (op_assign j 0)
+  L2:
+  while (op_logicalAnd TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@cfd07be (op_lessThan i 1000000))
+  {
+    (op_postFixIncr i)
+    (op_postFixIncr j)
+  }
+  if (op_greaterEqual j 100)
+  goto STUCK
+  else
+  {}
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@65bfd94
+  return 0
+}

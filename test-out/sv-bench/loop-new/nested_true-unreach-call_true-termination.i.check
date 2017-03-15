@@ -1,0 +1,31 @@
+loop-new/nested_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2fe1ac35
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4d2a7fa9
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6ad391df
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@342ec508
+{
+  t_int n = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@160c47bc
+  t_int m = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@8c5b5e3
+  t_int k = 0
+  t_int ij
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 10 n) (op_lessEqual n 10000))))
+  return 0
+  else
+  {}
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 10 m) (op_lessEqual m 10000))))
+  return 0
+  else
+  {}
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@7eee904d
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3caa0c1d
+  return 0
+}

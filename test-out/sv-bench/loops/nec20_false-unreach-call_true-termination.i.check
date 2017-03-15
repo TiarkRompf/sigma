@@ -1,0 +1,42 @@
+loops/nec20_false-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@334ff6f8
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@726734ae
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@258e52e6
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@454a4f35
+{
+  t_bool k = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@9fe9952
+  t_int inj
+  t_int a
+  if k
+  {
+    (op_assign n 0)
+  }
+  else
+  {
+    (op_assign n 1023)
+  }
+  (op_assign i 0)
+  while (op_lessEqual i n)
+  {
+    (op_postFixIncr i)
+    (op_assign j (op_plus j 2))
+  }
+  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@42770e87) 0)
+  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@15396d4d) 0)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@29dab38
+  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@7fd49630) 0)
+  if (op_logicalAnd (op_greaterEqual b 0) (op_lessThan b 1023))
+  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@5adac7b) 1)
+  else
+  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@5ba0fa86) 1)
+  return 1
+}

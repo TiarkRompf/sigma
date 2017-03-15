@@ -1,0 +1,58 @@
+loop-invgen/sendmail-close-angle_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6a4c9ab5
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@53d18b0e
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@ae84bfb
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@284537c6
+{
+  t_int in
+  t_int inlen = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@26d29949
+  t_int bufferlen = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7904ef66
+  t_int buf
+  t_int buflim
+  if (op_greaterThan bufferlen 1)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@31fbc42e
+  else
+  goto END
+  if (op_greaterThan inlen 0)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@30013ed0
+  else
+  goto END
+  if (op_lessThan bufferlen inlen)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2abf148
+  else
+  goto END
+  (op_assign buf 0)
+  (op_assign in 0)
+  (op_assign buflim (op_minus bufferlen 2))
+  while TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5c8a41a4
+  {
+    if (op_equals buf buflim)
+    stm org.eclipse.cdt.internal.core.dom.parser.c.CASTBreakStatement@33bf34af
+    else
+    {}
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a717bb6
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@578dea01
+    (op_postFixIncr buf)
+    out:
+    (op_postFixIncr in)
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@59841635
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@13544be6
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@12793ef1
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2a1c035d
+  (op_postFixIncr buf)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@53509d95
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@626af762
+  (op_postFixIncr buf)
+  END:
+  return 0
+}

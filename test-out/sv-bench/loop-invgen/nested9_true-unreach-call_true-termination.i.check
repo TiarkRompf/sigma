@@ -1,0 +1,40 @@
+loop-invgen/nested9_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@28336899
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@20b4ba87
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2f572929
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5dc9eb5e
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6e8d37de
+{
+  t_int ijknlm
+  (op_assign n TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6be8d80a)
+  (op_assign m TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7de0aa3f)
+  (op_assign l TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6f612dc6)
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan (op_minus 1000000) n) (op_lessThan n 1000000))))
+  return 0
+  else
+  {}
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan (op_minus 1000000) m) (op_lessThan m 1000000))))
+  return 0
+  else
+  {}
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan (op_minus 1000000) l) (op_lessThan l 1000000))))
+  return 0
+  else
+  {}
+  if (op_lessEqual (op_multiply 3 n) (op_plus m l))
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@6855d433
+  else
+  goto END
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@455079bb
+  END:
+  return 0
+}

@@ -1,0 +1,318 @@
+locks/test_locks_14_false-unreach-call_true-valid-memsafety_false-termination.c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@23cecab9
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@56c18b6c
+{
+  t_int p1 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5a7d42b4
+  t_int lk1
+  t_int p2 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1cc97fe8
+  t_int lk2
+  t_int p3 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4907e5ca
+  t_int lk3
+  t_int p4 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@13c79d6d
+  t_int lk4
+  t_int p5 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@239f1543
+  t_int lk5
+  t_int p6 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@74fe18e7
+  t_int lk6
+  t_int p7 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2a18a07
+  t_int lk7
+  t_int p8 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2da253cb
+  t_int lk8
+  t_int p9 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@764c6e31
+  t_int lk9
+  t_int p10 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@72f1693f
+  t_int lk10
+  t_int p11 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7c0e24d4
+  t_int lk11
+  t_int p12 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@430d1c95
+  t_int lk12
+  t_int p13 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@56a5cf23
+  t_int lk13
+  t_int p14 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2fe4fc59
+  t_int lk14
+  t_int cond
+  while 1
+  {
+    (op_assign cond TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@22c155f5)
+    if (op_equals cond 0)
+    {
+      goto out
+    }
+    else
+    {
+    }
+    (op_assign lk1 0)
+    (op_assign lk2 0)
+    (op_assign lk3 0)
+    (op_assign lk4 0)
+    (op_assign lk5 0)
+    (op_assign lk6 0)
+    (op_assign lk7 0)
+    (op_assign lk8 0)
+    (op_assign lk9 0)
+    (op_assign lk10 0)
+    (op_assign lk11 0)
+    (op_assign lk12 0)
+    (op_assign lk13 0)
+    (op_assign lk14 0)
+    if (op_notequals p1 0)
+    {
+      (op_assign lk1 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p2 0)
+    {
+      (op_assign lk2 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p3 0)
+    {
+      (op_assign lk3 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p4 0)
+    {
+      (op_assign lk4 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p5 0)
+    {
+      (op_assign lk5 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p6 0)
+    {
+      (op_assign lk6 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p7 0)
+    {
+      (op_assign lk7 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p8 0)
+    {
+      (op_assign lk8 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p9 0)
+    {
+      (op_assign lk9 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p10 0)
+    {
+      (op_assign lk10 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p11 0)
+    {
+      (op_assign lk11 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p12 0)
+    {
+      (op_assign lk12 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p13 0)
+    {
+      (op_assign lk13 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p14 0)
+    {
+      (op_assign lk14 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p1 0)
+    {
+      if (op_notequals lk1 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk1 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p2 0)
+    {
+      if (op_notequals lk2 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk2 0)
+    }
+    else
+    {
+      goto ERROR
+    }
+    if (op_notequals p3 0)
+    {
+      if (op_notequals lk3 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk3 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p4 0)
+    {
+      if (op_notequals lk4 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk4 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p5 0)
+    {
+      if (op_notequals lk5 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk5 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p6 0)
+    {
+      if (op_notequals lk6 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk6 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p7 0)
+    {
+      if (op_notequals lk7 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk7 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p8 0)
+    {
+      if (op_notequals lk8 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk8 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p9 0)
+    {
+      if (op_notequals lk9 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk9 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p10 0)
+    {
+      if (op_notequals lk10 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk10 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p11 0)
+    {
+      if (op_notequals lk11 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk11 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p12 0)
+    {
+      if (op_notequals lk12 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk12 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p13 0)
+    {
+      if (op_notequals lk13 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk13 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p14 0)
+    {
+      if (op_notequals lk14 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk14 0)
+    }
+    else
+    {
+      goto ERROR
+    }
+  }
+  out:
+  return 0
+  ERROR:
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@9030c8c
+  return 0
+}

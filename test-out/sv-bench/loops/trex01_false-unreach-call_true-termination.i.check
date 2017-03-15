@@ -1,0 +1,51 @@
+loops/trex01_false-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@377fabd0
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@51b15d29
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@217eef80
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5859056e
+{
+  t_int x = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@12b2049ey = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@49315bf4k = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1fe5bfbdz = 1
+  L1:
+  while (op_lessThan z k)
+  {
+    (op_assign z (op_multiply 2 z))
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@f07ab5a
+  L2:
+  while (op_logicalAnd (op_greaterThan x 0) (op_greaterThan y 0))
+  {
+    t_bool c = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@d93c8d0
+    if c
+    {
+      P1:
+      (op_assign x (op_minus x d))
+      (op_assign y TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4ebedc6d)
+      (op_assign z (op_minus z 1))
+    }
+    else
+    {
+      (op_assign y (op_minus y d))
+    }
+  }
+}
+{
+  t_bool c = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7c148a50
+  if c
+  {
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4e7ba3f3
+  }
+  else
+  {
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5d3d37a4
+  }
+  return 0
+}

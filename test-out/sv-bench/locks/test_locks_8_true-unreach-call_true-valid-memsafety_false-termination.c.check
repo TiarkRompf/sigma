@@ -1,0 +1,190 @@
+locks/test_locks_8_true-unreach-call_true-valid-memsafety_false-termination.c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@25675950
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@31e69dc9
+{
+  t_int p1 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@48ba2565
+  t_int lk1
+  t_int p2 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@668e04c1
+  t_int lk2
+  t_int p3 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@79bc6c99
+  t_int lk3
+  t_int p4 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7c31beb2
+  t_int lk4
+  t_int p5 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@65393d5c
+  t_int lk5
+  t_int p6 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@73079536
+  t_int lk6
+  t_int p7 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6945f76b
+  t_int lk7
+  t_int p8 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@18f010df
+  t_int lk8
+  t_int cond
+  while 1
+  {
+    (op_assign cond TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@348f1d40)
+    if (op_equals cond 0)
+    {
+      goto out
+    }
+    else
+    {
+    }
+    (op_assign lk1 0)
+    (op_assign lk2 0)
+    (op_assign lk3 0)
+    (op_assign lk4 0)
+    (op_assign lk5 0)
+    (op_assign lk6 0)
+    (op_assign lk7 0)
+    (op_assign lk8 0)
+    if (op_notequals p1 0)
+    {
+      (op_assign lk1 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p2 0)
+    {
+      (op_assign lk2 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p3 0)
+    {
+      (op_assign lk3 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p4 0)
+    {
+      (op_assign lk4 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p5 0)
+    {
+      (op_assign lk5 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p6 0)
+    {
+      (op_assign lk6 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p7 0)
+    {
+      (op_assign lk7 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p8 0)
+    {
+      (op_assign lk8 1)
+    }
+    else
+    {
+    }
+    if (op_notequals p1 0)
+    {
+      if (op_notequals lk1 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk1 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p2 0)
+    {
+      if (op_notequals lk2 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk2 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p3 0)
+    {
+      if (op_notequals lk3 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk3 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p4 0)
+    {
+      if (op_notequals lk4 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk4 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p5 0)
+    {
+      if (op_notequals lk5 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk5 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p6 0)
+    {
+      if (op_notequals lk6 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk6 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p7 0)
+    {
+      if (op_notequals lk7 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk7 0)
+    }
+    else
+    {
+    }
+    if (op_notequals p8 0)
+    {
+      if (op_notequals lk8 1)
+      goto ERROR
+      else
+      {}
+      (op_assign lk8 0)
+    }
+    else
+    {
+    }
+  }
+  out:
+  return 0
+  ERROR:
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7bee80c2
+  return 0
+}

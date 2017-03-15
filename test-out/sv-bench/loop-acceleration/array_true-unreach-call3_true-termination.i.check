@@ -1,0 +1,20 @@
+loop-acceleration/array_true-unreach-call3_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1ed1ce6b
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5c3882a9
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@175a8ab
+  }
+  else
+  {}
+  return (exp null)
+}
+{
+  t_int A
+  t_int i
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@34f11e6c
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@24433c0f
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3cf6cfe4
+}

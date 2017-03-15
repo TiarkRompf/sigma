@@ -1,0 +1,17 @@
+loops/sum04_false-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6f49b908
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@b3ddc05
+  }
+  else
+  {}
+  return (exp null)
+}
+{
+  t_int isn = 0
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@58b7ce1f
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@21425dda
+}

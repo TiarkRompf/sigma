@@ -1,0 +1,1940 @@
+ntdrivers-simplified/floppy_simpl4_true-unreach-call_true-valid-memsafety_true-termination.cil.c
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4d3554cb
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@510f80b2
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@109f3303
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@d0c512f
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6af8df49
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@475fd8b4
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2eb1fc77
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@41db45a7
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6df5d842
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@54d63730
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@75a53b99
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ec8aef7
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2d3c5ca4
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@48369184
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@149302e8
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3f07a99b
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@70910ba3
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@c570e84
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5fc9a4
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@216e345
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7a222cb7
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4eb52e59
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@30d9ccc2
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5e01d57
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6eccdec8
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@96ce2ae
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@77ad909d
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7222219a
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7a908b88
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@14077fe6
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@fb52c83
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6cf8e21e
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@124af8c2
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3d9d5d22
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1b6aaf26
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@30a94647
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@75e03478
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@22c303ab
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6c1e8b4a
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@167f73f0
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6248c6b3
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@58ac4f0a
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@40f0db8e
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2dfdc093
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@9a4f6c1
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@334a2ce0
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@75a0bdac
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@361a12d3
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@18a6f82f
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7a69eaf7
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@a5475cb
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6c3e72d8
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@43f688f0
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@76fdec2b
+{
+  {
+    (op_assign UNLOADED 0)
+    (op_assign NP 1)
+    (op_assign DC 2)
+    (op_assign SKIP1 3)
+    (op_assign SKIP2 4)
+    (op_assign MPR1 5)
+    (op_assign MPR3 6)
+    (op_assign IPC 7)
+    (op_assign s UNLOADED)
+    (op_assign pended 0)
+    (op_assign compRegistered 0)
+    (op_assign lowerDriverReturn 0)
+    (op_assign setEventCalled 0)
+    (op_assign customIrp 0)
+    return (exp null)
+  }
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5fae3512
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4019348d
+{
+  {
+    return (op_bracketedPrimary 0)
+  }
+}
+{
+  t_int status
+  t_int threadHandle = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@375f9576
+  t_int DisketteExtension__PoweringDown = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2e5abb02
+  t_int DisketteExtension__ThreadReferenceCount = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@f20d7e
+  t_int DisketteExtension__FloppyThread = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@946ecb1
+  t_int Irp__IoStatus__Status
+  t_int Irp__IoStatus__Information
+  t_int Irp__Tail__Overlay__CurrentStackLocation__Control
+  t_int ObjAttributes = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@42793cca
+  t_int __cil_tmp12
+  t_int __cil_tmp13
+  {
+    if (op_equals DisketteExtension__PoweringDown 1)
+    {
+      (op_assign myStatus (op_minus 1073741101))
+      (op_assign Irp__IoStatus__Status (op_minus 1073741101))
+      (op_assign Irp__IoStatus__Information 0)
+      return (op_bracketedPrimary (op_minus 1073741101))
+    }
+    else
+    {}
+    (op_postFixIncr DisketteExtension__ThreadReferenceCount)
+    if (op_equals DisketteExtension__ThreadReferenceCount 0)
+    {
+      (op_postFixIncr DisketteExtension__ThreadReferenceCount)
+      (op_postFixIncr PagingReferenceCount)
+      if (op_equals PagingReferenceCount 1)
+      {
+      }
+      else
+      {}
+      {
+        (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@39800d2c)
+      }
+      {
+        if (op_lessThan status 0)
+        {
+          (op_assign DisketteExtension__ThreadReferenceCount (op_minus 1))
+          (op_postFixDecr PagingReferenceCount)
+          if (op_equals PagingReferenceCount 0)
+          {
+          }
+          else
+          {}
+          return (op_bracketedPrimary status)
+        }
+        else
+        {}
+      }
+      {
+        (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@29897e9f)
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@17943c7b
+      }
+      {
+        if (op_lessThan status 0)
+        {
+          return (op_bracketedPrimary status)
+        }
+        else
+        {}
+      }
+    }
+    else
+    {}
+    if (op_equals pended 0)
+    {
+      (op_assign pended 1)
+    }
+    else
+    {
+      {
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1c00cd2f
+      }
+    }
+    return (op_bracketedPrimary 259)
+  }
+}
+{
+  t_int DeviceObject__DeviceExtension = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@25504aee
+  t_int Irp__Tail__Overlay__CurrentStackLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@474fa55d
+  t_int Irp__IoStatus__Information
+  t_int Irp__IoStatus__Status
+  t_int Irp__CurrentLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@718e2e2b
+  t_int disketteExtension__IsRemoved = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6bfdfc80
+  t_int disketteExtension__IsStarted = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4cddcc2b
+  t_int disketteExtension__TargetObject = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7602eda0
+  t_int disketteExtension__HoldNewRequests
+  t_int disketteExtension__FloppyThread = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@76fd7a3d
+  t_int disketteExtension__InterfaceString__Buffer = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7260819e
+  t_int disketteExtension__InterfaceString = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@507ea76d
+  t_int disketteExtension__ArcName__Length = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@31f03f2f
+  t_int disketteExtension__ArcName = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2cc187be
+  t_int irpSp__MinorFunction = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5adb9fc9
+  t_int IoGetConfigurationInformation__FloppyCount = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7fbb1e30
+  t_int irpSp
+  t_int disketteExtension
+  t_int ntStatus
+  t_int doneEvent = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4f025faf
+  t_int irpSp___0
+  t_int nextIrpSp
+  t_int nextIrpSp__Control
+  t_int irpSp___1
+  t_int irpSp__Context
+  t_int irpSp__Control
+  t_unspecified __cil_tmp29
+  t_unspecified __cil_tmp30
+  {
+    (op_assign ntStatus 0)
+    (op_postFixIncr PagingReferenceCount)
+    if (op_equals PagingReferenceCount 1)
+    {
+    }
+    else
+    {}
+    (op_assign disketteExtension DeviceObject__DeviceExtension)
+    (op_assign irpSp Irp__Tail__Overlay__CurrentStackLocation)
+    if disketteExtension__IsRemoved
+    {
+      {
+        (op_assign Irp__IoStatus__Information 0)
+        (op_assign Irp__IoStatus__Status (op_minus 1073741738))
+        (op_assign myStatus (op_minus 1073741738))
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6fdecd86
+      }
+      return (op_bracketedPrimary (op_minus 1073741738))
+    }
+    else
+    {}
+    if (op_equals irpSp__MinorFunction 0)
+    {
+      goto switch_0_0
+    }
+    else
+    {
+      if (op_equals irpSp__MinorFunction 5)
+      {
+        goto switch_0_5
+      }
+      else
+      {
+        if (op_equals irpSp__MinorFunction 1)
+        {
+          goto switch_0_5
+        }
+        else
+        {
+          if (op_equals irpSp__MinorFunction 6)
+          {
+            goto switch_0_6
+          }
+          else
+          {
+            if (op_equals irpSp__MinorFunction 3)
+            {
+              goto switch_0_6
+            }
+            else
+            {
+              if (op_equals irpSp__MinorFunction 4)
+              {
+                goto switch_0_4
+              }
+              else
+              {
+                if (op_equals irpSp__MinorFunction 2)
+                {
+                  goto switch_0_2
+                }
+                else
+                {
+                  goto switch_0_default
+                  if 0
+                  {
+                    switch_0_0:
+                    {
+                      (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@697d2263)
+                    }
+                    goto switch_0_break
+                    switch_0_5:
+                    if (op_equals irpSp__MinorFunction 5)
+                    {
+                    }
+                    else
+                    {}
+                    if (op_not disketteExtension__IsStarted)
+                    {
+                      if (op_equals s NP)
+                      {
+                        (op_assign s SKIP1)
+                      }
+                      else
+                      {
+                        {
+                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4e90fbe2
+                        }
+                      }
+                      {
+                        (op_postFixIncr Irp__CurrentLocation)
+                        (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                        (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@13b23ab8)
+                      }
+                      return (op_bracketedPrimary ntStatus)
+                    }
+                    else
+                    {}
+                    {
+                      (op_assign disketteExtension__HoldNewRequests 1)
+                      (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a1977b5)
+                    }
+                    {
+                      (op_assign __cil_tmp29 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@af722af)
+                      if (op_equals __cil_tmp29 259L)
+                      {
+                        {
+                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@43f197f8
+                        }
+                        if (op_notequals disketteExtension__FloppyThread 0)
+                        {
+                        }
+                        else
+                        {}
+                        (op_assign disketteExtension__FloppyThread 0)
+                        (op_assign Irp__IoStatus__Status 0)
+                        (op_assign myStatus 0)
+                        if (op_equals s NP)
+                        {
+                          (op_assign s SKIP1)
+                        }
+                        else
+                        {
+                          {
+                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@411412c4
+                          }
+                        }
+                        {
+                          (op_postFixIncr Irp__CurrentLocation)
+                          (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                          (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@71618c)
+                        }
+                      }
+                      else
+                      {
+                        {
+                          (op_assign ntStatus (op_minus 1073741823))
+                          (op_assign Irp__IoStatus__Status ntStatus)
+                          (op_assign myStatus ntStatus)
+                          (op_assign Irp__IoStatus__Information 0)
+                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@33a0c977
+                        }
+                      }
+                    }
+                    goto switch_0_break
+                    switch_0_6:
+                    if (op_equals irpSp__MinorFunction 6)
+                    {
+                    }
+                    else
+                    {}
+                    if (op_not disketteExtension__IsStarted)
+                    {
+                      (op_assign Irp__IoStatus__Status 0)
+                      (op_assign myStatus 0)
+                      if (op_equals s NP)
+                      {
+                        (op_assign s SKIP1)
+                      }
+                      else
+                      {
+                        {
+                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7ca1c6ac
+                        }
+                      }
+                      {
+                        (op_postFixIncr Irp__CurrentLocation)
+                        (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                        (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1dc269ce)
+                      }
+                    }
+                    else
+                    {
+                      (op_assign Irp__IoStatus__Status 0)
+                      (op_assign myStatus 0)
+                      (op_assign irpSp___0 Irp__Tail__Overlay__CurrentStackLocation)
+                      (op_assign nextIrpSp (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
+                      (op_assign nextIrpSp__Control 0)
+                      if (op_notequals s NP)
+                      {
+                        {
+                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@16b416fb
+                        }
+                      }
+                      else
+                      {
+                        if (op_notequals compRegistered 0)
+                        {
+                          {
+                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@23ea8e2b
+                          }
+                        }
+                        else
+                        {
+                          (op_assign compRegistered 1)
+                        }
+                      }
+                      {
+                        (op_assign irpSp___1 (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
+                        (op_assign irpSp__Context doneEvent)
+                        (op_assign irpSp__Control 224)
+                        (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@518ca85c)
+                      }
+                      {
+                        (op_assign __cil_tmp30 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@5f0e37ba)
+                        if (op_equals __cil_tmp30 259L)
+                        {
+                          {
+                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@69bbf16e
+                            (op_assign ntStatus myStatus)
+                          }
+                        }
+                        else
+                        {}
+                      }
+                      {
+                        (op_assign disketteExtension__HoldNewRequests 0)
+                        (op_assign Irp__IoStatus__Status ntStatus)
+                        (op_assign myStatus ntStatus)
+                        (op_assign Irp__IoStatus__Information 0)
+                        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1ed7a1a4
+                      }
+                    }
+                    goto switch_0_break
+                    switch_0_4:
+                    (op_assign disketteExtension__IsStarted 0)
+                    (op_assign Irp__IoStatus__Status 0)
+                    (op_assign myStatus 0)
+                    if (op_equals s NP)
+                    {
+                      (op_assign s SKIP1)
+                    }
+                    else
+                    {
+                      {
+                        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2a2d246a
+                      }
+                    }
+                    {
+                      (op_postFixIncr Irp__CurrentLocation)
+                      (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                      (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4b07572)
+                    }
+                    goto switch_0_break
+                    switch_0_2:
+                    (op_assign disketteExtension__HoldNewRequests 0)
+                    (op_assign disketteExtension__IsStarted 0)
+                    (op_assign disketteExtension__IsRemoved 1)
+                    if (op_equals s NP)
+                    {
+                      (op_assign s SKIP1)
+                    }
+                    else
+                    {
+                      {
+                        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@32b6c40b
+                      }
+                    }
+                    {
+                      (op_postFixIncr Irp__CurrentLocation)
+                      (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                      (op_assign Irp__IoStatus__Status 0)
+                      (op_assign myStatus 0)
+                      (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@11cf9978)
+                    }
+                    if (op_notequals disketteExtension__InterfaceString__Buffer 0)
+                    {
+                      {
+                        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5282f15f
+                      }
+                    }
+                    else
+                    {}
+                    if (op_notequals disketteExtension__ArcName__Length 0)
+                    {
+                      {
+                        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@551e1598
+                      }
+                    }
+                    else
+                    {}
+                    (op_postFixDecr IoGetConfigurationInformation__FloppyCount)
+                    goto switch_0_break
+                    switch_0_default:
+                    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@510c15ac
+                    if (op_equals s NP)
+                    {
+                      (op_assign s SKIP1)
+                    }
+                    else
+                    {
+                      {
+                        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3ce552ac
+                      }
+                    }
+                    {
+                      (op_postFixIncr Irp__CurrentLocation)
+                      (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                      (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@79285466)
+                    }
+                  }
+                  else
+                  {
+                    switch_0_break:
+                    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@5c3f2c0e
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    (op_postFixDecr PagingReferenceCount)
+    if (op_equals PagingReferenceCount 0)
+    {
+    }
+    else
+    {}
+    return (op_bracketedPrimary ntStatus)
+  }
+}
+{
+  t_int DeviceObject__DeviceExtension = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6d2ff350
+  t_int Irp__Tail__Overlay__CurrentStackLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7b49ac6b
+  t_int Irp__IoStatus__Status
+  t_int disketteExtension__TargetObject = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@40795c00
+  t_int disketteExtension__MaxTransferSize
+  t_int disketteExtension__DriveType = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6583575d
+  t_int disketteExtension__PerpendicularMode
+  t_int disketteExtension__DeviceUnit
+  t_int disketteExtension__DriveOnValue
+  t_int disketteExtension__UnderlyingPDO = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@77a48dce
+  t_int disketteExtension__InterfaceString = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@41385da5
+  t_int disketteExtension__IsStarted
+  t_int disketteExtension__HoldNewRequests
+  t_int ntStatus
+  t_int pnpStatus
+  t_int doneEvent = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4b2b80de
+  t_int fdcInfo = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@34ed0f59
+  t_int fdcInfo__BufferCount
+  t_int fdcInfo__BufferSize
+  t_int fdcInfo__MaxTransferSize = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@67742ef7
+  t_int fdcInfo__AcpiBios = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@64a292c9
+  t_int fdcInfo__AcpiFdiSupported = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7398d3f3
+  t_int fdcInfo__PeripheralNumber = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2fd39d1e
+  t_int fdcInfo__BusType
+  t_int fdcInfo__ControllerNumber = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@69960d85
+  t_int fdcInfo__UnitNumber = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1952eea4
+  t_int fdcInfo__BusNumber = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2c60b136
+  t_int Dc
+  t_int Fp
+  t_int disketteExtension
+  t_int irpSp
+  t_int irpSp___0
+  t_int nextIrpSp
+  t_int nextIrpSp__Control
+  t_int irpSp___1
+  t_int irpSp__Control
+  t_int irpSp__Context
+  t_int InterfaceType
+  t_int KUSER_SHARED_DATA__AlternativeArchitecture_NEC98x86 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1fe8f2c9
+  t_unspecified __cil_tmp42
+  t_int __cil_tmp43
+  t_int __cil_tmp44
+  t_int __cil_tmp45
+  t_int __cil_tmp46 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@46cb2e94
+  t_int __cil_tmp47
+  t_int __cil_tmp48
+  t_int __cil_tmp49
+  {
+    (op_assign Dc DiskController)
+    (op_assign Fp FloppyDiskPeripheral)
+    (op_assign disketteExtension DeviceObject__DeviceExtension)
+    (op_assign irpSp Irp__Tail__Overlay__CurrentStackLocation)
+    (op_assign irpSp___0 Irp__Tail__Overlay__CurrentStackLocation)
+    (op_assign nextIrpSp (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
+    (op_assign nextIrpSp__Control 0)
+    if (op_notequals s NP)
+    {
+      {
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@48e2df27
+      }
+    }
+    else
+    {
+      if (op_notequals compRegistered 0)
+      {
+        {
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@61a22e0c
+        }
+      }
+      else
+      {
+        (op_assign compRegistered 1)
+      }
+    }
+    {
+      (op_assign irpSp___1 (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
+      (op_assign irpSp__Context doneEvent)
+      (op_assign irpSp__Control 224)
+      (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3984e64b)
+    }
+    {
+      (op_assign __cil_tmp42 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@26a4d061)
+      if (op_equals __cil_tmp42 259L)
+      {
+        {
+          (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@78613875)
+          (op_assign ntStatus myStatus)
+        }
+      }
+      else
+      {}
+    }
+    {
+      (op_assign fdcInfo__BufferCount 0)
+      (op_assign fdcInfo__BufferSize 0)
+      (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@8c3ab3b)
+    }
+    if (op_greaterEqual ntStatus 0)
+    {
+      (op_assign disketteExtension__MaxTransferSize fdcInfo__MaxTransferSize)
+      if fdcInfo__AcpiBios
+      {
+        if fdcInfo__AcpiFdiSupported
+        {
+          {
+            (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@166ba2d6)
+          }
+          if (op_equals disketteExtension__DriveType 4)
+          {
+          }
+          else
+          {}
+        }
+        else
+        {
+          goto _L
+        }
+      }
+      else
+      {
+        _L:
+        if (op_equals disketteExtension__DriveType 4)
+        {
+        }
+        else
+        {}
+        (op_assign InterfaceType 0)
+        {
+          while 1
+          {
+            while_0_continue:
+            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@16cc5fa2
+            if (op_greaterEqual InterfaceType MaximumInterfaceType)
+            {
+              goto while_1_break
+            }
+            else
+            {}
+            {
+              (op_assign fdcInfo__BusType InterfaceType)
+              (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@671f7f9e)
+            }
+            if (op_greaterEqual ntStatus 0)
+            {
+              goto while_1_break
+            }
+            else
+            {}
+            (op_postFixIncr InterfaceType)
+          }
+          while_0_break:
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@72908a35
+        }
+        while_1_break:
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@39a6fba3
+      }
+      if (op_greaterEqual ntStatus 0)
+      {
+        if (op_notequals KUSER_SHARED_DATA__AlternativeArchitecture_NEC98x86 0)
+        {
+          (op_assign disketteExtension__DeviceUnit fdcInfo__UnitNumber)
+          (op_assign disketteExtension__DriveOnValue fdcInfo__UnitNumber)
+        }
+        else
+        {
+          (op_assign disketteExtension__DeviceUnit fdcInfo__PeripheralNumber)
+        }
+        {
+          (op_assign pnpStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4d63927a)
+        }
+        if (op_greaterEqual pnpStatus 0)
+        {
+          {
+            (op_assign pnpStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@519cf7c7)
+          }
+        }
+        else
+        {}
+        (op_assign disketteExtension__IsStarted 1)
+        (op_assign disketteExtension__HoldNewRequests 0)
+      }
+      else
+      {}
+    }
+    else
+    {}
+    {
+      (op_assign Irp__IoStatus__Status ntStatus)
+      (op_assign myStatus ntStatus)
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@272b1ee3
+    }
+    return (op_bracketedPrimary ntStatus)
+  }
+}
+{
+  {
+    {
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@29de8246
+    }
+    return (op_bracketedPrimary (op_minus 1073741802))
+  }
+}
+{
+  t_int ntStatus
+  t_int irp
+  t_int irpStack
+  t_int doneEvent = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@787f2545
+  t_int ioStatus = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4eebd742
+  t_int irp__Tail__Overlay__CurrentStackLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3148047a
+  t_int irpStack__Parameters__DeviceIoControl__Type3InputBuffer
+  t_unspecified __cil_tmp11
+  {
+    {
+      (op_assign irp TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6cd97ca7)
+    }
+    if (op_equals irp 0)
+    {
+      return (op_bracketedPrimary (op_minus 1073741670))
+    }
+    else
+    {}
+    {
+      (op_assign irpStack (op_minus irp__Tail__Overlay__CurrentStackLocation 1))
+      (op_assign irpStack__Parameters__DeviceIoControl__Type3InputBuffer Data)
+      (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6d8d2974)
+    }
+    {
+      (op_assign __cil_tmp11 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@7dccb240)
+      if (op_equals __cil_tmp11 259L)
+      {
+        {
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@cd60257
+          (op_assign ntStatus myStatus)
+        }
+      }
+      else
+      {}
+    }
+    return (op_bracketedPrimary ntStatus)
+  }
+}
+{
+  {
+    return (exp null)
+  }
+}
+{
+  {
+    (op_assign s NP)
+    (op_assign pended 0)
+    (op_assign compRegistered 0)
+    (op_assign lowerDriverReturn 0)
+    (op_assign setEventCalled 0)
+    (op_assign customIrp 0)
+    return (exp null)
+  }
+}
+{
+  t_int status
+  t_int irp = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2b4d7b2e
+  t_int pirp
+  t_int pirp__IoStatus__Status
+  t_int irp_choice = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2f8f21ba
+  t_int devobj = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@37c9d8b9
+  t_int __cil_tmp8
+  (op_assign FloppyThread 0)
+  (op_assign KernelMode 0)
+  (op_assign Suspended 0)
+  (op_assign Executive 0)
+  (op_assign DiskController 0)
+  (op_assign FloppyDiskPeripheral 0)
+  (op_assign FlConfigCallBack 0)
+  (op_assign MaximumInterfaceType 0)
+  (op_assign MOUNTDEV_MOUNTED_DEVICE_GUID 0)
+  (op_assign myStatus 0)
+  (op_assign s 0)
+  (op_assign UNLOADED 0)
+  (op_assign NP 0)
+  (op_assign DC 0)
+  (op_assign SKIP1 0)
+  (op_assign SKIP2 0)
+  (op_assign MPR1 0)
+  (op_assign MPR3 0)
+  (op_assign IPC 0)
+  (op_assign pended 0)
+  (op_assign compRegistered 0)
+  (op_assign lowerDriverReturn 0)
+  (op_assign setEventCalled 0)
+  (op_assign customIrp 0)
+  {
+    {
+      (op_assign status 0)
+      (op_assign pirp irp)
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@bb1b0ad
+    }
+    if (op_greaterEqual status 0)
+    {
+      (op_assign s NP)
+      (op_assign customIrp 0)
+      (op_assign setEventCalled customIrp)
+      (op_assign lowerDriverReturn setEventCalled)
+      (op_assign compRegistered lowerDriverReturn)
+      (op_assign pended compRegistered)
+      (op_assign pirp__IoStatus__Status 0)
+      (op_assign myStatus 0)
+      if (op_equals irp_choice 0)
+      {
+        (op_assign pirp__IoStatus__Status (op_minus 1073741637))
+        (op_assign myStatus (op_minus 1073741637))
+      }
+      else
+      {}
+      {
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4be52efe
+      }
+      {
+        if (op_lessThan status 0)
+        {
+          return (op_bracketedPrimary (op_minus 1))
+        }
+        else
+        {}
+      }
+      t_int tmp_ndt_1
+      (op_assign tmp_ndt_1 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1db144c9)
+      if (op_equals tmp_ndt_1 0)
+      {
+        goto switch_2_0
+      }
+      else
+      {
+        t_int tmp_ndt_2
+        (op_assign tmp_ndt_2 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@64445bd6)
+        if (op_equals tmp_ndt_2 1)
+        {
+          goto switch_2_1
+        }
+        else
+        {
+          t_int tmp_ndt_3
+          (op_assign tmp_ndt_3 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@62f6ab2b)
+          if (op_equals tmp_ndt_3 2)
+          {
+            goto switch_2_2
+          }
+          else
+          {
+            t_int tmp_ndt_4
+            (op_assign tmp_ndt_4 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@86eb55)
+            if (op_equals tmp_ndt_4 3)
+            {
+              goto switch_2_3
+            }
+            else
+            {
+              goto switch_2_default
+              if 0
+              {
+                switch_2_0:
+                {
+                  (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@17866080)
+                }
+                goto switch_2_break
+                switch_2_1:
+                {
+                  (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@51da134d)
+                }
+                goto switch_2_break
+                switch_2_2:
+                {
+                  (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6a255ae)
+                }
+                goto switch_2_break
+                switch_2_3:
+                {
+                  (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@31c9ca6c)
+                }
+                goto switch_2_break
+                switch_2_default:
+                TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@156f3eb5
+                return (op_bracketedPrimary (op_minus 1))
+              }
+              else
+              {
+                switch_2_break:
+                TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@142e172e
+              }
+            }
+          }
+        }
+      }
+    }
+    else
+    {}
+    if (op_equals pended 1)
+    {
+      if (op_equals s NP)
+      {
+        (op_assign s NP)
+      }
+      else
+      {
+        goto _L___2
+      }
+    }
+    else
+    {
+      _L___2:
+      if (op_equals pended 1)
+      {
+        if (op_equals s MPR3)
+        {
+          (op_assign s MPR3)
+        }
+        else
+        {
+          goto _L___1
+        }
+      }
+      else
+      {
+        _L___1:
+        if (op_notequals s UNLOADED)
+        {
+          if (op_notequals status (op_minus 1))
+          {
+            if (op_notequals s SKIP2)
+            {
+              if (op_notequals s IPC)
+              {
+                if (op_notequals s DC)
+                {
+                  {
+                    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@352f20
+                  }
+                }
+                else
+                {
+                  goto _L___0
+                }
+              }
+              else
+              {
+                goto _L___0
+              }
+            }
+            else
+            {
+              _L___0:
+              if (op_equals pended 1)
+              {
+                if (op_notequals status 259)
+                {
+                  (op_assign status 0)
+                }
+                else
+                {}
+              }
+              else
+              {
+                if (op_equals s DC)
+                {
+                  if (op_equals status 259)
+                  {
+                    {
+                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7f500fe0
+                    }
+                  }
+                  else
+                  {}
+                }
+                else
+                {
+                  if (op_notequals status lowerDriverReturn)
+                  {
+                    {
+                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@13260c29
+                    }
+                  }
+                  else
+                  {}
+                }
+              }
+            }
+          }
+          else
+          {}
+        }
+        else
+        {}
+      }
+    }
+    (op_assign status 0)
+    return (op_bracketedPrimary status)
+  }
+}
+{
+  t_int malloc = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7755ee04
+  {
+    (op_assign customIrp 1)
+    t_int tmp_ndt_5
+    (op_assign tmp_ndt_5 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5e3083e1)
+    if (op_equals tmp_ndt_5 0)
+    {
+      goto switch_3_0
+    }
+    else
+    {
+      goto switch_3_default
+      if 0
+      {
+        switch_3_0:
+        return (op_bracketedPrimary malloc)
+        switch_3_default:
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@21e0a8c8
+        return (op_bracketedPrimary 0)
+      }
+      else
+      {
+      }
+    }
+  }
+}
+{
+  {
+    t_int tmp_ndt_6
+    (op_assign tmp_ndt_6 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@204bf99)
+    if (op_equals tmp_ndt_6 0)
+    {
+      goto switch_4_0
+    }
+    else
+    {
+      goto switch_4_default
+      if 0
+      {
+        switch_4_0:
+        return (op_bracketedPrimary 0)
+        switch_4_default:
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@5af95413
+        return (op_bracketedPrimary (op_minus 1073741823))
+      }
+      else
+      {
+      }
+    }
+  }
+}
+{
+  {
+    t_int tmp_ndt_7
+    (op_assign tmp_ndt_7 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@ceb26)
+    if (op_equals tmp_ndt_7 0)
+    {
+      goto switch_5_0
+    }
+    else
+    {
+      goto switch_5_default
+      if 0
+      {
+        switch_5_0:
+        return (op_bracketedPrimary 0)
+        switch_5_default:
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@240ea507
+        return (op_bracketedPrimary (op_minus 1073741823))
+      }
+      else
+      {
+      }
+    }
+  }
+}
+{
+  {
+    t_int tmp_ndt_8
+    (op_assign tmp_ndt_8 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3d13e68)
+    if (op_equals tmp_ndt_8 0)
+    {
+      goto switch_6_0
+    }
+    else
+    {
+      goto switch_6_default
+      if 0
+      {
+        switch_6_0:
+        return (op_bracketedPrimary 0)
+        switch_6_default:
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@1398bbcd
+        return (op_bracketedPrimary (op_minus 1073741808))
+      }
+      else
+      {
+      }
+    }
+  }
+}
+{
+  {
+    t_int tmp_ndt_9
+    (op_assign tmp_ndt_9 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@74aa2743)
+    if (op_equals tmp_ndt_9 0)
+    {
+      goto switch_7_0
+    }
+    else
+    {
+      goto switch_7_default
+      if 0
+      {
+        switch_7_0:
+        return (op_bracketedPrimary 0)
+        switch_7_default:
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@255d824c
+        return (op_bracketedPrimary (op_minus 1073741823))
+      }
+      else
+      {
+      }
+    }
+  }
+}
+{
+  {
+    if (op_equals s NP)
+    {
+      (op_assign s MPR1)
+    }
+    else
+    {
+      {
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2f75daf1
+      }
+    }
+    return (exp null)
+  }
+}
+{
+  t_int returnVal2
+  t_int compRetStatus1
+  t_int lcontext = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@79654a01
+  t_unspecified __cil_tmp7
+  {
+    if compRegistered
+    {
+      {
+        (op_assign compRetStatus1 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5c50ea51)
+      }
+      {
+        (op_assign __cil_tmp7 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@15d65c75)
+        if (op_equals __cil_tmp7 (op_minus 1073741802))
+        {
+          {
+            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@14f5ae6c
+          }
+        }
+        else
+        {}
+      }
+    }
+    else
+    {}
+    t_int tmp_ndt_10
+    (op_assign tmp_ndt_10 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4793cbb1)
+    if (op_equals tmp_ndt_10 0)
+    {
+      goto switch_8_0
+    }
+    else
+    {
+      t_int tmp_ndt_11
+      (op_assign tmp_ndt_11 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1ccab370)
+      if (op_equals tmp_ndt_11 1)
+      {
+        goto switch_8_1
+      }
+      else
+      {
+        goto switch_8_default
+        if 0
+        {
+          switch_8_0:
+          (op_assign returnVal2 0)
+          goto switch_8_break
+          switch_8_1:
+          (op_assign returnVal2 (op_minus 1073741823))
+          goto switch_8_break
+          switch_8_default:
+          (op_assign returnVal2 259)
+          goto switch_8_break
+        }
+        else
+        {
+          switch_8_break:
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@3b586168
+        }
+      }
+    }
+    if (op_equals s NP)
+    {
+      (op_assign s IPC)
+      (op_assign lowerDriverReturn returnVal2)
+    }
+    else
+    {
+      if (op_equals s MPR1)
+      {
+        if (op_equals returnVal2 259)
+        {
+          (op_assign s MPR3)
+          (op_assign lowerDriverReturn returnVal2)
+        }
+        else
+        {
+          (op_assign s NP)
+          (op_assign lowerDriverReturn returnVal2)
+        }
+      }
+      else
+      {
+        if (op_equals s SKIP1)
+        {
+          (op_assign s SKIP2)
+          (op_assign lowerDriverReturn returnVal2)
+        }
+        else
+        {
+          {
+            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2e72ea1
+          }
+        }
+      }
+    }
+    return (op_bracketedPrimary returnVal2)
+  }
+}
+{
+  {
+    if (op_equals s NP)
+    {
+      (op_assign s DC)
+    }
+    else
+    {
+      {
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5b70a30f
+      }
+    }
+    return (exp null)
+  }
+}
+{
+  t_int l = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@12e8ca22
+  {
+    (op_assign setEventCalled 1)
+    return (op_bracketedPrimary l)
+  }
+}
+{
+  {
+    if (op_equals s MPR3)
+    {
+      if (op_equals setEventCalled 1)
+      {
+        (op_assign s NP)
+        (op_assign setEventCalled 0)
+      }
+      else
+      {
+        goto _L
+      }
+    }
+    else
+    {
+      _L:
+      if (op_equals customIrp 1)
+      {
+        (op_assign s NP)
+        (op_assign customIrp 0)
+      }
+      else
+      {
+        if (op_equals s MPR3)
+        {
+          {
+            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6a43aa36
+          }
+        }
+        else
+        {}
+      }
+    }
+    t_int tmp_ndt_12
+    (op_assign tmp_ndt_12 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@51ea13f9)
+    if (op_equals tmp_ndt_12 0)
+    {
+      goto switch_9_0
+    }
+    else
+    {
+      goto switch_9_default
+      if 0
+      {
+        switch_9_0:
+        return (op_bracketedPrimary 0)
+        switch_9_default:
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@f5caa10
+        return (op_bracketedPrimary (op_minus 1073741823))
+      }
+      else
+      {
+      }
+    }
+  }
+}
+{
+  {
+    t_int tmp_ndt_13
+    (op_assign tmp_ndt_13 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5b31d803)
+    if (op_equals tmp_ndt_13 0)
+    {
+      goto switch_10_0
+    }
+    else
+    {
+      goto switch_10_default
+      if 0
+      {
+        switch_10_0:
+        return (op_bracketedPrimary 0)
+        switch_10_default:
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2c54db49
+        return (op_bracketedPrimary (op_minus 1073741823))
+      }
+      else
+      {
+      }
+    }
+  }
+}
+{
+  {
+    t_int tmp_ndt_14
+    (op_assign tmp_ndt_14 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2d2070e1)
+    if (op_equals tmp_ndt_14 0)
+    {
+      goto switch_11_0
+    }
+    else
+    {
+      goto switch_11_default
+      if 0
+      {
+        switch_11_0:
+        return (op_bracketedPrimary 0)
+        switch_11_default:
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@4746537f
+        return (op_bracketedPrimary (op_minus 1073741823))
+      }
+      else
+      {
+      }
+    }
+  }
+}
+{
+  {
+    t_int tmp_ndt_15
+    (op_assign tmp_ndt_15 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@12626a54)
+    if (op_equals tmp_ndt_15 0)
+    {
+      goto switch_12_0
+    }
+    else
+    {
+      goto switch_12_default
+      if 0
+      {
+        switch_12_0:
+        return (op_bracketedPrimary 0)
+        switch_12_default:
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@186665c2
+        return (op_bracketedPrimary (op_minus 1073741823))
+      }
+      else
+      {
+      }
+    }
+  }
+}
+{
+  t_int Irp__IoStatus__Status
+  t_int Irp__IoStatus__Information
+  {
+    {
+      (op_assign myStatus 0)
+      (op_assign Irp__IoStatus__Status 0)
+      (op_assign Irp__IoStatus__Information 1)
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@36efb957
+    }
+    return (op_bracketedPrimary 0)
+  }
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4347c95e
+{
+  t_int disketteExtension__HoldNewRequests = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@42f63ba8
+  t_int disketteExtension__IsRemoved = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@69951e41
+  t_int Irp__IoStatus__Information
+  t_int disketteExtension__IsStarted = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@22fb2725
+  t_int Irp__CurrentLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5f8b071d
+  t_int Irp__Tail__Overlay__CurrentStackLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2cd34c3f
+  t_int disketteExtension__TargetObject = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6df528f2
+  t_int irpSp__Parameters__DeviceIoControl__OutputBufferLength = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@164cf866
+  t_int sizeof__MOUNTDEV_NAME = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1178b65d
+  t_int Irp__AssociatedIrp__SystemBuffer = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@27fcb2f9
+  t_int mountName__NameLength
+  t_int disketteExtension__DeviceName__Length = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@630abc4c
+  t_int sizeof__USHORT = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1274f783
+  t_int disketteExtension__InterfaceString__Buffer = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@466a71ce
+  t_int uniqueId__UniqueIdLength
+  t_int disketteExtension__InterfaceString__Length = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4c36880
+  t_int sizeof__MOUNTDEV_UNIQUE_ID = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@321d4c88
+  t_int irpSp__Parameters__DeviceIoControl__InputBufferLength = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7e07da7
+  t_int sizeof__FORMAT_PARAMETERS = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@12118894
+  t_int irpSp__Parameters__DeviceIoControl__IoControlCode___1 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@d09753e
+  t_int sizeof__FORMAT_EX_PARAMETERS = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5528011b
+  t_int formatExParameters__FormatGapLength = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@51a1435c
+  t_int formatExParameters__SectorsPerTrack = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4fea24d4
+  t_int sizeof__DISK_GEOMETRY = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@90c1892
+  t_int Irp__IoStatus__Status___0
+  t_int disketteExtension = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1c39f071
+  t_int ntStatus
+  t_int outputBufferLength
+  t_int lowestDriveMediaType = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4759fb09
+  t_int highestDriveMediaType = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@590bbbb2
+  t_int formatExParametersSize = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@302ae089
+  t_int formatExParameters
+  t_int tmp
+  t_int mountName
+  t_int uniqueId
+  t_int tmp___0
+  t_int __cil_tmp39
+  t_int __cil_tmp40
+  t_int __cil_tmp41 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@63c32485
+  t_int __cil_tmp42
+  t_int __cil_tmp43
+  t_int __cil_tmp44 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6bca1a47
+  t_int __cil_tmp45 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6f98faa7
+  t_int __cil_tmp46
+  t_int __cil_tmp47
+  t_int __cil_tmp48
+  t_int __cil_tmp49
+  t_int __cil_tmp50 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@8d17175
+  t_int __cil_tmp51
+  t_int __cil_tmp52
+  t_int __cil_tmp53
+  t_int __cil_tmp54
+  t_int __cil_tmp55 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@724c9be6
+  t_int __cil_tmp56
+  t_int __cil_tmp57
+  t_int __cil_tmp58
+  t_int __cil_tmp59
+  t_int __cil_tmp60 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@49efafca
+  t_int __cil_tmp61
+  t_int __cil_tmp62
+  t_int __cil_tmp63
+  t_int __cil_tmp64
+  t_int __cil_tmp65 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@610a3992
+  t_int __cil_tmp66 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@62d3b61f
+  t_int __cil_tmp67
+  t_int __cil_tmp68
+  t_int __cil_tmp69 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@74569208
+  t_int __cil_tmp70
+  t_int __cil_tmp71
+  t_int __cil_tmp72 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4073e2b7
+  t_int __cil_tmp73
+  t_int __cil_tmp74
+  t_int __cil_tmp75 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@70858582
+  t_int __cil_tmp76
+  t_int __cil_tmp77
+  t_int __cil_tmp78 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@f99a6c3
+  t_int __cil_tmp79
+  t_int __cil_tmp80
+  t_int __cil_tmp81 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4f1fb3ea
+  t_int __cil_tmp82
+  t_int __cil_tmp83
+  t_int __cil_tmp84
+  t_int __cil_tmp85
+  t_int __cil_tmp86
+  t_int __cil_tmp87
+  t_int __cil_tmp88 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@10a686e4
+  t_int __cil_tmp89
+  t_int __cil_tmp90
+  t_unspecified __cil_tmp91
+  {
+    if disketteExtension__HoldNewRequests
+    {
+      {
+        if (op_notequals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp41)
+        {
+          {
+            (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4c53a8e7)
+          }
+          return (op_bracketedPrimary ntStatus)
+        }
+        else
+        {}
+      }
+    }
+    else
+    {}
+    if disketteExtension__IsRemoved
+    {
+      {
+        (op_assign Irp__IoStatus__Information 0)
+        (op_assign Irp__IoStatus__Status___0 (op_minus 1073741738))
+        (op_assign myStatus (op_minus 1073741738))
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@e3ea010
+      }
+      return (op_bracketedPrimary (op_minus 1073741738))
+    }
+    else
+    {}
+    if (op_not disketteExtension__IsStarted)
+    {
+      if (op_equals s NP)
+      {
+        (op_assign s SKIP1)
+      }
+      else
+      {
+        {
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3c0cc2de
+        }
+      }
+      {
+        (op_postFixIncr Irp__CurrentLocation)
+        (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+        (op_assign tmp TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1839e21d)
+      }
+      return (op_bracketedPrimary tmp)
+    }
+    else
+    {}
+    {
+      if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp44)
+      {
+        goto switch_13_exp_0
+      }
+      else
+      {
+        {
+          if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp45)
+          {
+            goto switch_13_exp_1
+          }
+          else
+          {
+            {
+              if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp50)
+              {
+                goto switch_13_exp_2
+              }
+              else
+              {
+                {
+                  if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp55)
+                  {
+                    goto switch_13_exp_3
+                  }
+                  else
+                  {
+                    {
+                      if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp60)
+                      {
+                        goto switch_13_exp_4
+                      }
+                      else
+                      {
+                        {
+                          if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp65)
+                          {
+                            goto switch_13_exp_5
+                          }
+                          else
+                          {
+                            {
+                              if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp66)
+                              {
+                                goto switch_13_exp_6
+                              }
+                              else
+                              {
+                                {
+                                  if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp69)
+                                  {
+                                    goto switch_13_exp_7
+                                  }
+                                  else
+                                  {
+                                    {
+                                      if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp72)
+                                      {
+                                        goto switch_13_exp_8
+                                      }
+                                      else
+                                      {
+                                        {
+                                          if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp75)
+                                          {
+                                            goto switch_13_exp_9
+                                          }
+                                          else
+                                          {
+                                            {
+                                              if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp78)
+                                              {
+                                                goto switch_13_exp_10
+                                              }
+                                              else
+                                              {
+                                                {
+                                                  if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp81)
+                                                  {
+                                                    goto switch_13_exp_11
+                                                  }
+                                                  else
+                                                  {
+                                                    goto switch_13_default
+                                                    if 0
+                                                    {
+                                                      switch_13_exp_0:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@497c656d
+                                                      if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength sizeof__MOUNTDEV_NAME)
+                                                      {
+                                                        (op_assign ntStatus (op_minus 1073741811))
+                                                        goto switch_13_break
+                                                      }
+                                                      else
+                                                      {}
+                                                      (op_assign mountName Irp__AssociatedIrp__SystemBuffer)
+                                                      (op_assign mountName__NameLength disketteExtension__DeviceName__Length)
+                                                      {
+                                                        (op_assign __cil_tmp82 (op_plus sizeof__USHORT mountName__NameLength))
+                                                        if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength __cil_tmp82)
+                                                        {
+                                                          (op_assign ntStatus (op_minus 2147483643))
+                                                          (op_assign Irp__IoStatus__Information sizeof__MOUNTDEV_NAME)
+                                                          goto switch_13_break
+                                                        }
+                                                        else
+                                                        {}
+                                                      }
+                                                      (op_assign ntStatus 0)
+                                                      (op_assign Irp__IoStatus__Information (op_plus sizeof__USHORT mountName__NameLength))
+                                                      goto switch_13_break
+                                                      switch_13_exp_1:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@32b97272
+                                                      if (op_not disketteExtension__InterfaceString__Buffer)
+                                                      {
+                                                        (op_assign ntStatus (op_minus 1073741811))
+                                                        goto switch_13_break
+                                                      }
+                                                      else
+                                                      {
+                                                        if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength sizeof__MOUNTDEV_UNIQUE_ID)
+                                                        {
+                                                          (op_assign ntStatus (op_minus 1073741811))
+                                                          goto switch_13_break
+                                                        }
+                                                        else
+                                                        {}
+                                                      }
+                                                      (op_assign uniqueId Irp__AssociatedIrp__SystemBuffer)
+                                                      (op_assign uniqueId__UniqueIdLength disketteExtension__InterfaceString__Length)
+                                                      {
+                                                        (op_assign __cil_tmp83 (op_plus sizeof__USHORT uniqueId__UniqueIdLength))
+                                                        if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength __cil_tmp83)
+                                                        {
+                                                          (op_assign ntStatus (op_minus 2147483643))
+                                                          (op_assign Irp__IoStatus__Information sizeof__MOUNTDEV_UNIQUE_ID)
+                                                          goto switch_13_break
+                                                        }
+                                                        else
+                                                        {}
+                                                      }
+                                                      (op_assign ntStatus 0)
+                                                      (op_assign Irp__IoStatus__Information (op_plus sizeof__USHORT uniqueId__UniqueIdLength))
+                                                      goto switch_13_break
+                                                      switch_13_exp_2:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@68794cc9
+                                                      switch_13_exp_3:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@3f8762d1
+                                                      if (op_lessThan irpSp__Parameters__DeviceIoControl__InputBufferLength sizeof__FORMAT_PARAMETERS)
+                                                      {
+                                                        (op_assign ntStatus (op_minus 1073741811))
+                                                        goto switch_13_break
+                                                      }
+                                                      else
+                                                      {}
+                                                      {
+                                                        (op_assign tmp___0 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@157a2f41)
+                                                      }
+                                                      if (op_not tmp___0)
+                                                      {
+                                                        (op_assign ntStatus (op_minus 1073741811))
+                                                        goto switch_13_break
+                                                      }
+                                                      else
+                                                      {}
+                                                      {
+                                                        if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp88)
+                                                        {
+                                                          if (op_lessThan irpSp__Parameters__DeviceIoControl__InputBufferLength sizeof__FORMAT_EX_PARAMETERS)
+                                                          {
+                                                            (op_assign ntStatus (op_minus 1073741811))
+                                                            goto switch_13_break
+                                                          }
+                                                          else
+                                                          {}
+                                                          (op_assign formatExParameters Irp__AssociatedIrp__SystemBuffer)
+                                                          if (op_lessThan irpSp__Parameters__DeviceIoControl__InputBufferLength formatExParametersSize)
+                                                          {
+                                                            (op_assign ntStatus (op_minus 1073741811))
+                                                            goto switch_13_break
+                                                          }
+                                                          else
+                                                          {
+                                                            if (op_greaterEqual formatExParameters__FormatGapLength 256)
+                                                            {
+                                                              (op_assign ntStatus (op_minus 1073741811))
+                                                              goto switch_13_break
+                                                            }
+                                                            else
+                                                            {
+                                                              if (op_greaterEqual formatExParameters__SectorsPerTrack 256)
+                                                              {
+                                                                (op_assign ntStatus (op_minus 1073741811))
+                                                                goto switch_13_break
+                                                              }
+                                                              else
+                                                              {}
+                                                            }
+                                                          }
+                                                        }
+                                                        else
+                                                        {}
+                                                      }
+                                                      switch_13_exp_4:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@6c29e57e
+                                                      switch_13_exp_5:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@4e94f336
+                                                      switch_13_exp_6:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@4a8191df
+                                                      switch_13_exp_7:
+                                                      {
+                                                        (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@e45bfe9)
+                                                      }
+                                                      goto switch_13_break
+                                                      switch_13_exp_8:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2d64b94a
+                                                      switch_13_exp_9:
+                                                      (op_assign outputBufferLength irpSp__Parameters__DeviceIoControl__OutputBufferLength)
+                                                      if (op_lessThan outputBufferLength sizeof__DISK_GEOMETRY)
+                                                      {
+                                                        (op_assign ntStatus (op_minus 1073741789))
+                                                        goto switch_13_break
+                                                      }
+                                                      else
+                                                      {}
+                                                      (op_assign ntStatus 0)
+                                                      {
+                                                        (op_assign __cil_tmp89 (op_minus highestDriveMediaType lowestDriveMediaType))
+                                                        (op_assign __cil_tmp90 (op_plus __cil_tmp89 1))
+                                                        if (op_lessThan outputBufferLength __cil_tmp90)
+                                                        {
+                                                          (op_assign ntStatus (op_minus 2147483643))
+                                                        }
+                                                        else
+                                                        {}
+                                                      }
+                                                      goto switch_13_break
+                                                      switch_13_exp_10:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@4400e293
+                                                      switch_13_exp_11:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2499ca5
+                                                      switch_13_default:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2150c1f2
+                                                      if (op_equals s NP)
+                                                      {
+                                                        (op_assign s SKIP1)
+                                                      }
+                                                      else
+                                                      {
+                                                        {
+                                                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2976827b
+                                                        }
+                                                      }
+                                                      {
+                                                        (op_postFixIncr Irp__CurrentLocation)
+                                                        (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                                                        (op_assign ntStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6aa1f9bc)
+                                                      }
+                                                      return (op_bracketedPrimary ntStatus)
+                                                    }
+                                                    else
+                                                    {
+                                                      switch_13_break:
+                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@24c3ecf9
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    {
+      (op_assign __cil_tmp91 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@33bf6c2)
+      if (op_notequals __cil_tmp91 259L)
+      {
+        {
+          (op_assign Irp__IoStatus__Status___0 ntStatus)
+          (op_assign myStatus ntStatus)
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1e43c984
+        }
+      }
+      else
+      {}
+    }
+    return (op_bracketedPrimary ntStatus)
+  }
+}
+{
+  t_int DriveMediaConstants__driveMediaType__MediaType = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7b4abfe9
+  t_int FormatParameters__MediaType = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4055305d
+  t_int FAKE_CONDITION = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1c044373
+  {
+    if (op_notequals DriveMediaConstants__driveMediaType__MediaType FormatParameters__MediaType)
+    {
+      return (op_bracketedPrimary 0)
+    }
+    else
+    {
+      if FAKE_CONDITION
+      {
+        return (op_bracketedPrimary 0)
+      }
+      else
+      {
+        return (op_bracketedPrimary 1)
+      }
+    }
+  }
+}
+{
+  t_int Irp__IoStatus__Status
+  t_int Irp__IoStatus__Information
+  t_int Irp__Tail__Overlay__CurrentStackLocation__Control
+  t_int ntStatus
+  t_int FAKE_CONDITION = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1c0ba69e
+  {
+    (op_postFixIncr PagingReferenceCount)
+    if (op_equals PagingReferenceCount 1)
+    {
+    }
+    else
+    {}
+    if FAKE_CONDITION
+    {
+      {
+        (op_assign Irp__IoStatus__Status (op_minus 1073741536))
+        (op_assign myStatus (op_minus 1073741536))
+        (op_assign Irp__IoStatus__Information 0)
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3290e701
+        (op_postFixDecr PagingReferenceCount)
+      }
+      if (op_equals PagingReferenceCount 0)
+      {
+      }
+      else
+      {}
+      (op_assign ntStatus (op_minus 1073741536))
+    }
+    else
+    {
+      (op_assign Irp__IoStatus__Status 259)
+      (op_assign myStatus 259)
+      if (op_equals pended 0)
+      {
+        (op_assign pended 1)
+      }
+      else
+      {
+        {
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5b2eeed6
+        }
+      }
+      (op_assign ntStatus 259)
+    }
+    return (op_bracketedPrimary ntStatus)
+  }
+}
+{
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@650f211b
+    return (exp null)
+  }
+}

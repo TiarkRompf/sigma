@@ -1,0 +1,58 @@
+loops/trex04_true-unreach-call_false-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1a02ba2a
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@29fe37dd
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6fb638e5
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7e1a1823
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@71462e20
+{
+  t_int y = 0
+  t_bool c1 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@29deaf0ac2 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@77f1cbc4
+  if c1
+  (op_postFixIncr y)
+  else
+  {}
+  if c2
+  (op_postFixDecr y)
+  else
+  (op_plusAssign y 10)
+}
+{
+  t_int d = 1
+  t_int x = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@59841e19
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual x 1000000) (op_greaterEqual x (op_minus 1000000)))))
+  return 0
+  else
+  {}
+  t_bool c1 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@19731c27c2 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@450946fc
+  if c1
+  (op_assign d (op_minus d 1))
+  else
+  {}
+  if c2
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3c5f1a72
+  else
+  {}
+  (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTExpressionList@45d2bf36)
+  if c1
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@44c1118f
+  else
+  {}
+  if c2
+  (op_assign d (op_minus d 1))
+  else
+  {}
+  while (op_greaterThan x 0)
+  {
+    (op_assign x (op_minus x d))
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4b70814d
+}

@@ -1,0 +1,24 @@
+loops/invert_string_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1d8bff3a
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@518c3b31
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@72e83c1d
+{
+  t_int max = 5
+  t_char str1str2
+  t_int ij
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@62191d4d
+  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@20295c1b) '\0')
+  (op_assign j 0)
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@10ccae9c
+  (op_assign j (op_minus max 1))
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@23f7704c
+}

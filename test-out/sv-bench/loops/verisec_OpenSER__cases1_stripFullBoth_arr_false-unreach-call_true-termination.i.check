@@ -1,0 +1,61 @@
+loops/verisec_OpenSER__cases1_stripFullBoth_arr_false-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@37cc5a77
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@53ff5a68
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4eba9a64
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2e2627a7
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7becdff6
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5269f6f9
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@489a2f6a
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@579e32c1
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4a1054ab
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@57d3bd2e
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4e2b29c1
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@680512ff
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2078a658
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6a8845b4
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7dfa0c05
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3d287baf
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@58075034
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@708a1b65
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5dbdab55
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2336464e
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@41d224ec
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@61a35e80
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5174a6e2
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@40618eb4
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@10c42710
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6b683cd6
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1f5fc4ef
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5387fd9e
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@62cabc59
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@486eb25a
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@29f77f04
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@45700ca9
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@726f582a
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4faec85f
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5db391f1
+{
+  t_int start = 0i = (op_minus 1)j = (op_minus 1)
+  t_char str2
+  if (op_not str)
+  return (op_minus 1)
+  else
+  {}
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTDoStatement@1863cbaa
+  return 0
+}
+{
+  t_char A
+  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@10c57e84) 0)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2910b0f3
+  return 0
+}

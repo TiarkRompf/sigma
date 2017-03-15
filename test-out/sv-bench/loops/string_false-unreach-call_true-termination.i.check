@@ -1,0 +1,55 @@
+loops/string_false-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@315ebdd4
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7ac57608
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7db10cb9
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1590fc71
+{
+  t_char string_Astring_B
+  t_int ijnc_Anc_Bfound = 0
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@5164530a
+  if (op_not (op_bracketedPrimary (op_equals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@c01a18) '\0')))
+  return 0
+  else
+  {}
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@75611a7d
+  if (op_not (op_bracketedPrimary (op_equals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@678003d4) '\0')))
+  return 0
+  else
+  {}
+  (op_assign nc_A 0)
+  while (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@140ff02d) '\0')
+  (op_postFixIncr nc_A)
+  (op_assign nc_B 0)
+  while (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@149f386e) '\0')
+  (op_postFixIncr nc_B)
+  if (op_not (op_bracketedPrimary (op_greaterEqual nc_B nc_A)))
+  return 0
+  else
+  {}
+  (op_assign i (op_assign j 0))
+  while (op_logicalAnd (op_bracketedPrimary (op_lessThan i nc_A)) (op_bracketedPrimary (op_lessThan j nc_B)))
+  {
+    if (op_equals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@69d06a72) (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@e295a3f))
+    {
+      (op_postFixIncr i)
+      (op_postFixIncr j)
+    }
+    else
+    {
+      (op_assign i (op_plus (op_minus i j) 1))
+      (op_assign j 0)
+    }
+  }
+  (op_assign found (op_shiftLeft (op_bracketedPrimary (op_greaterThan j (op_minus nc_B 1))) i))
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@65cc4d4f
+  return 0
+}

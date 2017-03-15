@@ -1,0 +1,26 @@
+loop-new/gauss_sum_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@46917ff7
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@75570536
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@109577de
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7989e291
+{
+  t_int nsumi
+  (op_assign n TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@34aa4490)
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 1 n) (op_lessEqual n 1000))))
+  return 0
+  else
+  {}
+  (op_assign sum 0)
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@79198986
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@42893afc
+  return 0
+}

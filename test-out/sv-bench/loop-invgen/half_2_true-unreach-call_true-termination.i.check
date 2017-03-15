@@ -1,0 +1,37 @@
+loop-invgen/half_2_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1bb5913
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@56d50f4
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@40ad3623
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@655f5586
+{
+  t_int nik
+  (op_assign n TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3e77ebff)
+  if (op_not (op_bracketedPrimary (op_lessEqual n 1000000)))
+  return 0
+  else
+  {}
+  (op_assign k n)
+  (op_assign i 0)
+  while (op_lessThan i n)
+  {
+    (op_postFixDecr k)
+    (op_assign i (op_plus i 2))
+  }
+  t_int j = 0
+  while (op_lessThan j (op_divide n 2))
+  {
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5172f635
+    (op_postFixDecr k)
+    (op_postFixIncr j)
+  }
+  return 0
+}

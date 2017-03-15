@@ -1,0 +1,92 @@
+loop-invgen/apache-get-tag_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4cf2cd4d
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1f6cf4df
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4f012314
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2029408
+{
+  t_int tagbuf_len
+  t_int t
+  (op_assign tagbuf_len TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5840a9a0)
+  if (op_greaterEqual tagbuf_len 1)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2072747b
+  else
+  goto END
+  (op_assign t 0)
+  (op_prefixDecr tagbuf_len)
+  while 1
+  {
+    if (op_equals t tagbuf_len)
+    {
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@66adeae2
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@701980eb
+      goto END
+    }
+    else
+    {}
+    if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2dc93ae1
+    {
+      stm org.eclipse.cdt.internal.core.dom.parser.c.CASTBreakStatement@1eab428f
+    }
+    else
+    {}
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@17d85142
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2bfa958a
+    (op_postFixIncr t)
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4f80bc26
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@bfb3063
+  (op_postFixIncr t)
+  while 1
+  {
+    if (op_equals t tagbuf_len)
+    {
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5e7c321f
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@21d5aa9f
+      goto END
+    }
+    else
+    {}
+    if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6bfe530f
+    {
+      if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@39d41e3b
+      {
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6872fd4
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a0afcc9
+        (op_postFixIncr t)
+        if (op_equals t tagbuf_len)
+        {
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1375b0ac
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a49513f
+          goto END
+        }
+        else
+        {}
+      }
+      else
+      {}
+    }
+    else
+    if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@358f262d
+    {
+      stm org.eclipse.cdt.internal.core.dom.parser.c.CASTBreakStatement@683e78e1
+    }
+    else
+    {}
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5670559a
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@16f026c2
+    (op_postFixIncr t)
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5a02c47f
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@416056ae
+  END:
+  return 0
+}

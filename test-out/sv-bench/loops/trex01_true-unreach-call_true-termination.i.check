@@ -1,0 +1,65 @@
+loops/trex01_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1ebdbf7b
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@48f6ff1
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4511edf2
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6f049fde
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1c31b322
+{
+  t_int x = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@633ea7b2y = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@298ab85ak = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@623b28daz = 1
+  L1:
+  while (op_lessThan z k)
+  {
+    (op_assign z (op_multiply 2 z))
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@73022f1c
+  L2:
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual x 1000000) (op_greaterEqual x (op_minus 1000000)))))
+  return (exp null)
+  else
+  {}
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual y 1000000) (op_greaterEqual y (op_minus 1000000)))))
+  return (exp null)
+  else
+  {}
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual k 1000000) (op_greaterEqual k (op_minus 1000000)))))
+  return (exp null)
+  else
+  {}
+  while (op_logicalAnd (op_greaterThan x 0) (op_greaterThan y 0))
+  {
+    t_bool c = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@651705f9
+    if c
+    {
+      P1:
+      (op_assign x (op_minus x d))
+      (op_assign y TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@19233969)
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@22e5af6f
+      (op_assign z (op_minus z 1))
+    }
+    else
+    {
+      (op_assign y (op_minus y d))
+    }
+  }
+}
+{
+  t_bool c = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@407d1ee0
+  if c
+  {
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1d18f3db
+  }
+  else
+  {
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1d707960
+  }
+  return 0
+}

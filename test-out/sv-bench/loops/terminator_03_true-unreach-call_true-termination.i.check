@@ -1,0 +1,34 @@
+loops/terminator_03_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4642505b
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3a664f71
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@81a1857
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6cf4c341
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3860860c
+{
+  t_int x = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@30f55bb6
+  t_int y = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@68f5355f
+  if (op_not (op_bracketedPrimary (op_lessEqual y 1000000)))
+  return 0
+  else
+  {}
+  if (op_greaterThan y 0)
+  {
+    while (op_lessThan x 100)
+    {
+      (op_assign x (op_plus x y))
+    }
+  }
+  else
+  {}
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@22d11dcb
+  return 0
+}

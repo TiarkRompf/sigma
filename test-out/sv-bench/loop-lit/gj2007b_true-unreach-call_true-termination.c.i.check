@@ -1,0 +1,32 @@
+loop-lit/gj2007b_true-unreach-call_true-termination.c.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4b036322
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@54f6bd11
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@67ec659e
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4cd17c59
+{
+  t_int x = 0
+  t_int m = 0
+  t_int n = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1c1b0c92
+  while (op_lessThan x n)
+  {
+    if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7d642435
+    {
+      (op_assign m x)
+    }
+    else
+    {}
+    (op_assign x (op_plus x 1))
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@79a07e92
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3ed4f64b
+  return 0
+}

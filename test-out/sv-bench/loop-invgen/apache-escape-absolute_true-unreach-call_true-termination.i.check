@@ -1,0 +1,113 @@
+loop-invgen/apache-escape-absolute_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@406d0010
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7898aed7
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2238ed79
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@c7ee460
+{
+  t_int scheme
+  t_int urilentokenlen
+  t_int cpc
+  (op_assign urilen TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@243b187f)
+  (op_assign tokenlen TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1968f439)
+  (op_assign scheme TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7c5e8148)
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual urilen 1000000) (op_greaterEqual urilen (op_minus 1000000)))))
+  return 0
+  else
+  {}
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual tokenlen 1000000) (op_greaterEqual tokenlen (op_minus 1000000)))))
+  return 0
+  else
+  {}
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual scheme 1000000) (op_greaterEqual scheme (op_minus 1000000)))))
+  return 0
+  else
+  {}
+  if (op_greaterThan urilen 0)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@7783747
+  else
+  goto END
+  if (op_greaterThan tokenlen 0)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@7bfc2f37
+  else
+  goto END
+  if (op_greaterEqual scheme 0)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@256bd54d
+  else
+  goto END
+  if (op_logicalOr (op_equals scheme 0) (op_bracketedPrimary (op_lessThan (op_minus urilen 1) scheme)))
+  {
+    goto END
+  }
+  else
+  {}
+  (op_assign cp scheme)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2db74469
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6bb39c97
+  if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@71ac8341
+  {
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a16e184
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1d9568a3
+    while (op_notequals cp (op_minus urilen 1))
+    {
+      if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6a3508a2
+      stm org.eclipse.cdt.internal.core.dom.parser.c.CASTBreakStatement@7f16382e
+      else
+      {}
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4231fc89
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@74d7441c
+      (op_prefixIncr cp)
+    }
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3665323c
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@78fcab96
+    if (op_equals cp (op_minus urilen 1))
+    goto END
+    else
+    {}
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3564c5b4
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7bdd90a0
+    if (op_equals (op_plus cp 1) (op_minus urilen 1))
+    goto END
+    else
+    {}
+    (op_prefixIncr cp)
+    (op_assign scheme cp)
+    if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6436b935
+    {
+      (op_assign c 0)
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@790b0e3e
+      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6a513dce
+      while (op_logicalAnd (op_notequals cp (op_minus urilen 1)) (op_lessThan c (op_minus tokenlen 1)))
+      {
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7d9ee8b4
+        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2cb00923
+        if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@d6b9875
+        {
+          (op_prefixIncr c)
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6eb76b5b
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@64e6f571
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@483301df
+          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@19ca809c
+        }
+        else
+        {}
+        (op_prefixIncr cp)
+      }
+      goto END
+    }
+    else
+    {}
+  }
+  else
+  {}
+  END:
+  return 0
+}

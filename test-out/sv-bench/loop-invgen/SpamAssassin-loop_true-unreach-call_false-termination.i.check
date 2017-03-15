@@ -1,0 +1,29 @@
+loop-invgen/SpamAssassin-loop_true-unreach-call_false-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@28a9849b
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3d2d0ea
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@709966b0
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@213dbb13
+{
+  t_int len
+  t_int i
+  t_int j
+  t_int bufsize
+  (op_assign bufsize TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@45d46ef3)
+  if (op_lessThan bufsize 0)
+  return 0
+  else
+  {}
+  (op_assign len TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5094b323)
+  t_int limit = (op_minus bufsize 4)
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@6b83f367
+  return 0
+}

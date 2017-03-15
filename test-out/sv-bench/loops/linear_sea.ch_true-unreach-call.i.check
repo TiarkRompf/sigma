@@ -1,0 +1,31 @@
+loops/linear_sea.ch_true-unreach-call.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@92ef20a
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@630dbeb0
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@16c05403
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@e2d2387
+{
+  t_int j = 0
+  while (op_logicalAnd (op_lessThan j n) (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@70ed3eea) q))
+  {
+    (op_postFixIncr j)
+  }
+  if (op_lessThan j SIZE)
+  return 1
+  else
+  return 0
+}
+{
+  (op_assign SIZE (op_plus (op_bracketedPrimary (op_divide TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7e9bf679 8)) 1))
+  t_int a
+  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@6a6fc5e5) 3)
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@d39e234
+}

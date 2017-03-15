@@ -1,0 +1,25 @@
+loops/for_infinite_loop_2_true-unreach-call_false-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@50387e91
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7e833f15
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7054be13
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2bb7020e
+{
+  t_int i = 0
+  t_int x = 0y = 0
+  t_int n = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@38e82d1f
+  if (op_not (op_bracketedPrimary (op_greaterThan n 0)))
+  return 0
+  else
+  {}
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@5ff4c680
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a054f4b
+}

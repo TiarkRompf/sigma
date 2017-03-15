@@ -1,0 +1,30 @@
+loop-new/count_by_nondet_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7062fe6a
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5ac1d1d0
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7aaaa68a
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5acd3704
+{
+  t_int i = 0
+  t_int k = 0
+  while (op_lessThan i 1000000)
+  {
+    t_int j = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3d3b1399
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 1 j) (op_lessThan j 1000000))))
+    return 0
+    else
+    {}
+    (op_assign i (op_plus i j))
+    (op_postFixIncr k)
+  }
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@69a01abf
+  return 0
+}

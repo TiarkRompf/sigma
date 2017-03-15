@@ -1,0 +1,23 @@
+loops/matrix_true-unreach-call_true-termination.i
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@65cb603d
+{
+  if (op_not (op_bracketedPrimary cond))
+  {
+    ERROR:
+    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1cbfe91a
+  }
+  else
+  {}
+  return (exp null)
+}
+TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@33eae99a
+{
+  t_int N_LIN = 1
+  t_int N_COL = 1
+  t_int jk
+  t_int matrizmaior
+  (op_assign maior TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2d09707a)
+  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@13fd376e
+  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7069fb32
+  return 0
+}
