@@ -13,27 +13,35 @@ package analysis
 
 
 
-import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement;
-import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
-import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition;
-import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIncludeStatement;
-import org.eclipse.cdt.core.dom.ast.IASTProblem;
-import org.eclipse.cdt.core.dom.ast.IASTStatement;
-import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.cdt.core.dom.ast.gnu.c.GCCLanguage;
-import org.eclipse.cdt.core.dom.parser.c.ANSICParserExtensionConfiguration;
-import org.eclipse.cdt.core.dom.parser.c.ICParserExtensionConfiguration;
-import org.eclipse.cdt.core.index.IIndexFileLocation;
-import org.eclipse.cdt.core.model.ILanguage;
-import org.eclipse.cdt.core.parser.FileContent;
-import org.eclipse.cdt.core.parser.IParserLogService;
-import org.eclipse.cdt.core.parser.IScannerInfo;
-import org.eclipse.cdt.core.parser.ParserFactory;
-import org.eclipse.cdt.internal.core.parser.IMacroDictionary;
-import org.eclipse.cdt.internal.core.parser.InternalParserUtil;
-import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent;
-import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContentProvider;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.cdt.core.dom.ast.IASTCompoundStatement
+import org.eclipse.cdt.core.dom.ast.IASTDeclaration
+import org.eclipse.cdt.core.dom.ast.IASTFunctionDefinition
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIncludeStatement
+import org.eclipse.cdt.core.dom.ast.IASTProblem
+import org.eclipse.cdt.core.dom.ast.IASTStatement
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit
+import org.eclipse.cdt.core.dom.ast.gnu.c.GCCLanguage
+import org.eclipse.cdt.core.dom.parser.c.ANSICParserExtensionConfiguration
+import org.eclipse.cdt.core.dom.parser.c.ICParserExtensionConfiguration
+import org.eclipse.cdt.core.index.IIndexFileLocation
+import org.eclipse.cdt.core.model.ILanguage
+import org.eclipse.cdt.core.parser.FileContent
+import org.eclipse.cdt.core.parser.IParserLogService
+import org.eclipse.cdt.core.parser.IScannerInfo
+import org.eclipse.cdt.core.parser.ParserFactory
+import org.eclipse.cdt.internal.core.parser.IMacroDictionary
+import org.eclipse.cdt.internal.core.parser.InternalParserUtil
+import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent
+import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContentProvider
+import org.eclipse.core.runtime.CoreException
+
+import org.eclipse.cdt.core.dom.ast._
+import org.eclipse.cdt.internal.core.dom.parser.c._
+
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+
 
 //val language: ILanguage = new CLanguage(new ANSICParserExtensionConfiguration()) // C99
 
@@ -50,10 +58,6 @@ val parserLog: IParserLogService = ParserFactory.createDefaultLogService();
 def wrapCode(pFileName: String, pCode: String): FileContent = {
    FileContent.create(pFileName, pCode.toCharArray());
 }
-
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
 
 def wrapFile(pFileName: String): FileContent = {
   def readFile(name: String): String = try {
@@ -100,8 +104,6 @@ def recurse(node: org.eclipse.cdt.core.dom.ast.IASTNode, indent: String = ""): U
     for (y <- node.getChildren) recurse(y, indent + "  ")
 }
 
-import org.eclipse.cdt.core.dom.ast._
-import org.eclipse.cdt.internal.core.dom.parser.c._
 
 
 val types = Array(
