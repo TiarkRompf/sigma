@@ -55,6 +55,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
     case class New(x: Alloc) extends Exp
     case class Get(x: Exp, f: Exp) extends Exp
     case class Put(x: Exp, f: Exp, y: Exp) extends Exp
+    case class Assert(x: Exp) extends Exp
     case class If(c: Exp, a: Exp, b: Exp) extends Exp
     case class While(c: Exp, b: Exp) extends Exp
     case class Block(xs: List[Exp]) extends Exp {
@@ -63,7 +64,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
     // *** evaluator: Exp -> IR
 
-    val store0 = IR.const(Map())
+    val trackValid = false
+
+    val store0 = if (trackValid) GConst(Map(GConst("valid") -> GConst(1))) else GConst(Map())
+
     val itvec0 = IR.const("top")
 
     var store: Val = store0
@@ -87,11 +91,20 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
         store = IR.update(store, a, IR.const(Map()))
         a
       case Get(x, f) => 
-        IR.select(IR.select(store, eval(x)), eval(f))
+        val x1 = eval(x)
+        val f1 = eval(f)
+        IR.select(IR.select(store, x1), f1)
       case Put(x, f, y) => 
-        val a = eval(x)
-        val old = IR.select(store, a)
-        store = IR.update(store, a, IR.update(old, eval(f), eval(y)))
+        val x1 = eval(x)
+        val f1 = eval(f)
+        val y1 = eval(y)
+        val old = IR.select(store, x1) // must exist, do not merge
+        store = IR.update(store, x1, IR.update(old, f1, y1))
+        IR.const(())
+      case Assert(c) =>
+        val c1 = eval(e)
+        val old = IR.select(store, IR.const("valid"))
+        store = IR.update(store, IR.const("valid"), IR.times(old,c1)) // IR.times means IR.and
         IR.const(())
       case If(c,a,b) => 
         val c1 = eval(c)

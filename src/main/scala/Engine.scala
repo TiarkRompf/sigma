@@ -448,17 +448,24 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def const(x: Any) = x match {
         case x: Double if x.toInt.toDouble == x => GConst(x.toInt)
         case _ => GConst(x)
-      }      
+      }
+      // like update, but accept map to be empty/undefined
+      // must be invoked as update(x,u,merge(select(x,u),v,y))
+      def merge(x: From, f: From, y: From): From = x match { 
+        case GConst("undefined") => update(dreflect(DMap(Map())),f,y) // caveat: f may be non-const ?
+        case _ => update(x,f,y)
+      }
       override def update(x: From, f: From, y: From): From = x match {
-        case GConst("undefined") => update(dreflect(DMap(Map())),f,y) // f may be non-const
+        case GConst("undefined") => x // undefined
+        //case GConst("undefined") => update(dreflect(DMap(Map())),f,y) // f may be non-const
         //case GConst("undefined") => x 
-        case GConst(m:Map[_,_]) if m.isEmpty => update(dreflect(DMap(Map())),f,y) // f may be non-const
+        case GConst(m:Map[GVal,GVal] @unchecked) /*if m.isEmpty*/ => update(dreflect(DMap(m)),f,y) // f may be non-const -- problem?
         case Def(DMap(m)) => 
           f match {
-            case GConst((u,v)) => update(x,const(u),update(select(x,const(u)),const(v),y))
+            case GConst((u,v)) => update(x,const(u),merge(select(x,const(u)),const(v),y)) // store path!!
             case GConst(_) => map(m + (f -> y)) // TODO: y = DIf ??
             case Def(DIf(c,u,v)) => iff(c,update(x,u,y),update(x,v,y))
-            case Def(DPair(u,v)) => update(x,u,update(select(x,u),v,y))
+            case Def(DPair(u,v)) => update(x,u,merge(select(x,u),v,y)) // store path!!
             case _ => 
               // It would be nice to use f as a key even if it
               // is not a constant:
@@ -472,7 +479,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         // case Def(DUpdate(x2,f2,y2)) => if (f2 == f) y2 else select(x2,f)
         case Def(DUpdate(x2,f2,y2)) if f2 == f => update(x2,f,y) // this one is conservative: m + (f -> y1) + (f -> y2)   --->  m + (f -> y2)  TODO: more aggressive, e.g. remove f in m, too?
         case Def(DIf(c,u,v)) => iff(c,update(u,f,y),update(v,f,y))
-        case Def(DPair(u,v)) => update(x,u,update(select(x,u),v,y))
+        case Def(DPair(u,v)) => update(x,u,merge(select(x,u),v,y))
         case _ => super.update(x,f,y)
       }
       override def select(x: From, f: From): From          = x match {

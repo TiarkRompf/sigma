@@ -45,13 +45,18 @@ trait FileDiffSuite extends FunSuite {
         indent += (open - close)
       }
     }
-    assert (indent==0, "indentation sanity check")
+    //assert (indent==0, "indentation sanity check")
+    if (indent != 0) out.println("warning: indentation sanity check")
   }
   
   def withOutFile(name: String)(func: => Unit): Unit = {
     val file = new File(name)
     file.getParentFile.mkdirs()
     withOutput(new PrintStream(new FileOutputStream(file)))(func)
+  }
+  def withOutFileIndented(name: String)(func: => Unit): Unit = {
+    val bstream = new ByteArrayOutputStream
+    try withOutput(new PrintStream(bstream))(func) finally writeFileIndented(name,bstream.toString)
   }
   def captureOutput(func: => Unit): String = {
     val bstream = new ByteArrayOutputStream
@@ -93,8 +98,7 @@ trait FileDiffSuite extends FunSuite {
     val file = new File(name)
     file.getParentFile.mkdirs()
     val out = new java.io.PrintWriter(file)
-    printIndented(content)(out)
-    out.close()
+    try printIndented(content)(out) finally out.close()
   }
 
   def assertFileEqualsCheck(name: String): Unit = {
@@ -102,15 +106,14 @@ trait FileDiffSuite extends FunSuite {
       s.replaceAll("@[0-9a-f]+","@").   // disregard object ids
         replaceAll("[0-9]*\\.[0-9]+s","0.0s")  // disregard running times
     if (overwriteCheckFiles) {
-      withOutFile(name+".check")(print(readFile(name)))
+      writeFile(name+".check", readFile(name))
     } else {
       assert(sanitize(readFile(name)) == sanitize(readFile(name+".check")), "File differs: "+name) // TODO: diff output
     }
     new File(name) delete ()
   }
   def withOutFileChecked(name: String)(func: => Unit): Unit = {
-    writeFileIndented(name, captureOutput(func))
-    //withOutFile(name)(func)
+    withOutFileIndented(name)(try func catch { case e => print("# "); e.printStackTrace; throw e })
     assertFileEqualsCheck(name)
   }
   def printcheck(x:Any,y:Any) = assert({ println(x); x } === y)  
