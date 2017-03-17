@@ -6,7 +6,7 @@ t_unspecified __VERIFIER_nondet_long
 t_void __VERIFIER_nondet_pointer
 t_int __VERIFIER_nondet_int
 t_void ERR
-{
+t_int ssl3_accept(/* TODO: param list ... */) {
   t_int s__info_callback = __VERIFIER_nondet_int((exp null))
   t_int s__in_handshake = __VERIFIER_nondet_int((exp null))
   t_int s__state
@@ -725,12 +725,12 @@ t_void ERR
     return (op_bracketedPrimary ret)
   }
 }
-{
+t_void ERR(/* TODO: param list ... */) {
   ERROR:
   __VERIFIER_error((exp null))
   return (exp null)
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int s
   t_int tmp
   {

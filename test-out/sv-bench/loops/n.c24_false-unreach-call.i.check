@@ -1,6 +1,6 @@
 // loops/n.c24_false-unreach-call.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -59,14 +59,14 @@ t_char stpcpy
 t_char __stpncpy
 t_char stpncpy
 t_int __VERIFIER_nondet_int
-{
+t_int bar(/* TODO: param list ... */) {
   return __VERIFIER_nondet_int((exp null))
 }
-{
+t_int foo(/* TODO: param list ... */) {
   (op_assign (op_star x) __VERIFIER_nondet_int((exp null)))
   return (op_star x)
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int ijretoffsettmp_cnttel_dataklen
   t_char x
   for ((op_assign i 0)

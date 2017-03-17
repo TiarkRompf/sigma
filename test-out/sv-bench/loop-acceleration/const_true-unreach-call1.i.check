@@ -1,6 +1,6 @@
 // loop-acceleration/const_true-unreach-call1.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -8,7 +8,7 @@ t_void __VERIFIER_error
   else {}
   return (exp null)
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int x = 1
   t_int y = 0
   while (op_lessThan y 1024)

@@ -1,6 +1,6 @@
 // loop-acceleration/simple_false-unreach-call2_true-termination.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -8,7 +8,7 @@ t_void __VERIFIER_error
   else {}
   return (exp null)
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int x
   while (op_lessThan x 0x0fffffff)
   {

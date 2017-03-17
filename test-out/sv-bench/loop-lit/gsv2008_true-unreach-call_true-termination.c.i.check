@@ -1,7 +1,7 @@
 // loop-lit/gsv2008_true-unreach-call_true-termination.c.i
 t_void __VERIFIER_error
 t_void __VERIFIER_assume
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -10,7 +10,7 @@ t_void __VERIFIER_assume
   return (exp null)
 }
 t_int __VERIFIER_nondet_int
-{
+t_int main(/* TODO: param list ... */) {
   t_int xy
   (op_assign x (op_minus 50))
   (op_assign y __VERIFIER_nondet_int((exp null)))

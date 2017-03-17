@@ -1,7 +1,7 @@
 // loop-invgen/up_true-unreach-call_true-termination.i
 t_void __VERIFIER_error
 t_void __VERIFIER_assume
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -10,7 +10,7 @@ t_void __VERIFIER_assume
   return (exp null)
 }
 t_int __VERIFIER_nondet_int
-{
+t_int main(/* TODO: param list ... */) {
   t_int n
   t_int i = 0
   t_int k = 0

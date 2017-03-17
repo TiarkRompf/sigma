@@ -2,7 +2,7 @@
 t_void __VERIFIER_error
 t_void __VERIFIER_assume
 t_int __VERIFIER_nondet_int
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -11,7 +11,7 @@ t_int __VERIFIER_nondet_int
   return (exp null)
 }
 t_int __VERIFIER_nondet_uint
-{
+t_int main(/* TODO: param list ... */) {
   t_int M = __VERIFIER_nondet_uint((exp null))
   t_int ABC
   t_int i

@@ -1,6 +1,6 @@
 // loops/nec20_false-unreach-call_true-termination.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -10,7 +10,7 @@ t_void __VERIFIER_error
 }
 t_int b
 t_bool __VERIFIER_nondet_bool
-{
+t_int main(/* TODO: param list ... */) {
   t_bool k = __VERIFIER_nondet_bool((exp null))
   t_int inj
   t_int a

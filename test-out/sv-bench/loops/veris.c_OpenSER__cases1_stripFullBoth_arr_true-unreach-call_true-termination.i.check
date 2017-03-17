@@ -1,7 +1,7 @@
 // loops/veris.c_OpenSER__cases1_stripFullBoth_arr_true-unreach-call_true-termination.i
 t_void __VERIFIER_error
 t_char __VERIFIER_nondet_char
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -42,7 +42,7 @@ ieee80211_scan_entry
 t_int NSS_STATUS
 t_char fstring
 sockaddr_un
-{
+t_int parse_expression_list(/* TODO: param list ... */) {
   t_int start = 0i = (op_minus 1)j = (op_minus 1)
   t_char str2
   if (op_not str) return (op_minus 1)
@@ -79,7 +79,7 @@ sockaddr_un
   while (op_notequals str[i] 0)
   return 0
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_char A
   for (t_int i = 0
   ;(op_lessThan i (op_plus (op_plus 2 2) 4));(op_postFixIncr i)){

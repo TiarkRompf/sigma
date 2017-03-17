@@ -1,7 +1,7 @@
 // loops/trex04_true-unreach-call_false-termination.i
 t_void __VERIFIER_error
 t_void __VERIFIER_assume
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -11,7 +11,7 @@ t_void __VERIFIER_assume
 }
 t_bool __VERIFIER_nondet_bool
 t_int __VERIFIER_nondet_int
-{
+t_void foo(/* TODO: param list ... */) {
   t_int y = 0
   t_bool c1 = __VERIFIER_nondet_bool((exp null))c2 = __VERIFIER_nondet_bool((exp null))
   if c1 (op_postFixIncr y)
@@ -19,7 +19,7 @@ t_int __VERIFIER_nondet_int
   if c2 (op_postFixDecr y)
   else (op_plusAssign y 10)
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int d = 1
   t_int x = __VERIFIER_nondet_int((exp null))
   if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual x 1000000) (op_greaterEqual x (op_minus 1000000))))) return 0

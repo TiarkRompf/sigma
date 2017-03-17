@@ -1,6 +1,6 @@
 // loops/terminator_01_false-unreach-call_true-termination.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -9,7 +9,7 @@ t_void __VERIFIER_error
   return (exp null)
 }
 t_int __VERIFIER_nondet_int
-{
+t_int main(/* TODO: param list ... */) {
   t_int x = __VERIFIER_nondet_int((exp null))
   t_int p = (op_amper x)
   while (op_lessThan x 100)

@@ -1,7 +1,7 @@
 // loop-acceleration/simple_true-unreach-call3_true-termination.i
 t_void __VERIFIER_error
 t_int __VERIFIER_nondet_uint
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -9,7 +9,7 @@ t_int __VERIFIER_nondet_uint
   else {}
   return (exp null)
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int x = 0
   t_unspecified N = __VERIFIER_nondet_uint((exp null))
   while (op_lessThan x N)

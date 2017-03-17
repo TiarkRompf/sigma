@@ -2,7 +2,7 @@
 t_void __VERIFIER_assume
 t_void __VERIFIER_error
 t_int __VERIFIER_nondet_int
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -11,7 +11,7 @@ t_int __VERIFIER_nondet_int
   return (exp null)
 }
 t_int INFINITY = 899
-{
+t_int main(/* TODO: param list ... */) {
   t_int nodecount = __VERIFIER_nondet_int((exp null))
   t_int edgecount = __VERIFIER_nondet_int((exp null))
   if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 0 nodecount) (op_lessEqual nodecount 4)))) return 0

@@ -5,7 +5,7 @@ t_int __VERIFIER_nondet_int
 t_unspecified __VERIFIER_nondet_long
 t_void __VERIFIER_nondet_pointer
 t_int __VERIFIER_nondet_int
-{
+t_int main(/* TODO: param list ... */) {
   t_int s__state
   t_int s__hit = __VERIFIER_nondet_int((exp null))
   t_int blastFlag

@@ -1,6 +1,6 @@
 // loops/trex03_true-unreach-call_true-termination.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -10,7 +10,7 @@ t_void __VERIFIER_error
 }
 t_int __VERIFIER_nondet_uint
 t_bool __VERIFIER_nondet_bool
-{
+t_int main(/* TODO: param list ... */) {
   t_int x1 = __VERIFIER_nondet_uint((exp null))x2 = __VERIFIER_nondet_uint((exp null))x3 = __VERIFIER_nondet_uint((exp null))
   t_int d1 = 1d2 = 1d3 = 1
   t_bool c1 = __VERIFIER_nondet_bool((exp null))c2 = __VERIFIER_nondet_bool((exp null))

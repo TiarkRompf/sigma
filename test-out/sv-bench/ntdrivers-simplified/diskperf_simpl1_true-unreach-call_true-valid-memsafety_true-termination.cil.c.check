@@ -43,14 +43,14 @@ t_int routine
 t_int pirp
 t_int Executive
 t_int KernelMode
-{
+t_void errorFn(/* TODO: param list ... */) {
   {
     ERROR:
     __VERIFIER_error((exp null))
     return (exp null)
   }
 }
-{
+t_void _BLAST_init(/* TODO: param list ... */) {
   {
     (op_assign UNLOADED 0)
     (op_assign NP 1)
@@ -70,7 +70,7 @@ t_int KernelMode
     return (exp null)
   }
 }
-{
+t_void DiskPerfSyncFilterWithTarget(/* TODO: param list ... */) {
   t_int FilterDevice__Flags
   t_int TargetDevice__Characteristics
   t_int FilterDevice__Characteristics
@@ -79,7 +79,7 @@ t_int KernelMode
     return (exp null)
   }
 }
-{
+t_int DiskPerfDispatchPnp(/* TODO: param list ... */) {
   t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
   t_int irpSp__MinorFunction = __VERIFIER_nondet_int((exp null))
   t_int irpSp
@@ -122,7 +122,7 @@ t_int KernelMode
     return (op_bracketedPrimary status)
   }
 }
-{
+t_int DiskPerfIrpCompletion(/* TODO: param list ... */) {
   t_int Event
   {
     {
@@ -132,7 +132,7 @@ t_int KernelMode
     return (op_bracketedPrimary (op_minus 1073741802))
   }
 }
-{
+t_int DiskPerfStartDevice(/* TODO: param list ... */) {
   t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
   t_int deviceExtension__TargetDeviceObject = __VERIFIER_nondet_int((exp null))
   t_int Irp__IoStatus__Status
@@ -151,7 +151,7 @@ t_int KernelMode
     return (op_bracketedPrimary status)
   }
 }
-{
+t_int DiskPerfRemoveDevice(/* TODO: param list ... */) {
   t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
   t_int deviceExtension__WmilibContext = __VERIFIER_nondet_int((exp null))
   t_int Irp__IoStatus__Status
@@ -170,7 +170,7 @@ t_int KernelMode
     return (op_bracketedPrimary status)
   }
 }
-{
+t_int DiskPerfSendToNextDriver(/* TODO: param list ... */) {
   t_int Irp__CurrentLocation = __VERIFIER_nondet_int((exp null))
   t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
   t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
@@ -195,7 +195,7 @@ t_int KernelMode
     return (op_bracketedPrimary tmp)
   }
 }
-{
+t_int DiskPerfDispatchPower(/* TODO: param list ... */) {
   t_int Irp__CurrentLocation = __VERIFIER_nondet_int((exp null))
   t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
   t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
@@ -220,7 +220,7 @@ t_int KernelMode
     return (op_bracketedPrimary tmp)
   }
 }
-{
+t_int DiskPerfForwardIrpSynchronous(/* TODO: param list ... */) {
   t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
   t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
   t_int deviceExtension__TargetDeviceObject = __VERIFIER_nondet_int((exp null))
@@ -274,7 +274,7 @@ t_int KernelMode
     return (op_bracketedPrimary status)
   }
 }
-{
+t_int DiskPerfCreate(/* TODO: param list ... */) {
   {
     {
       (op_assign myStatus 0)
@@ -283,7 +283,7 @@ t_int KernelMode
     return (op_bracketedPrimary 0)
   }
 }
-{
+t_int DiskPerfIoCompletion(/* TODO: param list ... */) {
   t_int irpStack__MajorFunction = __VERIFIER_nondet_int((exp null))
   t_int partitionCounters__BytesRead__QuadPart = __VERIFIER_nondet_int((exp null))
   t_int Irp__IoStatus__Information = __VERIFIER_nondet_int((exp null))
@@ -339,7 +339,7 @@ t_int KernelMode
     return (op_bracketedPrimary 0)
   }
 }
-{
+t_int DiskPerfDeviceControl(/* TODO: param list ... */) {
   t_int Irp__CurrentLocation = __VERIFIER_nondet_int((exp null))
   t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
   t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
@@ -426,7 +426,7 @@ t_int KernelMode
     }
   }
 }
-{
+t_int DiskPerfShutdownFlush(/* TODO: param list ... */) {
   t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
   t_int Irp__CurrentLocation = __VERIFIER_nondet_int((exp null))
   t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
@@ -443,12 +443,12 @@ t_int KernelMode
     return (op_bracketedPrimary tmp)
   }
 }
-{
+t_void DiskPerfUnload(/* TODO: param list ... */) {
   {
     return (exp null)
   }
 }
-{
+t_int DiskPerfRegisterDevice(/* TODO: param list ... */) {
   t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
   t_int deviceExtension__TargetDeviceObject = __VERIFIER_nondet_int((exp null))
   t_int sizeof__number = __VERIFIER_nondet_int((exp null))
@@ -629,7 +629,7 @@ t_int KernelMode
     return (op_bracketedPrimary status)
   }
 }
-{
+t_void stub_driver_init(/* TODO: param list ... */) {
   {
     (op_assign s NP)
     (op_assign customIrp 0)
@@ -641,7 +641,7 @@ t_int KernelMode
     return (exp null)
   }
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int d = __VERIFIER_nondet_int((exp null))
   t_int status = __VERIFIER_nondet_int((exp null))
   t_int we_should_unload = __VERIFIER_nondet_int((exp null))
@@ -852,7 +852,7 @@ t_int KernelMode
     return (op_bracketedPrimary status)
   }
 }
-{
+t_int IoBuildDeviceIoControlRequest(/* TODO: param list ... */) {
   t_int malloc_ret = __VERIFIER_nondet_int((exp null))
   {
     (op_assign customIrp 1)
@@ -876,7 +876,7 @@ t_int KernelMode
     }
   }
 }
-{
+t_void stubMoreProcessingRequired(/* TODO: param list ... */) {
   {
     if (op_equals s NP) {
       (op_assign s MPR1)
@@ -889,7 +889,7 @@ t_int KernelMode
     return (exp null)
   }
 }
-{
+t_int IofCallDriver(/* TODO: param list ... */) {
   t_int returnVal2
   t_int compRetStatus
   t_int lcontext = __VERIFIER_nondet_int((exp null))
@@ -977,7 +977,7 @@ t_int KernelMode
     return (op_bracketedPrimary returnVal2)
   }
 }
-{
+t_void IofCompleteRequest(/* TODO: param list ... */) {
   {
     if (op_equals s NP) {
       (op_assign s DC)
@@ -990,14 +990,14 @@ t_int KernelMode
     return (exp null)
   }
 }
-{
+t_int KeSetEvent(/* TODO: param list ... */) {
   t_int l = __VERIFIER_nondet_int((exp null))
   {
     (op_assign setEventCalled 1)
     return (op_bracketedPrimary l)
   }
 }
-{
+t_int KeWaitForSingleObject(/* TODO: param list ... */) {
   {
     if (op_equals s MPR3) {
       if (op_equals setEventCalled 1) {
@@ -1043,7 +1043,7 @@ t_int KernelMode
     }
   }
 }
-{
+t_int PoCallDriver(/* TODO: param list ... */) {
   t_int compRetStatus
   t_int returnVal
   t_int lcontext = __VERIFIER_nondet_int((exp null))

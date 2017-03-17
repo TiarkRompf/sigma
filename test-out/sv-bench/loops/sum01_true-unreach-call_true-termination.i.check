@@ -2,7 +2,7 @@
 t_void __VERIFIER_error
 t_void __VERIFIER_assume
 t_void __VERIFIER_assert
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -11,7 +11,7 @@ t_void __VERIFIER_assert
   return (exp null)
 }
 t_int __VERIFIER_nondet_int
-{
+t_int main(/* TODO: param list ... */) {
   t_int in = __VERIFIER_nondet_int((exp null))sn = 0
   if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan n 1000) (op_greaterEqual n (op_minus 1000))))) return 0
   else {}

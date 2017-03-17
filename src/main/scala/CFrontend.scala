@@ -406,6 +406,11 @@ object CFrontend {
   }
   def evalGlobalDecl(node: IASTDeclaration): Unit = node match {
       case node: CASTFunctionDefinition =>
+          val declarator = node.getDeclarator().asInstanceOf[CASTDeclarator]
+          val declSpecifier = node.getDeclSpecifier
+          print(evalType(declSpecifier))
+          print(" ")
+          print(declarator.getName + "(/* TODO: param list ... */) ")
           evalStm(node.getBody)
       case _ =>
           evalLocalDecl(node)

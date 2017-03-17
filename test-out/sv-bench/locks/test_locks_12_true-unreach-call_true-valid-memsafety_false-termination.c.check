@@ -1,7 +1,7 @@
 // locks/test_locks_12_true-unreach-call_true-valid-memsafety_false-termination.c
 t_void __VERIFIER_error
 t_int __VERIFIER_nondet_int
-{
+t_int main(/* TODO: param list ... */) {
   t_int p1 = __VERIFIER_nondet_int((exp null))
   t_int lk1
   t_int p2 = __VERIFIER_nondet_int((exp null))

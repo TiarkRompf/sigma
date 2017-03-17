@@ -1,6 +1,6 @@
 // loops/eureka_01_true-unreach-call.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -9,7 +9,7 @@ t_void __VERIFIER_error
   return (exp null)
 }
 t_int INFINITY = 899
-{
+t_int main(/* TODO: param list ... */) {
   t_int nodecount = 5
   t_int edgecount = 20
   t_int source = 0

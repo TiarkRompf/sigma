@@ -1,6 +1,6 @@
 // loops/vogal_false-unreach-call.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -9,7 +9,7 @@ t_void __VERIFIER_error
   return (exp null)
 }
 t_char __VERIFIER_nondet_char
-{
+t_int main(/* TODO: param list ... */) {
   t_char string_entradavetor_vogais = {'a','A','e','E','i','I','o','O','u','U','\0'}
   {}
   t_int ijconttam_stringn_caracter

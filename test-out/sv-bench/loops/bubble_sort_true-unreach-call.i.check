@@ -1,6 +1,6 @@
 // loops/bubble_sort_true-unreach-call.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -8,7 +8,7 @@ t_void __VERIFIER_error
   else {}
   return (exp null)
 }
-{
+t_void bubblesort(/* TODO: param list ... */) {
   t_int abt
   for ((op_assign a 1)
   ;(op_lessThan a size);(op_prefixIncr a)){
@@ -26,7 +26,7 @@ t_void __VERIFIER_error
     }
   }
 }
-{
+t_void bubblesort1(/* TODO: param list ... */) {
   t_int jipivot
   for ((op_assign j 1)
   ;(op_lessThan j size);(op_prefixIncr j)){
@@ -41,7 +41,7 @@ t_void __VERIFIER_error
   }
 }
 t_int __VERIFIER_nondet_int
-{
+t_void q1(/* TODO: param list ... */) {
   if (op_lessThan argc 2) return (exp null)
   else {}
   t_int N = __VERIFIER_nondet_int((exp null))
@@ -71,7 +71,7 @@ t_int __VERIFIER_nondet_int
   }
   bubblesort((N,a))
 }
-{
+t_int main(/* TODO: param list ... */) {
   q1((argc,argv))
   return 0
 }

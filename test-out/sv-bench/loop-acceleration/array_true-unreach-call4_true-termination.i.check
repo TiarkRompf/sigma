@@ -1,7 +1,7 @@
 // loop-acceleration/array_true-unreach-call4_true-termination.i
 t_void __VERIFIER_error
 t_int __VERIFIER_nondet_int
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -9,7 +9,7 @@ t_int __VERIFIER_nondet_int
   else {}
   return (exp null)
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int A
   t_int i
   for ((op_assign i 0)

@@ -28,7 +28,7 @@ t_int lowerDriverReturn
 t_int setEventCalled
 t_int customIrp
 t_int myStatus
-{
+t_void stub_driver_init(/* TODO: param list ... */) {
   {
     (op_assign s NP)
     (op_assign pended 0)
@@ -40,7 +40,7 @@ t_int myStatus
     return (exp null)
   }
 }
-{
+t_void _BLAST_init(/* TODO: param list ... */) {
   {
     (op_assign UNLOADED 0)
     (op_assign NP 1)
@@ -62,7 +62,7 @@ t_int myStatus
 }
 t_void IofCompleteRequest
 t_void errorFn
-{
+t_int KbFilter_PnP(/* TODO: param list ... */) {
   t_int devExt
   t_int irpStack
   t_int status
@@ -301,7 +301,7 @@ t_void errorFn
     return (op_bracketedPrimary status)
   }
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int status
   t_int irp = __VERIFIER_nondet_int((exp null))
   t_int pirp
@@ -452,7 +452,7 @@ t_void errorFn
     return (op_bracketedPrimary status)
   }
 }
-{
+t_void stubMoreProcessingRequired(/* TODO: param list ... */) {
   {
     if (op_equals s NP) {
       (op_assign s MPR1)
@@ -465,7 +465,7 @@ t_void errorFn
     return (exp null)
   }
 }
-{
+t_int IofCallDriver(/* TODO: param list ... */) {
   t_int returnVal2
   t_int compRetStatus
   t_int lcontext = __VERIFIER_nondet_int((exp null))
@@ -537,7 +537,7 @@ t_void errorFn
     return (op_bracketedPrimary returnVal2)
   }
 }
-{
+t_void IofCompleteRequest(/* TODO: param list ... */) {
   {
     if (op_equals s NP) {
       (op_assign s DC)
@@ -550,14 +550,14 @@ t_void errorFn
     return (exp null)
   }
 }
-{
+t_int KeSetEvent(/* TODO: param list ... */) {
   t_int l = __VERIFIER_nondet_int((exp null))
   {
     (op_assign setEventCalled 1)
     return (op_bracketedPrimary l)
   }
 }
-{
+t_int KeWaitForSingleObject(/* TODO: param list ... */) {
   {}
   {
     if (op_equals s MPR3) {
@@ -603,7 +603,7 @@ t_void errorFn
     }
   }
 }
-{
+t_int KbFilter_Complete(/* TODO: param list ... */) {
   t_int event
   {
     {
@@ -613,7 +613,7 @@ t_void errorFn
     return (op_bracketedPrimary (op_minus 1073741802))
   }
 }
-{
+t_void errorFn(/* TODO: param list ... */) {
   {
     ERROR:
     __VERIFIER_error((exp null))

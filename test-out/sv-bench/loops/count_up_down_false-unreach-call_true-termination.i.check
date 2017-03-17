@@ -1,6 +1,6 @@
 // loops/count_up_down_false-unreach-call_true-termination.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -9,7 +9,7 @@ t_void __VERIFIER_error
   return (exp null)
 }
 t_int __VERIFIER_nondet_uint
-{
+t_int main(/* TODO: param list ... */) {
   t_int n = __VERIFIER_nondet_uint((exp null))
   t_int x = ny = 0
   while (op_greaterThan x 0)

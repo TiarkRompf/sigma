@@ -1,7 +1,7 @@
 // loop-acceleration/multivar_false-unreach-call1_true-termination.i
 t_void __VERIFIER_error
 t_int __VERIFIER_nondet_uint
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -9,7 +9,7 @@ t_int __VERIFIER_nondet_uint
   else {}
   return (exp null)
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int x = __VERIFIER_nondet_uint((exp null))
   t_int y = (op_plus x 1)
   while (op_lessThan x 1024)

@@ -1,6 +1,6 @@
 // loops/linear_search_false-unreach-call.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -10,7 +10,7 @@ t_void __VERIFIER_error
 }
 t_int __VERIFIER_nondet_uint
 t_int SIZE
-{
+t_int linear_search(/* TODO: param list ... */) {
   t_int j = 0
   while (op_logicalAnd (op_lessThan j n) (op_notequals a[j] q))
   {
@@ -21,7 +21,7 @@ t_int SIZE
   if (op_lessThan j SIZE) return 1
   else return 0
 }
-{
+t_int main(/* TODO: param list ... */) {
   (op_assign SIZE (op_plus (op_bracketedPrimary (op_divide __VERIFIER_nondet_uint((exp null)) 2)) 1))
   t_int a
   (op_assign a[(op_divide SIZE 2)] 3)

@@ -1,4 +1,4 @@
-{
+t_int main(/* TODO: param list ... */) {
   t_int i = 0
   t_int a = 0
   while 1

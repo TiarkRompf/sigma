@@ -47,14 +47,14 @@ t_int compRegistered
 t_int lowerDriverReturn
 t_int setEventCalled
 t_int customIrp
-{
+t_void errorFn(/* TODO: param list ... */) {
   {
     ERROR:
     __VERIFIER_error((exp null))
     return (exp null)
   }
 }
-{
+t_void _BLAST_init(/* TODO: param list ... */) {
   {
     (op_assign UNLOADED 0)
     (op_assign NP 1)
@@ -75,12 +75,12 @@ t_int customIrp
 }
 t_int PagingReferenceCount = 0
 t_int PagingMutex = 0
-{
+t_int FlAcpiConfigureFloppy(/* TODO: param list ... */) {
   {
     return (op_bracketedPrimary 0)
   }
 }
-{
+t_int FlQueueIrpToThread(/* TODO: param list ... */) {
   t_int status
   t_int threadHandle = __VERIFIER_nondet_int((exp null))
   t_int DisketteExtension__PoweringDown = __VERIFIER_nondet_int((exp null))
@@ -144,7 +144,7 @@ t_int PagingMutex = 0
     return (op_bracketedPrimary 259)
   }
 }
-{
+t_int FloppyPnp(/* TODO: param list ... */) {
   t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
   t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
   t_int Irp__IoStatus__Information
@@ -440,7 +440,7 @@ t_int PagingMutex = 0
     return (op_bracketedPrimary ntStatus)
   }
 }
-{
+t_int FloppyStartDevice(/* TODO: param list ... */) {
   t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
   t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
   t_int Irp__IoStatus__Status
@@ -612,7 +612,7 @@ t_int PagingMutex = 0
     return (op_bracketedPrimary ntStatus)
   }
 }
-{
+t_int FloppyPnpComplete(/* TODO: param list ... */) {
   {
     {
       KeSetEvent((Context,1,0))
@@ -620,7 +620,7 @@ t_int PagingMutex = 0
     return (op_bracketedPrimary (op_minus 1073741802))
   }
 }
-{
+t_int FlFdcDeviceIo(/* TODO: param list ... */) {
   t_int ntStatus
   t_int irp
   t_int irpStack
@@ -655,12 +655,12 @@ t_int PagingMutex = 0
     return (op_bracketedPrimary ntStatus)
   }
 }
-{
+t_void FloppyProcessQueuedRequests(/* TODO: param list ... */) {
   {
     return (exp null)
   }
 }
-{
+t_void stub_driver_init(/* TODO: param list ... */) {
   {
     (op_assign s NP)
     (op_assign pended 0)
@@ -671,7 +671,7 @@ t_int PagingMutex = 0
     return (exp null)
   }
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int status
   t_int irp = __VERIFIER_nondet_int((exp null))
   t_int pirp
@@ -830,7 +830,7 @@ t_int PagingMutex = 0
     return (op_bracketedPrimary status)
   }
 }
-{
+t_int IoBuildDeviceIoControlRequest(/* TODO: param list ... */) {
   t_int malloc = __VERIFIER_nondet_int((exp null))
   {
     (op_assign customIrp 1)
@@ -853,7 +853,7 @@ t_int PagingMutex = 0
     }
   }
 }
-{
+t_int IoDeleteSymbolicLink(/* TODO: param list ... */) {
   {
     t_int tmp_ndt_3
     (op_assign tmp_ndt_3 __VERIFIER_nondet_int((exp null)))
@@ -874,7 +874,7 @@ t_int PagingMutex = 0
     }
   }
 }
-{
+t_int IoQueryDeviceDescription(/* TODO: param list ... */) {
   {
     t_int tmp_ndt_4
     (op_assign tmp_ndt_4 __VERIFIER_nondet_int((exp null)))
@@ -895,7 +895,7 @@ t_int PagingMutex = 0
     }
   }
 }
-{
+t_int IoRegisterDeviceInterface(/* TODO: param list ... */) {
   {
     t_int tmp_ndt_5
     (op_assign tmp_ndt_5 __VERIFIER_nondet_int((exp null)))
@@ -916,7 +916,7 @@ t_int PagingMutex = 0
     }
   }
 }
-{
+t_int IoSetDeviceInterfaceState(/* TODO: param list ... */) {
   {
     t_int tmp_ndt_6
     (op_assign tmp_ndt_6 __VERIFIER_nondet_int((exp null)))
@@ -937,7 +937,7 @@ t_int PagingMutex = 0
     }
   }
 }
-{
+t_void stubMoreProcessingRequired(/* TODO: param list ... */) {
   {
     if (op_equals s NP) {
       (op_assign s MPR1)
@@ -950,7 +950,7 @@ t_int PagingMutex = 0
     return (exp null)
   }
 }
-{
+t_int IofCallDriver(/* TODO: param list ... */) {
   t_int returnVal2
   t_int compRetStatus1
   t_int lcontext = __VERIFIER_nondet_int((exp null))
@@ -1031,7 +1031,7 @@ t_int PagingMutex = 0
     return (op_bracketedPrimary returnVal2)
   }
 }
-{
+t_void IofCompleteRequest(/* TODO: param list ... */) {
   {
     if (op_equals s NP) {
       (op_assign s DC)
@@ -1044,14 +1044,14 @@ t_int PagingMutex = 0
     return (exp null)
   }
 }
-{
+t_int KeSetEvent(/* TODO: param list ... */) {
   t_int l = __VERIFIER_nondet_int((exp null))
   {
     (op_assign setEventCalled 1)
     return (op_bracketedPrimary l)
   }
 }
-{
+t_int KeWaitForSingleObject(/* TODO: param list ... */) {
   {
     if (op_equals s MPR3) {
       if (op_equals setEventCalled 1) {
@@ -1096,7 +1096,7 @@ t_int PagingMutex = 0
     }
   }
 }
-{
+t_int ObReferenceObjectByHandle(/* TODO: param list ... */) {
   {
     t_int tmp_ndt_9
     (op_assign tmp_ndt_9 __VERIFIER_nondet_int((exp null)))
@@ -1117,7 +1117,7 @@ t_int PagingMutex = 0
     }
   }
 }
-{
+t_int PsCreateSystemThread(/* TODO: param list ... */) {
   {
     t_int tmp_ndt_10
     (op_assign tmp_ndt_10 __VERIFIER_nondet_int((exp null)))
@@ -1138,7 +1138,7 @@ t_int PagingMutex = 0
     }
   }
 }
-{
+t_int ZwClose(/* TODO: param list ... */) {
   {
     t_int tmp_ndt_11
     (op_assign tmp_ndt_11 __VERIFIER_nondet_int((exp null)))

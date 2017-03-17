@@ -1,6 +1,6 @@
 // loops/nec40_true-unreach-call_true-termination.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -11,7 +11,7 @@ t_void __VERIFIER_error
 t_int __VERIFIER_nondet_int
 t_char xy
 t_int ijk
-{
+t_int main(/* TODO: param list ... */) {
   (op_assign k __VERIFIER_nondet_int((exp null)))
   (op_assign i 0)
   while (op_notequals x[i] 0)

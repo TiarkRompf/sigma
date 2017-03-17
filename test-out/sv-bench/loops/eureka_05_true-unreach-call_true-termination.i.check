@@ -1,6 +1,6 @@
 // loops/eureka_05_true-unreach-call_true-termination.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -10,7 +10,7 @@ t_void __VERIFIER_error
 }
 t_int array
 t_int n = 5
-{
+t_void SelectionSort(/* TODO: param list ... */) {
   t_int lhrhitemp
   for ((op_assign lh 0)
   ;(op_lessThan lh n);(op_postFixIncr lh)){
@@ -23,7 +23,7 @@ t_int n = 5
     (op_assign array[rh] temp)
   }
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int arrayi
   for ((op_assign i (op_minus 5 1))
   ;(op_greaterEqual i 0);(op_postFixDecr i))(op_assign array[i] i)

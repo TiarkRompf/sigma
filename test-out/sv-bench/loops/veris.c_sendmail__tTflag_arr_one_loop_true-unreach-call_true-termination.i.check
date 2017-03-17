@@ -1,7 +1,7 @@
 // loops/veris.c_sendmail__tTflag_arr_one_loop_true-unreach-call_true-termination.i
 t_void __VERIFIER_error
 t_char __VERIFIER_nondet_char
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -9,7 +9,7 @@ t_char __VERIFIER_nondet_char
   else {}
   return (exp null)
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_char in
   t_char s
   t_char c

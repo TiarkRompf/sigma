@@ -1,6 +1,6 @@
 // loops/sum01_false-unreach-call_true-termination.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -9,7 +9,7 @@ t_void __VERIFIER_error
   return (exp null)
 }
 t_int __VERIFIER_nondet_uint
-{
+t_int main(/* TODO: param list ... */) {
   t_int in = __VERIFIER_nondet_uint((exp null))sn = 0
   for ((op_assign i 1)
   ;(op_lessEqual i n);(op_postFixIncr i)){

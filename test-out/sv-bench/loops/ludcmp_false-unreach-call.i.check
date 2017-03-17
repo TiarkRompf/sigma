@@ -1,6 +1,6 @@
 // loops/ludcmp_false-unreach-call.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -10,13 +10,13 @@ t_void __VERIFIER_error
 }
 t_double abx
 t_int ludcmp
-{
+t_double fabs(/* TODO: param list ... */) {
   t_double f
   if (op_greaterEqual n 0) (op_assign f n)
   else (op_assign f (op_minus n))
   return f
 }
-{
+t_int main(/* TODO: param list ... */) {
   t_int ijnmax = 50n = 5chkerr
   t_double epsw
   (op_assign eps 1.0e-6)
@@ -36,7 +36,7 @@ t_int ludcmp
   (op_assign chkerr ludcmp((nmax,n,eps)))
   return 0
 }
-{
+t_int ludcmp(/* TODO: param list ... */) {
   t_int ijk
   t_double wy
   if (op_logicalOr (op_greaterThan n 99) (op_lessEqual eps 0.0)) return (op_bracketedPrimary 999)

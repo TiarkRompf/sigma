@@ -1,6 +1,6 @@
 // loops/while_infinite_loop_4_false-unreach-call_true-termination.i
 t_void __VERIFIER_error
-{
+t_void __VERIFIER_assert(/* TODO: param list ... */) {
   if (op_not (op_bracketedPrimary cond)) {
     ERROR:
     __VERIFIER_error((exp null))
@@ -9,7 +9,7 @@ t_void __VERIFIER_error
   return (exp null)
 }
 t_int x = 0
-{
+t_void eval(/* TODO: param list ... */) {
   while 1
   {
     (op_assign x 1)
@@ -17,7 +17,7 @@ t_int x = 0
   }
   return (exp null)
 }
-{
+t_int main(/* TODO: param list ... */) {
   while 1
   {
     eval((exp null))
