@@ -1,29 +1,23 @@
-loop-lit/jm2006_variant_true-unreach-call_true-termination.c.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@58a0ffab
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5f43423b
+// loop-lit/jm2006_variant_true-unreach-call_true-termination.c.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7c03e0cc
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1691e77a
+t_int __VERIFIER_nondet_int
 {
   t_int ij
-  (op_assign i TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@49931fa4)
-  (op_assign j TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@c04de37)
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_greaterEqual i 0) (op_lessEqual i 1000000))))
-  return 0
-  else
-  {}
-  if (op_not (op_bracketedPrimary (op_greaterEqual j 0)))
-  return 0
-  else
-  {}
+  (op_assign i __VERIFIER_nondet_int((exp null)))
+  (op_assign j __VERIFIER_nondet_int((exp null)))
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_greaterEqual i 0) (op_lessEqual i 1000000)))) return 0
+  else {}
+  if (op_not (op_bracketedPrimary (op_greaterEqual j 0))) return 0
+  else {}
   t_int x = i
   t_int y = j
   t_int z = 0
@@ -33,11 +27,9 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1691e77a
     (op_minusAssign y 2)
     (op_postFixIncr z)
   }
-  if (op_equals i j)
-  {
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6fe24afb
+  if (op_equals i j) {
+    __VERIFIER_assert((op_equals y (op_minus z)))
   }
-  else
-  {}
+  else {}
   return 0
 }

@@ -1,18 +1,19 @@
-loop-acceleration/array_false-unreach-call1_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@44b30e00
+// loop-acceleration/array_false-unreach-call1_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@70b3b0d6
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
 {
   t_int A
   t_int i
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@3eeac5da
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@623f9d5d
+  for ((op_assign i 0)
+  ;(op_lessThan i 1024);(op_postFixIncr i)){
+    (op_assign A[i] i)
+  }
+  __VERIFIER_assert((op_notequals A[1023] 1023))
 }

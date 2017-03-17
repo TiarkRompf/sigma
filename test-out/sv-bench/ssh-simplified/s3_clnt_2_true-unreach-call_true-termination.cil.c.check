@@ -1,41 +1,41 @@
-ssh-simplified/s3_clnt_2_true-unreach-call_true-termination.cil.c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1f8a5528
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7368455e
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@50d07a3
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@21f95f9b
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6c976d99
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5d6497e0
+// ssh-simplified/s3_clnt_2_true-unreach-call_true-termination.cil.c
+t_void __VERIFIER_error
+t_char __VERIFIER_nondet_char
+t_int __VERIFIER_nondet_int
+t_unspecified __VERIFIER_nondet_long
+t_void __VERIFIER_nondet_pointer
+t_int __VERIFIER_nondet_int
 {
-  t_int s__info_callback = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3039a3f0
-  t_int s__in_handshake = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5bd737eb
+  t_int s__info_callback = __VERIFIER_nondet_int((exp null))
+  t_int s__in_handshake = __VERIFIER_nondet_int((exp null))
   t_int s__state
   t_int s__new_session
   t_int s__server
-  t_int s__version = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@cfb62ad
+  t_int s__version = __VERIFIER_nondet_int((exp null))
   t_int s__type
   t_int s__init_num
-  t_int s__bbio = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@75d93f45
-  t_int s__wbio = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@882342d
-  t_int s__hit = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6a0832b9
+  t_int s__bbio = __VERIFIER_nondet_int((exp null))
+  t_int s__wbio = __VERIFIER_nondet_int((exp null))
+  t_int s__hit = __VERIFIER_nondet_int((exp null))
   t_int s__rwstate
   t_int s__init_buf___0
-  t_int s__debug = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3db1cb5f
+  t_int s__debug = __VERIFIER_nondet_int((exp null))
   t_int s__shutdown
-  t_int s__ctx__info_callback = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@12ee8bb
-  t_int s__ctx__stats__sess_connect_renegotiate = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@181497ef
-  t_int s__ctx__stats__sess_connect = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3322f3ae
-  t_int s__ctx__stats__sess_hit = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@fa3da6
-  t_int s__ctx__stats__sess_connect_good = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@76e77632
+  t_int s__ctx__info_callback = __VERIFIER_nondet_int((exp null))
+  t_int s__ctx__stats__sess_connect_renegotiate = __VERIFIER_nondet_int((exp null))
+  t_int s__ctx__stats__sess_connect = __VERIFIER_nondet_int((exp null))
+  t_int s__ctx__stats__sess_hit = __VERIFIER_nondet_int((exp null))
+  t_int s__ctx__stats__sess_connect_good = __VERIFIER_nondet_int((exp null))
   t_int s__s3__change_cipher_spec
   t_int s__s3__flags
   t_int s__s3__delay_buf_pop_ret
-  t_int s__s3__tmp__cert_req = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4af02cee
-  t_int s__s3__tmp__new_compression = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6eeb199d
-  t_int s__s3__tmp__reuse_message = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3fad1eeb
-  t_int s__s3__tmp__new_cipher = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7236b9ca
-  t_int s__s3__tmp__new_cipher__algorithms = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@396a7c3e
+  t_int s__s3__tmp__cert_req = __VERIFIER_nondet_int((exp null))
+  t_int s__s3__tmp__new_compression = __VERIFIER_nondet_int((exp null))
+  t_int s__s3__tmp__reuse_message = __VERIFIER_nondet_int((exp null))
+  t_int s__s3__tmp__new_cipher = __VERIFIER_nondet_int((exp null))
+  t_int s__s3__tmp__new_cipher__algorithms = __VERIFIER_nondet_int((exp null))
   t_int s__s3__tmp__next_state___0
-  t_int s__s3__tmp__new_compression__id = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@ffbbd7f
+  t_int s__s3__tmp__new_compression__id = __VERIFIER_nondet_int((exp null))
   t_int s__session__cipher
   t_int s__session__compress_meth
   t_int buf
@@ -48,15 +48,15 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5d6497e0
   t_int state
   t_int skip
   t_int tmp___0
-  t_int tmp___1 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5876a02d
-  t_int tmp___2 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1f49aa00
-  t_int tmp___3 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7528ae5b
-  t_int tmp___4 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@27eae5c4
-  t_int tmp___5 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4af05edc
-  t_int tmp___6 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@18bbe428
-  t_int tmp___7 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2851cb12
-  t_int tmp___8 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@58e5df19
-  t_int tmp___9 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@102b7c67
+  t_int tmp___1 = __VERIFIER_nondet_int((exp null))
+  t_int tmp___2 = __VERIFIER_nondet_int((exp null))
+  t_int tmp___3 = __VERIFIER_nondet_int((exp null))
+  t_int tmp___4 = __VERIFIER_nondet_int((exp null))
+  t_int tmp___5 = __VERIFIER_nondet_int((exp null))
+  t_int tmp___6 = __VERIFIER_nondet_int((exp null))
+  t_int tmp___7 = __VERIFIER_nondet_int((exp null))
+  t_int tmp___8 = __VERIFIER_nondet_int((exp null))
+  t_int tmp___9 = __VERIFIER_nondet_int((exp null))
   t_int blastFlag
   t_int __cil_tmp55
   t_unspecified __cil_tmp56
@@ -70,675 +70,513 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5d6497e0
   t_unspecified __cil_tmp64
   t_unspecified __cil_tmp65
   {
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@577640ee
+    {}
     (op_assign s__state initial_state)
     (op_assign blastFlag 0)
-    (op_assign tmp TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@71590849)
+    (op_assign tmp __VERIFIER_nondet_int((exp null)))
     (op_assign cb 0)
     (op_assign ret (op_minus 1))
     (op_assign skip 0)
     (op_assign tmp___0 0)
-    if (op_notequals s__info_callback 0)
-    {
+    if (op_notequals s__info_callback 0) {
       (op_assign cb s__info_callback)
     }
-    else
-    {
-      if (op_notequals s__ctx__info_callback 0)
-      {
+    else {
+      if (op_notequals s__ctx__info_callback 0) {
         (op_assign cb s__ctx__info_callback)
       }
-      else
-      {}
+      else {}
     }
     (op_postFixIncr s__in_handshake)
-    if (op_minus tmp___1 12288)
-    {
-      if (op_minus tmp___2 16384)
-      {
+    if (op_minus tmp___1 12288) {
+      if (op_minus tmp___2 16384) {
       }
-      else
-      {}
+      else {}
     }
-    else
-    {}
+    else {}
     {
       while 1
       {
         while_0_continue:
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@7b21c6c
+        {}
         (op_assign state s__state)
-        if (op_equals s__state 12292)
-        {
+        if (op_equals s__state 12292) {
           goto switch_1_12292
         }
-        else
-        {
-          if (op_equals s__state 16384)
-          {
+        else {
+          if (op_equals s__state 16384) {
             goto switch_1_16384
           }
-          else
-          {
-            if (op_equals s__state 4096)
-            {
+          else {
+            if (op_equals s__state 4096) {
               goto switch_1_4096
             }
-            else
-            {
-              if (op_equals s__state 20480)
-              {
+            else {
+              if (op_equals s__state 20480) {
                 goto switch_1_20480
               }
-              else
-              {
-                if (op_equals s__state 4099)
-                {
+              else {
+                if (op_equals s__state 4099) {
                   goto switch_1_4099
                 }
-                else
-                {
-                  if (op_equals s__state 4368)
-                  {
+                else {
+                  if (op_equals s__state 4368) {
                     goto switch_1_4368
                   }
-                  else
-                  {
-                    if (op_equals s__state 4369)
-                    {
+                  else {
+                    if (op_equals s__state 4369) {
                       goto switch_1_4369
                     }
-                    else
-                    {
-                      if (op_equals s__state 4384)
-                      {
+                    else {
+                      if (op_equals s__state 4384) {
                         goto switch_1_4384
                       }
-                      else
-                      {
-                        if (op_equals s__state 4385)
-                        {
+                      else {
+                        if (op_equals s__state 4385) {
                           goto switch_1_4385
                         }
-                        else
-                        {
-                          if (op_equals s__state 4400)
-                          {
+                        else {
+                          if (op_equals s__state 4400) {
                             goto switch_1_4400
                           }
-                          else
-                          {
-                            if (op_equals s__state 4401)
-                            {
+                          else {
+                            if (op_equals s__state 4401) {
                               goto switch_1_4401
                             }
-                            else
-                            {
-                              if (op_equals s__state 4416)
-                              {
+                            else {
+                              if (op_equals s__state 4416) {
                                 goto switch_1_4416
                               }
-                              else
-                              {
-                                if (op_equals s__state 4417)
-                                {
+                              else {
+                                if (op_equals s__state 4417) {
                                   goto switch_1_4417
                                 }
-                                else
-                                {
-                                  if (op_equals s__state 4432)
-                                  {
+                                else {
+                                  if (op_equals s__state 4432) {
                                     goto switch_1_4432
                                   }
-                                  else
-                                  {
-                                    if (op_equals s__state 4433)
-                                    {
+                                  else {
+                                    if (op_equals s__state 4433) {
                                       goto switch_1_4433
                                     }
-                                    else
-                                    {
-                                      if (op_equals s__state 4448)
-                                      {
+                                    else {
+                                      if (op_equals s__state 4448) {
                                         goto switch_1_4448
                                       }
-                                      else
-                                      {
-                                        if (op_equals s__state 4449)
-                                        {
+                                      else {
+                                        if (op_equals s__state 4449) {
                                           goto switch_1_4449
                                         }
-                                        else
-                                        {
-                                          if (op_equals s__state 4464)
-                                          {
+                                        else {
+                                          if (op_equals s__state 4464) {
                                             goto switch_1_4464
                                           }
-                                          else
-                                          {
-                                            if (op_equals s__state 4465)
-                                            {
+                                          else {
+                                            if (op_equals s__state 4465) {
                                               goto switch_1_4465
                                             }
-                                            else
-                                            {
-                                              if (op_equals s__state 4466)
-                                              {
+                                            else {
+                                              if (op_equals s__state 4466) {
                                                 goto switch_1_4466
                                               }
-                                              else
-                                              {
-                                                if (op_equals s__state 4467)
-                                                {
+                                              else {
+                                                if (op_equals s__state 4467) {
                                                   goto switch_1_4467
                                                 }
-                                                else
-                                                {
-                                                  if (op_equals s__state 4480)
-                                                  {
+                                                else {
+                                                  if (op_equals s__state 4480) {
                                                     goto switch_1_4480
                                                   }
-                                                  else
-                                                  {
-                                                    if (op_equals s__state 4481)
-                                                    {
+                                                  else {
+                                                    if (op_equals s__state 4481) {
                                                       goto switch_1_4481
                                                     }
-                                                    else
-                                                    {
-                                                      if (op_equals s__state 4496)
-                                                      {
+                                                    else {
+                                                      if (op_equals s__state 4496) {
                                                         goto switch_1_4496
                                                       }
-                                                      else
-                                                      {
-                                                        if (op_equals s__state 4497)
-                                                        {
+                                                      else {
+                                                        if (op_equals s__state 4497) {
                                                           goto switch_1_4497
                                                         }
-                                                        else
-                                                        {
-                                                          if (op_equals s__state 4512)
-                                                          {
+                                                        else {
+                                                          if (op_equals s__state 4512) {
                                                             goto switch_1_4512
                                                           }
-                                                          else
-                                                          {
-                                                            if (op_equals s__state 4513)
-                                                            {
+                                                          else {
+                                                            if (op_equals s__state 4513) {
                                                               goto switch_1_4513
                                                             }
-                                                            else
-                                                            {
-                                                              if (op_equals s__state 4528)
-                                                              {
+                                                            else {
+                                                              if (op_equals s__state 4528) {
                                                                 goto switch_1_4528
                                                               }
-                                                              else
-                                                              {
-                                                                if (op_equals s__state 4529)
-                                                                {
+                                                              else {
+                                                                if (op_equals s__state 4529) {
                                                                   goto switch_1_4529
                                                                 }
-                                                                else
-                                                                {
-                                                                  if (op_equals s__state 4560)
-                                                                  {
+                                                                else {
+                                                                  if (op_equals s__state 4560) {
                                                                     goto switch_1_4560
                                                                   }
-                                                                  else
-                                                                  {
-                                                                    if (op_equals s__state 4561)
-                                                                    {
+                                                                  else {
+                                                                    if (op_equals s__state 4561) {
                                                                       goto switch_1_4561
                                                                     }
-                                                                    else
-                                                                    {
-                                                                      if (op_equals s__state 4352)
-                                                                      {
+                                                                    else {
+                                                                      if (op_equals s__state 4352) {
                                                                         goto switch_1_4352
                                                                       }
-                                                                      else
-                                                                      {
-                                                                        if (op_equals s__state 3)
-                                                                        {
+                                                                      else {
+                                                                        if (op_equals s__state 3) {
                                                                           goto switch_1_3
                                                                         }
-                                                                        else
-                                                                        {
+                                                                        else {
                                                                           goto switch_1_default
-                                                                          if 0
-                                                                          {
+                                                                          if 0 {
                                                                             switch_1_12292:
                                                                             (op_assign s__new_session 1)
                                                                             (op_assign s__state 4096)
                                                                             (op_postFixIncr s__ctx__stats__sess_connect_renegotiate)
                                                                             switch_1_16384:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@4c3190b9
+                                                                            {}
                                                                             switch_1_4096:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2925d8e1
+                                                                            {}
                                                                             switch_1_20480:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@100786cc
+                                                                            {}
                                                                             switch_1_4099:
                                                                             (op_assign s__server 0)
-                                                                            if (op_notequals cb 0)
-                                                                            {
+                                                                            if (op_notequals cb 0) {
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             {
                                                                               (op_assign __cil_tmp55 (op_minus s__version 65280))
-                                                                              if (op_notequals __cil_tmp55 768)
-                                                                              {
+                                                                              if (op_notequals __cil_tmp55 768) {
                                                                                 (op_assign ret (op_minus 1))
                                                                                 goto end
                                                                               }
-                                                                              else
-                                                                              {}
+                                                                              else {}
                                                                             }
                                                                             (op_assign s__type 4096)
-                                                                            if (op_equals s__init_buf___0 0)
-                                                                            {
-                                                                              (op_assign buf TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7c1a9dc)
-                                                                              if (op_equals buf 0)
-                                                                              {
+                                                                            if (op_equals s__init_buf___0 0) {
+                                                                              (op_assign buf __VERIFIER_nondet_int((exp null)))
+                                                                              if (op_equals buf 0) {
                                                                                 (op_assign ret (op_minus 1))
                                                                                 goto end
                                                                               }
-                                                                              else
-                                                                              {}
-                                                                              if (op_not tmp___3)
-                                                                              {
+                                                                              else {}
+                                                                              if (op_not tmp___3) {
                                                                                 (op_assign ret (op_minus 1))
                                                                                 goto end
                                                                               }
-                                                                              else
-                                                                              {}
+                                                                              else {}
                                                                               (op_assign s__init_buf___0 buf)
                                                                             }
-                                                                            else
-                                                                            {}
-                                                                            if (op_not tmp___4)
-                                                                            {
+                                                                            else {}
+                                                                            if (op_not tmp___4) {
                                                                               (op_assign ret (op_minus 1))
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
-                                                                            if (op_not tmp___5)
-                                                                            {
+                                                                            else {}
+                                                                            if (op_not tmp___5) {
                                                                               (op_assign ret (op_minus 1))
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             (op_assign s__state 4368)
                                                                             (op_postFixIncr s__ctx__stats__sess_connect)
                                                                             (op_assign s__init_num 0)
                                                                             goto switch_1_break
                                                                             switch_1_4368:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@47b555c5
+                                                                            {}
                                                                             switch_1_4369:
                                                                             (op_assign s__shutdown 0)
-                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@40506f02)
-                                                                            if (op_equals blastFlag 0)
-                                                                            {
+                                                                            (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                            if (op_equals blastFlag 0) {
                                                                               (op_assign blastFlag 1)
                                                                             }
-                                                                            else
-                                                                            {
-                                                                              if (op_equals blastFlag 4)
-                                                                              {
+                                                                            else {
+                                                                              if (op_equals blastFlag 4) {
                                                                                 (op_assign blastFlag 5)
                                                                               }
-                                                                              else
-                                                                              {}
+                                                                              else {}
                                                                             }
-                                                                            if (op_lessEqual ret 0)
-                                                                            {
+                                                                            if (op_lessEqual ret 0) {
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             (op_assign s__state 4384)
                                                                             (op_assign s__init_num 0)
-                                                                            if (op_notequals s__bbio s__wbio)
-                                                                            {
+                                                                            if (op_notequals s__bbio s__wbio) {
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             goto switch_1_break
                                                                             switch_1_4384:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@6c4db022
+                                                                            {}
                                                                             switch_1_4385:
-                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@66487b3e)
-                                                                            if (op_equals blastFlag 1)
-                                                                            {
+                                                                            (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                            if (op_equals blastFlag 1) {
                                                                               (op_assign blastFlag 2)
                                                                             }
-                                                                            else
-                                                                            {}
-                                                                            if (op_lessEqual ret 0)
-                                                                            {
+                                                                            else {}
+                                                                            if (op_lessEqual ret 0) {
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
-                                                                            if s__hit
-                                                                            {
+                                                                            else {}
+                                                                            if s__hit {
                                                                               (op_assign s__state 4560)
                                                                             }
-                                                                            else
-                                                                            {
+                                                                            else {
                                                                               (op_assign s__state 4400)
                                                                             }
                                                                             (op_assign s__init_num 0)
                                                                             goto switch_1_break
                                                                             switch_1_4400:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@bbe014f
+                                                                            {}
                                                                             switch_1_4401:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@48555745
+                                                                            {}
                                                                             {
-                                                                              (op_assign __cil_tmp56 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@499822cd)
-                                                                              if (op_minus __cil_tmp56 256UL)
-                                                                              {
+                                                                              (op_assign __cil_tmp56 (t_unspecified)s__s3__tmp__new_cipher__algorithms)
+                                                                              if (op_minus __cil_tmp56 256UL) {
                                                                                 (op_assign skip 1)
                                                                               }
-                                                                              else
-                                                                              {
-                                                                                (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6cac214b)
-                                                                                if (op_equals blastFlag 2)
-                                                                                {
+                                                                              else {
+                                                                                (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                                if (op_equals blastFlag 2) {
                                                                                   (op_assign blastFlag 3)
                                                                                 }
-                                                                                else
-                                                                                {}
-                                                                                if (op_lessEqual ret 0)
-                                                                                {
+                                                                                else {}
+                                                                                if (op_lessEqual ret 0) {
                                                                                   goto end
                                                                                 }
-                                                                                else
-                                                                                {}
+                                                                                else {}
                                                                               }
                                                                             }
                                                                             (op_assign s__state 4416)
                                                                             (op_assign s__init_num 0)
                                                                             goto switch_1_break
                                                                             switch_1_4416:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@17e3e1e8
+                                                                            {}
                                                                             switch_1_4417:
-                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@756e632e)
-                                                                            if (op_equals blastFlag 3)
-                                                                            {
+                                                                            (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                            if (op_equals blastFlag 3) {
                                                                               (op_assign blastFlag 4)
                                                                             }
-                                                                            else
-                                                                            {}
-                                                                            if (op_lessEqual ret 0)
-                                                                            {
+                                                                            else {}
+                                                                            if (op_lessEqual ret 0) {
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             (op_assign s__state 4432)
                                                                             (op_assign s__init_num 0)
-                                                                            if (op_not tmp___6)
-                                                                            {
+                                                                            if (op_not tmp___6) {
                                                                               (op_assign ret (op_minus 1))
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             goto switch_1_break
                                                                             switch_1_4432:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@7de8b904
+                                                                            {}
                                                                             switch_1_4433:
-                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7043798b)
-                                                                            if (op_equals blastFlag 5)
-                                                                            {
+                                                                            (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                            if (op_equals blastFlag 5) {
                                                                               goto ERROR
                                                                             }
-                                                                            else
-                                                                            {}
-                                                                            if (op_lessEqual ret 0)
-                                                                            {
+                                                                            else {}
+                                                                            if (op_lessEqual ret 0) {
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             (op_assign s__state 4448)
                                                                             (op_assign s__init_num 0)
                                                                             goto switch_1_break
                                                                             switch_1_4448:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@78272aca
+                                                                            {}
                                                                             switch_1_4449:
-                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7ed641f3)
-                                                                            if (op_lessEqual ret 0)
-                                                                            {
+                                                                            (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                            if (op_lessEqual ret 0) {
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
-                                                                            if s__s3__tmp__cert_req
-                                                                            {
+                                                                            else {}
+                                                                            if s__s3__tmp__cert_req {
                                                                               (op_assign s__state 4464)
                                                                             }
-                                                                            else
-                                                                            {
+                                                                            else {
                                                                               (op_assign s__state 4480)
                                                                             }
                                                                             (op_assign s__init_num 0)
                                                                             goto switch_1_break
                                                                             switch_1_4464:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@464ee7b4
+                                                                            {}
                                                                             switch_1_4465:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2d2a41d7
+                                                                            {}
                                                                             switch_1_4466:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@6c1a5fc2
+                                                                            {}
                                                                             switch_1_4467:
-                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@208f426b)
-                                                                            if (op_lessEqual ret 0)
-                                                                            {
+                                                                            (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                            if (op_lessEqual ret 0) {
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             (op_assign s__state 4480)
                                                                             (op_assign s__init_num 0)
                                                                             goto switch_1_break
                                                                             switch_1_4480:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@11cd6289
+                                                                            {}
                                                                             switch_1_4481:
-                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6e16ad9e)
-                                                                            if (op_lessEqual ret 0)
-                                                                            {
+                                                                            (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                            if (op_lessEqual ret 0) {
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
-                                                                            (op_assign l TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@50cc0bd1)
-                                                                            if (op_equals s__s3__tmp__cert_req 1)
-                                                                            {
+                                                                            else {}
+                                                                            (op_assign l (t_unspecified)s__s3__tmp__new_cipher__algorithms)
+                                                                            if (op_equals s__s3__tmp__cert_req 1) {
                                                                               (op_assign s__state 4496)
                                                                             }
-                                                                            else
-                                                                            {
+                                                                            else {
                                                                               (op_assign s__state 4512)
                                                                               (op_assign s__s3__change_cipher_spec 0)
                                                                             }
                                                                             (op_assign s__init_num 0)
                                                                             goto switch_1_break
                                                                             switch_1_4496:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@a8a87b9
+                                                                            {}
                                                                             switch_1_4497:
-                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@70a9654b)
-                                                                            if (op_lessEqual ret 0)
-                                                                            {
+                                                                            (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                            if (op_lessEqual ret 0) {
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             (op_assign s__state 4512)
                                                                             (op_assign s__init_num 0)
                                                                             (op_assign s__s3__change_cipher_spec 0)
                                                                             goto switch_1_break
                                                                             switch_1_4512:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2b084c9d
+                                                                            {}
                                                                             switch_1_4513:
-                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1baa48ae)
-                                                                            if (op_lessEqual ret 0)
-                                                                            {
+                                                                            (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                            if (op_lessEqual ret 0) {
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             (op_assign s__state 4528)
                                                                             (op_assign s__init_num 0)
                                                                             (op_assign s__session__cipher s__s3__tmp__new_cipher)
-                                                                            if (op_equals s__s3__tmp__new_compression 0)
-                                                                            {
+                                                                            if (op_equals s__s3__tmp__new_compression 0) {
                                                                               (op_assign s__session__compress_meth 0)
                                                                             }
-                                                                            else
-                                                                            {
+                                                                            else {
                                                                               (op_assign s__session__compress_meth s__s3__tmp__new_compression__id)
                                                                             }
-                                                                            if (op_not tmp___7)
-                                                                            {
+                                                                            if (op_not tmp___7) {
                                                                               (op_assign ret (op_minus 1))
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
-                                                                            if (op_not tmp___8)
-                                                                            {
+                                                                            else {}
+                                                                            if (op_not tmp___8) {
                                                                               (op_assign ret (op_minus 1))
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             goto switch_1_break
                                                                             switch_1_4528:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@45c3a32d
+                                                                            {}
                                                                             switch_1_4529:
-                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7e7b15e3)
-                                                                            if (op_lessEqual ret 0)
-                                                                            {
+                                                                            (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                            if (op_lessEqual ret 0) {
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             (op_assign s__state 4352)
-                                                                            (op_assign __cil_tmp57 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@17fed215)
+                                                                            (op_assign __cil_tmp57 (t_unspecified)s__s3__flags)
                                                                             (op_assign __cil_tmp58 (op_plus __cil_tmp57 5))
-                                                                            (op_assign s__s3__flags TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@5ed8177c)
-                                                                            if s__hit
-                                                                            {
+                                                                            (op_assign s__s3__flags (t_unspecified)__cil_tmp58)
+                                                                            if s__hit {
                                                                               (op_assign s__s3__tmp__next_state___0 3)
                                                                               {
-                                                                                (op_assign __cil_tmp59 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@65a0d41)
-                                                                                if (op_minus __cil_tmp59 2L)
-                                                                                {
+                                                                                (op_assign __cil_tmp59 (t_unspecified)s__s3__flags)
+                                                                                if (op_minus __cil_tmp59 2L) {
                                                                                   (op_assign s__state 3)
-                                                                                  (op_assign __cil_tmp60 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@2028d464)
+                                                                                  (op_assign __cil_tmp60 (t_unspecified)s__s3__flags)
                                                                                   (op_assign __cil_tmp61 (op_plus __cil_tmp60 4L))
-                                                                                  (op_assign s__s3__flags TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@4127d40e)
+                                                                                  (op_assign s__s3__flags (t_unspecified)__cil_tmp61)
                                                                                   (op_assign s__s3__delay_buf_pop_ret 0)
                                                                                 }
-                                                                                else
-                                                                                {}
+                                                                                else {}
                                                                               }
                                                                             }
-                                                                            else
-                                                                            {
+                                                                            else {
                                                                               (op_assign s__s3__tmp__next_state___0 4560)
                                                                             }
                                                                             (op_assign s__init_num 0)
                                                                             goto switch_1_break
                                                                             switch_1_4560:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@5fda58a1
+                                                                            {}
                                                                             switch_1_4561:
-                                                                            (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@93c661e)
-                                                                            if (op_lessEqual ret 0)
-                                                                            {
+                                                                            (op_assign ret __VERIFIER_nondet_int((exp null)))
+                                                                            if (op_lessEqual ret 0) {
                                                                               goto end
                                                                             }
-                                                                            else
-                                                                            {}
-                                                                            if s__hit
-                                                                            {
+                                                                            else {}
+                                                                            if s__hit {
                                                                               (op_assign s__state 4512)
                                                                             }
-                                                                            else
-                                                                            {
+                                                                            else {
                                                                               (op_assign s__state 3)
                                                                             }
                                                                             (op_assign s__init_num 0)
                                                                             goto switch_1_break
                                                                             switch_1_4352:
                                                                             {
-                                                                              (op_assign __cil_tmp62 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@6f5108a9)
-                                                                              if (op_greaterThan __cil_tmp62 0L)
-                                                                              {
+                                                                              (op_assign __cil_tmp62 (t_unspecified)num1)
+                                                                              if (op_greaterThan __cil_tmp62 0L) {
                                                                                 (op_assign s__rwstate 2)
                                                                                 (op_assign num1 tmp___9)
                                                                                 {
-                                                                                  (op_assign __cil_tmp63 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@102926e9)
-                                                                                  if (op_lessEqual __cil_tmp63 0L)
-                                                                                  {
+                                                                                  (op_assign __cil_tmp63 (t_unspecified)num1)
+                                                                                  if (op_lessEqual __cil_tmp63 0L) {
                                                                                     (op_assign ret (op_minus 1))
                                                                                     goto end
                                                                                   }
-                                                                                  else
-                                                                                  {}
+                                                                                  else {}
                                                                                 }
                                                                                 (op_assign s__rwstate 1)
                                                                               }
-                                                                              else
-                                                                              {}
+                                                                              else {}
                                                                             }
                                                                             (op_assign s__state s__s3__tmp__next_state___0)
                                                                             goto switch_1_break
                                                                             switch_1_3:
-                                                                            if (op_notequals s__init_buf___0 0)
-                                                                            {
+                                                                            if (op_notequals s__init_buf___0 0) {
                                                                               (op_assign s__init_buf___0 0)
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             {
-                                                                              (op_assign __cil_tmp64 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@1dbb7b1d)
+                                                                              (op_assign __cil_tmp64 (t_unspecified)s__s3__flags)
                                                                               (op_assign __cil_tmp65 (op_minus __cil_tmp64 4L))
-                                                                              if (op_not __cil_tmp65)
-                                                                              {
+                                                                              if (op_not __cil_tmp65) {
                                                                               }
-                                                                              else
-                                                                              {}
+                                                                              else {}
                                                                             }
                                                                             (op_assign s__init_num 0)
                                                                             (op_assign s__new_session 0)
-                                                                            if s__hit
-                                                                            {
+                                                                            if s__hit {
                                                                               (op_postFixIncr s__ctx__stats__sess_hit)
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             (op_assign ret 1)
                                                                             (op_postFixIncr s__ctx__stats__sess_connect_good)
-                                                                            if (op_notequals cb 0)
-                                                                            {
+                                                                            if (op_notequals cb 0) {
                                                                             }
-                                                                            else
-                                                                            {}
+                                                                            else {}
                                                                             goto end
                                                                             switch_1_default:
                                                                             (op_assign ret (op_minus 1))
                                                                             goto end
                                                                           }
-                                                                          else
-                                                                          {
+                                                                          else {
                                                                             switch_1_break:
-                                                                            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@77dde222
+                                                                            {}
                                                                           }
                                                                         }
                                                                       }
@@ -773,56 +611,42 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5d6497e0
             }
           }
         }
-        if (op_not s__s3__tmp__reuse_message)
-        {
-          if (op_not skip)
-          {
-            if s__debug
-            {
-              (op_assign ret TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@102eb830)
-              if (op_lessEqual ret 0)
-              {
+        if (op_not s__s3__tmp__reuse_message) {
+          if (op_not skip) {
+            if s__debug {
+              (op_assign ret __VERIFIER_nondet_int((exp null)))
+              if (op_lessEqual ret 0) {
                 goto end
               }
-              else
-              {}
+              else {}
             }
-            else
-            {}
-            if (op_notequals cb 0)
-            {
-              if (op_notequals s__state state)
-              {
+            else {}
+            if (op_notequals cb 0) {
+              if (op_notequals s__state state) {
                 (op_assign new_state s__state)
                 (op_assign s__state state)
                 (op_assign s__state new_state)
               }
-              else
-              {}
+              else {}
             }
-            else
-            {}
+            else {}
           }
-          else
-          {}
+          else {}
         }
-        else
-        {}
+        else {}
         (op_assign skip 0)
       }
       while_0_break:
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@49e9dab2
+      {}
     }
     end:
     (op_postFixDecr s__in_handshake)
-    if (op_notequals cb 0)
-    {
+    if (op_notequals cb 0) {
     }
-    else
-    {}
+    else {}
     return (op_bracketedPrimary ret)
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@f4c2301
+    __VERIFIER_error((exp null))
     return (op_bracketedPrimary (op_minus 1))
   }
 }
@@ -831,7 +655,7 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5d6497e0
   {
     {
       (op_assign s 12292)
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@17180c38
+      ssl3_connect(s)
     }
     return (op_bracketedPrimary 0)
   }

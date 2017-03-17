@@ -1,32 +1,32 @@
-loop-invgen/nest-if3_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4ea0a572
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@15c20aa2
+// loop-invgen/nest-if3_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@42d44756
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1ece535d
+t_int __VERIFIER_nondet_int
 {
   t_int iknl
-  (op_assign n TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@558efec3)
-  (op_assign l TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@509c79ca)
-  if (op_not (op_bracketedPrimary (op_greaterThan l 0)))
-  return 0
-  else
-  {}
-  if (op_not (op_bracketedPrimary (op_lessThan l 1000000)))
-  return 0
-  else
-  {}
-  if (op_not (op_bracketedPrimary (op_lessThan n 1000000)))
-  return 0
-  else
-  {}
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@30127a78
+  (op_assign n __VERIFIER_nondet_int((exp null)))
+  (op_assign l __VERIFIER_nondet_int((exp null)))
+  if (op_not (op_bracketedPrimary (op_greaterThan l 0))) return 0
+  else {}
+  if (op_not (op_bracketedPrimary (op_lessThan l 1000000))) return 0
+  else {}
+  if (op_not (op_bracketedPrimary (op_lessThan n 1000000))) return 0
+  else {}
+  for ((op_assign k 1)
+  ;(op_lessThan k n);(op_postFixIncr k)){
+    for ((op_assign i l)
+    ;(op_lessThan i n);(op_postFixIncr i)){
+      __VERIFIER_assert((op_lessEqual 1 i))
+    }
+    if __VERIFIER_nondet_int((exp null)) (op_assign l (op_plus l 1))
+    else {}
+  }
 }

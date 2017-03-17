@@ -1,17 +1,19 @@
-loops/sum04_false-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6f49b908
+// loops/sum04_false-unreach-call_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@b3ddc05
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
 {
   t_int isn = 0
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@58b7ce1f
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@21425dda
+  for ((op_assign i 1)
+  ;(op_lessEqual i 8);(op_postFixIncr i)){
+    if (op_lessThan i 4) (op_assign sn (op_plus sn (op_bracketedPrimary 2)))
+    else {}
+  }
+  __VERIFIER_assert((op_logicalOr (op_equals sn (op_multiply 8 (op_bracketedPrimary 2))) (op_equals sn 0)))
 }

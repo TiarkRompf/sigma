@@ -1,22 +1,25 @@
-loops/array_false-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3d78e75b
+// loops/array_false-unreach-call_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@49ef95de
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@196b10a3
+t_int __VERIFIER_nondet_int
 {
   t_int SIZE = 1
   t_int jk
   t_int arraymenor
-  (op_assign menor TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7c0ca525)
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@634d7c0
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@33c0f3bd
+  (op_assign menor __VERIFIER_nondet_int((exp null)))
+  for ((op_assign j 0)
+  ;(op_lessThan j SIZE);(op_postFixIncr j)){
+    (op_assign array[j] __VERIFIER_nondet_int((exp null)))
+    if (op_lessEqual array[j] menor) (op_assign menor array[j])
+    else {}
+  }
+  __VERIFIER_assert((op_greaterThan array[0] menor))
   return 0
 }

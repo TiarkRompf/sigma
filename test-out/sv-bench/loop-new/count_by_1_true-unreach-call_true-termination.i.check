@@ -1,20 +1,19 @@
-loop-new/count_by_1_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@73546ac7
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@380052d0
+// loop-new/count_by_1_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7e1d0fd3
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@91b52ab
+t_int __VERIFIER_nondet_int
 {
   t_int i
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@59c9131d
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@63655c26
+  for ((op_assign i 0)
+  ;(op_lessThan i 1000000);(op_postFixIncr i)){}
+  __VERIFIER_assert((op_equals i 1000000))
   return 0
 }

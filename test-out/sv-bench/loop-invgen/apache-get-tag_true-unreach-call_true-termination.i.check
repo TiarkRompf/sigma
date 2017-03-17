@@ -1,92 +1,74 @@
-loop-invgen/apache-get-tag_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4cf2cd4d
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1f6cf4df
+// loop-invgen/apache-get-tag_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4f012314
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2029408
+t_int __VERIFIER_nondet_int
 {
   t_int tagbuf_len
   t_int t
-  (op_assign tagbuf_len TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5840a9a0)
-  if (op_greaterEqual tagbuf_len 1)
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2072747b
-  else
-  goto END
+  (op_assign tagbuf_len __VERIFIER_nondet_int((exp null)))
+  if (op_greaterEqual tagbuf_len 1) {}
+  else goto END
   (op_assign t 0)
   (op_prefixDecr tagbuf_len)
   while 1
   {
-    if (op_equals t tagbuf_len)
-    {
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@66adeae2
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@701980eb
+    if (op_equals t tagbuf_len) {
+      __VERIFIER_assert((op_lessEqual 0 t))
+      __VERIFIER_assert((op_lessEqual t tagbuf_len))
       goto END
     }
-    else
-    {}
-    if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2dc93ae1
-    {
-      stm org.eclipse.cdt.internal.core.dom.parser.c.CASTBreakStatement@1eab428f
+    else {}
+    if __VERIFIER_nondet_int((exp null)) {
+      break
     }
-    else
-    {}
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@17d85142
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2bfa958a
+    else {}
+    __VERIFIER_assert((op_lessEqual 0 t))
+    __VERIFIER_assert((op_lessEqual t tagbuf_len))
     (op_postFixIncr t)
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4f80bc26
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@bfb3063
+  __VERIFIER_assert((op_lessEqual 0 t))
+  __VERIFIER_assert((op_lessEqual t tagbuf_len))
   (op_postFixIncr t)
   while 1
   {
-    if (op_equals t tagbuf_len)
-    {
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5e7c321f
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@21d5aa9f
+    if (op_equals t tagbuf_len) {
+      __VERIFIER_assert((op_lessEqual 0 t))
+      __VERIFIER_assert((op_lessEqual t tagbuf_len))
       goto END
     }
-    else
-    {}
-    if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6bfe530f
-    {
-      if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@39d41e3b
-      {
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6872fd4
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a0afcc9
+    else {}
+    if __VERIFIER_nondet_int((exp null)) {
+      if __VERIFIER_nondet_int((exp null)) {
+        __VERIFIER_assert((op_lessEqual 0 t))
+        __VERIFIER_assert((op_lessEqual t tagbuf_len))
         (op_postFixIncr t)
-        if (op_equals t tagbuf_len)
-        {
-          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1375b0ac
-          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a49513f
+        if (op_equals t tagbuf_len) {
+          __VERIFIER_assert((op_lessEqual 0 t))
+          __VERIFIER_assert((op_lessEqual t tagbuf_len))
           goto END
         }
-        else
-        {}
+        else {}
       }
-      else
-      {}
+      else {}
     }
-    else
-    if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@358f262d
-    {
-      stm org.eclipse.cdt.internal.core.dom.parser.c.CASTBreakStatement@683e78e1
+    else if __VERIFIER_nondet_int((exp null)) {
+      break
     }
-    else
-    {}
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5670559a
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@16f026c2
+    else {}
+    __VERIFIER_assert((op_lessEqual 0 t))
+    __VERIFIER_assert((op_lessEqual t tagbuf_len))
     (op_postFixIncr t)
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5a02c47f
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@416056ae
+  __VERIFIER_assert((op_lessEqual 0 t))
+  __VERIFIER_assert((op_lessEqual t tagbuf_len))
   END:
   return 0
 }

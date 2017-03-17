@@ -1,29 +1,23 @@
-loop-lit/hhk2008_true-unreach-call_true-termination.c.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5c387573
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@cfe0f26
+// loop-lit/hhk2008_true-unreach-call_true-termination.c.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1d496cb0
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@409f0d7d
+t_int __VERIFIER_nondet_int
 {
-  t_int a = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5f936bf0
-  t_int b = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2368d81b
+  t_int a = __VERIFIER_nondet_int((exp null))
+  t_int b = __VERIFIER_nondet_int((exp null))
   t_int rescnt
-  if (op_not (op_bracketedPrimary (op_lessEqual a 1000000)))
-  return 0
-  else
-  {}
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 0 b) (op_lessEqual b 1000000))))
-  return 0
-  else
-  {}
+  if (op_not (op_bracketedPrimary (op_lessEqual a 1000000))) return 0
+  else {}
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 0 b) (op_lessEqual b 1000000)))) return 0
+  else {}
   (op_assign res a)
   (op_assign cnt b)
   while (op_greaterThan cnt 0)
@@ -31,6 +25,6 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@409f0d7d
     (op_assign cnt (op_minus cnt 1))
     (op_assign res (op_plus res 1))
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@75921c2a
+  __VERIFIER_assert((op_equals res (op_plus a b)))
   return 0
 }

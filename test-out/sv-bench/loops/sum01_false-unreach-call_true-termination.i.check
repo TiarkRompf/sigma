@@ -1,18 +1,20 @@
-loops/sum01_false-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@21acd73c
+// loops/sum01_false-unreach-call_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@522c253f
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7d47f05e
+t_int __VERIFIER_nondet_uint
 {
-  t_int in = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@81a7a69sn = 0
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@4f485961
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7c7e886a
+  t_int in = __VERIFIER_nondet_uint((exp null))sn = 0
+  for ((op_assign i 1)
+  ;(op_lessEqual i n);(op_postFixIncr i)){
+    if (op_lessThan i 10) (op_assign sn (op_plus sn (op_bracketedPrimary 2)))
+    else {}
+  }
+  __VERIFIER_assert((op_logicalOr (op_equals sn (op_multiply n (op_bracketedPrimary 2))) (op_equals sn 0)))
 }

@@ -1,44 +1,38 @@
-ssh-simplified/s3_srvr_1b_true-unreach-call_false-termination.cil.c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6e3fc2ed
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7535c0a2
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1a11541d
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@196d7b06
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@9d5fa6c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@52be0b24
+// ssh-simplified/s3_srvr_1b_true-unreach-call_false-termination.cil.c
+t_void __VERIFIER_error
+t_char __VERIFIER_nondet_char
+t_int __VERIFIER_nondet_int
+t_unspecified __VERIFIER_nondet_long
+t_void __VERIFIER_nondet_pointer
+t_int __VERIFIER_nondet_int
 {
   t_int s__state
-  t_int s__hit = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@429f1cd2
+  t_int s__hit = __VERIFIER_nondet_int((exp null))
   t_int blastFlag
   t_int tmp___1
   (op_assign s__state 8466)
   (op_assign blastFlag 0)
   while 1
   {
-    if (op_logicalAnd (op_lessEqual s__state 8512) (op_greaterThan blastFlag 2))
-    {
+    if (op_logicalAnd (op_lessEqual s__state 8512) (op_greaterThan blastFlag 2)) {
       goto ERROR
     }
-    else
-    {}
+    else {}
     {
       {
         {
           {
             {
-              if (op_equals s__state 8466)
-              {
+              if (op_equals s__state 8466) {
                 goto switch_1_8466
               }
-              else
-              {
+              else {
                 {
                   {
-                    if (op_equals s__state 8512)
-                    {
+                    if (op_equals s__state 8512) {
                       goto switch_1_8512
                     }
-                    else
-                    {
+                    else {
                       {
                         {
                           {
@@ -52,91 +46,69 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@52be0b24
                                           {
                                             {
                                               {
-                                                if (op_equals s__state 8640)
-                                                {
+                                                if (op_equals s__state 8640) {
                                                   goto switch_1_8640
                                                 }
-                                                else
-                                                {
+                                                else {
                                                   {
-                                                    if (op_equals s__state 8656)
-                                                    {
+                                                    if (op_equals s__state 8656) {
                                                       goto switch_1_8656
                                                     }
-                                                    else
-                                                    {
+                                                    else {
                                                       {
                                                         {
                                                           goto end
                                                           switch_1_8466:
-                                                          if (op_equals blastFlag 0)
-                                                          {
+                                                          if (op_equals blastFlag 0) {
                                                             (op_assign blastFlag 2)
                                                           }
-                                                          else
-                                                          {}
-                                                          if s__hit
-                                                          {
+                                                          else {}
+                                                          if s__hit {
                                                             (op_assign s__state 8656)
                                                           }
-                                                          else
-                                                          {
+                                                          else {
                                                             (op_assign s__state 8512)
                                                           }
                                                           goto switch_1_break
                                                           switch_1_8512:
-                                                          (op_assign tmp___1 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3058eacc)
-                                                          if tmp___1
-                                                          {
+                                                          (op_assign tmp___1 __VERIFIER_nondet_int((exp null)))
+                                                          if tmp___1 {
                                                             (op_assign s__state 8466)
                                                           }
-                                                          else
-                                                          {
+                                                          else {
                                                             (op_assign s__state 8640)
                                                           }
                                                           goto switch_1_break
                                                           switch_1_8640:
-                                                          if (op_equals blastFlag 3)
-                                                          {
+                                                          if (op_equals blastFlag 3) {
                                                             (op_assign blastFlag 4)
                                                           }
-                                                          else
-                                                          {}
-                                                          if s__hit
-                                                          {
+                                                          else {}
+                                                          if s__hit {
                                                             goto end
                                                           }
-                                                          else
-                                                          {
+                                                          else {
                                                             (op_assign s__state 8656)
                                                           }
                                                           goto switch_1_break
                                                           switch_1_8656:
-                                                          if (op_equals blastFlag 2)
-                                                          {
+                                                          if (op_equals blastFlag 2) {
                                                             (op_assign blastFlag 3)
                                                           }
-                                                          else
-                                                          {}
-                                                          if (op_equals blastFlag 4)
-                                                          {
+                                                          else {}
+                                                          if (op_equals blastFlag 4) {
                                                             (op_assign blastFlag 5)
                                                           }
-                                                          else
-                                                          {
-                                                            if (op_equals blastFlag 5)
-                                                            {
+                                                          else {
+                                                            if (op_equals blastFlag 5) {
                                                               goto ERROR
                                                             }
-                                                            else
-                                                            {}
+                                                            else {}
                                                           }
-                                                          if s__hit
-                                                          {
+                                                          if s__hit {
                                                             (op_assign s__state 8640)
                                                           }
-                                                          else
-                                                          {
+                                                          else {
                                                             goto end
                                                           }
                                                           goto switch_1_break
@@ -168,11 +140,11 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@52be0b24
       }
     }
     switch_1_break:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@16787031
+    {}
   }
   end:
   return (op_bracketedPrimary (op_minus 1))
   ERROR:
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@34bdbef1
+  __VERIFIER_error((exp null))
   return (op_bracketedPrimary (op_minus 1))
 }

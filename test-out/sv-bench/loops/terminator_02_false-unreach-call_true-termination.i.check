@@ -1,34 +1,30 @@
-loops/terminator_02_false-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7a61d186
+// loops/terminator_02_false-unreach-call_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6972c2f9
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@35b81792
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4f9e2839
+t_int __VERIFIER_nondet_int
+t_bool __VERIFIER_nondet_bool
 {
-  t_int x = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3b873dad
-  t_int y = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@441d552e
-  t_int z = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@316cceb8
+  t_int x = __VERIFIER_nondet_int((exp null))
+  t_int y = __VERIFIER_nondet_int((exp null))
+  t_int z = __VERIFIER_nondet_int((exp null))
   while (op_logicalAnd (op_lessThan x 100) (op_lessThan 100 z))
   {
-    t_bool tmp = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@f8de74c
-    if tmp
-    {
+    t_bool tmp = __VERIFIER_nondet_bool((exp null))
+    if tmp {
       (op_postFixIncr x)
     }
-    else
-    {
+    else {
       (op_postFixDecr x)
       (op_postFixDecr z)
     }
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@de5c945
+  __VERIFIER_assert(0)
   return 0
 }

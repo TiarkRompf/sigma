@@ -1,23 +1,21 @@
-loops/terminator_01_false-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@68fc7c5a
+// loops/terminator_01_false-unreach-call_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@21b30b82
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@382574bf
+t_int __VERIFIER_nondet_int
 {
-  t_int x = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@48a2968b
+  t_int x = __VERIFIER_nondet_int((exp null))
   t_int p = (op_amper x)
   while (op_lessThan x 100)
   {
     (op_postFixIncr (op_bracketedPrimary (op_star p)))
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@43b73d69
+  __VERIFIER_assert(0)
   return 0
 }

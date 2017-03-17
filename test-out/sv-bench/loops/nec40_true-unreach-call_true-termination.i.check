@@ -1,35 +1,29 @@
-loops/nec40_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@396b3468
+// loops/nec40_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@671aaa1b
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@73bf422
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5bec7d2c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3b44ca4d
+t_int __VERIFIER_nondet_int
+t_char xy
+t_int ijk
 {
-  (op_assign k TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@9bcf54c)
+  (op_assign k __VERIFIER_nondet_int((exp null)))
   (op_assign i 0)
-  while (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@517e9abd) 0)
+  while (op_notequals x[i] 0)
   {
-    (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@694398a3) (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@74483164))
+    (op_assign y[i] x[i])
     (op_postFixIncr i)
   }
-  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@1a30ac34) 0)
-  if (op_logicalAnd (op_greaterEqual k 0) (op_lessThan k i))
-  if (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@3fbe66bd) 0)
-  {
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4acd7769
+  (op_assign y[i] 0)
+  if (op_logicalAnd (op_greaterEqual k 0) (op_lessThan k i)) if (op_notequals y[k] 0) {
+    __VERIFIER_assert(0)
   }
-  else
-  {}
-  else
-  {}
+  else {}
+  else {}
   return 0
 }

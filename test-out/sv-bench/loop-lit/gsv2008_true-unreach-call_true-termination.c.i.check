@@ -1,30 +1,26 @@
-loop-lit/gsv2008_true-unreach-call_true-termination.c.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@488ac7f2
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3098b555
+// loop-lit/gsv2008_true-unreach-call_true-termination.c.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2776e20
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@e6bcfb5
+t_int __VERIFIER_nondet_int
 {
   t_int xy
   (op_assign x (op_minus 50))
-  (op_assign y TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@10403cdd)
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan (op_minus 1000) y) (op_lessThan y 1000000))))
-  return 0
-  else
-  {}
+  (op_assign y __VERIFIER_nondet_int((exp null)))
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan (op_minus 1000) y) (op_lessThan y 1000000)))) return 0
+  else {}
   while (op_lessThan x 0)
   {
     (op_assign x (op_plus x y))
     (op_postFixIncr y)
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6507119d
+  __VERIFIER_assert((op_greaterThan y 0))
   return 0
 }

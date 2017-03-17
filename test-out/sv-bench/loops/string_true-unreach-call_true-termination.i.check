@@ -1,55 +1,47 @@
-loops/string_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7fbbac45
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@60f5ee8a
+// loops/string_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2c32f7a7
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@d65ab77
+t_char __VERIFIER_nondet_char
 {
   t_char string_Astring_B
   t_int ijnc_Anc_Bfound = 0
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@2f9ee71a
-  if (op_not (op_bracketedPrimary (op_equals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@6050cddd) '\0')))
-  return 0
-  else
-  {}
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@5be491bf
-  if (op_not (op_bracketedPrimary (op_equals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@7b7aa7a7) '\0')))
-  return 0
-  else
-  {}
+  for ((op_assign i 0)
+  ;(op_lessThan i 5);(op_postFixIncr i))(op_assign string_A[i] __VERIFIER_nondet_char((exp null)))
+  if (op_not (op_bracketedPrimary (op_equals string_A[(op_minus 5 1)] '\0'))) return 0
+  else {}
+  for ((op_assign i 0)
+  ;(op_lessThan i 5);(op_postFixIncr i))(op_assign string_B[i] __VERIFIER_nondet_char((exp null)))
+  if (op_not (op_bracketedPrimary (op_equals string_B[(op_minus 5 1)] '\0'))) return 0
+  else {}
   (op_assign nc_A 0)
-  while (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@238439e5) '\0')
+  while (op_notequals string_A[nc_A] '\0')
   (op_postFixIncr nc_A)
   (op_assign nc_B 0)
-  while (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@45dc266d) '\0')
+  while (op_notequals string_B[nc_B] '\0')
   (op_postFixIncr nc_B)
-  if (op_not (op_bracketedPrimary (op_greaterEqual nc_B nc_A)))
-  return 0
-  else
-  {}
+  if (op_not (op_bracketedPrimary (op_greaterEqual nc_B nc_A))) return 0
+  else {}
   (op_assign i (op_assign j 0))
   while (op_logicalAnd (op_bracketedPrimary (op_lessThan i nc_A)) (op_bracketedPrimary (op_lessThan j nc_B)))
   {
-    if (op_equals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@3a4a2e00) (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@14a3e171))
-    {
+    if (op_equals string_A[i] string_B[j]) {
       (op_postFixIncr i)
       (op_postFixIncr j)
     }
-    else
-    {
+    else {
       (op_assign i (op_plus (op_minus i j) 1))
       (op_assign j 0)
     }
   }
   (op_assign found (op_bracketedPrimary (op_greaterThan j (op_minus nc_B 1))))
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@16eab911
+  __VERIFIER_assert((op_logicalOr (op_equals found 0) (op_equals found 1)))
   return 0
 }

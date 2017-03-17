@@ -1,17 +1,15 @@
-loop-lit/cggmp2005_true-unreach-call_true-termination.c.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@78831eb8
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@39a0c050
+// loop-lit/cggmp2005_true-unreach-call_true-termination.c.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6211f59a
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6f86a467
+t_int __VERIFIER_nondet_int
 {
   t_int ij
   (op_assign i 1)
@@ -21,6 +19,6 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6f86a467
     (op_assign i (op_plus i 2))
     (op_assign j (op_plus (op_minus 1) j))
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@f9011f1
+  __VERIFIER_assert((op_equals j 6))
   return 0
 }

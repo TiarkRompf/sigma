@@ -1,41 +1,35 @@
-loop-lit/bhmr2007_true-unreach-call_true-termination.c.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4a68c246
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@925e288
+// loop-lit/bhmr2007_true-unreach-call_true-termination.c.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@784b3c8f
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@ace62a6
+t_int __VERIFIER_nondet_int
 {
   t_int inab
   (op_assign i 0)
   (op_assign a 0)
   (op_assign b 0)
-  (op_assign n TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@638eb4b)
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_greaterEqual n 0) (op_lessEqual n 1000000))))
-  return 0
-  else
-  {}
+  (op_assign n __VERIFIER_nondet_int((exp null)))
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_greaterEqual n 0) (op_lessEqual n 1000000)))) return 0
+  else {}
   while (op_lessThan i n)
   {
-    if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@202f68a6
-    {
+    if __VERIFIER_nondet_int((exp null)) {
       (op_assign a (op_plus a 1))
       (op_assign b (op_plus b 2))
     }
-    else
-    {
+    else {
       (op_assign a (op_plus a 2))
       (op_assign b (op_plus b 1))
     }
     (op_assign i (op_plus i 1))
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1219768
+  __VERIFIER_assert((op_equals (op_plus a b) (op_multiply 3 n)))
   return 0
 }

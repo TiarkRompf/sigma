@@ -1,14 +1,12 @@
-loops/veris.c_sendmail__tTflag_arr_one_loop_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3187069b
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6db7d007
+// loops/veris.c_sendmail__tTflag_arr_one_loop_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_char __VERIFIER_nondet_char
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@38dec212
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
 {
@@ -17,19 +15,22 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6db7d007
   t_char c
   t_int ij
   t_int idx_in
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@40524dcf
-  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@49e82880) 0)
+  for ((op_assign i 0)
+  ;(op_lessThan i 10);(op_postFixIncr i)){
+    (op_assign in[i] __VERIFIER_nondet_char((exp null)))
+  }
+  (op_assign in[10] 0)
   (op_assign idx_in 0)
   (op_assign s in)
   (op_assign i 0)
-  (op_assign c (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@1a0cfe52))
+  (op_assign c in[idx_in])
   while (op_logicalAnd (op_bracketedPrimary (op_lessEqual '0' c)) (op_bracketedPrimary (op_lessEqual c '9')))
   {
     (op_assign j (op_minus c '0'))
     (op_assign i (op_plus (op_multiply i 10U) j))
     (op_postFixIncr idx_in)
-    (op_assign c (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@540c7153))
+    (op_assign c in[idx_in])
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6e27228
+  __VERIFIER_assert((op_greaterEqual i 0))
   return 0
 }

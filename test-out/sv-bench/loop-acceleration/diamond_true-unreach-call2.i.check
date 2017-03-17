@@ -1,61 +1,39 @@
-loop-acceleration/diamond_true-unreach-call2.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@40995ced
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1668de0f
+// loop-acceleration/diamond_true-unreach-call2.i
+t_void __VERIFIER_error
+t_int __VERIFIER_nondet_uint
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@16531baf
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
 {
   t_int x = 0
-  t_int y = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@46ad3407
+  t_int y = __VERIFIER_nondet_uint((exp null))
   while (op_lessThan x 99)
   {
-    if (op_equals (op_modulo y 2) 0)
-    (op_plusAssign x 2)
-    else
-    (op_postFixIncr x)
-    if (op_equals (op_modulo y 2) 0)
-    (op_plusAssign x 2)
-    else
-    (op_minusAssign x 2)
-    if (op_equals (op_modulo y 2) 0)
-    (op_plusAssign x 2)
-    else
-    (op_plusAssign x 2)
-    if (op_equals (op_modulo y 2) 0)
-    (op_plusAssign x 2)
-    else
-    (op_minusAssign x 2)
-    if (op_equals (op_modulo y 2) 0)
-    (op_plusAssign x 2)
-    else
-    (op_plusAssign x 2)
-    if (op_equals (op_modulo y 2) 0)
-    (op_plusAssign x 2)
-    else
-    (op_minusAssign x 4)
-    if (op_equals (op_modulo y 2) 0)
-    (op_plusAssign x 2)
-    else
-    (op_plusAssign x 4)
-    if (op_equals (op_modulo y 2) 0)
-    (op_plusAssign x 2)
-    else
-    (op_plusAssign x 2)
-    if (op_equals (op_modulo y 2) 0)
-    (op_plusAssign x 2)
-    else
-    (op_minusAssign x 4)
-    if (op_equals (op_modulo y 2) 0)
-    (op_plusAssign x 2)
-    else
-    (op_minusAssign x 4)
+    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+    else (op_postFixIncr x)
+    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+    else (op_minusAssign x 2)
+    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+    else (op_plusAssign x 2)
+    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+    else (op_minusAssign x 2)
+    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+    else (op_plusAssign x 2)
+    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+    else (op_minusAssign x 4)
+    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+    else (op_plusAssign x 4)
+    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+    else (op_plusAssign x 2)
+    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+    else (op_minusAssign x 4)
+    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+    else (op_minusAssign x 4)
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4c59760b
+  __VERIFIER_assert((op_equals (op_bracketedPrimary (op_modulo x 2)) (op_bracketedPrimary (op_modulo y 2))))
 }

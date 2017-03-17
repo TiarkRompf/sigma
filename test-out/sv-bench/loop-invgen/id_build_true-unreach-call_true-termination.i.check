@@ -1,20 +1,25 @@
-loop-invgen/id_build_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5a328afc
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@30198074
+// loop-invgen/id_build_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@8f3172
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2479c2f4
+t_int __VERIFIER_nondet_int
 {
-  t_int offsetlengthnlen = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6ad2c9ed
+  t_int offsetlengthnlen = __VERIFIER_nondet_int((exp null))
   t_int ij
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@1634eee3
+  for ((op_assign i 0)
+  ;(op_lessThan i nlen);(op_postFixIncr i)){
+    for ((op_assign j 0)
+    ;(op_lessThan j 8);(op_postFixIncr j)){
+      __VERIFIER_assert((op_lessEqual 0 (op_minus (op_minus nlen 1) i)))
+      __VERIFIER_assert((op_lessThan (op_minus (op_minus nlen 1) i) nlen))
+    }
+  }
   return 0
 }

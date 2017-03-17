@@ -1,40 +1,33 @@
-loop-invgen/nested9_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@28336899
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@20b4ba87
+// loop-invgen/nested9_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2f572929
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5dc9eb5e
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6e8d37de
+t_int __VERIFIER_nondet_int
+t_int __BLAST_NONDET
 {
   t_int ijknlm
-  (op_assign n TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6be8d80a)
-  (op_assign m TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7de0aa3f)
-  (op_assign l TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6f612dc6)
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan (op_minus 1000000) n) (op_lessThan n 1000000))))
-  return 0
-  else
-  {}
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan (op_minus 1000000) m) (op_lessThan m 1000000))))
-  return 0
-  else
-  {}
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan (op_minus 1000000) l) (op_lessThan l 1000000))))
-  return 0
-  else
-  {}
-  if (op_lessEqual (op_multiply 3 n) (op_plus m l))
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@6855d433
-  else
-  goto END
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@455079bb
+  (op_assign n __VERIFIER_nondet_int((exp null)))
+  (op_assign m __VERIFIER_nondet_int((exp null)))
+  (op_assign l __VERIFIER_nondet_int((exp null)))
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan (op_minus 1000000) n) (op_lessThan n 1000000)))) return 0
+  else {}
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan (op_minus 1000000) m) (op_lessThan m 1000000)))) return 0
+  else {}
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessThan (op_minus 1000000) l) (op_lessThan l 1000000)))) return 0
+  else {}
+  if (op_lessEqual (op_multiply 3 n) (op_plus m l)) {}
+  else goto END
+  for ((op_assign i 0)
+  ;(op_lessThan i n);(op_postFixIncr i))for ((op_assign j (op_multiply 2 i))
+  ;(op_lessThan j (op_multiply 3 i));(op_postFixIncr j))for ((op_assign k i)
+  ;(op_lessThan k j);(op_postFixIncr k))__VERIFIER_assert((op_lessEqual (op_minus k i) (op_multiply 2 n)))
   END:
   return 0
 }

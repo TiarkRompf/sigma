@@ -1,23 +1,29 @@
-loops/matrix_false-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1524811a
+// loops/matrix_false-unreach-call_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@55416617
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@35ce1408
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7571d19b
+t_int __VERIFIER_nondet_uint
+t_int __VERIFIER_nondet_int
 {
-  t_int N_LIN = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@44eca27e
-  t_int N_COL = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1a43152a
+  t_int N_LIN = __VERIFIER_nondet_uint((exp null))
+  t_int N_COL = __VERIFIER_nondet_uint((exp null))
   t_int jk
   t_int matrizmaior
-  (op_assign maior TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5fe82c3e)
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@24eec351
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@5b06ae0
+  (op_assign maior __VERIFIER_nondet_int((exp null)))
+  for ((op_assign j 0)
+  ;(op_lessThan j N_COL);(op_postFixIncr j))for ((op_assign k 0)
+  ;(op_lessThan k N_LIN);(op_postFixIncr k)){
+    (op_assign matriz[j][k] __VERIFIER_nondet_int((exp null)))
+    if (op_greaterThan matriz[j][k] maior) (op_assign maior matriz[j][k])
+    else {}
+  }
+  for ((op_assign j 0)
+  ;(op_lessThan j N_COL);(op_postFixIncr j))for ((op_assign k 0)
+  ;(op_lessThan k N_LIN);(op_postFixIncr k))__VERIFIER_assert((op_lessThan matriz[j][k] maior))
 }

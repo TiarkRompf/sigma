@@ -1,31 +1,27 @@
-loops/linear_sea.ch_true-unreach-call.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@92ef20a
+// loops/linear_sea.ch_true-unreach-call.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@630dbeb0
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@16c05403
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@e2d2387
+t_int __VERIFIER_nondet_uint
+t_int SIZE
 {
   t_int j = 0
-  while (op_logicalAnd (op_lessThan j n) (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@70ed3eea) q))
+  while (op_logicalAnd (op_lessThan j n) (op_notequals a[j] q))
   {
     (op_postFixIncr j)
   }
-  if (op_lessThan j SIZE)
-  return 1
-  else
-  return 0
+  if (op_lessThan j SIZE) return 1
+  else return 0
 }
 {
-  (op_assign SIZE (op_plus (op_bracketedPrimary (op_divide TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7e9bf679 8)) 1))
+  (op_assign SIZE (op_plus (op_bracketedPrimary (op_divide __VERIFIER_nondet_uint((exp null)) 8)) 1))
   t_int a
-  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@6a6fc5e5) 3)
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@d39e234
+  (op_assign a[(op_divide SIZE 2)] 3)
+  __VERIFIER_assert(linear_search((a,SIZE,3)))
 }

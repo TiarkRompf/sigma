@@ -1,51 +1,45 @@
-loops/trex01_false-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@377fabd0
+// loops/trex01_false-unreach-call_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@51b15d29
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@217eef80
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5859056e
+t_bool __VERIFIER_nondet_bool
+t_int __VERIFIER_nondet_int
 {
-  t_int x = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@12b2049ey = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@49315bf4k = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1fe5bfbdz = 1
+  t_int x = __VERIFIER_nondet_int((exp null))y = __VERIFIER_nondet_int((exp null))k = __VERIFIER_nondet_int((exp null))z = 1
   L1:
   while (op_lessThan z k)
   {
     (op_assign z (op_multiply 2 z))
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@f07ab5a
+  __VERIFIER_assert((op_greaterEqual z 2))
   L2:
   while (op_logicalAnd (op_greaterThan x 0) (op_greaterThan y 0))
   {
-    t_bool c = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@d93c8d0
-    if c
-    {
+    t_bool c = __VERIFIER_nondet_bool((exp null))
+    if c {
       P1:
       (op_assign x (op_minus x d))
-      (op_assign y TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4ebedc6d)
+      (op_assign y __VERIFIER_nondet_bool((exp null)))
       (op_assign z (op_minus z 1))
     }
-    else
-    {
+    else {
       (op_assign y (op_minus y d))
     }
   }
 }
 {
-  t_bool c = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7c148a50
-  if c
-  {
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4e7ba3f3
+  t_bool c = __VERIFIER_nondet_bool((exp null))
+  if c {
+    f(1)
   }
-  else
-  {
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5d3d37a4
+  else {
+    f(2)
   }
   return 0
 }

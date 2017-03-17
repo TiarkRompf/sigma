@@ -1,30 +1,26 @@
-loops/trex02_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@12e13376
+// loops/trex02_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3a43a5d4
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@609f0f6c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7ebac166
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@65db2744
+t_bool __VERIFIER_nondet_bool
+t_int __VERIFIER_nondet_int
+t_int x
 {
   (op_postFixDecr x)
 }
 {
-  (op_assign x TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4291532e)
+  (op_assign x __VERIFIER_nondet_int((exp null)))
   while (op_greaterThan x 0)
   {
-    t_bool c = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5aedc07f
-    if c
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@72748bb5
-    else
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4ea963b8
+    t_bool c = __VERIFIER_nondet_bool((exp null))
+    if c foo((exp null))
+    else foo((exp null))
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6e94160
+  __VERIFIER_assert((op_lessEqual x 0))
 }

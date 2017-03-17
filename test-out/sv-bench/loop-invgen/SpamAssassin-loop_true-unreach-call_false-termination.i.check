@@ -1,29 +1,60 @@
-loop-invgen/SpamAssassin-loop_true-unreach-call_false-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@28a9849b
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3d2d0ea
+// loop-invgen/SpamAssassin-loop_true-unreach-call_false-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@709966b0
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@213dbb13
+t_int __VERIFIER_nondet_int
 {
   t_int len
   t_int i
   t_int j
   t_int bufsize
-  (op_assign bufsize TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@45d46ef3)
-  if (op_lessThan bufsize 0)
-  return 0
-  else
-  {}
-  (op_assign len TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5094b323)
+  (op_assign bufsize __VERIFIER_nondet_int((exp null)))
+  if (op_lessThan bufsize 0) return 0
+  else {}
+  (op_assign len __VERIFIER_nondet_int((exp null)))
   t_int limit = (op_minus bufsize 4)
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@6b83f367
+  for ((op_assign i 0)
+  ;(op_lessThan i len);(exp null)){
+    for ((op_assign j 0)
+    ;(op_logicalAnd (op_lessThan i len) (op_lessThan j limit));(exp null)){
+      if (op_lessThan (op_plus i 1) len) {
+        __VERIFIER_assert((op_lessThan (op_plus i 1) len))
+        __VERIFIER_assert((op_lessEqual 0 i))
+        if __VERIFIER_nondet_int((exp null)) goto ELSE
+        else {}
+        __VERIFIER_assert((op_lessThan i len))
+        __VERIFIER_assert((op_lessEqual 0 i))
+        __VERIFIER_assert((op_lessThan j bufsize))
+        __VERIFIER_assert((op_lessEqual 0 j))
+        (op_postFixIncr j)
+        (op_postFixIncr i)
+        __VERIFIER_assert((op_lessThan i len))
+        __VERIFIER_assert((op_lessEqual 0 i))
+        __VERIFIER_assert((op_lessThan j bufsize))
+        __VERIFIER_assert((op_lessEqual 0 j))
+        (op_postFixIncr j)
+        (op_postFixIncr i)
+        __VERIFIER_assert((op_lessThan j bufsize))
+        __VERIFIER_assert((op_lessEqual 0 j))
+        (op_postFixIncr j)
+      }
+      else {
+        ELSE:
+        __VERIFIER_assert((op_lessThan i len))
+        __VERIFIER_assert((op_lessEqual 0 i))
+        __VERIFIER_assert((op_lessThan j bufsize))
+        __VERIFIER_assert((op_lessEqual 0 j))
+        (op_postFixIncr j)
+        (op_postFixIncr i)
+      }
+    }
+  }
   return 0
 }

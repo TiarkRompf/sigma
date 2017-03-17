@@ -1,38 +1,42 @@
-loops/vogal_true-unreach-call.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@e46e65c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@734567a8
+// loops/vogal_true-unreach-call.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@44f4067a
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@51124ffe
+t_char __VERIFIER_nondet_char
 {
-  t_char input_stringvogal_array = (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTInitializerList@68df2786)
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@30ff7512
-  t_int ijconttam_stringn_caracter
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@54dc62a1
-  if (op_not (op_bracketedPrimary (op_equals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@17f2aa7b) '\0')))
-  return 0
-  else
+  t_char input_stringvogal_array = {'a','A','e','E','i','I','o','O','u','U','\0'}
   {}
+  t_int ijconttam_stringn_caracter
+  for ((op_assign i 0)
+  ;(op_lessThan i 5);(op_postFixIncr i))(op_assign input_string[i] __VERIFIER_nondet_char((exp null)))
+  if (op_not (op_bracketedPrimary (op_equals input_string[(op_minus 5 1)] '\0'))) return 0
+  else {}
   (op_assign n_caracter 0)
-  while (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@6804c14) '\0')
+  while (op_notequals input_string[n_caracter] '\0')
   (op_postFixIncr n_caracter)
   (op_assign cont 0)
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@4d1cfe33
+  for ((op_assign i 0)
+  ;(op_lessThan i n_caracter);(op_postFixIncr i))for ((op_assign j 0)
+  ;(op_lessThan j (op_divide 5 2));(op_postFixIncr j))if (op_equals input_string[i] vogal_array[j]) (op_postFixIncr cont)
+  else {}
   (op_assign i 0)
   t_int cont_aux = 0
-  while (op_notequals (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@7ae2445b) '\0')
+  while (op_notequals input_string[i] '\0')
   {
-    stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@7841880e
+    for ((op_assign j 0)
+    ;(op_lessThan j (op_divide 5 2));(op_postFixIncr j)){
+      if (op_equals input_string[i] vogal_array[j]) (op_postFixIncr cont_aux)
+      else {}
+    }
     (op_postFixIncr i)
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7ca59bfe
+  __VERIFIER_assert((op_equals cont_aux cont))
   return 0
 }

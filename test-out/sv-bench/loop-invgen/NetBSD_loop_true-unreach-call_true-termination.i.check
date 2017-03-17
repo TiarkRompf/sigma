@@ -1,17 +1,15 @@
-loop-invgen/NetBSD_loop_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3d99927c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5bf08714
+// loop-invgen/NetBSD_loop_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1dc23415
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5b991bb7
+t_int __VERIFIER_nondet_int
 {
   t_int MAXPATHLEN
   t_int pathbuf_off
@@ -19,16 +17,18 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5b991bb7
   t_int glob2_p_off
   t_int glob2_pathbuf_off
   t_int glob2_pathlim_off
-  (op_assign MAXPATHLEN TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2a6268ca)
-  if (op_logicalAnd (op_greaterThan MAXPATHLEN 0) (op_lessThan MAXPATHLEN 2147483647))
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@757592b5
-  else
-  goto END
+  (op_assign MAXPATHLEN __VERIFIER_nondet_int((exp null)))
+  if (op_logicalAnd (op_greaterThan MAXPATHLEN 0) (op_lessThan MAXPATHLEN 2147483647)) {}
+  else goto END
   (op_assign pathbuf_off 0)
   (op_assign bound_off (op_minus (op_plus pathbuf_off (op_bracketedPrimary (op_plus MAXPATHLEN 1))) 1))
   (op_assign glob2_pathbuf_off pathbuf_off)
   (op_assign glob2_pathlim_off bound_off)
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@799b6292
+  for ((op_assign glob2_p_off glob2_pathbuf_off)
+  ;(op_lessEqual glob2_p_off glob2_pathlim_off);(op_postFixIncr glob2_p_off)){
+    __VERIFIER_assert((op_lessEqual 0 glob2_p_off))
+    __VERIFIER_assert((op_lessThan glob2_p_off (op_plus MAXPATHLEN 1)))
+  }
   END:
   return 0
 }

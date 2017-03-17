@@ -1,13 +1,11 @@
-loop-acceleration/underapprox_true-unreach-call1_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@608a0862
+// loop-acceleration/underapprox_true-unreach-call1_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1c4210ca
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
 {
@@ -18,5 +16,5 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@608a0862
     (op_postFixIncr x)
     (op_multiplyAssign y 2)
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@bd6eeec
+  __VERIFIER_assert((op_modulo y 3))
 }

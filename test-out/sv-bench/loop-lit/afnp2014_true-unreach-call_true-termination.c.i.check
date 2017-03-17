@@ -1,25 +1,23 @@
-loop-lit/afnp2014_true-unreach-call_true-termination.c.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2e98d372
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6c163a04
+// loop-lit/afnp2014_true-unreach-call_true-termination.c.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@641c06ee
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7b371734
+t_int __VERIFIER_nondet_int
 {
   t_int x = 1
   t_int y = 0
-  while (op_logicalAnd (op_lessThan y 1000) TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@135c5863)
+  while (op_logicalAnd (op_lessThan y 1000) __VERIFIER_nondet_int((exp null)))
   {
     (op_assign x (op_plus x y))
     (op_assign y (op_plus y 1))
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4e478616
+  __VERIFIER_assert((op_greaterEqual x y))
   return 0
 }

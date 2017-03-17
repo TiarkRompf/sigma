@@ -1,27 +1,29 @@
-loop-invgen/id_trans_false-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2bdfddad
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1d84c67d
+// loop-invgen/id_trans_false-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@55f8e686
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@55bb6756
+t_int __VERIFIER_nondet_int
 {
   t_int idBitLengthmaterial_lengthnlen
   t_int jk
-  (op_assign nlen TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5ceaf9)
-  (op_assign idBitLength TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3bd063a1)
-  (op_assign material_length TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@290e6e8b)
-  if (op_not (op_bracketedPrimary (op_equals nlen (op_divide idBitLength 32))))
-  return 0
-  else
-  {}
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@27012d2b
+  (op_assign nlen __VERIFIER_nondet_int((exp null)))
+  (op_assign idBitLength __VERIFIER_nondet_int((exp null)))
+  (op_assign material_length __VERIFIER_nondet_int((exp null)))
+  if (op_not (op_bracketedPrimary (op_equals nlen (op_divide idBitLength 32)))) return 0
+  else {}
+  for ((op_assign j 0)
+  ;(op_logicalAnd (op_bracketedPrimary (op_lessThan j (op_divide idBitLength 8))) (op_bracketedPrimary (op_lessThan j material_length)));(op_postFixIncr j)){
+    __VERIFIER_assert((op_lessEqual 0 j))
+    __VERIFIER_assert((op_lessThan j material_length))
+    __VERIFIER_assert((op_lessEqual 0 (op_divide j 4)))
+    __VERIFIER_assert((op_lessThan (op_divide j 4) nlen))
+  }
   return 0
 }

@@ -1,26 +1,28 @@
-loop-new/half_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7422c556
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@12ca8186
+// loop-new/half_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@27aa6fe0
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2cffef33
+t_int __VERIFIER_nondet_int
 {
   t_int i = 0
   t_int n = 0
-  t_int k = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4e95978f
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual k 1000000) (op_greaterEqual k (op_minus 1000000)))))
-  return 0
-  else
-  {}
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@815e96a
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7cb452e7
+  t_int k = __VERIFIER_nondet_int((exp null))
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual k 1000000) (op_greaterEqual k (op_minus 1000000))))) return 0
+  else {}
+  for ((op_assign i 0)
+  ;(op_lessThan i (op_multiply 2 k));(op_postFixIncr i)){
+    if (op_equals (op_modulo i 2) 0) {
+      (op_postFixIncr n)
+    }
+    else {}
+  }
+  __VERIFIER_assert((op_logicalOr (op_lessThan k 0) (op_equals n k)))
   return 0
 }

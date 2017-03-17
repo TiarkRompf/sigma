@@ -1,29 +1,25 @@
-loops/n.c11_true-unreach-call_false-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@142b6a9c
+// loops/n.c11_true-unreach-call_false-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@72c752c3
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@87b4db2
+t_bool __VERIFIER_nondet_bool
 {
   t_int a
   t_int len = 0
   t_int i
-  while TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@37f497e4
+  while __VERIFIER_nondet_bool((exp null))
   {
-    if (op_equals len 4)
-    (op_assign len 0)
-    else
-    {}
-    (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@7844640c) 0)
+    if (op_equals len 4) (op_assign len 0)
+    else {}
+    (op_assign a[len] 0)
     (op_postFixIncr len)
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@30dd608d
+  __VERIFIER_assert((op_logicalAnd (op_greaterEqual len 0) (op_lessThan len 5)))
   return 1
 }

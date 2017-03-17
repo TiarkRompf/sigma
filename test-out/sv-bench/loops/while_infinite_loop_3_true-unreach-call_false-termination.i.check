@@ -1,30 +1,28 @@
-loops/while_infinite_loop_3_true-unreach-call_false-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2e1f5729
+// loops/while_infinite_loop_3_true-unreach-call_false-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@233d7474
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1e68ff03
+t_int x = 0
 {
   while 1
   {
     (op_assign x 0)
-    stm org.eclipse.cdt.internal.core.dom.parser.c.CASTBreakStatement@7450257e
+    break
   }
   return (exp null)
 }
 {
   while 1
   {
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@20a292c2
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@68f4dc76
+    eval((exp null))
+    __VERIFIER_assert((op_equals x 0))
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@313db68c
+  __VERIFIER_assert((op_notequals x 0))
   return 0
 }

@@ -1,32 +1,28 @@
-loop-lit/gj2007b_true-unreach-call_true-termination.c.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4b036322
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@54f6bd11
+// loop-lit/gj2007b_true-unreach-call_true-termination.c.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@67ec659e
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4cd17c59
+t_int __VERIFIER_nondet_int
 {
   t_int x = 0
   t_int m = 0
-  t_int n = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1c1b0c92
+  t_int n = __VERIFIER_nondet_int((exp null))
   while (op_lessThan x n)
   {
-    if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7d642435
-    {
+    if __VERIFIER_nondet_int((exp null)) {
       (op_assign m x)
     }
-    else
-    {}
+    else {}
     (op_assign x (op_plus x 1))
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@79a07e92
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3ed4f64b
+  __VERIFIER_assert((op_bracketedPrimary (op_logicalOr (op_greaterEqual m 0) (op_lessEqual n 0))))
+  __VERIFIER_assert((op_bracketedPrimary (op_logicalOr (op_lessThan m n) (op_lessEqual n 0))))
   return 0
 }

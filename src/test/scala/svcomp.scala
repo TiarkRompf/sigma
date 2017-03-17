@@ -2,7 +2,7 @@ package analysis
 
 import CFrontend._
 
-class SVCompSuite extends FileDiffSuite {
+abstract class SVCompSuite extends FileDiffSuite {
 
 /*
 ------> see https://sv-comp.sosy-lab.org
@@ -222,7 +222,7 @@ Architecture: 32 bit
   def testOne(dir: String, file: String, props: Map[String,Boolean]) = {
     val key = dir+"/"+file
     test(key) { withOutFileChecked(out_prefix+key) {       
-      println(key) 
+      println("// "+key)
       val parsed = parseCFile(sv_bench_root+"/"+dir+"/"+file)
       evalUnit(parsed)
     }}
@@ -240,6 +240,6 @@ class SVCompLoops extends SVCompSuite {
 }
 
 class SVCompRecursive extends SVCompSuite {
-    extractAll(loops)
+    extractAll(recursive)
 }
 

@@ -1,22 +1,20 @@
-loop-invgen/down_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@15e8079d
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@239f5d4
+// loop-invgen/down_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4ed4e8d0
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@d420282
+t_int __VERIFIER_nondet_int
 {
   t_int n
   t_int k = 0
   t_int i = 0
-  (op_assign n TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@58c32858)
+  (op_assign n __VERIFIER_nondet_int((exp null)))
   while (op_lessThan i n)
   {
     (op_postFixIncr i)
@@ -25,7 +23,7 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@d420282
   t_int j = n
   while (op_greaterThan j 0)
   {
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1599f1c1
+    __VERIFIER_assert((op_greaterThan k 0))
     (op_postFixDecr j)
     (op_postFixDecr k)
   }

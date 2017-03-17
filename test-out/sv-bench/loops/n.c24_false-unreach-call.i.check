@@ -1,78 +1,116 @@
-loops/n.c24_false-unreach-call.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@758d539
+// loops/n.c24_false-unreach-call.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@194f9030
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4be92c03
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4d08a8f4
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@cb84d71
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@691392c6
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6b9822d3
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@63df685c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2dc27293
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@58b2404f
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@72967f30
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6a9374b6
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@547bc59d
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1e015765
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5f2fc46a
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2ee83dfd
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@24b55290
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@301b831c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@11360de1
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7edecdef
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@70f13176
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1c9e5f17
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3de60060
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@35df0386
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4c5ceeca
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@22d466b1
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2f3c978b
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@62b272d9
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4933fafb
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@48d3fc82
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@318badc
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@724d24dc
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@247fec4c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@739f23ad
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3597b958
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2ee700f2
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@75a184ee
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7fa953bc
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@77fc7868
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@618a06f5
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@18f568de
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2df4eccf
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@395fee21
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@853ea51
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3b53c01d
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@314bd12c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@77231fc2
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@60b57215
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@45c31536
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2a6e7e13
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@45dcb993
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@eb25ee7
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@530580a2
+t_int size_t
+t_void memcpy
+t_void memmove
+t_void memccpy
+t_void memset
+t_int memcmp
+t_void memchr
+t_char strcpy
+t_char strncpy
+t_char strcat
+t_char strncat
+t_int strcmp
+t_int strncmp
+t_int strcoll
+size_t strxfrm
+__locale_struct __locale_t
+__locale_t locale_t
+t_int strcoll_l
+size_t strxfrm_l
+t_char strdup
+t_char strndup
+t_char strchr
+t_char strrchr
+size_t strcspn
+size_t strspn
+t_char strpbrk
+t_char strstr
+t_char strtok
+t_char __strtok_r
+t_char strtok_r
+size_t strlen
+size_t strnlen
+t_char strerror
+t_int strerror_r
+t_char strerror_l
+t_void __bzero
+t_void bcopy
+t_void bzero
+t_int bcmp
+t_char index
+t_char rindex
+t_int ffs
+t_int strcasecmp
+t_int strncasecmp
+t_char strsep
+t_char strsignal
+t_char __stpcpy
+t_char stpcpy
+t_char __stpncpy
+t_char stpncpy
+t_int __VERIFIER_nondet_int
 {
-  return TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a42f237
+  return __VERIFIER_nondet_int((exp null))
 }
 {
-  (op_assign (op_star x) TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2a72d2cd)
+  (op_assign (op_star x) __VERIFIER_nondet_int((exp null)))
   return (op_star x)
 }
 {
   t_int ijretoffsettmp_cnttel_dataklen
   t_char x
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@362be402
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@495462f5
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@541ae2a2
+  for ((op_assign i 0)
+  ;(op_lessThan i 1000);(op_prefixIncr i))(op_assign x[i] __VERIFIER_nondet_int((exp null)))
+  for ((op_assign i 0)
+  ;(op_lessThan i 1000);(op_prefixIncr i)){
+    (op_assign ret __VERIFIER_nondet_int((exp null)))
+    if (op_notequals ret 0) return (op_minus 1)
+    else {}
+    (op_assign tmp_cnt __VERIFIER_nondet_int((exp null)))
+    if (op_lessThan tmp_cnt 0) return (op_minus 1)
+    else {}
+    for ((op_assign offset 0)
+    ;(op_lessThan offset tmp_cnt);(op_postFixIncr offset)){
+      (op_assign ret foo((op_amper tel_data)))
+      if (op_logicalOr (op_bracketedPrimary (op_equals ret 0)) (op_bracketedPrimary (op_equals ret 1))) {
+        return 1
+      }
+      else if (op_equals ret (op_minus 1)) {
+        continue
+      }
+      else {}
+      for ((op_assign j 0)
+      ;(op_notequals x[j] 0);(op_postFixIncr j)){
+        if (op_equals x[i] 1) {
+          memmove(((op_amper x[i]),(op_amper x[(op_plus i 1)]),(op_minus (op_bracketedPrimary 1001) (op_bracketedPrimary (op_plus i 1)))))
+        }
+        else {}
+      }
+      (op_assign ret bar(x))
+      if (op_notequals ret (op_minus 1)) {
+        continue
+      }
+      else {}
+      (op_assign klen strlen(x))
+      if (op_greaterThan klen 20) {
+        (op_assign x[i] 0)
+      }
+      else if (op_greaterThan klen 0) {
+        (op_assign x[i] (op_minus 1))
+      }
+      else {}
+    }
+  }
+  __VERIFIER_assert((op_logicalAnd (op_greaterEqual offset 0) (op_lessEqual offset 1000)))
   return 1
 }

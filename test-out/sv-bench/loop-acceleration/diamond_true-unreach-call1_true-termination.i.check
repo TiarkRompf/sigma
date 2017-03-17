@@ -1,29 +1,25 @@
-loop-acceleration/diamond_true-unreach-call1_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@921d99a
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@17b168aa
+// loop-acceleration/diamond_true-unreach-call1_true-termination.i
+t_void __VERIFIER_error
+t_int __VERIFIER_nondet_uint
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3c4d4d5c
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
 {
   t_int x = 0
-  t_int y = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5b9b6401
+  t_int y = __VERIFIER_nondet_uint((exp null))
   while (op_lessThan x 99)
   {
-    if (op_equals (op_modulo y 2) 0)
-    {
+    if (op_equals (op_modulo y 2) 0) {
       (op_plusAssign x 2)
     }
-    else
-    {
+    else {
       (op_postFixIncr x)
     }
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5cf18be1
+  __VERIFIER_assert((op_equals (op_bracketedPrimary (op_modulo x 2)) (op_bracketedPrimary (op_modulo y 2))))
 }

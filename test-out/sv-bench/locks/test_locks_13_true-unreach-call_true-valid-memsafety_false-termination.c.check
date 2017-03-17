@@ -1,43 +1,41 @@
-locks/test_locks_13_true-unreach-call_true-valid-memsafety_false-termination.c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7582ba7
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@52720b14
+// locks/test_locks_13_true-unreach-call_true-valid-memsafety_false-termination.c
+t_void __VERIFIER_error
+t_int __VERIFIER_nondet_int
 {
-  t_int p1 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@542af47f
+  t_int p1 = __VERIFIER_nondet_int((exp null))
   t_int lk1
-  t_int p2 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3e0df595
+  t_int p2 = __VERIFIER_nondet_int((exp null))
   t_int lk2
-  t_int p3 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@784ee4e0
+  t_int p3 = __VERIFIER_nondet_int((exp null))
   t_int lk3
-  t_int p4 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3aa66a56
+  t_int p4 = __VERIFIER_nondet_int((exp null))
   t_int lk4
-  t_int p5 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@392cf871
+  t_int p5 = __VERIFIER_nondet_int((exp null))
   t_int lk5
-  t_int p6 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@68dc139c
+  t_int p6 = __VERIFIER_nondet_int((exp null))
   t_int lk6
-  t_int p7 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@67ba8383
+  t_int p7 = __VERIFIER_nondet_int((exp null))
   t_int lk7
-  t_int p8 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6ec7b1f8
+  t_int p8 = __VERIFIER_nondet_int((exp null))
   t_int lk8
-  t_int p9 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@30f62321
+  t_int p9 = __VERIFIER_nondet_int((exp null))
   t_int lk9
-  t_int p10 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@38be8650
+  t_int p10 = __VERIFIER_nondet_int((exp null))
   t_int lk10
-  t_int p11 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@b2bac5f
+  t_int p11 = __VERIFIER_nondet_int((exp null))
   t_int lk11
-  t_int p12 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@583084b3
+  t_int p12 = __VERIFIER_nondet_int((exp null))
   t_int lk12
-  t_int p13 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@59de5bbf
+  t_int p13 = __VERIFIER_nondet_int((exp null))
   t_int lk13
   t_int cond
   while 1
   {
-    (op_assign cond TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@151ecad2)
-    if (op_equals cond 0)
-    {
+    (op_assign cond __VERIFIER_nondet_int((exp null)))
+    if (op_equals cond 0) {
       goto out
     }
-    else
-    {
+    else {
     }
     (op_assign lk1 0)
     (op_assign lk2 0)
@@ -52,244 +50,166 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@52720b14
     (op_assign lk11 0)
     (op_assign lk12 0)
     (op_assign lk13 0)
-    if (op_notequals p1 0)
-    {
+    if (op_notequals p1 0) {
       (op_assign lk1 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p2 0)
-    {
+    if (op_notequals p2 0) {
       (op_assign lk2 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p3 0)
-    {
+    if (op_notequals p3 0) {
       (op_assign lk3 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p4 0)
-    {
+    if (op_notequals p4 0) {
       (op_assign lk4 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p5 0)
-    {
+    if (op_notequals p5 0) {
       (op_assign lk5 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p6 0)
-    {
+    if (op_notequals p6 0) {
       (op_assign lk6 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p7 0)
-    {
+    if (op_notequals p7 0) {
       (op_assign lk7 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p8 0)
-    {
+    if (op_notequals p8 0) {
       (op_assign lk8 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p9 0)
-    {
+    if (op_notequals p9 0) {
       (op_assign lk9 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p10 0)
-    {
+    if (op_notequals p10 0) {
       (op_assign lk10 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p11 0)
-    {
+    if (op_notequals p11 0) {
       (op_assign lk11 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p12 0)
-    {
+    if (op_notequals p12 0) {
       (op_assign lk12 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p13 0)
-    {
+    if (op_notequals p13 0) {
       (op_assign lk13 1)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p1 0)
-    {
-      if (op_notequals lk1 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p1 0) {
+      if (op_notequals lk1 1) goto ERROR
+      else {}
       (op_assign lk1 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p2 0)
-    {
-      if (op_notequals lk2 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p2 0) {
+      if (op_notequals lk2 1) goto ERROR
+      else {}
       (op_assign lk2 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p3 0)
-    {
-      if (op_notequals lk3 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p3 0) {
+      if (op_notequals lk3 1) goto ERROR
+      else {}
       (op_assign lk3 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p4 0)
-    {
-      if (op_notequals lk4 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p4 0) {
+      if (op_notequals lk4 1) goto ERROR
+      else {}
       (op_assign lk4 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p5 0)
-    {
-      if (op_notequals lk5 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p5 0) {
+      if (op_notequals lk5 1) goto ERROR
+      else {}
       (op_assign lk5 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p6 0)
-    {
-      if (op_notequals lk6 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p6 0) {
+      if (op_notequals lk6 1) goto ERROR
+      else {}
       (op_assign lk6 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p7 0)
-    {
-      if (op_notequals lk7 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p7 0) {
+      if (op_notequals lk7 1) goto ERROR
+      else {}
       (op_assign lk7 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p8 0)
-    {
-      if (op_notequals lk8 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p8 0) {
+      if (op_notequals lk8 1) goto ERROR
+      else {}
       (op_assign lk8 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p9 0)
-    {
-      if (op_notequals lk9 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p9 0) {
+      if (op_notequals lk9 1) goto ERROR
+      else {}
       (op_assign lk9 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p10 0)
-    {
-      if (op_notequals lk10 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p10 0) {
+      if (op_notequals lk10 1) goto ERROR
+      else {}
       (op_assign lk10 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p11 0)
-    {
-      if (op_notequals lk11 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p11 0) {
+      if (op_notequals lk11 1) goto ERROR
+      else {}
       (op_assign lk11 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p12 0)
-    {
-      if (op_notequals lk12 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p12 0) {
+      if (op_notequals lk12 1) goto ERROR
+      else {}
       (op_assign lk12 0)
     }
-    else
-    {
+    else {
     }
-    if (op_notequals p13 0)
-    {
-      if (op_notequals lk13 1)
-      goto ERROR
-      else
-      {}
+    if (op_notequals p13 0) {
+      if (op_notequals lk13 1) goto ERROR
+      else {}
       (op_assign lk13 0)
     }
-    else
-    {
+    else {
     }
   }
   out:
   return 0
   ERROR:
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4381c57a
+  __VERIFIER_error((exp null))
   return 0
 }

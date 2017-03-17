@@ -1,13 +1,11 @@
-loop-acceleration/array_true-unreach-call2_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@58109266
+// loop-acceleration/array_true-unreach-call2_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@288146c
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
 {
@@ -15,6 +13,10 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@58109266
   t_int B
   t_int i
   t_int tmp
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@15191134
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@428ee7fe
+  for ((op_assign i 0)
+  ;(op_lessThan i 2048);(op_postFixIncr i)){
+    (op_assign tmp A[i])
+    (op_assign B[i] tmp)
+  }
+  __VERIFIER_assert((op_equals A[(op_divide 2048 2)] B[(op_divide 2048 2)]))
 }

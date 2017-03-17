@@ -1,24 +1,33 @@
-loops/eureka_05_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@ee1778
+// loops/eureka_05_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1a7cef8a
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@11d0c19
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4ccf92ff
+t_int array
+t_int n = 5
 {
   t_int lhrhitemp
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@3c6a09c9
+  for ((op_assign lh 0)
+  ;(op_lessThan lh n);(op_postFixIncr lh)){
+    (op_assign rh lh)
+    for ((op_assign i (op_plus lh 1))
+    ;(op_lessThan i n);(op_postFixIncr i))if (op_lessThan array[i] array[rh]) (op_assign rh i)
+    else {}
+    (op_assign temp array[lh])
+    (op_assign array[lh] array[rh])
+    (op_assign array[rh] temp)
+  }
 }
 {
   t_int arrayi
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@4117b171
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2883008e
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@186b270b
+  for ((op_assign i (op_minus 5 1))
+  ;(op_greaterEqual i 0);(op_postFixDecr i))(op_assign array[i] i)
+  SelectionSort((exp null))
+  for ((op_assign i 0)
+  ;(op_lessThan i 5);(op_postFixIncr i))__VERIFIER_assert((op_equals array[i] i))
 }

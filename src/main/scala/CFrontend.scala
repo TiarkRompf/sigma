@@ -195,7 +195,7 @@ object CFrontend {
   "op_lessEqual", // = 10;
   // greater than or equals >=
   "op_greaterEqual", // = 11;
-  // binary and &
+  // binary and &rec
   "op_binaryAnd", // = 12;
   // binary Xor ^
   "op_binaryXor", // = 13;
@@ -245,7 +245,25 @@ object CFrontend {
   assert(operators2.length == 35)
 
 
+  val type_ops = Array(
+    // <code>op_sizeof</code> sizeof( typeId ) expression
+    "op_sizeof", // = 0;
+    // For c++, only.
+    "op_typeid", // = 1;
+    // For gnu-parsers, only.
+    // <code>op_alignOf</code> is used for __alignOf( typeId ) type expressions.
+    "op_alignof", // = 2;
+    // For gnu-parsers, only.
+    // <code>op_typeof</code> is used for typeof( typeId ) type expressions.
+    "op_typeof" // = 3;
+  )
 
+  def evalType(node: IASTDeclSpecifier) = node match {
+    case d: CASTSimpleDeclSpecifier     => types(d.getType)
+    case d: CASTTypedefNameSpecifier    => d.getName
+    case d: CASTElaboratedTypeSpecifier => d.getName // enough?
+    case d: CASTCompositeTypeSpecifier  => d.getName // enough?
+  }
   def evalExp(node: IASTNode): String = node match {
       case node: CASTLiteralExpression =>
           val lk = node.getKind
@@ -262,24 +280,42 @@ object CFrontend {
           val arg2 = evalExp(node.getOperand2)
           "("+op+" "+arg1+" "+arg2+")"
       case node: CASTFunctionCallExpression =>
-          "TODO "+node // FIXME
+          val fun = node.getFunctionNameExpression
+          val arg = node.getParameterExpression
+          evalExp(fun)+"("+evalExp(arg)+")"
+      case node: CASTArraySubscriptExpression =>
+          val a = node.getArrayExpression
+          val x = node.getSubscriptExpression
+          evalExp(a) + "["+ evalExp(x) + "]"
+      case node: CASTExpressionList =>
+          val as = node.getExpressions
+          as.map(evalExp).mkString("(",",",")")
+      case node: CASTInitializerList =>
+          val as = node.getInitializers
+          as.map(evalExp).mkString("{",",","}")
+      case node: CASTEqualsInitializer => // copy initializer
+          evalExp(node.getInitializerClause)
       case node: CASTCastExpression =>
-          "TODO "+node // FIXME
+          "("+types(node.getOperator)+")"+evalExp(node.getOperand)
+      case node: CASTTypeIdExpression => // sizeof
+          val op = type_ops(node.getOperator)
+          val tp = node.getTypeId
+          val declarator = tp.getAbstractDeclarator.asInstanceOf[CASTDeclarator]
+          val declSpecifier = tp.getDeclSpecifier
+          // TODO: pointer types, ...
+          op + "("+evalType(declSpecifier)+")"
       case _ => "(exp "+node+")"
   }
   def evalLocalDecl(node: IASTDeclaration): Unit = node match {
       case node: CASTSimpleDeclaration =>
           val declarators = node.getDeclarators()
-          val declSpecifier = node.getDeclSpecifier.asInstanceOf[CASTSimpleDeclSpecifier]
-
-          // org.eclipse.cdt.internal.core.dom.parser.c.CASTTypedefNameSpecifier
-          // org.eclipse.cdt.internal.core.dom.parser.c.CASTElaboratedTypeSpecifier
-
-          print(types(declSpecifier.getType))
+          val declSpecifier = node.getDeclSpecifier
+          print(evalType(declSpecifier))
           print(" ")
           for (d <- declarators) {
               val d1 = d.asInstanceOf[CASTDeclarator]
               val ptr =  d1.getPointerOperators()
+              // TODO: pointer types, ...
               if (d1.getInitializer == null)
                 print(d1.getName)
               else {
@@ -306,32 +342,60 @@ object CFrontend {
           val b = node.getBody
           println("while "+evalExp(c))
           evalStm(b)
+      case node: CASTDoStatement =>
+          val c = node.getCondition
+          val b = node.getBody
+          print("do ")
+          evalStm(b)      
+          println("while "+evalExp(c))
+      case node: CASTForStatement =>
+          val c = node.getConditionExpression
+          val i = node.getInitializerStatement
+          val p = node.getIterationExpression
+          val b = node.getBody
+          print("for (")
+          evalStm(i)
+          print(";" + evalExp(c) + ";" + evalExp(p)+")")
+          evalStm(b)
+
       case node: CASTIfStatement =>
           val c = node.getConditionExpression
           val a = node.getThenClause
           val b = node.getElseClause
-          println("if "+evalExp(c))
+          print("if "+evalExp(c)+" ")
           evalStm(a)
-          println("else")
+          print("else ")
           evalStm(b)
+      case node: CASTSwitchStatement =>
+          val c = node.getControllerExpression()
+          val b = node.getBody
+          println("switch "+evalExp(c))
+          evalStm(b)
+      case node: CASTCaseStatement =>
+          println("case "+evalExp(node.getExpression)+":")
+          //evalStm(node.getNestedStatement)
       case node: CASTLabelStatement =>
           println(node.getName + ":")
           evalStm(node.getNestedStatement)
       case node: CASTGotoStatement =>
           println("goto "+node.getName)
+      case node: CASTBreakStatement =>
+          println("break")
+      case node: CASTContinueStatement =>
+          println("continue")
       case node: CASTReturnStatement =>
           println("return "+evalExp(node.getReturnValue))
       case node: CASTNullStatement =>
-          println("TODO "+node)
+          println("{}")
       case null => 
           println("{}")
       case _ => println("stm "+node)
   }
   def evalGlobalDecl(node: IASTDeclaration): Unit = node match {
-      case node: CASTSimpleDeclaration =>
-          println("TODO: "+node) // FIXME
       case node: CASTFunctionDefinition =>
           evalStm(node.getBody)
+      case _ =>
+          evalLocalDecl(node)
   }
   def evalUnit(node: IASTTranslationUnit): Unit = node match {
       case node: CASTTranslationUnit =>

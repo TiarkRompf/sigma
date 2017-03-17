@@ -1,36 +1,77 @@
-loops/bubble_sort_true-unreach-call.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@63378b64
+// loops/bubble_sort_true-unreach-call.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1178ed4d
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
 {
   t_int abt
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@56dc949f
+  for ((op_assign a 1)
+  ;(op_lessThan a size);(op_prefixIncr a)){
+    for ((op_assign b (op_minus size 1))
+    ;(op_greaterEqual b a);(op_prefixDecr b)){
+      if (op_logicalAnd (op_lessThan (op_minus b 1) size) (op_lessThan b size)) {
+        if (op_greaterThan item[(op_minus b 1)] item[b]) {
+          (op_assign t item[(op_minus b 1)])
+          (op_assign item[(op_minus b 1)] item[b])
+          (op_assign item[b] t)
+        }
+        else {}
+      }
+      else {}
+    }
+  }
 }
 {
   t_int jipivot
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@6aec1015
+  for ((op_assign j 1)
+  ;(op_lessThan j size);(op_prefixIncr j)){
+    (op_assign pivot item[j])
+    (op_assign i (op_minus j 1))
+    while (op_logicalAnd (op_greaterEqual i 0) (op_greaterThan item[i] pivot))
+    {
+      (op_assign item[(op_plus i 1)] item[i])
+      (op_postFixDecr i)
+    }
+    (op_assign item[(op_plus i 1)] pivot)
+  }
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@35dfca87
+t_int __VERIFIER_nondet_int
 {
-  if (op_lessThan argc 2)
-  return (exp null)
-  else
-  {}
-  t_int N = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@631b4bf4
+  if (op_lessThan argc 2) return (exp null)
+  else {}
+  t_int N = __VERIFIER_nondet_int((exp null))
   t_int a
   t_int i
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTSwitchStatement@51d15364
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5b379df3
+  switch 2
+  {
+    case 0:
+    for ((op_assign i 0)
+    ;(op_lessThan i N);(op_prefixIncr i))(op_assign a[i] i)
+    break
+    case 1:
+    for ((op_assign i (op_bracketedPrimary (op_minus N 1)))
+    ;(op_greaterEqual i 0);(op_prefixDecr i))(op_assign a[i] (op_minus (op_minus N 1) i))
+    break
+    case 2:
+    for ((op_assign i 0)
+    ;(op_lessThan i N);(op_prefixIncr i))(op_assign a[i] i)
+    for ((op_assign i 0)
+    ;(op_lessThan i N);(op_postFixIncr i)){
+      t_int r = (op_plus i (op_bracketedPrimary (op_modulo __VERIFIER_nondet_int((exp null)) (op_bracketedPrimary (op_minus N i)))))
+      t_int temp = a[i]
+      (op_assign a[i] a[r])
+      (op_assign a[r] temp)
+    }
+    break
+  }
+  bubblesort((N,a))
 }
 {
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@10f7efe0
+  q1((argc,argv))
   return 0
 }

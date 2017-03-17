@@ -1,32 +1,26 @@
-loop-invgen/heapsort_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@78c7de16
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@67ab47ed
+// loop-invgen/heapsort_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@660260f4
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2087f15f
+t_int __VERIFIER_nondet_int
 {
   t_int nlrij
-  (op_assign n TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@66f6ac37)
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 1 n) (op_lessEqual n 1000000))))
-  return 0
-  else
-  {}
+  (op_assign n __VERIFIER_nondet_int((exp null)))
+  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 1 n) (op_lessEqual n 1000000)))) return 0
+  else {}
   (op_assign l (op_plus (op_divide n 2) 1))
   (op_assign r n)
-  if (op_greaterThan l 1)
-  {
+  if (op_greaterThan l 1) {
     (op_postFixDecr l)
   }
-  else
-  {
+  else {
     (op_postFixDecr r)
   }
   while (op_greaterThan r 1)
@@ -35,44 +29,36 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2087f15f
     (op_assign j (op_multiply 2 l))
     while (op_lessEqual j r)
     {
-      if (op_lessThan j r)
-      {
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5bdf1b2b
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2eafc564
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@31bdd4e7
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@62f941f3
-        if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@41dc08c4
-        (op_assign j (op_plus j 1))
-        else
-        {}
+      if (op_lessThan j r) {
+        __VERIFIER_assert((op_lessEqual 1 j))
+        __VERIFIER_assert((op_lessEqual j n))
+        __VERIFIER_assert((op_lessEqual 1 (op_plus j 1)))
+        __VERIFIER_assert((op_lessEqual (op_plus j 1) n))
+        if __VERIFIER_nondet_int((exp null)) (op_assign j (op_plus j 1))
+        else {}
       }
-      else
-      {}
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1188617e
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4ecd8544
-      if TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6693b3b7
-      {
-        stm org.eclipse.cdt.internal.core.dom.parser.c.CASTBreakStatement@47a80d89
+      else {}
+      __VERIFIER_assert((op_lessEqual 1 j))
+      __VERIFIER_assert((op_lessEqual j n))
+      if __VERIFIER_nondet_int((exp null)) {
+        break
       }
-      else
-      {}
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@15f90793
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@37bc47cd
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4c495486
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4b0adcc3
+      else {}
+      __VERIFIER_assert((op_lessEqual 1 i))
+      __VERIFIER_assert((op_lessEqual i n))
+      __VERIFIER_assert((op_lessEqual 1 j))
+      __VERIFIER_assert((op_lessEqual j n))
       (op_assign i j)
       (op_assign j (op_multiply 2 j))
     }
-    if (op_greaterThan l 1)
-    {
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@16129fae
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@43c5308e
+    if (op_greaterThan l 1) {
+      __VERIFIER_assert((op_lessEqual 1 l))
+      __VERIFIER_assert((op_lessEqual l n))
       (op_postFixDecr l)
     }
-    else
-    {
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@452eb114
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@585f91b6
+    else {
+      __VERIFIER_assert((op_lessEqual 1 r))
+      __VERIFIER_assert((op_lessEqual r n))
       (op_postFixDecr r)
     }
   }

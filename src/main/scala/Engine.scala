@@ -657,12 +657,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
 
       override def fixindex(x: String, c: From)       = c match {
         case GConst(0) => const(0)
-        // Q: why exactly are we subtracting 1 ?
-        // it doesn't seem quite right but appears necessary
-        case Def(DLess(GRef(`x`),u)) => u //plus(u,const(-1))
+        case Def(DLess(GRef(`x`),u)) => u
         case _ =>
           super.fixindex(x,c)
-          //super.fixindex(x,subst(c,less(const(0),GRef(x)),const(1)))
       }
 
       override def call(f: From, x: From)            = f match {

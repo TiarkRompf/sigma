@@ -1,41 +1,41 @@
-ntdrivers-simplified/kbfiltr_simpl2_false-unreach-call_true-valid-memsafety_true-termination.cil.c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@247e29e8
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3848c1f2
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@19521997
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@367139a
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@56834b77
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@283a4704
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@212d7d35
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1aed5149
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@56f96990
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2c01062c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@660f024c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@169870dd
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@bb03e77
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2f24694b
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@31270381
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@646c93e0
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ea54a9c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@62471832
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6bf534f0
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6b8659fd
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2f331fbb
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@756f04e7
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@37ffec0e
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6e6f02bd
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5996060c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@54d379e5
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1c0470ed
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@a68e33a
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6327221d
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2cf473cd
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1348eda6
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5e74adc6
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4995bdf
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@b7c3a9a
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5f0dc38e
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@24ec4f34
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
+// ntdrivers-simplified/kbfiltr_simpl2_false-unreach-call_true-valid-memsafety_true-termination.cil.c
+t_void __VERIFIER_error
+t_char __VERIFIER_nondet_char
+t_int __VERIFIER_nondet_int
+t_unspecified __VERIFIER_nondet_long
+t_void __VERIFIER_nondet_pointer
+t_int KbFilter_PnP
+t_int IofCallDriver
+t_int KeSetEvent
+t_int KeWaitForSingleObject
+t_int KbFilter_Complete
+t_int KbFilter_CreateClose
+t_int KbFilter_DispatchPassThrough
+t_int KbFilter_Power
+t_int PoCallDriver
+t_int KbFilter_InternIoCtl
+t_void errorFn
+t_void IofCompleteRequest
+t_int __VERIFIER_nondet_int
+t_int KernelMode
+t_int Executive
+t_int DevicePowerState
+t_int s
+t_int UNLOADED
+t_int NP
+t_int DC
+t_int SKIP1
+t_int SKIP2
+t_int MPR1
+t_int MPR3
+t_int IPC
+t_int pended
+t_int compFptr
+t_int compRegistered
+t_int lowerDriverReturn
+t_int setEventCalled
+t_int customIrp
+t_int myStatus
 {
   {
     (op_assign s NP)
@@ -72,17 +72,17 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
   t_int devExt
   t_int irpStack
   t_int status
-  t_int event = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@a7e0f9
-  t_int DeviceObject__DeviceExtension = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@318742d0
-  t_int Irp__Tail__Overlay__CurrentStackLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@77d43e3b
-  t_int irpStack__MinorFunction = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@30082c03
-  t_int devExt__TopOfStack = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@f97a2d3
+  t_int event = __VERIFIER_nondet_int((exp null))
+  t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
+  t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
+  t_int irpStack__MinorFunction = __VERIFIER_nondet_int((exp null))
+  t_int devExt__TopOfStack = __VERIFIER_nondet_int((exp null))
   t_int devExt__Started
   t_int devExt__Removed
   t_int devExt__SurpriseRemoved
   t_int Irp__IoStatus__Status
   t_int Irp__IoStatus__Information
-  t_int Irp__CurrentLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@40df033
+  t_int Irp__CurrentLocation = __VERIFIER_nondet_int((exp null))
   t_int irpSp
   t_int nextIrpSp
   t_int nextIrpSp__Control
@@ -94,155 +94,108 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
     (op_assign status 0)
     (op_assign devExt DeviceObject__DeviceExtension)
     (op_assign irpStack Irp__Tail__Overlay__CurrentStackLocation)
-    if (op_equals irpStack__MinorFunction 0)
-    {
+    if (op_equals irpStack__MinorFunction 0) {
       goto switch_0_0
     }
-    else
-    {
-      if (op_equals irpStack__MinorFunction 23)
-      {
+    else {
+      if (op_equals irpStack__MinorFunction 23) {
         goto switch_0_23
       }
-      else
-      {
-        if (op_equals irpStack__MinorFunction 2)
-        {
+      else {
+        if (op_equals irpStack__MinorFunction 2) {
           goto switch_0_2
         }
-        else
-        {
-          if (op_equals irpStack__MinorFunction 1)
-          {
+        else {
+          if (op_equals irpStack__MinorFunction 1) {
             goto switch_0_1
           }
-          else
-          {
-            if (op_equals irpStack__MinorFunction 5)
-            {
+          else {
+            if (op_equals irpStack__MinorFunction 5) {
               goto switch_0_1
             }
-            else
-            {
-              if (op_equals irpStack__MinorFunction 3)
-              {
+            else {
+              if (op_equals irpStack__MinorFunction 3) {
                 goto switch_0_1
               }
-              else
-              {
-                if (op_equals irpStack__MinorFunction 6)
-                {
+              else {
+                if (op_equals irpStack__MinorFunction 6) {
                   goto switch_0_1
                 }
-                else
-                {
-                  if (op_equals irpStack__MinorFunction 13)
-                  {
+                else {
+                  if (op_equals irpStack__MinorFunction 13) {
                     goto switch_0_1
                   }
-                  else
-                  {
-                    if (op_equals irpStack__MinorFunction 4)
-                    {
+                  else {
+                    if (op_equals irpStack__MinorFunction 4) {
                       goto switch_0_1
                     }
-                    else
-                    {
-                      if (op_equals irpStack__MinorFunction 7)
-                      {
+                    else {
+                      if (op_equals irpStack__MinorFunction 7) {
                         goto switch_0_1
                       }
-                      else
-                      {
-                        if (op_equals irpStack__MinorFunction 8)
-                        {
+                      else {
+                        if (op_equals irpStack__MinorFunction 8) {
                           goto switch_0_1
                         }
-                        else
-                        {
-                          if (op_equals irpStack__MinorFunction 9)
-                          {
+                        else {
+                          if (op_equals irpStack__MinorFunction 9) {
                             goto switch_0_1
                           }
-                          else
-                          {
-                            if (op_equals irpStack__MinorFunction 12)
-                            {
+                          else {
+                            if (op_equals irpStack__MinorFunction 12) {
                               goto switch_0_1
                             }
-                            else
-                            {
-                              if (op_equals irpStack__MinorFunction 10)
-                              {
+                            else {
+                              if (op_equals irpStack__MinorFunction 10) {
                                 goto switch_0_1
                               }
-                              else
-                              {
-                                if (op_equals irpStack__MinorFunction 11)
-                                {
+                              else {
+                                if (op_equals irpStack__MinorFunction 11) {
                                   goto switch_0_1
                                 }
-                                else
-                                {
-                                  if (op_equals irpStack__MinorFunction 15)
-                                  {
+                                else {
+                                  if (op_equals irpStack__MinorFunction 15) {
                                     goto switch_0_1
                                   }
-                                  else
-                                  {
-                                    if (op_equals irpStack__MinorFunction 16)
-                                    {
+                                  else {
+                                    if (op_equals irpStack__MinorFunction 16) {
                                       goto switch_0_1
                                     }
-                                    else
-                                    {
-                                      if (op_equals irpStack__MinorFunction 17)
-                                      {
+                                    else {
+                                      if (op_equals irpStack__MinorFunction 17) {
                                         goto switch_0_1
                                       }
-                                      else
-                                      {
-                                        if (op_equals irpStack__MinorFunction 18)
-                                        {
+                                      else {
+                                        if (op_equals irpStack__MinorFunction 18) {
                                           goto switch_0_1
                                         }
-                                        else
-                                        {
-                                          if (op_equals irpStack__MinorFunction 19)
-                                          {
+                                        else {
+                                          if (op_equals irpStack__MinorFunction 19) {
                                             goto switch_0_1
                                           }
-                                          else
-                                          {
-                                            if (op_equals irpStack__MinorFunction 20)
-                                            {
+                                          else {
+                                            if (op_equals irpStack__MinorFunction 20) {
                                               goto switch_0_1
                                             }
-                                            else
-                                            {
+                                            else {
                                               goto switch_0_1
-                                              if 0
-                                              {
+                                              if 0 {
                                                 switch_0_0:
                                                 (op_assign irpSp Irp__Tail__Overlay__CurrentStackLocation)
                                                 (op_assign nextIrpSp (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
                                                 (op_assign nextIrpSp__Control 0)
-                                                if (op_notequals s NP)
-                                                {
+                                                if (op_notequals s NP) {
                                                   {
-                                                    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@527e336f
+                                                    errorFn((exp null))
                                                   }
                                                 }
-                                                else
-                                                {
-                                                  if (op_notequals compRegistered 0)
-                                                  {
+                                                else {
+                                                  if (op_notequals compRegistered 0) {
                                                     {
-                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@23676517
+                                                      errorFn((exp null))
                                                     }
                                                   }
-                                                  else
-                                                  {
+                                                  else {
                                                     (op_assign compRegistered 1)
                                                   }
                                                 }
@@ -250,99 +203,86 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
                                                   (op_assign irpSp___0 (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
                                                   (op_assign irpSp__Context event)
                                                   (op_assign irpSp__Control 224)
-                                                  (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1154da92)
+                                                  (op_assign status IofCallDriver((devExt__TopOfStack,Irp)))
                                                 }
                                                 {
-                                                  (op_assign __cil_tmp23 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@7ab32ce3)
-                                                  if (op_equals __cil_tmp23 259)
-                                                  {
+                                                  (op_assign __cil_tmp23 (t_unspecified)status)
+                                                  if (op_equals __cil_tmp23 259) {
                                                     {
-                                                      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@59f59d91
+                                                      KeWaitForSingleObject((event,Executive,KernelMode,0,0))
                                                     }
                                                   }
-                                                  else
-                                                  {}
+                                                  else {}
                                                 }
-                                                if (op_greaterEqual status 0)
-                                                {
-                                                  if (op_greaterEqual myStatus 0)
-                                                  {
+                                                if (op_greaterEqual status 0) {
+                                                  if (op_greaterEqual myStatus 0) {
                                                     (op_assign devExt__Started 1)
                                                     (op_assign devExt__Removed 0)
                                                     (op_assign devExt__SurpriseRemoved 0)
                                                   }
-                                                  else
-                                                  {}
+                                                  else {}
                                                 }
-                                                else
-                                                {}
+                                                else {}
                                                 {
                                                   (op_assign Irp__IoStatus__Status status)
                                                   (op_assign myStatus status)
                                                   (op_assign Irp__IoStatus__Information 0)
-                                                  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@41a20465
+                                                  IofCompleteRequest((Irp,0))
                                                 }
                                                 goto switch_0_break
                                                 switch_0_23:
                                                 (op_assign devExt__SurpriseRemoved 1)
-                                                if (op_equals s NP)
-                                                {
+                                                if (op_equals s NP) {
                                                   (op_assign s SKIP1)
                                                 }
-                                                else
-                                                {
+                                                else {
                                                   {
-                                                    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7615c689
+                                                    errorFn((exp null))
                                                   }
                                                 }
                                                 {
                                                   (op_postFixIncr Irp__CurrentLocation)
                                                   (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
-                                                  (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@15a2289c)
+                                                  (op_assign status IofCallDriver((devExt__TopOfStack,Irp)))
                                                 }
                                                 goto switch_0_break
                                                 switch_0_2:
                                                 (op_assign devExt__Removed 1)
-                                                if (op_equals s NP)
-                                                {
+                                                if (op_equals s NP) {
                                                   (op_assign s SKIP1)
                                                 }
-                                                else
-                                                {
+                                                else {
                                                   {
-                                                    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@604e26ac
+                                                    errorFn((exp null))
                                                   }
                                                 }
                                                 {
                                                   (op_postFixIncr Irp__CurrentLocation)
                                                   (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
-                                                  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@319e97ec
+                                                  IofCallDriver((devExt__TopOfStack,Irp))
                                                   (op_assign status 0)
                                                 }
                                                 goto switch_0_break
                                                 switch_0_1:
-                                                TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@69672ed8
-                                                if (op_equals s NP)
-                                                {
+                                                {}
+                                                if (op_equals s NP) {
                                                   (op_assign s SKIP1)
                                                 }
-                                                else
-                                                {
+                                                else {
                                                   {
-                                                    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6d850da0
+                                                    errorFn((exp null))
                                                   }
                                                 }
                                                 {
                                                   (op_postFixIncr Irp__CurrentLocation)
                                                   (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
-                                                  (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7c6f3dfa)
+                                                  (op_assign status IofCallDriver((devExt__TopOfStack,Irp)))
                                                 }
                                                 goto switch_0_break
                                               }
-                                              else
-                                              {
+                                              else {
                                                 switch_0_break:
-                                                TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@390bf46c
+                                                {}
                                               }
                                             }
                                           }
@@ -370,11 +310,11 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
 }
 {
   t_int status
-  t_int irp = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@694a1c7b
+  t_int irp = __VERIFIER_nondet_int((exp null))
   t_int pirp
   t_int pirp__IoStatus__Status
-  t_int irp_choice = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2ce7e4ff
-  t_int devobj = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@29e29c74
+  t_int irp_choice = __VERIFIER_nondet_int((exp null))
+  t_int devobj = __VERIFIER_nondet_int((exp null))
   t_int __cil_tmp8
   (op_assign KernelMode 0)
   (op_assign Executive 0)
@@ -399,10 +339,9 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
     {
       (op_assign status 0)
       (op_assign pirp irp)
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4faca5b0
+      _BLAST_init((exp null))
     }
-    if (op_greaterEqual status 0)
-    {
+    if (op_greaterEqual status 0) {
       (op_assign s NP)
       (op_assign customIrp 0)
       (op_assign setEventCalled customIrp)
@@ -411,100 +350,84 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
       (op_assign pended compRegistered)
       (op_assign pirp__IoStatus__Status 0)
       (op_assign myStatus 0)
-      if (op_equals irp_choice 0)
-      {
+      if (op_equals irp_choice 0) {
         (op_assign pirp__IoStatus__Status (op_minus 1073741637))
         (op_assign myStatus (op_minus 1073741637))
       }
-      else
-      {}
+      else {}
       {
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@76bcd1fa
+        stub_driver_init((exp null))
       }
       {
-        if (op_lessThan status 0)
-        {
+        if (op_lessThan status 0) {
           return (op_bracketedPrimary (op_minus 1))
         }
-        else
-        {}
+        else {}
       }
       t_int tmp_ndt_1
-      (op_assign tmp_ndt_1 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@65ef03ce)
-      if (op_equals tmp_ndt_1 0)
-      {
+      (op_assign tmp_ndt_1 __VERIFIER_nondet_int((exp null)))
+      if (op_equals tmp_ndt_1 0) {
         goto switch_1_0
       }
-      else
-      {
+      else {
         t_int tmp_ndt_2
-        (op_assign tmp_ndt_2 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@58d3223b)
-        if (op_equals tmp_ndt_2 1)
-        {
+        (op_assign tmp_ndt_2 __VERIFIER_nondet_int((exp null)))
+        if (op_equals tmp_ndt_2 1) {
           goto switch_1_1
         }
-        else
-        {
+        else {
           t_int tmp_ndt_3
-          (op_assign tmp_ndt_3 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@72f89db4)
-          if (op_equals tmp_ndt_3 3)
-          {
+          (op_assign tmp_ndt_3 __VERIFIER_nondet_int((exp null)))
+          if (op_equals tmp_ndt_3 3) {
             goto switch_1_3
           }
-          else
-          {
+          else {
             t_int tmp_ndt_4
-            (op_assign tmp_ndt_4 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@625ba110)
-            if (op_equals tmp_ndt_4 4)
-            {
+            (op_assign tmp_ndt_4 __VERIFIER_nondet_int((exp null)))
+            if (op_equals tmp_ndt_4 4) {
               goto switch_1_4
             }
-            else
-            {
+            else {
               t_int tmp_ndt_5
-              (op_assign tmp_ndt_5 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7f373fe6)
-              if (op_equals tmp_ndt_5 8)
-              {
+              (op_assign tmp_ndt_5 __VERIFIER_nondet_int((exp null)))
+              if (op_equals tmp_ndt_5 8) {
                 goto switch_1_8
               }
-              else
-              {
+              else {
                 goto switch_1_default
-                if 0
-                {
+                if 0 {
                   switch_1_0:
                   {
-                    (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3eb408c1)
+                    (op_assign status KbFilter_CreateClose((devobj,pirp)))
                   }
                   goto switch_1_break
                   switch_1_1:
                   {
-                    (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@817279e)
+                    (op_assign status KbFilter_CreateClose((devobj,pirp)))
                   }
                   goto switch_1_break
                   switch_1_3:
                   {
-                    (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@377b44ad)
+                    (op_assign status KbFilter_PnP((devobj,pirp)))
                   }
                   goto switch_1_break
                   switch_1_4:
                   {
-                    (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@717595ab)
+                    (op_assign status KbFilter_Power((devobj,pirp)))
                   }
                   goto switch_1_break
                   switch_1_8:
                   {
-                    (op_assign status TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6f196944)
+                    (op_assign status KbFilter_InternIoCtl((devobj,pirp)))
                   }
                   goto switch_1_break
                   switch_1_default:
-                  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@5e0388ee
+                  {}
                   return (op_bracketedPrimary (op_minus 1))
                 }
-                else
-                {
+                else {
                   switch_1_break:
-                  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@3330e1af
+                  {}
                 }
               }
             }
@@ -512,98 +435,69 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
         }
       }
     }
-    else
-    {}
-    if (op_equals pended 1)
-    {
-      if (op_equals s NP)
-      {
+    else {}
+    if (op_equals pended 1) {
+      if (op_equals s NP) {
         (op_assign s NP)
       }
-      else
-      {
+      else {
         goto _L___2
       }
     }
-    else
-    {
+    else {
       _L___2:
-      if (op_equals pended 1)
-      {
-        if (op_equals s MPR3)
-        {
+      if (op_equals pended 1) {
+        if (op_equals s MPR3) {
           (op_assign s MPR3)
         }
-        else
-        {
+        else {
           goto _L___1
         }
       }
-      else
-      {
+      else {
         _L___1:
-        if (op_notequals s UNLOADED)
-        {
-          if (op_notequals status (op_minus 1))
-          {
-            if (op_notequals s SKIP2)
-            {
-              if (op_notequals s IPC)
-              {
-                if (op_equals s DC)
-                {
+        if (op_notequals s UNLOADED) {
+          if (op_notequals status (op_minus 1)) {
+            if (op_notequals s SKIP2) {
+              if (op_notequals s IPC) {
+                if (op_equals s DC) {
                   goto _L___0
                 }
-                else
-                {}
+                else {}
               }
-              else
-              {
+              else {
                 goto _L___0
               }
             }
-            else
-            {
+            else {
               _L___0:
-              if (op_equals pended 1)
-              {
-                if (op_notequals status 259)
-                {
+              if (op_equals pended 1) {
+                if (op_notequals status 259) {
                   {
-                    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6e35e2af
+                    errorFn((exp null))
                   }
                 }
-                else
-                {}
+                else {}
               }
-              else
-              {
-                if (op_equals s DC)
-                {
-                  if (op_equals status 259)
-                  {
+              else {
+                if (op_equals s DC) {
+                  if (op_equals status 259) {
                   }
-                  else
-                  {}
+                  else {}
                 }
-                else
-                {
-                  if (op_notequals status lowerDriverReturn)
-                  {
-                    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4a42f564
+                else {
+                  if (op_notequals status lowerDriverReturn) {
+                    errorFn((exp null))
                   }
-                  else
-                  {
+                  else {
                   }
                 }
               }
             }
           }
-          else
-          {}
+          else {}
         }
-        else
-        {}
+        else {}
       }
     }
     return (op_bracketedPrimary status)
@@ -611,14 +505,12 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
 }
 {
   {
-    if (op_equals s NP)
-    {
+    if (op_equals s NP) {
       (op_assign s MPR1)
     }
-    else
-    {
+    else {
       {
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@8c4403a
+        errorFn((exp null))
       }
     }
     return (exp null)
@@ -627,47 +519,38 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
 {
   t_int returnVal2
   t_int compRetStatus
-  t_int lcontext = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3ccdf514
+  t_int lcontext = __VERIFIER_nondet_int((exp null))
   t_unspecified __cil_tmp7
   {
-    if compRegistered
-    {
+    if compRegistered {
       {
-        (op_assign compRetStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7d2c58b8)
+        (op_assign compRetStatus KbFilter_Complete((DeviceObject,Irp,lcontext)))
       }
       {
-        (op_assign __cil_tmp7 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@20986bac)
-        if (op_equals __cil_tmp7 (op_minus 1073741802))
-        {
+        (op_assign __cil_tmp7 (t_unspecified)compRetStatus)
+        if (op_equals __cil_tmp7 (op_minus 1073741802)) {
           {
-            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@af73a15
+            stubMoreProcessingRequired((exp null))
           }
         }
-        else
-        {}
+        else {}
       }
     }
-    else
-    {}
+    else {}
     t_int tmp_ndt_6
-    (op_assign tmp_ndt_6 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@59411b0a)
-    if (op_equals tmp_ndt_6 0)
-    {
+    (op_assign tmp_ndt_6 __VERIFIER_nondet_int((exp null)))
+    if (op_equals tmp_ndt_6 0) {
       goto switch_2_0
     }
-    else
-    {
+    else {
       t_int tmp_ndt_7
-      (op_assign tmp_ndt_7 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@46b76102)
-      if (op_equals tmp_ndt_7 1)
-      {
+      (op_assign tmp_ndt_7 __VERIFIER_nondet_int((exp null)))
+      if (op_equals tmp_ndt_7 1) {
         goto switch_2_1
       }
-      else
-      {
+      else {
         goto switch_2_default
-        if 0
-        {
+        if 0 {
           switch_2_0:
           (op_assign returnVal2 0)
           goto switch_2_break
@@ -678,44 +561,35 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
           (op_assign returnVal2 259)
           goto switch_2_break
         }
-        else
-        {
+        else {
           switch_2_break:
-          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2591a773
+          {}
         }
       }
     }
-    if (op_equals s NP)
-    {
+    if (op_equals s NP) {
       (op_assign s IPC)
       (op_assign lowerDriverReturn returnVal2)
     }
-    else
-    {
-      if (op_equals s MPR1)
-      {
-        if (op_equals returnVal2 259)
-        {
+    else {
+      if (op_equals s MPR1) {
+        if (op_equals returnVal2 259) {
           (op_assign s MPR3)
           (op_assign lowerDriverReturn returnVal2)
         }
-        else
-        {
+        else {
           (op_assign s NP)
           (op_assign lowerDriverReturn returnVal2)
         }
       }
-      else
-      {
-        if (op_equals s SKIP1)
-        {
+      else {
+        if (op_equals s SKIP1) {
           (op_assign s SKIP2)
           (op_assign lowerDriverReturn returnVal2)
         }
-        else
-        {
+        else {
           {
-            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@16850646
+            errorFn((exp null))
           }
         }
       }
@@ -725,21 +599,19 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
 }
 {
   {
-    if (op_equals s NP)
-    {
+    if (op_equals s NP) {
       (op_assign s DC)
     }
-    else
-    {
+    else {
       {
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@474dc6d7
+        errorFn((exp null))
       }
     }
     return (exp null)
   }
 }
 {
-  t_int l = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3a0f104d
+  t_int l = __VERIFIER_nondet_int((exp null))
   {
     (op_assign setEventCalled 1)
     return (op_bracketedPrimary l)
@@ -747,57 +619,45 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
 }
 {
   {
-    if (op_equals s MPR3)
-    {
-      if (op_equals setEventCalled 1)
-      {
+    if (op_equals s MPR3) {
+      if (op_equals setEventCalled 1) {
         (op_assign s NP)
         (op_assign setEventCalled 0)
       }
-      else
-      {
+      else {
         goto _L
       }
     }
-    else
-    {
+    else {
       _L:
-      if (op_equals customIrp 1)
-      {
+      if (op_equals customIrp 1) {
         (op_assign s NP)
         (op_assign customIrp 0)
       }
-      else
-      {
-        if (op_equals s MPR3)
-        {
+      else {
+        if (op_equals s MPR3) {
           {
-            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@128d8240
+            errorFn((exp null))
           }
         }
-        else
-        {}
+        else {}
       }
     }
     t_int tmp_ndt_8
-    (op_assign tmp_ndt_8 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2c840161)
-    if (op_equals tmp_ndt_8 0)
-    {
+    (op_assign tmp_ndt_8 __VERIFIER_nondet_int((exp null)))
+    if (op_equals tmp_ndt_8 0) {
       goto switch_3_0
     }
-    else
-    {
+    else {
       goto switch_3_default
-      if 0
-      {
+      if 0 {
         switch_3_0:
         return (op_bracketedPrimary 0)
         switch_3_default:
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@5561158
+        {}
         return (op_bracketedPrimary (op_minus 1073741823))
       }
-      else
-      {
+      else {
       }
     }
   }
@@ -807,165 +667,141 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
   {
     {
       (op_assign event Context)
-      TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4799e4c7
+      KeSetEvent((event,0,0))
     }
     return (op_bracketedPrimary (op_minus 1073741802))
   }
 }
 {
-  t_int irpStack__MajorFunction = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3978f1f6
-  t_int devExt__UpperConnectData__ClassService = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@357b70b1
+  t_int irpStack__MajorFunction = __VERIFIER_nondet_int((exp null))
+  t_int devExt__UpperConnectData__ClassService = __VERIFIER_nondet_int((exp null))
   t_int Irp__IoStatus__Status
   t_int status
   t_int tmp
   {
     (op_assign status myStatus)
-    if (op_equals irpStack__MajorFunction 0)
-    {
+    if (op_equals irpStack__MajorFunction 0) {
       goto switch_4_0
     }
-    else
-    {
-      if (op_equals irpStack__MajorFunction 2)
-      {
+    else {
+      if (op_equals irpStack__MajorFunction 2) {
         goto switch_4_2
       }
-      else
-      {
-        if 0
-        {
+      else {
+        if 0 {
           switch_4_0:
-          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@126b97
-          if (op_equals devExt__UpperConnectData__ClassService 0)
-          {
+          {}
+          if (op_equals devExt__UpperConnectData__ClassService 0) {
             (op_assign status (op_minus 1073741436))
           }
-          else
-          {}
+          else {}
           goto switch_4_break
           switch_4_2:
-          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@825088e
+          {}
           goto switch_4_break
         }
-        else
-        {
+        else {
           switch_4_break:
-          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@762caf3d
+          {}
         }
       }
     }
     {
       (op_assign Irp__IoStatus__Status status)
       (op_assign myStatus status)
-      (op_assign tmp TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@18bca7b1)
+      (op_assign tmp KbFilter_DispatchPassThrough((DeviceObject,Irp)))
     }
     return (op_bracketedPrimary tmp)
   }
 }
 {
-  t_int Irp__Tail__Overlay__CurrentStackLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@b6139e2
-  t_int Irp__CurrentLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2ba03178
-  t_int DeviceObject__DeviceExtension__TopOfStack = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@38e62676
+  t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
+  t_int Irp__CurrentLocation = __VERIFIER_nondet_int((exp null))
+  t_int DeviceObject__DeviceExtension__TopOfStack = __VERIFIER_nondet_int((exp null))
   t_int irpStack
   t_int tmp
   {
     (op_assign irpStack Irp__Tail__Overlay__CurrentStackLocation)
-    if (op_equals s NP)
-    {
+    if (op_equals s NP) {
       (op_assign s SKIP1)
     }
-    else
-    {
+    else {
       {
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@459a8ff4
+        errorFn((exp null))
       }
     }
     {
       (op_postFixIncr Irp__CurrentLocation)
       (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
-      (op_assign tmp TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@47b6108c)
+      (op_assign tmp IofCallDriver((DeviceObject__DeviceExtension__TopOfStack,Irp)))
     }
     return (op_bracketedPrimary tmp)
   }
 }
 {
-  t_int irpStack__MinorFunction = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6db7c2f3
+  t_int irpStack__MinorFunction = __VERIFIER_nondet_int((exp null))
   t_int devExt__DeviceState
-  t_int powerState__DeviceState = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@646b8ca5
-  t_int Irp__CurrentLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@759f4af3
-  t_int Irp__Tail__Overlay__CurrentStackLocation = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@25a06bc
-  t_int devExt__TopOfStack = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5129ec5e
-  t_int powerType = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@691f4c7a
+  t_int powerState__DeviceState = __VERIFIER_nondet_int((exp null))
+  t_int Irp__CurrentLocation = __VERIFIER_nondet_int((exp null))
+  t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
+  t_int devExt__TopOfStack = __VERIFIER_nondet_int((exp null))
+  t_int powerType = __VERIFIER_nondet_int((exp null))
   t_int tmp
   {
-    if (op_equals irpStack__MinorFunction 2)
-    {
+    if (op_equals irpStack__MinorFunction 2) {
       goto switch_5_2
     }
-    else
-    {
-      if (op_equals irpStack__MinorFunction 1)
-      {
+    else {
+      if (op_equals irpStack__MinorFunction 1) {
         goto switch_5_1
       }
-      else
-      {
-        if (op_equals irpStack__MinorFunction 0)
-        {
+      else {
+        if (op_equals irpStack__MinorFunction 0) {
           goto switch_5_0
         }
-        else
-        {
-          if (op_equals irpStack__MinorFunction 3)
-          {
+        else {
+          if (op_equals irpStack__MinorFunction 3) {
             goto switch_5_3
           }
-          else
-          {
+          else {
             goto switch_5_default
-            if 0
-            {
+            if 0 {
               switch_5_2:
-              TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@66585b78
-              if (op_equals powerType DevicePowerState)
-              {
+              {}
+              if (op_equals powerType DevicePowerState) {
                 (op_assign devExt__DeviceState powerState__DeviceState)
               }
-              else
-              {}
+              else {}
               switch_5_1:
-              TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@3465cee9
+              {}
               switch_5_0:
-              TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@2a308f27
+              {}
               switch_5_3:
-              TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@39df7a87
+              {}
               switch_5_default:
-              TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@1d78655f
+              {}
               goto switch_5_break
             }
-            else
-            {
+            else {
               switch_5_break:
-              TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@7f0f29f
+              {}
             }
           }
         }
       }
     }
-    if (op_equals s NP)
-    {
+    if (op_equals s NP) {
       (op_assign s SKIP1)
     }
-    else
-    {
+    else {
       {
-        TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@29971cf1
+        errorFn((exp null))
       }
     }
     {
       (op_postFixIncr Irp__CurrentLocation)
       (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
-      (op_assign tmp TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6b5e4006)
+      (op_assign tmp PoCallDriver((devExt__TopOfStack,Irp)))
     }
     return (op_bracketedPrimary tmp)
   }
@@ -973,48 +809,39 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
 {
   t_int compRetStatus
   t_int returnVal
-  t_int lcontext = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@35d282af
+  t_int lcontext = __VERIFIER_nondet_int((exp null))
   t_unspecified __cil_tmp7
   t_unspecified __cil_tmp8
   {
-    if compRegistered
-    {
+    if compRegistered {
       {
-        (op_assign compRetStatus TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@35b6fa80)
+        (op_assign compRetStatus KbFilter_Complete((DeviceObject,Irp,lcontext)))
       }
       {
-        (op_assign __cil_tmp7 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@24d70853)
-        if (op_equals __cil_tmp7 (op_minus 1073741802))
-        {
+        (op_assign __cil_tmp7 (t_unspecified)compRetStatus)
+        if (op_equals __cil_tmp7 (op_minus 1073741802)) {
           {
-            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3d1032bf
+            stubMoreProcessingRequired((exp null))
           }
         }
-        else
-        {}
+        else {}
       }
     }
-    else
-    {}
+    else {}
     t_int tmp_ndt_9
-    (op_assign tmp_ndt_9 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1cf60848)
-    if (op_equals tmp_ndt_9 0)
-    {
+    (op_assign tmp_ndt_9 __VERIFIER_nondet_int((exp null)))
+    if (op_equals tmp_ndt_9 0) {
       goto switch_6_0
     }
-    else
-    {
+    else {
       t_int tmp_ndt_10
-      (op_assign tmp_ndt_10 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1e9693ac)
-      if (op_equals tmp_ndt_10 1)
-      {
+      (op_assign tmp_ndt_10 __VERIFIER_nondet_int((exp null)))
+      if (op_equals tmp_ndt_10 1) {
         goto switch_6_1
       }
-      else
-      {
+      else {
         goto switch_6_default
-        if 0
-        {
+        if 0 {
           switch_6_0:
           (op_assign returnVal 0)
           goto switch_6_break
@@ -1025,47 +852,38 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
           (op_assign returnVal 259)
           goto switch_6_break
         }
-        else
-        {
+        else {
           switch_6_break:
-          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@21f95bd
+          {}
         }
       }
     }
-    if (op_equals s NP)
-    {
+    if (op_equals s NP) {
       (op_assign s IPC)
       (op_assign lowerDriverReturn returnVal)
     }
-    else
-    {
-      if (op_equals s MPR1)
-      {
+    else {
+      if (op_equals s MPR1) {
         {
-          (op_assign __cil_tmp8 TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTCastExpression@3e26da8b)
-          if (op_equals __cil_tmp8 259L)
-          {
+          (op_assign __cil_tmp8 (t_unspecified)returnVal)
+          if (op_equals __cil_tmp8 259L) {
             (op_assign s MPR3)
             (op_assign lowerDriverReturn returnVal)
           }
-          else
-          {
+          else {
             (op_assign s NP)
             (op_assign lowerDriverReturn returnVal)
           }
         }
       }
-      else
-      {
-        if (op_equals s SKIP1)
-        {
+      else {
+        if (op_equals s SKIP1) {
           (op_assign s SKIP2)
           (op_assign lowerDriverReturn returnVal)
         }
-        else
-        {
+        else {
           {
-            TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@123e314f
+            errorFn((exp null))
           }
         }
       }
@@ -1075,14 +893,14 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
 }
 {
   t_int Irp__IoStatus__Information
-  t_int irpStack__Parameters__DeviceIoControl__IoControlCode = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@389fcb57
-  t_int devExt__UpperConnectData__ClassService = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@46d31384
-  t_int irpStack__Parameters__DeviceIoControl__InputBufferLength = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4ea96b57
-  t_int sizeof__CONNECT_DATA = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@2dfe8f84
-  t_int irpStack__Parameters__DeviceIoControl__Type3InputBuffer = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6b7d3c1f
-  t_int sizeof__INTERNAL_I8042_HOOK_KEYBOARD = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@35ec4dc7
-  t_int hookKeyboard__InitializationRoutine = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@309a7bfe
-  t_int hookKeyboard__IsrRoutine = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@69c150c6
+  t_int irpStack__Parameters__DeviceIoControl__IoControlCode = __VERIFIER_nondet_int((exp null))
+  t_int devExt__UpperConnectData__ClassService = __VERIFIER_nondet_int((exp null))
+  t_int irpStack__Parameters__DeviceIoControl__InputBufferLength = __VERIFIER_nondet_int((exp null))
+  t_int sizeof__CONNECT_DATA = __VERIFIER_nondet_int((exp null))
+  t_int irpStack__Parameters__DeviceIoControl__Type3InputBuffer = __VERIFIER_nondet_int((exp null))
+  t_int sizeof__INTERNAL_I8042_HOOK_KEYBOARD = __VERIFIER_nondet_int((exp null))
+  t_int hookKeyboard__InitializationRoutine = __VERIFIER_nondet_int((exp null))
+  t_int hookKeyboard__IsrRoutine = __VERIFIER_nondet_int((exp null))
   t_int Irp__IoStatus__Status
   t_int hookKeyboard
   t_int connectData
@@ -1091,116 +909,93 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
   t_int __cil_tmp17
   t_int __cil_tmp18
   t_int __cil_tmp19
-  t_int __cil_tmp20 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6bde1425
+  t_int __cil_tmp20 = __VERIFIER_nondet_int((exp null))
   t_int __cil_tmp21
   t_int __cil_tmp22
   t_int __cil_tmp23
-  t_int __cil_tmp24 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3c8beeec
+  t_int __cil_tmp24 = __VERIFIER_nondet_int((exp null))
   t_int __cil_tmp25
   t_int __cil_tmp26
   t_int __cil_tmp27
-  t_int __cil_tmp28 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5f2d3708
-  t_int __cil_tmp29 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3c891b4b
+  t_int __cil_tmp28 = __VERIFIER_nondet_int((exp null))
+  t_int __cil_tmp29 = __VERIFIER_nondet_int((exp null))
   t_int __cil_tmp30
   t_int __cil_tmp31
-  t_int __cil_tmp32 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@276d4fc3
+  t_int __cil_tmp32 = __VERIFIER_nondet_int((exp null))
   t_int __cil_tmp33
   t_int __cil_tmp34
-  t_int __cil_tmp35 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4472394c
+  t_int __cil_tmp35 = __VERIFIER_nondet_int((exp null))
   t_int __cil_tmp36
   t_int __cil_tmp37
-  t_int __cil_tmp38 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@72d1c3bd
+  t_int __cil_tmp38 = __VERIFIER_nondet_int((exp null))
   t_int __cil_tmp39
   t_int __cil_tmp40
-  t_int __cil_tmp41 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@676cdef
+  t_int __cil_tmp41 = __VERIFIER_nondet_int((exp null))
   t_int __cil_tmp42
   t_int __cil_tmp43
-  t_int __cil_tmp44 = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4b2889b5
+  t_int __cil_tmp44 = __VERIFIER_nondet_int((exp null))
   t_int __cil_tmp45
   {
     (op_assign status 0)
     (op_assign Irp__IoStatus__Information 0)
     {
-      if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp20)
-      {
+      if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp20) {
         goto switch_7_exp_0
       }
-      else
-      {
+      else {
         {
-          if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp24)
-          {
+          if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp24) {
             goto switch_7_exp_1
           }
-          else
-          {
+          else {
             {
-              if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp28)
-              {
+              if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp28) {
                 goto switch_7_exp_2
               }
-              else
-              {
+              else {
                 {
-                  if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp29)
-                  {
+                  if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp29) {
                     goto switch_7_exp_3
                   }
-                  else
-                  {
+                  else {
                     {
-                      if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp32)
-                      {
+                      if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp32) {
                         goto switch_7_exp_4
                       }
-                      else
-                      {
+                      else {
                         {
-                          if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp35)
-                          {
+                          if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp35) {
                             goto switch_7_exp_5
                           }
-                          else
-                          {
+                          else {
                             {
-                              if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp38)
-                              {
+                              if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp38) {
                                 goto switch_7_exp_6
                               }
-                              else
-                              {
+                              else {
                                 {
-                                  if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp41)
-                                  {
+                                  if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp41) {
                                     goto switch_7_exp_7
                                   }
-                                  else
-                                  {
+                                  else {
                                     {
-                                      if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp44)
-                                      {
+                                      if (op_equals irpStack__Parameters__DeviceIoControl__IoControlCode __cil_tmp44) {
                                         goto switch_7_exp_8
                                       }
-                                      else
-                                      {
-                                        if 0
-                                        {
+                                      else {
+                                        if 0 {
                                           switch_7_exp_0:
-                                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@1ec561c5
-                                          if (op_notequals devExt__UpperConnectData__ClassService 0)
-                                          {
+                                          {}
+                                          if (op_notequals devExt__UpperConnectData__ClassService 0) {
                                             (op_assign status (op_minus 1073741757))
                                             goto switch_7_break
                                           }
-                                          else
-                                          {
-                                            if (op_lessThan irpStack__Parameters__DeviceIoControl__InputBufferLength sizeof__CONNECT_DATA)
-                                            {
+                                          else {
+                                            if (op_lessThan irpStack__Parameters__DeviceIoControl__InputBufferLength sizeof__CONNECT_DATA) {
                                               (op_assign status (op_minus 1073741811))
                                               goto switch_7_break
                                             }
-                                            else
-                                            {}
+                                            else {}
                                           }
                                           (op_assign connectData irpStack__Parameters__DeviceIoControl__Type3InputBuffer)
                                           goto switch_7_break
@@ -1208,45 +1003,38 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
                                           (op_assign status (op_minus 1073741822))
                                           goto switch_7_break
                                           switch_7_exp_2:
-                                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@6275858b
-                                          if (op_lessThan irpStack__Parameters__DeviceIoControl__InputBufferLength sizeof__INTERNAL_I8042_HOOK_KEYBOARD)
-                                          {
+                                          {}
+                                          if (op_lessThan irpStack__Parameters__DeviceIoControl__InputBufferLength sizeof__INTERNAL_I8042_HOOK_KEYBOARD) {
                                             (op_assign status (op_minus 1073741811))
                                             goto switch_7_break
                                           }
-                                          else
-                                          {}
+                                          else {}
                                           (op_assign hookKeyboard irpStack__Parameters__DeviceIoControl__Type3InputBuffer)
-                                          if hookKeyboard__InitializationRoutine
-                                          {
+                                          if hookKeyboard__InitializationRoutine {
                                           }
-                                          else
-                                          {}
-                                          if hookKeyboard__IsrRoutine
-                                          {
+                                          else {}
+                                          if hookKeyboard__IsrRoutine {
                                           }
-                                          else
-                                          {}
+                                          else {}
                                           (op_assign status 0)
                                           goto switch_7_break
                                           switch_7_exp_3:
-                                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@52dc259f
+                                          {}
                                           switch_7_exp_4:
-                                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@5db67b50
+                                          {}
                                           switch_7_exp_5:
-                                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@6848e26a
+                                          {}
                                           switch_7_exp_6:
-                                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@26df7b35
+                                          {}
                                           switch_7_exp_7:
-                                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@151c52ac
+                                          {}
                                           switch_7_exp_8:
-                                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@7b1ec7a4
+                                          {}
                                           goto switch_7_break
                                         }
-                                        else
-                                        {
+                                        else {
                                           switch_7_break:
-                                          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@54ea211f
+                                          {}
                                         }
                                       }
                                     }
@@ -1267,20 +1055,18 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
       }
     }
     {
-      if (op_lessThan status 0)
-      {
+      if (op_lessThan status 0) {
         {
           (op_assign Irp__IoStatus__Status status)
           (op_assign myStatus status)
-          TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@931ee64
+          IofCompleteRequest((Irp,0))
         }
         return (op_bracketedPrimary status)
       }
-      else
-      {}
+      else {}
     }
     {
-      (op_assign tmp TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7e4f54dc)
+      (op_assign tmp KbFilter_DispatchPassThrough((DeviceObject,Irp)))
     }
     return (op_bracketedPrimary tmp)
   }
@@ -1288,7 +1074,7 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6ae5bfd5
 {
   {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@73e18f56
+    __VERIFIER_error((exp null))
     return (exp null)
   }
 }

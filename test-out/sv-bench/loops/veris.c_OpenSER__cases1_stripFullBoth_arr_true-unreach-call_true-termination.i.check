@@ -1,63 +1,91 @@
-loops/veris.c_OpenSER__cases1_stripFullBoth_arr_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@177286d4
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@55ab9cac
+// loops/veris.c_OpenSER__cases1_stripFullBoth_arr_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_char __VERIFIER_nondet_char
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@524ea8de
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@36f3d66d
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@35b4b241
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3c7306a7
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1bdc41af
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@3334bc07
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2382369a
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7e04a73
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@7ec8a219
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@680aed43
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5a0e203e
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5fb85ade
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@64dbf35a
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5b046a77
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@70a0aef9
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6dd36499
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@56290b5a
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2e86943a
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@5b242075
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@2d257024
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@33c8cd01
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@29f5a806
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@53a802c5
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@558afcc4
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@205f83b1
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@246eba24
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@37c32a46
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@352d9ca6
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6933c3b9
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@38ddfb21
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@16626766
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4f7311a0
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@382a3dfc
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6f79cd2b
+t_int size_t
+t_int bool
+t_char strchr
+t_char strrchr
+t_char strstr
+t_char strncpy
+t_char strncpy_ptr
+t_char strcpy
+t_unspecified strlen
+t_int strncmp
+t_int strcmp
+t_char strcat
+t_void memcpy
+t_int isascii
+t_int isspace
+t_int getc
+t_char strrand
+t_int istrrand
+t_int istrchr
+t_int istrrchr
+t_int istrncmp
+t_int istrstr
+t_char r_strncpy
+t_char r_strcpy
+t_char r_strcat
+t_char r_strncat
+t_void r_memcpy
+t_int u_int
+t_char u_int8_t
+ieee80211_scan_entry
+t_int NSS_STATUS
+t_char fstring
+sockaddr_un
 {
   t_int start = 0i = (op_minus 1)j = (op_minus 1)
   t_char str2
-  if (op_not str)
-  return (op_minus 1)
-  else
-  {}
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTDoStatement@6aa5cef5
+  if (op_not str) return (op_minus 1)
+  else {}
+  do {
+    (op_postFixIncr i)
+    switch str[i]
+    {
+      case 0:
+      while (op_logicalOr (op_bracketedPrimary (op_equals str[start] ' ')) (op_bracketedPrimary (op_equals str[start] '\t')))
+      (op_postFixIncr start)
+      if (op_equals str[start] '"') (op_postFixIncr start)
+      else {}
+      (op_assign j (op_minus i 1))
+      while (op_logicalAnd (op_bracketedPrimary (op_lessThan 0 j)) (op_bracketedPrimary (op_logicalOr (op_bracketedPrimary (op_equals str[j] ' ')) (op_bracketedPrimary (op_equals str[j] '\t')))))
+      (op_postFixDecr j)
+      if (op_logicalAnd (op_bracketedPrimary (op_lessThan 0 j)) (op_bracketedPrimary (op_equals str[j] '"'))) (op_postFixDecr j)
+      else {}
+      if (op_lessEqual start j) {
+        if (op_greaterEqual (op_plus (op_minus j start) 1) 2) {
+          return (op_minus 1)
+        }
+        else {}
+        r_strncpy((str2,(op_plus str start),(op_plus (op_minus j start) 1)))
+        __VERIFIER_assert((op_lessThan (op_plus (op_minus j start) 1) 2))
+        (op_assign str2[(op_plus (op_minus j start) 1)] 0)
+      }
+      else {
+        return (op_minus 1)
+      }
+      (op_assign start (op_plus i 1))
+    }
+  }
+  while (op_notequals str[i] 0)
   return 0
 }
 {
   t_char A
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@3d8c3c10
-  (op_assign (exp org.eclipse.cdt.internal.core.dom.parser.c.CASTArraySubscriptExpression@54202380) 0)
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7591acba
+  for (t_int i = 0
+  ;(op_lessThan i (op_plus (op_plus 2 2) 4));(op_postFixIncr i)){
+    (op_assign A[i] __VERIFIER_nondet_char((exp null)))
+  }
+  (op_assign A[(op_plus (op_plus 2 2) 4)] 0)
+  parse_expression_list(A)
   return 0
 }

@@ -1,28 +1,24 @@
-loops/terminator_03_false-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@237f49f2
+// loops/terminator_03_false-unreach-call_true-termination.i
+t_void __VERIFIER_error
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@74b14a2b
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@14e67476
+t_int __VERIFIER_nondet_int
 {
-  t_int x = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@37ea284e
-  t_int y = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@6e83c798
-  if (op_greaterThan y 0)
-  {
+  t_int x = __VERIFIER_nondet_int((exp null))
+  t_int y = __VERIFIER_nondet_int((exp null))
+  if (op_greaterThan y 0) {
     while (op_lessThan x 100)
     {
       (op_assign x (op_plus x y))
     }
   }
-  else
-  {}
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@109d3871
+  else {}
+  __VERIFIER_assert((op_logicalOr (op_lessEqual y 0) (op_bracketedPrimary (op_logicalAnd (op_lessThan y 0) (op_greaterEqual x 100)))))
   return 0
 }

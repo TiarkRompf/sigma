@@ -1,17 +1,15 @@
-loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@261c2626
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@22a7f545
+// loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7d8045b3
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@14d975c9
+t_int __VERIFIER_nondet_int
 {
   t_int p
   t_int i
@@ -19,46 +17,35 @@ TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@14d975c9
   t_int bufsize
   t_int bufsize_0
   t_int ielen
-  (op_assign leader_len TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@53b34c62)
-  (op_assign bufsize TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@4ea3968c)
-  (op_assign ielen TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@3171ef36)
-  if (op_not (op_bracketedPrimary (op_lessThan leader_len 1000000)))
-  return 0
-  else
-  {}
-  if (op_not (op_bracketedPrimary (op_lessThan bufsize 1000000)))
-  return 0
-  else
-  {}
-  if (op_not (op_bracketedPrimary (op_lessThan ielen 1000000)))
-  return 0
-  else
-  {}
-  if (op_greaterThan leader_len 0)
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@6ed9a3ec
-  else
-  goto END
-  if (op_greaterThan bufsize 0)
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@27c03209
-  else
-  goto END
-  if (op_greaterThan ielen 0)
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@7585d78b
-  else
-  goto END
-  if (op_lessThan bufsize leader_len)
-  goto END
-  else
-  {}
+  (op_assign leader_len __VERIFIER_nondet_int((exp null)))
+  (op_assign bufsize __VERIFIER_nondet_int((exp null)))
+  (op_assign ielen __VERIFIER_nondet_int((exp null)))
+  if (op_not (op_bracketedPrimary (op_lessThan leader_len 1000000))) return 0
+  else {}
+  if (op_not (op_bracketedPrimary (op_lessThan bufsize 1000000))) return 0
+  else {}
+  if (op_not (op_bracketedPrimary (op_lessThan ielen 1000000))) return 0
+  else {}
+  if (op_greaterThan leader_len 0) {}
+  else goto END
+  if (op_greaterThan bufsize 0) {}
+  else goto END
+  if (op_greaterThan ielen 0) {}
+  else goto END
+  if (op_lessThan bufsize leader_len) goto END
+  else {}
   (op_assign p 0)
   (op_assign bufsize_0 bufsize)
   (op_minusAssign bufsize leader_len)
   (op_plusAssign p leader_len)
-  if (op_lessThan bufsize (op_multiply 2 ielen))
-  goto END
-  else
-  {}
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@4b338e52
+  if (op_lessThan bufsize (op_multiply 2 ielen)) goto END
+  else {}
+  for ((op_assign i 0)
+  ;(op_logicalAnd (op_lessThan i ielen) (op_greaterThan bufsize 2));(op_postFixIncr i)){
+    __VERIFIER_assert((op_lessEqual 0 p))
+    __VERIFIER_assert((op_lessThan (op_plus p 1) bufsize_0))
+    (op_plusAssign p 2)
+  }
   END:
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTNullStatement@68d6921b
+  {}
 }

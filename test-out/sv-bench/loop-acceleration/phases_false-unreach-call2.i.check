@@ -1,34 +1,28 @@
-loop-acceleration/phases_false-unreach-call2.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@1b218d6c
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6e2f92b7
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@452ab2fe
+// loop-acceleration/phases_false-unreach-call2.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
+t_int __VERIFIER_nondet_uint
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@668b750e
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
 {
   t_int x = 1
-  t_int y = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@7156de5e
-  if (op_not (op_bracketedPrimary (op_greaterThan y 0)))
-  return 0
-  else
-  {}
+  t_int y = __VERIFIER_nondet_uint((exp null))
+  if (op_not (op_bracketedPrimary (op_greaterThan y 0))) return 0
+  else {}
   while (op_lessThan x y)
   {
-    if (op_lessThan x (op_divide y x))
-    {
+    if (op_lessThan x (op_divide y x)) {
       (op_multiplyAssign x x)
     }
-    else
-    {
+    else {
       (op_postFixIncr x)
     }
   }
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@637e50e9
+  __VERIFIER_assert((op_notequals x y))
 }

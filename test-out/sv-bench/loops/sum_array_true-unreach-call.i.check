@@ -1,24 +1,34 @@
-loops/sum_array_true-unreach-call.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@6debdfda
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@643542d
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@4e630371
+// loops/sum_array_true-unreach-call.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
+t_int __VERIFIER_nondet_int
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@24020d36
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@17a40363
+t_int __VERIFIER_nondet_uint
 {
-  t_int M = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@b5adf86
+  t_int M = __VERIFIER_nondet_uint((exp null))
   t_int ABC
   t_int i
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@5d742d17
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@69abf032
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@5e23497f
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@3581bd2
+  for ((op_assign i 0)
+  ;(op_lessThan i M);(op_postFixIncr i)){
+    (op_assign A[i] __VERIFIER_nondet_int((exp null)))
+    if (op_not (op_bracketedPrimary (op_lessEqual A[i] 1000000))) return 0
+    else {}
+  }
+  for ((op_assign i 0)
+  ;(op_lessThan i M);(op_postFixIncr i)){
+    (op_assign B[i] __VERIFIER_nondet_int((exp null)))
+    if (op_not (op_bracketedPrimary (op_lessEqual B[i] 1000000))) return 0
+    else {}
+  }
+  for ((op_assign i 0)
+  ;(op_lessThan i M);(op_postFixIncr i))(op_assign C[i] (op_plus A[i] B[i]))
+  for ((op_assign i 0)
+  ;(op_lessThan i M);(op_postFixIncr i))__VERIFIER_assert((op_equals C[i] (op_plus A[i] B[i])))
 }

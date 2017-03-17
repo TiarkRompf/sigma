@@ -1,24 +1,29 @@
-loops/for_bounded_loop1_false-unreach-call_true-termination.i
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@38eb2ead
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@72c48120
+// loops/for_bounded_loop1_false-unreach-call_true-termination.i
+t_void __VERIFIER_error
+t_void __VERIFIER_assume
 {
-  if (op_not (op_bracketedPrimary cond))
-  {
+  if (op_not (op_bracketedPrimary cond)) {
     ERROR:
-    TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@46b9db56
+    __VERIFIER_error((exp null))
   }
-  else
-  {}
+  else {}
   return (exp null)
 }
-TODO: org.eclipse.cdt.internal.core.dom.parser.c.CASTSimpleDeclaration@608efb52
+t_int __VERIFIER_nondet_int
 {
   t_int i = 0x = 0y = 0
-  t_int n = TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@1712fa8
-  if (op_not (op_bracketedPrimary (op_greaterThan n 0)))
-  return 0
-  else
-  {}
-  stm org.eclipse.cdt.internal.core.dom.parser.c.CASTForStatement@576a6327
-  TODO org.eclipse.cdt.internal.core.dom.parser.c.CASTFunctionCallExpression@5f8171f7
+  t_int n = __VERIFIER_nondet_int((exp null))
+  if (op_not (op_bracketedPrimary (op_greaterThan n 0))) return 0
+  else {}
+  for ((op_assign i 0)
+  ;(op_lessThan i n);(op_postFixIncr i)){
+    (op_assign x (op_minus x y))
+    __VERIFIER_assert((op_equals x 0))
+    (op_assign y __VERIFIER_nondet_int((exp null)))
+    if (op_not (op_bracketedPrimary (op_notequals y 0))) return 0
+    else {}
+    (op_assign x (op_plus x y))
+    __VERIFIER_assert((op_notequals x 0))
+  }
+  __VERIFIER_assert((op_equals x 0))
 }
