@@ -80,6 +80,19 @@ object CFrontend {
   }
 
 
+  def prettyPrintDefault(node: IASTNode): Unit = {
+    //import org.eclipse.cdt.internal.core.dom.rewrite.astwriter._
+    val w = new ASTWriterVisitor
+    node.accept(w)
+    val s = w.toString
+    //val s = w.write(node)
+    println(s)
+  }
+
+
+
+
+
 
   val types = Array(
   "t_unspecified", // = 0;
