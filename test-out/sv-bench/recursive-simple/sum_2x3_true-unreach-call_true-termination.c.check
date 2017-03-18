@@ -1,0 +1,41 @@
+// # recursive-simple/sum_2x3_true-unreach-call_true-termination.c
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int sum(t_int n,t_int m){
+    if (op_lessEqual n 0) {
+      return (op_plus m n)
+    }
+    else {
+      return sum(((op_minus n 1),(op_plus m 1)))
+    }
+  }
+  t_int main(t_void ){
+    t_int a = 2
+    t_int b = 3
+    t_int result = sum((a,b))
+    if (op_notequals result (op_plus a b)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  int sum(int n, int m)
+  {
+    if(n <= 0){
+      return m + n;
+    }else{
+      return sum(n - 1, m + 1);
+    }
+  }
+  int main(void)
+  {
+    int a = 2;
+    int b = 3;
+    int result = sum(a, b);
+    if(result != a + b){
+      ERROR:
+      __VERIFIER_error();
+    }
+  }

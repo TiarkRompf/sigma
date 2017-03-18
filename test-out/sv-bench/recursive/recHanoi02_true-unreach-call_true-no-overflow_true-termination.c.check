@@ -1,0 +1,50 @@
+// # recursive/recHanoi02_true-unreach-call_true-no-overflow_true-termination.c
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_int(t_void )
+  t_int hanoi(t_int n){
+    if (op_equals n 1) {
+      return 1
+    }
+    else {}
+    return (op_plus (op_multiply 2 (op_bracketedPrimary hanoi((op_minus n 1)))) 1)
+  }
+  t_int main(){
+    t_int n = __VERIFIER_nondet_int()
+    if (op_logicalOr (op_lessThan n 1) (op_greaterThan n 31)) {
+      return 0
+    }
+    else {}
+    t_int result = hanoi(n)
+    if (op_greaterEqual result 0) {
+      return 0
+    }
+    else {
+      ERROR:
+      __VERIFIER_error()
+    }
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern int __VERIFIER_nondet_int(void);
+  int hanoi(int n)
+  {
+    if(n == 1){
+      return 1;
+    }
+    return 2 * (hanoi(n - 1)) + 1;
+  }
+  int main()
+  {
+    int n = __VERIFIER_nondet_int();
+    if(n < 1 || n > 31){
+      return 0;
+    }
+    int result = hanoi(n);
+    if(result >= 0){
+      return 0;
+    }else{
+      ERROR:
+      __VERIFIER_error();
+    }
+  }

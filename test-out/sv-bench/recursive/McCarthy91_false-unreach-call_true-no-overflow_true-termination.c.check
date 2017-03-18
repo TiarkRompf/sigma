@@ -1,0 +1,43 @@
+// # recursive/McCarthy91_false-unreach-call_true-no-overflow_true-termination.c
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_int(t_void )
+  t_int f91(t_int x){
+    if (op_greaterThan x 100) return (op_minus x 10)
+    else {
+      return f91(f91((op_plus x 11)))
+    }
+  }
+  t_int main(){
+    t_int x = __VERIFIER_nondet_int()
+    t_int result = f91(x)
+    if (op_logicalOr (op_equals result 91) (op_logicalAnd (op_greaterThan x 102) (op_equals result (op_minus x 10)))) {
+      return 0
+    }
+    else {
+      ERROR:
+      __VERIFIER_error()
+    }
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern int __VERIFIER_nondet_int(void);
+  int f91(int x)
+  {
+    if(x > 100)
+    return x - 10;
+    else{
+      return f91(f91(x + 11));
+    }
+  }
+  int main()
+  {
+    int x = __VERIFIER_nondet_int();
+    int result = f91(x);
+    if(result == 91 || x > 102 && result == x - 10){
+      return 0;
+    }else{
+      ERROR:
+      __VERIFIER_error();
+    }
+  }

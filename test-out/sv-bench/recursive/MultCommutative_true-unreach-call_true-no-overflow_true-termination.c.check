@@ -1,0 +1,68 @@
+// # recursive/MultCommutative_true-unreach-call_true-no-overflow_true-termination.c
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_int(t_void )
+  t_int mult(t_int n,t_int m){
+    if (op_lessThan m 0) {
+      return mult((n,(op_minus m)))
+    }
+    else {}
+    if (op_equals m 0) {
+      return 0
+    }
+    else {}
+    return (op_plus n mult((n,(op_minus m 1))))
+  }
+  t_int main(){
+    t_int m = __VERIFIER_nondet_int()
+    if (op_logicalOr (op_lessThan m 0) (op_greaterThan m 46340)) {
+      return 0
+    }
+    else {}
+    t_int n = __VERIFIER_nondet_int()
+    if (op_logicalOr (op_lessThan n 0) (op_greaterThan n 46340)) {
+      return 0
+    }
+    else {}
+    t_int res1 = mult((m,n))
+    t_int res2 = mult((n,m))
+    if (op_logicalAnd (op_logicalAnd (op_notequals res1 res2) (op_greaterThan m 0)) (op_greaterThan n 0)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {
+      return 0
+    }
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern int __VERIFIER_nondet_int(void);
+  int mult(int n, int m)
+  {
+    if(m < 0){
+      return mult(n, -m);
+    }
+    if(m == 0){
+      return 0;
+    }
+    return n + mult(n, m - 1);
+  }
+  int main()
+  {
+    int m = __VERIFIER_nondet_int();
+    if(m < 0 || m > 46340){
+      return 0;
+    }
+    int n = __VERIFIER_nondet_int();
+    if(n < 0 || n > 46340){
+      return 0;
+    }
+    int res1 = mult(m, n);
+    int res2 = mult(n, m);
+    if(res1 != res2 && m > 0 && n > 0){
+      ERROR:
+      __VERIFIER_error();
+    }else{
+      return 0;
+    }
+  }

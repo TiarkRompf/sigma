@@ -1,0 +1,71 @@
+// # recursive/Addition02_false-unreach-call_true-no-overflow_true-termination.c
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_int(t_void )
+  t_int addition(t_int m,t_int n){
+    if (op_equals n 0) {
+      return m
+    }
+    else {}
+    if (op_greaterThan n 0) {
+      return addition(((op_plus m 1),(op_minus n 1)))
+    }
+    else {}
+    if (op_lessThan n 0) {
+      return addition(((op_minus m 1),(op_plus n 1)))
+    }
+    else {}
+  }
+  t_int main(){
+    t_int m = __VERIFIER_nondet_int()
+    if (op_logicalOr (op_lessThan m 0) (op_greaterThan m 1073741823)) {
+      return 0
+    }
+    else {}
+    t_int n = __VERIFIER_nondet_int()
+    if (op_logicalOr (op_lessThan n 0) (op_greaterThan n 1073741823)) {
+      return 0
+    }
+    else {}
+    t_int result = addition((m,n))
+    if (op_equals result (op_minus m n)) {
+      return 0
+    }
+    else {
+      ERROR:
+      __VERIFIER_error()
+    }
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern int __VERIFIER_nondet_int(void);
+  int addition(int m, int n)
+  {
+    if(n == 0){
+      return m;
+    }
+    if(n > 0){
+      return addition(m + 1, n - 1);
+    }
+    if(n < 0){
+      return addition(m - 1, n + 1);
+    }
+  }
+  int main()
+  {
+    int m = __VERIFIER_nondet_int();
+    if(m < 0 || m > 1073741823){
+      return 0;
+    }
+    int n = __VERIFIER_nondet_int();
+    if(n < 0 || n > 1073741823){
+      return 0;
+    }
+    int result = addition(m, n);
+    if(result == m - n){
+      return 0;
+    }else{
+      ERROR:
+      __VERIFIER_error();
+    }
+  }

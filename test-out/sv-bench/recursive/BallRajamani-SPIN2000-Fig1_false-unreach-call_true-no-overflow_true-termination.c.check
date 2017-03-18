@@ -1,0 +1,47 @@
+// # recursive/BallRajamani-SPIN2000-Fig1_false-unreach-call_true-no-overflow_true-termination.c
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_int(t_void )
+  t_int g
+  t_int A(t_int a1,t_int a2){
+    if a1 {
+      A((a2,a1))
+    }
+    else {
+      (op_assign g a2)
+    }
+  }
+  t_int main(){
+    t_int g = __VERIFIER_nondet_int()
+    t_int h = (op_not g)
+    A((g,h))
+    A((g,h))
+    if g {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern int __VERIFIER_nondet_int(void);
+  int g;
+  int A(int a1, int a2)
+  {
+    if(a1){
+      A(a2, a1);
+    }else{
+      g = a2;
+    }
+  }
+  int main()
+  {
+    int g = __VERIFIER_nondet_int();
+    int h = !g;
+    A(g, h);
+    A(g, h);
+    if(g){
+      ERROR:
+      __VERIFIER_error();
+    }
+  }

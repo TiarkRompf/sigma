@@ -1,0 +1,73 @@
+// # recursive/gcd01_true-unreach-call_true-no-overflow_true-termination.c
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_int(t_void )
+  t_int gcd(t_int y1,t_int y2){
+    if (op_logicalOr (op_lessEqual y1 0) (op_lessEqual y2 0)) {
+      return 0
+    }
+    else {}
+    if (op_equals y1 y2) {
+      return y1
+    }
+    else {}
+    if (op_greaterThan y1 y2) {
+      return gcd(((op_minus y1 y2),y2))
+    }
+    else {}
+    return gcd((y1,(op_minus y2 y1)))
+  }
+  t_int main(){
+    t_int m = __VERIFIER_nondet_int()
+    if (op_logicalOr (op_lessEqual m 0) (op_greaterThan m 2147483647)) {
+      return 0
+    }
+    else {}
+    t_int n = __VERIFIER_nondet_int()
+    if (op_logicalOr (op_lessEqual n 0) (op_greaterThan n 2147483647)) {
+      return 0
+    }
+    else {}
+    t_int z = gcd((m,n))
+    if (op_logicalAnd (op_logicalAnd (op_lessThan z 1) (op_greaterThan m 0)) (op_greaterThan n 0)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {
+      return 0
+    }
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern int __VERIFIER_nondet_int(void);
+  int gcd(int y1, int y2)
+  {
+    if(y1 <= 0 || y2 <= 0){
+      return 0;
+    }
+    if(y1 == y2){
+      return y1;
+    }
+    if(y1 > y2){
+      return gcd(y1 - y2, y2);
+    }
+    return gcd(y1, y2 - y1);
+  }
+  int main()
+  {
+    int m = __VERIFIER_nondet_int();
+    if(m <= 0 || m > 2147483647){
+      return 0;
+    }
+    int n = __VERIFIER_nondet_int();
+    if(n <= 0 || n > 2147483647){
+      return 0;
+    }
+    int z = gcd(m, n);
+    if(z < 1 && m > 0 && n > 0){
+      ERROR:
+      __VERIFIER_error();
+    }else{
+      return 0;
+    }
+  }

@@ -1,0 +1,74 @@
+// # recursive/recHanoi01_true-unreach-call_true-no-overflow_true-termination.c
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_int(t_void )
+  t_int counter
+  t_int hanoi(t_int n){
+    if (op_equals n 1) {
+      return 1
+    }
+    else {}
+    return (op_plus (op_multiply 2 (op_bracketedPrimary hanoi((op_minus n 1)))) 1)
+  }
+  t_void applyHanoi(t_int n,t_int from,t_int to,t_int via){
+    if (op_equals n 0) {
+      return
+    }
+    else {}
+    (op_postFixIncr counter)
+    applyHanoi(((op_minus n 1),from,via,to))
+    applyHanoi(((op_minus n 1),via,to,from))
+  }
+  t_int main(){
+    t_int n = __VERIFIER_nondet_int()
+    if (op_logicalOr (op_lessThan n 1) (op_greaterThan n 31)) {
+      return 0
+    }
+    else {}
+    (op_assign counter 0)
+    applyHanoi((n,1,3,2))
+    t_int result = hanoi(n)
+    if (op_equals result counter) {
+      return 0
+    }
+    else {
+      ERROR:
+      __VERIFIER_error()
+    }
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern int __VERIFIER_nondet_int(void);
+  int counter;
+  int hanoi(int n)
+  {
+    if(n == 1){
+      return 1;
+    }
+    return 2 * (hanoi(n - 1)) + 1;
+  }
+  void applyHanoi(int n, int from, int to, int via)
+  {
+    if(n == 0){
+      return;
+    }
+    counter++;
+    applyHanoi(n - 1, from, via, to);
+    applyHanoi(n - 1, via, to, from);
+  }
+  int main()
+  {
+    int n = __VERIFIER_nondet_int();
+    if(n < 1 || n > 31){
+      return 0;
+    }
+    counter = 0;
+    applyHanoi(n, 1, 3, 2);
+    int result = hanoi(n);
+    if(result == counter){
+      return 0;
+    }else{
+      ERROR:
+      __VERIFIER_error();
+    }
+  }

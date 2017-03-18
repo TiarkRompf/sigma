@@ -1,0 +1,57 @@
+// # recursive/Addition03_true-unreach-call_true-no-overflow_true-termination.c
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_int(t_void )
+  t_unspecified addition(t_unspecified m,t_unspecified n){
+    if (op_equals n 0) {
+      return m
+    }
+    else {}
+    if (op_greaterThan n 0) {
+      return addition(((op_plus m 1),(op_minus n 1)))
+    }
+    else {}
+    if (op_lessThan n 0) {
+      return addition(((op_minus m 1),(op_plus n 1)))
+    }
+    else {}
+  }
+  t_int main(){
+    t_int m = __VERIFIER_nondet_int()
+    t_int n = __VERIFIER_nondet_int()
+    t_unspecified result = addition((m,n))
+    if (op_logicalOr (op_logicalOr (op_lessThan m 100) (op_lessThan n 100)) (op_greaterEqual result 200)) {
+      return 0
+    }
+    else {
+      ERROR:
+      __VERIFIER_error()
+    }
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern int __VERIFIER_nondet_int(void);
+  long long addition(long long  m, long long  n)
+  {
+    if(n == 0){
+      return m;
+    }
+    if(n > 0){
+      return addition(m + 1, n - 1);
+    }
+    if(n < 0){
+      return addition(m - 1, n + 1);
+    }
+  }
+  int main()
+  {
+    int m = __VERIFIER_nondet_int();
+    int n = __VERIFIER_nondet_int();
+    long long result = addition(m, n);
+    if(m < 100 || n < 100 || result >= 200){
+      return 0;
+    }else{
+      ERROR:
+      __VERIFIER_error();
+    }
+  }

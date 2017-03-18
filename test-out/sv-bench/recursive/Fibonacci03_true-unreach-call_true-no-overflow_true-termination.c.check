@@ -1,0 +1,58 @@
+// # recursive/Fibonacci03_true-unreach-call_true-no-overflow_true-termination.c
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_int(t_void )
+  t_int fibonacci(t_int n){
+    if (op_lessThan n 1) {
+      return 0
+    }
+    else if (op_equals n 1) {
+      return 1
+    }
+    else {
+      return (op_plus fibonacci((op_minus n 1)) fibonacci((op_minus n 2)))
+    }
+  }
+  t_int main(){
+    t_int x = __VERIFIER_nondet_int()
+    if (op_greaterThan x 46) {
+      return 0
+    }
+    else {}
+    t_int result = fibonacci(x)
+    if (op_logicalOr (op_lessThan x 9) (op_greaterEqual result 34)) {
+      return 0
+    }
+    else {
+      ERROR:
+      __VERIFIER_error()
+    }
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern int __VERIFIER_nondet_int(void);
+  int fibonacci(int n)
+  {
+    if(n < 1){
+      return 0;
+    }else
+    if(n == 1){
+      return 1;
+    }else{
+      return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+  }
+  int main()
+  {
+    int x = __VERIFIER_nondet_int();
+    if(x > 46){
+      return 0;
+    }
+    int result = fibonacci(x);
+    if(x < 9 || result >= 34){
+      return 0;
+    }else{
+      ERROR:
+      __VERIFIER_error();
+    }
+  }
