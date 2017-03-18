@@ -457,16 +457,22 @@ object CFrontend {
   case class Jump(target: String) extends Continuation
   case class CJump(c: IASTExpression, a: String, b: String) extends Continuation
 
-  case class Block(label: String, stms: Array[IASTStatement], cnt: Continuation)
+  case class Block(label: String, stms: Array[IASTStatement], cnt: Continuation) {
+    val successors = cnt match {
+      case Return(_)    => Nil
+      case Jump(b)      => List(b)
+      case CJump(c,a,b) => List(a,b)
+    }
+  }
 
-  import scala.collection.mutable._
-
+  import scala.collection.{mutable,immutable}
+  import mutable.ArrayBuffer
 
   
   // state per function
   var curFunction: String = null
   var blocks: ArrayBuffer[Block] = new ArrayBuffer
-  var blockIndex: HashMap[String,Block] = new HashMap
+  var blockIndex: mutable.HashMap[String,Block] = new mutable.HashMap
 
   // state per block
   var blockName: String = null
@@ -487,6 +493,31 @@ object CFrontend {
     blockName = s
     stms.clear
   }
+
+  def postDominators(blocks: List[Block]) = {
+    var PostDom: Map[String,Set[String]] = Map()
+    val labels = blocks.map(_.label).toSet
+    val (exit,internal) = blocks.partition(_.successors.isEmpty)
+    for (n <- exit)
+      PostDom += (n.label -> Set(n.label))
+    for (n <- internal)
+      PostDom += (n.label -> labels)
+    var p0 = PostDom
+    do {
+      p0 = PostDom
+      for (n <- internal) {
+        val x = (labels /: n.successors) ((a:Set[String],b:String) => a intersect PostDom(b))
+        PostDom += (n.label -> (Set(n.label) ++ x))
+      }
+    } while (PostDom != p0)
+    PostDom
+  }
+
+
+
+
+
+
 
   def evalCfgStm(node: IASTStatement): Unit = node match {
       case node: CASTCompoundStatement =>
@@ -585,8 +616,13 @@ object CFrontend {
           print(evalType(declSpecifier))
           print(" ")
           evalDeclarator(declarator)
+
+          if (curFunction != "main")
+            return println("{ ... skipping body ... }")
+
           println(" {")
-          startBlock(freshLabel("Entry"))
+          val entryLabel = freshLabel("Entry")
+          startBlock(entryLabel)
           evalCfgStm(node.getBody)
           endBlock(Return(null))
 
@@ -597,6 +633,29 @@ object CFrontend {
             println("}")
           }
 
+          if (blocks.length > 100) {
+            println("CFG too large: > 100 nodes")
+          } else {
+            println("# post-dominators:")
+            val postDom = postDominators(blocks.toList)
+            println(postDom)
+            println("# loop headers:")
+
+            val loopHeaders = new mutable.HashSet[String]
+
+            def dfs(l: String, path: Set[String]): Unit = {
+              if (path contains l) {
+                loopHeaders += l
+              } else {
+                val path1 = path + l
+                blockIndex(l).successors.foreach(l1 => dfs(l1, path1))
+              }
+            }
+            dfs(entryLabel, Set.empty)
+
+            println(loopHeaders)
+
+          }
 
           println("}")
       case _ =>
