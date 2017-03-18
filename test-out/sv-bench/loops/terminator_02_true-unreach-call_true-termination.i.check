@@ -1,39 +1,78 @@
-// loops/terminator_02_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loops/terminator_02_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_bool __VERIFIER_nondet_bool
-t_int main(/* TODO: param list ... */) {
-  t_int x = __VERIFIER_nondet_int((exp null))
-  t_int y = __VERIFIER_nondet_int((exp null))
-  t_int z = __VERIFIER_nondet_int((exp null))
-  if (op_not (op_bracketedPrimary (op_lessThan x 100))) return 0
-  else {}
-  if (op_not (op_bracketedPrimary (op_greaterThan x (op_minus 100)))) return 0
-  else {}
-  if (op_not (op_bracketedPrimary (op_lessThan z 100))) return 0
-  else {}
-  if (op_not (op_bracketedPrimary (op_greaterThan z (op_minus 100)))) return 0
-  else {}
-  while (op_logicalAnd (op_lessThan x 100) (op_lessThan 100 z))
+  t_int __VERIFIER_nondet_int()
+  t_bool __VERIFIER_nondet_bool()
+  t_int main(){
+    t_int x = __VERIFIER_nondet_int()
+    t_int y = __VERIFIER_nondet_int()
+    t_int z = __VERIFIER_nondet_int()
+    if (op_not (op_bracketedPrimary (op_lessThan x 100))) return 0
+    else {}
+    if (op_not (op_bracketedPrimary (op_greaterThan x (op_minus 100)))) return 0
+    else {}
+    if (op_not (op_bracketedPrimary (op_lessThan z 100))) return 0
+    else {}
+    if (op_not (op_bracketedPrimary (op_greaterThan z (op_minus 100)))) return 0
+    else {}
+    while (op_logicalAnd (op_lessThan x 100) (op_lessThan 100 z))
+    {
+      t_bool tmp = __VERIFIER_nondet_bool()
+      if tmp {
+        (op_postFixIncr x)
+      }
+      else {
+        (op_postFixDecr x)
+        (op_postFixDecr z)
+      }
+    }
+    __VERIFIER_assert((op_logicalOr (op_greaterEqual x 100) (op_lessEqual z 100)))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
   {
-    t_bool tmp = __VERIFIER_nondet_bool((exp null))
-    if tmp {
-      (op_postFixIncr x)
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
     }
-    else {
-      (op_postFixDecr x)
-      (op_postFixDecr z)
-    }
+    return;
   }
-  __VERIFIER_assert((op_logicalOr (op_greaterEqual x 100) (op_lessEqual z 100)))
-  return 0
-}
+  int __VERIFIER_nondet_int();
+  _Bool __VERIFIER_nondet_bool();
+  int main()
+  {
+    int x = __VERIFIER_nondet_int();
+    int y = __VERIFIER_nondet_int();
+    int z = __VERIFIER_nondet_int();
+    if(!(x < 100))
+    return 0;
+    if(!(x > -100))
+    return 0;
+    if(!(z < 100))
+    return 0;
+    if(!(z > -100))
+    return 0;
+    while(x < 100 && 100 < z){
+      _Bool tmp = __VERIFIER_nondet_bool();
+      if(tmp){
+        x++;
+      }else{
+        x--;
+        z--;
+      }
+    }
+    __VERIFIER_assert(x >= 100 || z <= 100);
+    return 0;
+  }

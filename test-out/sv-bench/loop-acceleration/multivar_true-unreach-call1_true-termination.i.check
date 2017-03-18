@@ -1,21 +1,43 @@
-// loop-acceleration/multivar_true-unreach-call1_true-termination.i
-t_void __VERIFIER_error
-t_int __VERIFIER_nondet_uint
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-acceleration/multivar_true-unreach-call1_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_uint(t_void )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int main(/* TODO: param list ... */) {
-  t_int x = __VERIFIER_nondet_uint((exp null))
-  t_int y = x
-  while (op_lessThan x 1024)
+  t_int main(t_void ){
+    t_int x = __VERIFIER_nondet_uint()
+    t_int y = x
+    while (op_lessThan x 1024)
+    {
+      (op_postFixIncr x)
+      (op_postFixIncr y)
+    }
+    __VERIFIER_assert((op_equals x y))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern unsigned int __VERIFIER_nondet_uint(void);
+  void __VERIFIER_assert(int cond)
   {
-    (op_postFixIncr x)
-    (op_postFixIncr y)
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  __VERIFIER_assert((op_equals x y))
-}
+  int main(void)
+  {
+    unsigned int x = __VERIFIER_nondet_uint();
+    unsigned int y = x;
+    while(x < 1024){
+      x++;
+      y++;
+    }
+    __VERIFIER_assert(x == y);
+  }

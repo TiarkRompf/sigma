@@ -1,27 +1,59 @@
-// loops/trex03_false-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loops/trex03_false-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_uint
-t_bool __VERIFIER_nondet_bool
-t_int main(/* TODO: param list ... */) {
-  t_int x1 = __VERIFIER_nondet_uint((exp null))x2 = __VERIFIER_nondet_uint((exp null))x3 = __VERIFIER_nondet_uint((exp null))
-  t_int d1 = 1d2 = 1d3 = 1
-  t_bool c1 = __VERIFIER_nondet_bool((exp null))c2 = __VERIFIER_nondet_bool((exp null))
-  while (op_logicalAnd (op_logicalAnd (op_greaterThan x1 0) (op_greaterThan x2 0)) (op_greaterThan x3 0))
+  t_int __VERIFIER_nondet_uint()
+  t_bool __VERIFIER_nondet_bool()
+  t_int main(){
+    t_int x1 = __VERIFIER_nondet_uint()x2 = __VERIFIER_nondet_uint()x3 = __VERIFIER_nondet_uint()
+    t_int d1 = 1d2 = 1d3 = 1
+    t_bool c1 = __VERIFIER_nondet_bool()c2 = __VERIFIER_nondet_bool()
+    while (op_logicalAnd (op_logicalAnd (op_greaterThan x1 0) (op_greaterThan x2 0)) (op_greaterThan x3 0))
+    {
+      if c1 (op_assign x1 (op_minus x1 d1))
+      else if c2 (op_assign x2 (op_minus x2 d2))
+      else (op_assign x3 (op_minus x3 d3))
+      (op_assign c1 __VERIFIER_nondet_bool())
+      (op_assign c2 __VERIFIER_nondet_bool())
+    }
+    __VERIFIER_assert((op_logicalAnd (op_logicalAnd (op_equals x1 0) (op_equals x2 0)) (op_equals x3 0)))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
   {
-    if c1 (op_assign x1 (op_minus x1 d1))
-    else if c2 (op_assign x2 (op_minus x2 d2))
-    else (op_assign x3 (op_minus x3 d3))
-    (op_assign c1 __VERIFIER_nondet_bool((exp null)))
-    (op_assign c2 __VERIFIER_nondet_bool((exp null)))
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  __VERIFIER_assert((op_logicalAnd (op_logicalAnd (op_equals x1 0) (op_equals x2 0)) (op_equals x3 0)))
-  return 0
-}
+  extern unsigned int __VERIFIER_nondet_uint();
+  extern _Bool __VERIFIER_nondet_bool();
+  int main()
+  {
+    unsigned int x1 = __VERIFIER_nondet_uint(), x2 = __VERIFIER_nondet_uint(), x3 = __VERIFIER_nondet_uint();
+    unsigned int d1 = 1, d2 = 1, d3 = 1;
+    _Bool c1 = __VERIFIER_nondet_bool(), c2 = __VERIFIER_nondet_bool();
+    while(x1 > 0 && x2 > 0 && x3 > 0){
+      if(c1)
+      x1 = x1 - d1;
+      else
+      if(c2)
+      x2 = x2 - d2;
+      else
+      x3 = x3 - d3;
+      c1 = __VERIFIER_nondet_bool();
+      c2 = __VERIFIER_nondet_bool();
+    }
+    __VERIFIER_assert(x1 == 0 && x2 == 0 && x3 == 0);
+    return 0;
+  }

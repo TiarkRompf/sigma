@@ -1,26 +1,56 @@
-// loops/trex02_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loops/trex02_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_bool __VERIFIER_nondet_bool
-t_int __VERIFIER_nondet_int
-t_int x
-t_void foo(/* TODO: param list ... */) {
-  (op_postFixDecr x)
-}
-t_int main(/* TODO: param list ... */) {
-  (op_assign x __VERIFIER_nondet_int((exp null)))
-  while (op_greaterThan x 0)
+  t_bool __VERIFIER_nondet_bool()
+  t_int __VERIFIER_nondet_int()
+  t_int x
+  t_void foo(){
+    (op_postFixDecr x)
+  }
+  t_int main(){
+    (op_assign x __VERIFIER_nondet_int())
+    while (op_greaterThan x 0)
+    {
+      t_bool c = __VERIFIER_nondet_bool()
+      if c foo()
+      else foo()
+    }
+    __VERIFIER_assert((op_lessEqual x 0))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
   {
-    t_bool c = __VERIFIER_nondet_bool((exp null))
-    if c foo((exp null))
-    else foo((exp null))
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  __VERIFIER_assert((op_lessEqual x 0))
-}
+  _Bool __VERIFIER_nondet_bool();
+  int __VERIFIER_nondet_int();
+  int x;
+  void foo()
+  {
+    x--;
+  }
+  int main()
+  {
+    x = __VERIFIER_nondet_int();
+    while(x > 0){
+      _Bool c = __VERIFIER_nondet_bool();
+      if(c)
+      foo();
+      else
+      foo();
+    }
+    __VERIFIER_assert(x <= 0);
+  }

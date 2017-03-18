@@ -1,27 +1,55 @@
-// loops/matrix_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int N_LIN = 1
-  t_int N_COL = 1
-  t_int jk
-  t_int matrizmaior
-  (op_assign maior __VERIFIER_nondet_int((exp null)))
-  for ((op_assign j 0)
-  ;(op_lessThan j N_COL);(op_postFixIncr j))for ((op_assign k 0)
-  ;(op_lessThan k N_LIN);(op_postFixIncr k)){
-    (op_assign matriz[j][k] __VERIFIER_nondet_int((exp null)))
-    if (op_greaterEqual matriz[j][k] maior) (op_assign maior matriz[j][k])
+// # loops/matrix_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
     else {}
+    return
   }
-  __VERIFIER_assert((op_lessEqual matriz[0][0] maior))
-  return 0
-}
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int N_LIN = 1
+    t_int N_COL = 1
+    t_int jk
+    t_int matrizmaior
+    (op_assign maior __VERIFIER_nondet_int())
+    for ((op_assign j 0)
+    ;(op_lessThan j N_COL);(op_postFixIncr j))for ((op_assign k 0)
+    ;(op_lessThan k N_LIN);(op_postFixIncr k)){
+      (op_assign matriz[j][k] __VERIFIER_nondet_int())
+      if (op_greaterEqual matriz[j][k] maior) (op_assign maior matriz[j][k])
+      else {}
+    }
+    __VERIFIER_assert((op_lessEqual matriz[0][0] maior))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    unsigned int N_LIN = 1;
+    unsigned int N_COL = 1;
+    unsigned int j, k;
+    int matriz[N_COL][N_LIN], maior;
+    maior = __VERIFIER_nondet_int();
+    for(j = 0;j < N_COL;j++)
+    for(k = 0;k < N_LIN;k++){
+      matriz[j][k] = __VERIFIER_nondet_int();
+      if(matriz[j][k] >= maior)
+      maior = matriz[j][k];
+    }
+    __VERIFIER_assert(matriz[0][0] <= maior);
+    return 0;
+  }

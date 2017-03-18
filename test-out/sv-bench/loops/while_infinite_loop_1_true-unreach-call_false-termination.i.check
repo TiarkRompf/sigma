@@ -1,18 +1,37 @@
-// loops/while_infinite_loop_1_true-unreach-call_false-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loops/while_infinite_loop_1_true-unreach-call_false-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int main(/* TODO: param list ... */) {
-  t_int x = 0
-  while 1
+  t_int main(){
+    t_int x = 0
+    while 1
+    {
+      __VERIFIER_assert((op_equals x 0))
+    }
+    __VERIFIER_assert((op_notequals x 0))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
   {
-    __VERIFIER_assert((op_equals x 0))
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  __VERIFIER_assert((op_notequals x 0))
-}
+  int main()
+  {
+    int x = 0;
+    while(1){
+      __VERIFIER_assert(x == 0);
+    }
+    __VERIFIER_assert(x != 0);
+  }

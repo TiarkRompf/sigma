@@ -1,60 +1,119 @@
-// loop-invgen/SpamAssassin-loop_true-unreach-call_false-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-invgen/SpamAssassin-loop_true-unreach-call_false-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int len
-  t_int i
-  t_int j
-  t_int bufsize
-  (op_assign bufsize __VERIFIER_nondet_int((exp null)))
-  if (op_lessThan bufsize 0) return 0
-  else {}
-  (op_assign len __VERIFIER_nondet_int((exp null)))
-  t_int limit = (op_minus bufsize 4)
-  for ((op_assign i 0)
-  ;(op_lessThan i len);(exp null)){
-    for ((op_assign j 0)
-    ;(op_logicalAnd (op_lessThan i len) (op_lessThan j limit));(exp null)){
-      if (op_lessThan (op_plus i 1) len) {
-        __VERIFIER_assert((op_lessThan (op_plus i 1) len))
-        __VERIFIER_assert((op_lessEqual 0 i))
-        if __VERIFIER_nondet_int((exp null)) goto ELSE
-        else {}
-        __VERIFIER_assert((op_lessThan i len))
-        __VERIFIER_assert((op_lessEqual 0 i))
-        __VERIFIER_assert((op_lessThan j bufsize))
-        __VERIFIER_assert((op_lessEqual 0 j))
-        (op_postFixIncr j)
-        (op_postFixIncr i)
-        __VERIFIER_assert((op_lessThan i len))
-        __VERIFIER_assert((op_lessEqual 0 i))
-        __VERIFIER_assert((op_lessThan j bufsize))
-        __VERIFIER_assert((op_lessEqual 0 j))
-        (op_postFixIncr j)
-        (op_postFixIncr i)
-        __VERIFIER_assert((op_lessThan j bufsize))
-        __VERIFIER_assert((op_lessEqual 0 j))
-        (op_postFixIncr j)
-      }
-      else {
-        ELSE:
-        __VERIFIER_assert((op_lessThan i len))
-        __VERIFIER_assert((op_lessEqual 0 i))
-        __VERIFIER_assert((op_lessThan j bufsize))
-        __VERIFIER_assert((op_lessEqual 0 j))
-        (op_postFixIncr j)
-        (op_postFixIncr i)
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int len
+    t_int i
+    t_int j
+    t_int bufsize
+    (op_assign bufsize __VERIFIER_nondet_int())
+    if (op_lessThan bufsize 0) return 0
+    else {}
+    (op_assign len __VERIFIER_nondet_int())
+    t_int limit = (op_minus bufsize 4)
+    for ((op_assign i 0)
+    ;(op_lessThan i len);){
+      for ((op_assign j 0)
+      ;(op_logicalAnd (op_lessThan i len) (op_lessThan j limit));){
+        if (op_lessThan (op_plus i 1) len) {
+          __VERIFIER_assert((op_lessThan (op_plus i 1) len))
+          __VERIFIER_assert((op_lessEqual 0 i))
+          if __VERIFIER_nondet_int() goto ELSE
+          else {}
+          __VERIFIER_assert((op_lessThan i len))
+          __VERIFIER_assert((op_lessEqual 0 i))
+          __VERIFIER_assert((op_lessThan j bufsize))
+          __VERIFIER_assert((op_lessEqual 0 j))
+          (op_postFixIncr j)
+          (op_postFixIncr i)
+          __VERIFIER_assert((op_lessThan i len))
+          __VERIFIER_assert((op_lessEqual 0 i))
+          __VERIFIER_assert((op_lessThan j bufsize))
+          __VERIFIER_assert((op_lessEqual 0 j))
+          (op_postFixIncr j)
+          (op_postFixIncr i)
+          __VERIFIER_assert((op_lessThan j bufsize))
+          __VERIFIER_assert((op_lessEqual 0 j))
+          (op_postFixIncr j)
+        }
+        else {
+          ELSE:
+          __VERIFIER_assert((op_lessThan i len))
+          __VERIFIER_assert((op_lessEqual 0 i))
+          __VERIFIER_assert((op_lessThan j bufsize))
+          __VERIFIER_assert((op_lessEqual 0 j))
+          (op_postFixIncr j)
+          (op_postFixIncr i)
+        }
       }
     }
+    return 0
   }
-  return 0
-}
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int len;
+    int i;
+    int j;
+    int bufsize;
+    bufsize = __VERIFIER_nondet_int();
+    if(bufsize < 0)
+    return 0;
+    len = __VERIFIER_nondet_int();
+    int limit = bufsize - 4;
+    for(i = 0;i < len;){
+      for(j = 0;i < len && j < limit;){
+        if(i + 1 < len){
+          __VERIFIER_assert(i + 1 < len);
+          __VERIFIER_assert(0 <= i);
+          if(__VERIFIER_nondet_int())
+          goto ELSE;
+          __VERIFIER_assert(i < len);
+          __VERIFIER_assert(0 <= i);
+          __VERIFIER_assert(j < bufsize);
+          __VERIFIER_assert(0 <= j);
+          j++;
+          i++;
+          __VERIFIER_assert(i < len);
+          __VERIFIER_assert(0 <= i);
+          __VERIFIER_assert(j < bufsize);
+          __VERIFIER_assert(0 <= j);
+          j++;
+          i++;
+          __VERIFIER_assert(j < bufsize);
+          __VERIFIER_assert(0 <= j);
+          j++;
+        }else{
+          ELSE:
+          __VERIFIER_assert(i < len);
+          __VERIFIER_assert(0 <= i);
+          __VERIFIER_assert(j < bufsize);
+          __VERIFIER_assert(0 <= j);
+          j++;
+          i++;
+        }
+      }
+    }
+    return 0;
+  }

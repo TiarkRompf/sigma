@@ -1,42 +1,88 @@
-// loops/trex04_true-unreach-call_false-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loops/trex04_true-unreach-call_false-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assume(t_int cond)
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_bool __VERIFIER_nondet_bool
-t_int __VERIFIER_nondet_int
-t_void foo(/* TODO: param list ... */) {
-  t_int y = 0
-  t_bool c1 = __VERIFIER_nondet_bool((exp null))c2 = __VERIFIER_nondet_bool((exp null))
-  if c1 (op_postFixIncr y)
-  else {}
-  if c2 (op_postFixDecr y)
-  else (op_plusAssign y 10)
-}
-t_int main(/* TODO: param list ... */) {
-  t_int d = 1
-  t_int x = __VERIFIER_nondet_int((exp null))
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual x 1000000) (op_greaterEqual x (op_minus 1000000))))) return 0
-  else {}
-  t_bool c1 = __VERIFIER_nondet_bool((exp null))c2 = __VERIFIER_nondet_bool((exp null))
-  if c1 (op_assign d (op_minus d 1))
-  else {}
-  if c2 foo((exp null))
-  else {}
-  ((op_assign c1 __VERIFIER_nondet_bool((exp null))),(op_assign c2 __VERIFIER_nondet_bool((exp null))))
-  if c1 foo((exp null))
-  else {}
-  if c2 (op_assign d (op_minus d 1))
-  else {}
-  while (op_greaterThan x 0)
+  t_bool __VERIFIER_nondet_bool()
+  t_int __VERIFIER_nondet_int()
+  t_void foo(){
+    t_int y = 0
+    t_bool c1 = __VERIFIER_nondet_bool()c2 = __VERIFIER_nondet_bool()
+    if c1 (op_postFixIncr y)
+    else {}
+    if c2 (op_postFixDecr y)
+    else (op_plusAssign y 10)
+  }
+  t_int main(){
+    t_int d = 1
+    t_int x = __VERIFIER_nondet_int()
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual x 1000000) (op_greaterEqual x (op_minus 1000000))))) return 0
+    else {}
+    t_bool c1 = __VERIFIER_nondet_bool()c2 = __VERIFIER_nondet_bool()
+    if c1 (op_assign d (op_minus d 1))
+    else {}
+    if c2 foo()
+    else {}
+    ((op_assign c1 __VERIFIER_nondet_bool()),(op_assign c2 __VERIFIER_nondet_bool()))
+    if c1 foo()
+    else {}
+    if c2 (op_assign d (op_minus d 1))
+    else {}
+    while (op_greaterThan x 0)
+    {
+      (op_assign x (op_minus x d))
+    }
+    __VERIFIER_assert((op_lessEqual x 0))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern void __VERIFIER_assume(int cond);
+  void __VERIFIER_assert(int cond)
   {
-    (op_assign x (op_minus x d))
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  __VERIFIER_assert((op_lessEqual x 0))
-}
+  extern _Bool __VERIFIER_nondet_bool();
+  extern int __VERIFIER_nondet_int();
+  void foo()
+  {
+    int y = 0;
+    _Bool c1 = __VERIFIER_nondet_bool(), c2 = __VERIFIER_nondet_bool();
+    if(c1)
+    y++;
+    if(c2)
+    y--;
+    else
+    y += 10;
+  }
+  int main()
+  {
+    int d = 1;
+    int x = __VERIFIER_nondet_int();
+    if(!(x <= 1000000 && x >= -1000000))
+    return 0;
+    _Bool c1 = __VERIFIER_nondet_bool(), c2 = __VERIFIER_nondet_bool();
+    if(c1)
+    d = d - 1;
+    if(c2)
+    foo();
+    c1 = __VERIFIER_nondet_bool(), c2 = __VERIFIER_nondet_bool();
+    if(c1)
+    foo();
+    if(c2)
+    d = d - 1;
+    while(x > 0){
+      x = x - d;
+    }
+    __VERIFIER_assert(x <= 0);
+  }

@@ -1,25 +1,52 @@
-// loop-lit/mcmillan2006_true-unreach-call_true-termination.c.i
-t_void malloc
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-lit/mcmillan2006_true-unreach-call_true-termination.c.i
+// # custom traverser
+  t_void malloc(t_int __size)
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_void malloc
-t_int main(/* TODO: param list ... */) {
-  t_int n = __VERIFIER_nondet_int((exp null))
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 0 n) (op_lessEqual n 1000)))) return 0
-  else {}
-  t_int x = malloc((op_multiply n op_sizeof(t_int)))
-  for (t_int i = 0
-  ;(op_lessThan i n);(op_postFixIncr i))(op_assign x[i] 0)
-  for (t_int i = 0
-  ;(op_lessThan i n);(op_postFixIncr i))__VERIFIER_assert((op_equals x[i] 0))
-  return 0
-}
+  t_int __VERIFIER_nondet_int()
+  t_void malloc(t_int size)
+  t_int main(){
+    t_int n = __VERIFIER_nondet_int()
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 0 n) (op_lessEqual n 1000)))) return 0
+    else {}
+    t_int x = malloc((op_multiply n op_sizeof(t_int)))
+    for (t_int i = 0
+    ;(op_lessThan i n);(op_postFixIncr i))(op_assign x[i] 0)
+    for (t_int i = 0
+    ;(op_lessThan i n);(op_postFixIncr i))__VERIFIER_assert((op_equals x[i] 0))
+    return 0
+  }
+// # default pretty printer
+  extern void *malloc(unsigned int __size);
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  extern int __VERIFIER_nondet_int();
+  extern void *malloc(unsigned int size);
+  int main()
+  {
+    int n = __VERIFIER_nondet_int();
+    if(!(0 <= n && n <= 1000))
+    return 0;
+    int *x = malloc(n * sizeof (int));
+    for(int i = 0;i < n;i++)
+    x[i] = 0;
+    for(int i = 0;i < n;i++)
+    __VERIFIER_assert(x[i] == 0);
+    return 0;
+  }

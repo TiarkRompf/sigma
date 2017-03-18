@@ -317,24 +317,50 @@ object CFrontend {
           val declSpecifier = tp.getDeclSpecifier
           // TODO: pointer types, ...
           op + "("+evalType(declSpecifier)+")"
+      case null => ""
       case _ => "(exp "+node+")"
+  }
+  def evalDeclarator(node: IASTDeclarator): Unit = node match {
+    case d1: CASTFunctionDeclarator =>
+      val ptr = d1.getPointerOperators()
+      // TODO: pointer types, ...
+      print(d1.getName)
+      // parameters
+      val xs = d1.getParameters();
+      print("(")
+      var first = true
+      for (d <- xs) {
+        if (!first) print(",")        
+        print(evalType(d.getDeclSpecifier))
+        print(" ")
+        evalDeclarator(d.getDeclarator)
+        first = false
+      }
+      print(")")
+    case d1: CASTDeclarator =>
+      val ptr = d1.getPointerOperators()
+      // TODO: pointer types, ...
+      print(d1.getName)
+      /* val nested = d1.getNestedDeclarator // used at all?
+      if (nested != null) {
+        print("(")
+        evalDeclarator(nested)
+        print(")")
+      }*/
+      val init = d1.getInitializer
+      if (init != null) {
+        val init1 = init.asInstanceOf[CASTEqualsInitializer].getInitializerClause
+        print(" = " + evalExp(init1))
+      }
   }
   def evalLocalDecl(node: IASTDeclaration): Unit = node match {
       case node: CASTSimpleDeclaration =>
-          val declarators = node.getDeclarators()
           val declSpecifier = node.getDeclSpecifier
+          val decls = node.getDeclarators
           print(evalType(declSpecifier))
           print(" ")
-          for (d <- declarators) {
-              val d1 = d.asInstanceOf[CASTDeclarator]
-              val ptr =  d1.getPointerOperators()
-              // TODO: pointer types, ...
-              if (d1.getInitializer == null)
-                print(d1.getName)
-              else {
-                val init = d1.getInitializer.asInstanceOf[CASTEqualsInitializer].getInitializerClause
-                print(d1.getName + " = " + evalExp(init))
-              }
+          for (d <- decls) {
+            evalDeclarator(d)
           }
           println
       case _ => println("dec "+node)
@@ -406,11 +432,11 @@ object CFrontend {
   }
   def evalGlobalDecl(node: IASTDeclaration): Unit = node match {
       case node: CASTFunctionDefinition =>
-          val declarator = node.getDeclarator().asInstanceOf[CASTDeclarator]
+          val declarator = node.getDeclarator()
           val declSpecifier = node.getDeclSpecifier
           print(evalType(declSpecifier))
           print(" ")
-          print(declarator.getName + "(/* TODO: param list ... */) ")
+          evalDeclarator(declarator)
           evalStm(node.getBody)
       case _ =>
           evalLocalDecl(node)

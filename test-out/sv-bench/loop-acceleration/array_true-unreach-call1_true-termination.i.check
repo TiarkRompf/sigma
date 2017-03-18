@@ -1,19 +1,39 @@
-// loop-acceleration/array_true-unreach-call1_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-acceleration/array_true-unreach-call1_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int main(/* TODO: param list ... */) {
-  t_int A
-  t_int i
-  for ((op_assign i 0)
-  ;(op_lessThan i 1024);(op_postFixIncr i)){
-    (op_assign A[i] i)
+  t_int main(t_void ){
+    t_int A
+    t_int i
+    for ((op_assign i 0)
+    ;(op_lessThan i 1024);(op_postFixIncr i)){
+      (op_assign A[i] i)
+    }
+    __VERIFIER_assert((op_equals A[1023] 1023))
   }
-  __VERIFIER_assert((op_equals A[1023] 1023))
-}
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int main(void)
+  {
+    int A[2048];
+    int i;
+    for(i = 0;i < 1024;i++){
+      A[i] = i;
+    }
+    __VERIFIER_assert(A[1023] == 1023);
+  }

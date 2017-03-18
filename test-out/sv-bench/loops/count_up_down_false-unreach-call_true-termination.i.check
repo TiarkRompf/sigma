@@ -1,21 +1,43 @@
-// loops/count_up_down_false-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loops/count_up_down_false-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_uint
-t_int main(/* TODO: param list ... */) {
-  t_int n = __VERIFIER_nondet_uint((exp null))
-  t_int x = ny = 0
-  while (op_greaterThan x 0)
+  t_int __VERIFIER_nondet_uint()
+  t_int main(){
+    t_int n = __VERIFIER_nondet_uint()
+    t_int x = ny = 0
+    while (op_greaterThan x 0)
+    {
+      (op_postFixDecr x)
+      (op_postFixIncr y)
+    }
+    __VERIFIER_assert((op_notequals y n))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
   {
-    (op_postFixDecr x)
-    (op_postFixIncr y)
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  __VERIFIER_assert((op_notequals y n))
-}
+  unsigned int __VERIFIER_nondet_uint();
+  int main()
+  {
+    unsigned int n = __VERIFIER_nondet_uint();
+    unsigned int x = n, y = 0;
+    while(x > 0){
+      x--;
+      y++;
+    }
+    __VERIFIER_assert(y != n);
+  }

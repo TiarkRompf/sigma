@@ -1,29 +1,62 @@
-// loops/linear_search_false-unreach-call.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_uint
-t_int SIZE
-t_int linear_search(/* TODO: param list ... */) {
-  t_int j = 0
-  while (op_logicalAnd (op_lessThan j n) (op_notequals a[j] q))
-  {
-    (op_postFixIncr j)
-    if (op_equals j 20) (op_assign j (op_minus 1))
+// # loops/linear_search_false-unreach-call.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
     else {}
+    return
   }
-  if (op_lessThan j SIZE) return 1
-  else return 0
-}
-t_int main(/* TODO: param list ... */) {
-  (op_assign SIZE (op_plus (op_bracketedPrimary (op_divide __VERIFIER_nondet_uint((exp null)) 2)) 1))
-  t_int a
-  (op_assign a[(op_divide SIZE 2)] 3)
-  __VERIFIER_assert(linear_search((a,SIZE,3)))
-}
+  t_int __VERIFIER_nondet_uint()
+  t_int SIZE
+  t_int linear_search(t_int a,t_int n,t_int q){
+    t_int j = 0
+    while (op_logicalAnd (op_lessThan j n) (op_notequals a[j] q))
+    {
+      (op_postFixIncr j)
+      if (op_equals j 20) (op_assign j (op_minus 1))
+      else {}
+    }
+    if (op_lessThan j SIZE) return 1
+    else return 0
+  }
+  t_int main(){
+    (op_assign SIZE (op_plus (op_bracketedPrimary (op_divide __VERIFIER_nondet_uint() 2)) 1))
+    t_int a
+    (op_assign a[(op_divide SIZE 2)] 3)
+    __VERIFIER_assert(linear_search((a,SIZE,3)))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  unsigned int __VERIFIER_nondet_uint();
+  unsigned int SIZE;
+  int linear_search(int *a, int n, int q)
+  {
+    unsigned int j = 0;
+    while(j < n && a[j] != q){
+      j++;
+      if(j == 20)
+      j = -1;
+    }
+    if(j < SIZE)
+    return 1;
+    else
+    return 0;
+  }
+  int main()
+  {
+    SIZE = (__VERIFIER_nondet_uint() / 2) + 1;
+    int a[SIZE];
+    a[SIZE / 2] = 3;
+    __VERIFIER_assert(linear_search(a, SIZE, 3));
+  }

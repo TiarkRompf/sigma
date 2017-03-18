@@ -1,21 +1,43 @@
-// loops/sum01_bug02_false-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_uint
-t_int main(/* TODO: param list ... */) {
-  t_int ij = 10n = __VERIFIER_nondet_uint((exp null))sn = 0
-  for ((op_assign i 1)
-  ;(op_lessEqual i n);(op_postFixIncr i)){
-    if (op_lessThan i j) (op_assign sn (op_plus sn (op_bracketedPrimary 2)))
+// # loops/sum01_bug02_false-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
     else {}
-    (op_postFixDecr j)
+    return
   }
-  __VERIFIER_assert((op_logicalOr (op_equals sn (op_multiply n (op_bracketedPrimary 2))) (op_equals sn 0)))
-}
+  t_int __VERIFIER_nondet_uint()
+  t_int main(){
+    t_int ij = 10n = __VERIFIER_nondet_uint()sn = 0
+    for ((op_assign i 1)
+    ;(op_lessEqual i n);(op_postFixIncr i)){
+      if (op_lessThan i j) (op_assign sn (op_plus sn (op_bracketedPrimary 2)))
+      else {}
+      (op_postFixDecr j)
+    }
+    __VERIFIER_assert((op_logicalOr (op_equals sn (op_multiply n (op_bracketedPrimary 2))) (op_equals sn 0)))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  extern unsigned int __VERIFIER_nondet_uint();
+  int main()
+  {
+    int i, j = 10, n = __VERIFIER_nondet_uint(), sn = 0;
+    for(i = 1;i <= n;i++){
+      if(i < j)
+      sn = sn + (2);
+      j--;
+    }
+    __VERIFIER_assert(sn == n * (2) || sn == 0);
+  }

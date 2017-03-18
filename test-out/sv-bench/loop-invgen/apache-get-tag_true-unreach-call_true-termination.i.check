@@ -1,74 +1,144 @@
-// loop-invgen/apache-get-tag_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-invgen/apache-get-tag_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int tagbuf_len
-  t_int t
-  (op_assign tagbuf_len __VERIFIER_nondet_int((exp null)))
-  if (op_greaterEqual tagbuf_len 1) {}
-  else goto END
-  (op_assign t 0)
-  (op_prefixDecr tagbuf_len)
-  while 1
-  {
-    if (op_equals t tagbuf_len) {
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int tagbuf_len
+    t_int t
+    (op_assign tagbuf_len __VERIFIER_nondet_int())
+    if (op_greaterEqual tagbuf_len 1) {}
+    else goto END
+    (op_assign t 0)
+    (op_prefixDecr tagbuf_len)
+    while 1
+    {
+      if (op_equals t tagbuf_len) {
+        __VERIFIER_assert((op_lessEqual 0 t))
+        __VERIFIER_assert((op_lessEqual t tagbuf_len))
+        goto END
+      }
+      else {}
+      if __VERIFIER_nondet_int() {
+        break
+      }
+      else {}
       __VERIFIER_assert((op_lessEqual 0 t))
       __VERIFIER_assert((op_lessEqual t tagbuf_len))
-      goto END
+      (op_postFixIncr t)
     }
-    else {}
-    if __VERIFIER_nondet_int((exp null)) {
-      break
-    }
-    else {}
     __VERIFIER_assert((op_lessEqual 0 t))
     __VERIFIER_assert((op_lessEqual t tagbuf_len))
     (op_postFixIncr t)
-  }
-  __VERIFIER_assert((op_lessEqual 0 t))
-  __VERIFIER_assert((op_lessEqual t tagbuf_len))
-  (op_postFixIncr t)
-  while 1
-  {
-    if (op_equals t tagbuf_len) {
-      __VERIFIER_assert((op_lessEqual 0 t))
-      __VERIFIER_assert((op_lessEqual t tagbuf_len))
-      goto END
-    }
-    else {}
-    if __VERIFIER_nondet_int((exp null)) {
-      if __VERIFIER_nondet_int((exp null)) {
+    while 1
+    {
+      if (op_equals t tagbuf_len) {
         __VERIFIER_assert((op_lessEqual 0 t))
         __VERIFIER_assert((op_lessEqual t tagbuf_len))
-        (op_postFixIncr t)
-        if (op_equals t tagbuf_len) {
+        goto END
+      }
+      else {}
+      if __VERIFIER_nondet_int() {
+        if __VERIFIER_nondet_int() {
           __VERIFIER_assert((op_lessEqual 0 t))
           __VERIFIER_assert((op_lessEqual t tagbuf_len))
-          goto END
+          (op_postFixIncr t)
+          if (op_equals t tagbuf_len) {
+            __VERIFIER_assert((op_lessEqual 0 t))
+            __VERIFIER_assert((op_lessEqual t tagbuf_len))
+            goto END
+          }
+          else {}
         }
         else {}
       }
+      else if __VERIFIER_nondet_int() {
+        break
+      }
       else {}
+      __VERIFIER_assert((op_lessEqual 0 t))
+      __VERIFIER_assert((op_lessEqual t tagbuf_len))
+      (op_postFixIncr t)
     }
-    else if __VERIFIER_nondet_int((exp null)) {
-      break
-    }
-    else {}
     __VERIFIER_assert((op_lessEqual 0 t))
     __VERIFIER_assert((op_lessEqual t tagbuf_len))
-    (op_postFixIncr t)
+    END:
+    return 0
   }
-  __VERIFIER_assert((op_lessEqual 0 t))
-  __VERIFIER_assert((op_lessEqual t tagbuf_len))
-  END:
-  return 0
-}
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int tagbuf_len;
+    int t;
+    tagbuf_len = __VERIFIER_nondet_int();
+    if(tagbuf_len >= 1);
+    else
+    goto END;
+    t = 0;
+    --tagbuf_len;
+    while(1){
+      if(t == tagbuf_len){
+        __VERIFIER_assert(0 <= t);
+        __VERIFIER_assert(t <= tagbuf_len);
+        goto END;
+      }
+      if(__VERIFIER_nondet_int()){
+        break;
+      }
+      __VERIFIER_assert(0 <= t);
+      __VERIFIER_assert(t <= tagbuf_len);
+      t++;
+    }
+    __VERIFIER_assert(0 <= t);
+    __VERIFIER_assert(t <= tagbuf_len);
+    t++;
+    while(1){
+      if(t == tagbuf_len){
+        __VERIFIER_assert(0 <= t);
+        __VERIFIER_assert(t <= tagbuf_len);
+        goto END;
+      }
+      if(__VERIFIER_nondet_int()){
+        if(__VERIFIER_nondet_int()){
+          __VERIFIER_assert(0 <= t);
+          __VERIFIER_assert(t <= tagbuf_len);
+          t++;
+          if(t == tagbuf_len){
+            __VERIFIER_assert(0 <= t);
+            __VERIFIER_assert(t <= tagbuf_len);
+            goto END;
+          }
+        }
+      }
+      else
+      if(__VERIFIER_nondet_int()){
+        break;
+      }
+      __VERIFIER_assert(0 <= t);
+      __VERIFIER_assert(t <= tagbuf_len);
+      t++;
+    }
+    __VERIFIER_assert(0 <= t);
+    __VERIFIER_assert(t <= tagbuf_len);
+    END:
+    return 0;
+  }

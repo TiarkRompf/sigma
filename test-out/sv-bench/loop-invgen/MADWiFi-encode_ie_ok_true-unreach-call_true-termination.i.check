@@ -1,51 +1,106 @@
-// loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int p
-  t_int i
-  t_int leader_len
-  t_int bufsize
-  t_int bufsize_0
-  t_int ielen
-  (op_assign leader_len __VERIFIER_nondet_int((exp null)))
-  (op_assign bufsize __VERIFIER_nondet_int((exp null)))
-  (op_assign ielen __VERIFIER_nondet_int((exp null)))
-  if (op_not (op_bracketedPrimary (op_lessThan leader_len 1000000))) return 0
-  else {}
-  if (op_not (op_bracketedPrimary (op_lessThan bufsize 1000000))) return 0
-  else {}
-  if (op_not (op_bracketedPrimary (op_lessThan ielen 1000000))) return 0
-  else {}
-  if (op_greaterThan leader_len 0) {}
-  else goto END
-  if (op_greaterThan bufsize 0) {}
-  else goto END
-  if (op_greaterThan ielen 0) {}
-  else goto END
-  if (op_lessThan bufsize leader_len) goto END
-  else {}
-  (op_assign p 0)
-  (op_assign bufsize_0 bufsize)
-  (op_minusAssign bufsize leader_len)
-  (op_plusAssign p leader_len)
-  if (op_lessThan bufsize (op_multiply 2 ielen)) goto END
-  else {}
-  for ((op_assign i 0)
-  ;(op_logicalAnd (op_lessThan i ielen) (op_greaterThan bufsize 2));(op_postFixIncr i)){
-    __VERIFIER_assert((op_lessEqual 0 p))
-    __VERIFIER_assert((op_lessThan (op_plus p 1) bufsize_0))
-    (op_plusAssign p 2)
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int p
+    t_int i
+    t_int leader_len
+    t_int bufsize
+    t_int bufsize_0
+    t_int ielen
+    (op_assign leader_len __VERIFIER_nondet_int())
+    (op_assign bufsize __VERIFIER_nondet_int())
+    (op_assign ielen __VERIFIER_nondet_int())
+    if (op_not (op_bracketedPrimary (op_lessThan leader_len 1000000))) return 0
+    else {}
+    if (op_not (op_bracketedPrimary (op_lessThan bufsize 1000000))) return 0
+    else {}
+    if (op_not (op_bracketedPrimary (op_lessThan ielen 1000000))) return 0
+    else {}
+    if (op_greaterThan leader_len 0) {}
+    else goto END
+    if (op_greaterThan bufsize 0) {}
+    else goto END
+    if (op_greaterThan ielen 0) {}
+    else goto END
+    if (op_lessThan bufsize leader_len) goto END
+    else {}
+    (op_assign p 0)
+    (op_assign bufsize_0 bufsize)
+    (op_minusAssign bufsize leader_len)
+    (op_plusAssign p leader_len)
+    if (op_lessThan bufsize (op_multiply 2 ielen)) goto END
+    else {}
+    for ((op_assign i 0)
+    ;(op_logicalAnd (op_lessThan i ielen) (op_greaterThan bufsize 2));(op_postFixIncr i)){
+      __VERIFIER_assert((op_lessEqual 0 p))
+      __VERIFIER_assert((op_lessThan (op_plus p 1) bufsize_0))
+      (op_plusAssign p 2)
+    }
+    END:
+    {}
   }
-  END:
-  {}
-}
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int p;
+    int i;
+    int leader_len;
+    int bufsize;
+    int bufsize_0;
+    int ielen;
+    leader_len = __VERIFIER_nondet_int();
+    bufsize = __VERIFIER_nondet_int();
+    ielen = __VERIFIER_nondet_int();
+    if(!(leader_len < 1000000))
+    return 0;
+    if(!(bufsize < 1000000))
+    return 0;
+    if(!(ielen < 1000000))
+    return 0;
+    if(leader_len > 0);
+    else
+    goto END;
+    if(bufsize > 0);
+    else
+    goto END;
+    if(ielen > 0);
+    else
+    goto END;
+    if(bufsize < leader_len)
+    goto END;
+    p = 0;
+    bufsize_0 = bufsize;
+    bufsize -= leader_len;
+    p += leader_len;
+    if(bufsize < 2 * ielen)
+    goto END;
+    for(i = 0;i < ielen && bufsize > 2;i++){
+      __VERIFIER_assert(0 <= p);
+      __VERIFIER_assert(p + 1 < bufsize_0);
+      p += 2;
+    }
+    END:
+    ;
+  }

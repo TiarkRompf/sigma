@@ -1,19 +1,39 @@
-// loop-new/count_by_1_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-new/count_by_1_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int i
-  for ((op_assign i 0)
-  ;(op_lessThan i 1000000);(op_postFixIncr i)){}
-  __VERIFIER_assert((op_equals i 1000000))
-  return 0
-}
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int i
+    for ((op_assign i 0)
+    ;(op_lessThan i 1000000);(op_postFixIncr i)){}
+    __VERIFIER_assert((op_equals i 1000000))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int i;
+    for(i = 0;i < 1000000;i++);
+    __VERIFIER_assert(i == 1000000);
+    return 0;
+  }

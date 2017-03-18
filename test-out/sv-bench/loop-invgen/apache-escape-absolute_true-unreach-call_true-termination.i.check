@@ -1,85 +1,169 @@
-// loop-invgen/apache-escape-absolute_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int scheme
-  t_int urilentokenlen
-  t_int cpc
-  (op_assign urilen __VERIFIER_nondet_int((exp null)))
-  (op_assign tokenlen __VERIFIER_nondet_int((exp null)))
-  (op_assign scheme __VERIFIER_nondet_int((exp null)))
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual urilen 1000000) (op_greaterEqual urilen (op_minus 1000000))))) return 0
-  else {}
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual tokenlen 1000000) (op_greaterEqual tokenlen (op_minus 1000000))))) return 0
-  else {}
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual scheme 1000000) (op_greaterEqual scheme (op_minus 1000000))))) return 0
-  else {}
-  if (op_greaterThan urilen 0) {}
-  else goto END
-  if (op_greaterThan tokenlen 0) {}
-  else goto END
-  if (op_greaterEqual scheme 0) {}
-  else goto END
-  if (op_logicalOr (op_equals scheme 0) (op_bracketedPrimary (op_lessThan (op_minus urilen 1) scheme))) {
-    goto END
-  }
-  else {}
-  (op_assign cp scheme)
-  __VERIFIER_assert((op_lessThan (op_minus cp 1) urilen))
-  __VERIFIER_assert((op_lessEqual 0 (op_minus cp 1)))
-  if __VERIFIER_nondet_int((exp null)) {
-    __VERIFIER_assert((op_lessThan cp urilen))
-    __VERIFIER_assert((op_lessEqual 0 cp))
-    while (op_notequals cp (op_minus urilen 1))
-    {
-      if __VERIFIER_nondet_int((exp null)) break
-      else {}
-      __VERIFIER_assert((op_lessThan cp urilen))
-      __VERIFIER_assert((op_lessEqual 0 cp))
-      (op_prefixIncr cp)
+// # loop-invgen/apache-escape-absolute_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
     }
-    __VERIFIER_assert((op_lessThan cp urilen))
-    __VERIFIER_assert((op_lessEqual 0 cp))
-    if (op_equals cp (op_minus urilen 1)) goto END
     else {}
-    __VERIFIER_assert((op_lessThan (op_plus cp 1) urilen))
-    __VERIFIER_assert((op_lessEqual 0 (op_plus cp 1)))
-    if (op_equals (op_plus cp 1) (op_minus urilen 1)) goto END
+    return
+  }
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int scheme
+    t_int urilentokenlen
+    t_int cpc
+    (op_assign urilen __VERIFIER_nondet_int())
+    (op_assign tokenlen __VERIFIER_nondet_int())
+    (op_assign scheme __VERIFIER_nondet_int())
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual urilen 1000000) (op_greaterEqual urilen (op_minus 1000000))))) return 0
     else {}
-    (op_prefixIncr cp)
-    (op_assign scheme cp)
-    if __VERIFIER_nondet_int((exp null)) {
-      (op_assign c 0)
-      __VERIFIER_assert((op_lessThan cp urilen))
-      __VERIFIER_assert((op_lessEqual 0 cp))
-      while (op_logicalAnd (op_notequals cp (op_minus urilen 1)) (op_lessThan c (op_minus tokenlen 1)))
-      {
-        __VERIFIER_assert((op_lessThan cp urilen))
-        __VERIFIER_assert((op_lessEqual 0 cp))
-        if __VERIFIER_nondet_int((exp null)) {
-          (op_prefixIncr c)
-          __VERIFIER_assert((op_lessThan c tokenlen))
-          __VERIFIER_assert((op_lessEqual 0 c))
-          __VERIFIER_assert((op_lessThan cp urilen))
-          __VERIFIER_assert((op_lessEqual 0 cp))
-        }
-        else {}
-        (op_prefixIncr cp)
-      }
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual tokenlen 1000000) (op_greaterEqual tokenlen (op_minus 1000000))))) return 0
+    else {}
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual scheme 1000000) (op_greaterEqual scheme (op_minus 1000000))))) return 0
+    else {}
+    if (op_greaterThan urilen 0) {}
+    else goto END
+    if (op_greaterThan tokenlen 0) {}
+    else goto END
+    if (op_greaterEqual scheme 0) {}
+    else goto END
+    if (op_logicalOr (op_equals scheme 0) (op_bracketedPrimary (op_lessThan (op_minus urilen 1) scheme))) {
       goto END
     }
     else {}
+    (op_assign cp scheme)
+    __VERIFIER_assert((op_lessThan (op_minus cp 1) urilen))
+    __VERIFIER_assert((op_lessEqual 0 (op_minus cp 1)))
+    if __VERIFIER_nondet_int() {
+      __VERIFIER_assert((op_lessThan cp urilen))
+      __VERIFIER_assert((op_lessEqual 0 cp))
+      while (op_notequals cp (op_minus urilen 1))
+      {
+        if __VERIFIER_nondet_int() break
+        else {}
+        __VERIFIER_assert((op_lessThan cp urilen))
+        __VERIFIER_assert((op_lessEqual 0 cp))
+        (op_prefixIncr cp)
+      }
+      __VERIFIER_assert((op_lessThan cp urilen))
+      __VERIFIER_assert((op_lessEqual 0 cp))
+      if (op_equals cp (op_minus urilen 1)) goto END
+      else {}
+      __VERIFIER_assert((op_lessThan (op_plus cp 1) urilen))
+      __VERIFIER_assert((op_lessEqual 0 (op_plus cp 1)))
+      if (op_equals (op_plus cp 1) (op_minus urilen 1)) goto END
+      else {}
+      (op_prefixIncr cp)
+      (op_assign scheme cp)
+      if __VERIFIER_nondet_int() {
+        (op_assign c 0)
+        __VERIFIER_assert((op_lessThan cp urilen))
+        __VERIFIER_assert((op_lessEqual 0 cp))
+        while (op_logicalAnd (op_notequals cp (op_minus urilen 1)) (op_lessThan c (op_minus tokenlen 1)))
+        {
+          __VERIFIER_assert((op_lessThan cp urilen))
+          __VERIFIER_assert((op_lessEqual 0 cp))
+          if __VERIFIER_nondet_int() {
+            (op_prefixIncr c)
+            __VERIFIER_assert((op_lessThan c tokenlen))
+            __VERIFIER_assert((op_lessEqual 0 c))
+            __VERIFIER_assert((op_lessThan cp urilen))
+            __VERIFIER_assert((op_lessEqual 0 cp))
+          }
+          else {}
+          (op_prefixIncr cp)
+        }
+        goto END
+      }
+      else {}
+    }
+    else {}
+    END:
+    return 0
   }
-  else {}
-  END:
-  return 0
-}
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int scheme;
+    int urilen, tokenlen;
+    int cp, c;
+    urilen = __VERIFIER_nondet_int();
+    tokenlen = __VERIFIER_nondet_int();
+    scheme = __VERIFIER_nondet_int();
+    if(!(urilen <= 1000000 && urilen >= -1000000))
+    return 0;
+    if(!(tokenlen <= 1000000 && tokenlen >= -1000000))
+    return 0;
+    if(!(scheme <= 1000000 && scheme >= -1000000))
+    return 0;
+    if(urilen > 0);
+    else
+    goto END;
+    if(tokenlen > 0);
+    else
+    goto END;
+    if(scheme >= 0);
+    else
+    goto END;
+    if(scheme == 0 || (urilen - 1 < scheme)){
+      goto END;
+    }
+    cp = scheme;
+    __VERIFIER_assert(cp - 1 < urilen);
+    __VERIFIER_assert(0 <= cp - 1);
+    if(__VERIFIER_nondet_int()){
+      __VERIFIER_assert(cp < urilen);
+      __VERIFIER_assert(0 <= cp);
+      while(cp != urilen - 1){
+        if(__VERIFIER_nondet_int())
+        break;
+        __VERIFIER_assert(cp < urilen);
+        __VERIFIER_assert(0 <= cp);
+        ++cp;
+      }
+      __VERIFIER_assert(cp < urilen);
+      __VERIFIER_assert(0 <= cp);
+      if(cp == urilen - 1)
+      goto END;
+      __VERIFIER_assert(cp + 1 < urilen);
+      __VERIFIER_assert(0 <= cp + 1);
+      if(cp + 1 == urilen - 1)
+      goto END;
+      ++cp;
+      scheme = cp;
+      if(__VERIFIER_nondet_int()){
+        c = 0;
+        __VERIFIER_assert(cp < urilen);
+        __VERIFIER_assert(0 <= cp);
+        while(cp != urilen - 1 && c < tokenlen - 1){
+          __VERIFIER_assert(cp < urilen);
+          __VERIFIER_assert(0 <= cp);
+          if(__VERIFIER_nondet_int()){
+            ++c;
+            __VERIFIER_assert(c < tokenlen);
+            __VERIFIER_assert(0 <= c);
+            __VERIFIER_assert(cp < urilen);
+            __VERIFIER_assert(0 <= cp);
+          }
+          ++cp;
+        }
+        goto END;
+      }
+    }
+    END:
+    return 0;
+  }

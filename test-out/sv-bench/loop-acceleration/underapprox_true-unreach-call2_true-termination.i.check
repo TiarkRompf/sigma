@@ -1,20 +1,41 @@
-// loop-acceleration/underapprox_true-unreach-call2_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-acceleration/underapprox_true-unreach-call2_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int main(/* TODO: param list ... */) {
-  t_int x = 0
-  t_int y = 1
-  while (op_lessThan x 6)
+  t_int main(t_void ){
+    t_int x = 0
+    t_int y = 1
+    while (op_lessThan x 6)
+    {
+      (op_postFixIncr x)
+      (op_multiplyAssign y 2)
+    }
+    __VERIFIER_assert((op_equals x 6))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
   {
-    (op_postFixIncr x)
-    (op_multiplyAssign y 2)
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  __VERIFIER_assert((op_equals x 6))
-}
+  int main(void)
+  {
+    unsigned int x = 0;
+    unsigned int y = 1;
+    while(x < 6){
+      x++;
+      y *= 2;
+    }
+    __VERIFIER_assert(x == 6);
+  }

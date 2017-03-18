@@ -1,33 +1,68 @@
-// loops/eureka_05_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int array
-t_int n = 5
-t_void SelectionSort(/* TODO: param list ... */) {
-  t_int lhrhitemp
-  for ((op_assign lh 0)
-  ;(op_lessThan lh n);(op_postFixIncr lh)){
-    (op_assign rh lh)
-    for ((op_assign i (op_plus lh 1))
-    ;(op_lessThan i n);(op_postFixIncr i))if (op_lessThan array[i] array[rh]) (op_assign rh i)
+// # loops/eureka_05_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
     else {}
-    (op_assign temp array[lh])
-    (op_assign array[lh] array[rh])
-    (op_assign array[rh] temp)
+    return
   }
-}
-t_int main(/* TODO: param list ... */) {
-  t_int arrayi
-  for ((op_assign i (op_minus 5 1))
-  ;(op_greaterEqual i 0);(op_postFixDecr i))(op_assign array[i] i)
-  SelectionSort((exp null))
-  for ((op_assign i 0)
-  ;(op_lessThan i 5);(op_postFixIncr i))__VERIFIER_assert((op_equals array[i] i))
-}
+  t_int array
+  t_int n = 5
+  t_void SelectionSort(){
+    t_int lhrhitemp
+    for ((op_assign lh 0)
+    ;(op_lessThan lh n);(op_postFixIncr lh)){
+      (op_assign rh lh)
+      for ((op_assign i (op_plus lh 1))
+      ;(op_lessThan i n);(op_postFixIncr i))if (op_lessThan array[i] array[rh]) (op_assign rh i)
+      else {}
+      (op_assign temp array[lh])
+      (op_assign array[lh] array[rh])
+      (op_assign array[rh] temp)
+    }
+  }
+  t_int main(t_void ){
+    t_int arrayi
+    for ((op_assign i (op_minus 5 1))
+    ;(op_greaterEqual i 0);(op_postFixDecr i))(op_assign array[i] i)
+    SelectionSort()
+    for ((op_assign i 0)
+    ;(op_lessThan i 5);(op_postFixIncr i))__VERIFIER_assert((op_equals array[i] i))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int array[5];
+  int n = 5;
+  void SelectionSort()
+  {
+    int lh, rh, i, temp;
+    for(lh = 0;lh < n;lh++){
+      rh = lh;
+      for(i = lh + 1;i < n;i++)
+      if(array[i] < array[rh])
+      rh = i;
+      temp = array[lh];
+      array[lh] = array[rh];
+      array[rh] = temp;
+    }
+  }
+  int main(void)
+  {
+    int array[5], i;
+    for(i = 5 - 1;i >= 0;i--)
+    array[i] = i;
+    SelectionSort();
+    for(i = 0;i < 5;i++)
+    __VERIFIER_assert(array[i] == i);
+  }

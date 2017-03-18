@@ -1,24 +1,48 @@
-// loops/terminator_03_false-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int x = __VERIFIER_nondet_int((exp null))
-  t_int y = __VERIFIER_nondet_int((exp null))
-  if (op_greaterThan y 0) {
-    while (op_lessThan x 100)
-    {
-      (op_assign x (op_plus x y))
+// # loops/terminator_03_false-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
     }
+    else {}
+    return
   }
-  else {}
-  __VERIFIER_assert((op_logicalOr (op_lessEqual y 0) (op_bracketedPrimary (op_logicalAnd (op_lessThan y 0) (op_greaterEqual x 100)))))
-  return 0
-}
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int x = __VERIFIER_nondet_int()
+    t_int y = __VERIFIER_nondet_int()
+    if (op_greaterThan y 0) {
+      while (op_lessThan x 100)
+      {
+        (op_assign x (op_plus x y))
+      }
+    }
+    else {}
+    __VERIFIER_assert((op_logicalOr (op_lessEqual y 0) (op_bracketedPrimary (op_logicalAnd (op_lessThan y 0) (op_greaterEqual x 100)))))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  extern int __VERIFIER_nondet_int();
+  int main()
+  {
+    int x = __VERIFIER_nondet_int();
+    int y = __VERIFIER_nondet_int();
+    if(y > 0){
+      while(x < 100){
+        x = x + y;
+      }
+    }
+    __VERIFIER_assert(y <= 0 || (y < 0 && x >= 100));
+    return 0;
+  }

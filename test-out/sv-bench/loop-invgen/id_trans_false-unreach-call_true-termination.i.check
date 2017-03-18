@@ -1,29 +1,59 @@
-// loop-invgen/id_trans_false-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-invgen/id_trans_false-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int idBitLengthmaterial_lengthnlen
-  t_int jk
-  (op_assign nlen __VERIFIER_nondet_int((exp null)))
-  (op_assign idBitLength __VERIFIER_nondet_int((exp null)))
-  (op_assign material_length __VERIFIER_nondet_int((exp null)))
-  if (op_not (op_bracketedPrimary (op_equals nlen (op_divide idBitLength 32)))) return 0
-  else {}
-  for ((op_assign j 0)
-  ;(op_logicalAnd (op_bracketedPrimary (op_lessThan j (op_divide idBitLength 8))) (op_bracketedPrimary (op_lessThan j material_length)));(op_postFixIncr j)){
-    __VERIFIER_assert((op_lessEqual 0 j))
-    __VERIFIER_assert((op_lessThan j material_length))
-    __VERIFIER_assert((op_lessEqual 0 (op_divide j 4)))
-    __VERIFIER_assert((op_lessThan (op_divide j 4) nlen))
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int idBitLengthmaterial_lengthnlen
+    t_int jk
+    (op_assign nlen __VERIFIER_nondet_int())
+    (op_assign idBitLength __VERIFIER_nondet_int())
+    (op_assign material_length __VERIFIER_nondet_int())
+    if (op_not (op_bracketedPrimary (op_equals nlen (op_divide idBitLength 32)))) return 0
+    else {}
+    for ((op_assign j 0)
+    ;(op_logicalAnd (op_bracketedPrimary (op_lessThan j (op_divide idBitLength 8))) (op_bracketedPrimary (op_lessThan j material_length)));(op_postFixIncr j)){
+      __VERIFIER_assert((op_lessEqual 0 j))
+      __VERIFIER_assert((op_lessThan j material_length))
+      __VERIFIER_assert((op_lessEqual 0 (op_divide j 4)))
+      __VERIFIER_assert((op_lessThan (op_divide j 4) nlen))
+    }
+    return 0
   }
-  return 0
-}
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int idBitLength, material_length, nlen;
+    int j, k;
+    nlen = __VERIFIER_nondet_int();
+    idBitLength = __VERIFIER_nondet_int();
+    material_length = __VERIFIER_nondet_int();
+    if(!(nlen == idBitLength / 32))
+    return 0;
+    for(j = 0;(j < idBitLength / 8) && (j < material_length);j++){
+      __VERIFIER_assert(0 <= j);
+      __VERIFIER_assert(j < material_length);
+      __VERIFIER_assert(0 <= j / 4);
+      __VERIFIER_assert(j / 4 < nlen);
+    }
+    return 0;
+  }

@@ -1,21 +1,44 @@
-// loop-acceleration/functions_false-unreach-call1_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-acceleration/functions_false-unreach-call1_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int f(/* TODO: param list ... */) {
-  return (op_plus z 2)
-}
-t_int main(/* TODO: param list ... */) {
-  t_int x = 0
-  while (op_lessThan x 0x0fffffff)
+  t_int f(t_int z){
+    return (op_plus z 2)
+  }
+  t_int main(t_void ){
+    t_int x = 0
+    while (op_lessThan x 0x0fffffff)
+    {
+      (op_assign x f(x))
+    }
+    __VERIFIER_assert((op_modulo x 2))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
   {
-    (op_assign x f(x))
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  __VERIFIER_assert((op_modulo x 2))
-}
+  unsigned int f(unsigned int z)
+  {
+    return z + 2;
+  }
+  int main(void)
+  {
+    unsigned int x = 0;
+    while(x < 0x0fffffff){
+      x = f(x);
+    }
+    __VERIFIER_assert(x % 2);
+  }

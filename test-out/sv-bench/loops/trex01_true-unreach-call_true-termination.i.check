@@ -1,53 +1,105 @@
-// loops/trex01_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loops/trex01_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assume(t_int condition)
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_bool __VERIFIER_nondet_bool
-t_int __VERIFIER_nondet_int
-t_void f(/* TODO: param list ... */) {
-  t_int x = __VERIFIER_nondet_int((exp null))y = __VERIFIER_nondet_int((exp null))k = __VERIFIER_nondet_int((exp null))z = 1
-  L1:
-  while (op_lessThan z k)
-  {
-    (op_assign z (op_multiply 2 z))
+  t_bool __VERIFIER_nondet_bool()
+  t_int __VERIFIER_nondet_int()
+  t_void f(t_int d){
+    t_int x = __VERIFIER_nondet_int()y = __VERIFIER_nondet_int()k = __VERIFIER_nondet_int()z = 1
+    L1:
+    while (op_lessThan z k)
+    {
+      (op_assign z (op_multiply 2 z))
+    }
+    __VERIFIER_assert((op_greaterEqual z 1))
+    L2:
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual x 1000000) (op_greaterEqual x (op_minus 1000000))))) return
+    else {}
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual y 1000000) (op_greaterEqual y (op_minus 1000000))))) return
+    else {}
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual k 1000000) (op_greaterEqual k (op_minus 1000000))))) return
+    else {}
+    while (op_logicalAnd (op_greaterThan x 0) (op_greaterThan y 0))
+    {
+      t_bool c = __VERIFIER_nondet_bool()
+      if c {
+        P1:
+        (op_assign x (op_minus x d))
+        (op_assign y __VERIFIER_nondet_bool())
+        {}
+        (op_assign z (op_minus z 1))
+      }
+      else {
+        (op_assign y (op_minus y d))
+      }
+    }
   }
-  __VERIFIER_assert((op_greaterEqual z 1))
-  L2:
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual x 1000000) (op_greaterEqual x (op_minus 1000000))))) return (exp null)
-  else {}
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual y 1000000) (op_greaterEqual y (op_minus 1000000))))) return (exp null)
-  else {}
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual k 1000000) (op_greaterEqual k (op_minus 1000000))))) return (exp null)
-  else {}
-  while (op_logicalAnd (op_greaterThan x 0) (op_greaterThan y 0))
-  {
-    t_bool c = __VERIFIER_nondet_bool((exp null))
+  t_int main(){
+    t_bool c = __VERIFIER_nondet_bool()
     if c {
-      P1:
-      (op_assign x (op_minus x d))
-      (op_assign y __VERIFIER_nondet_bool((exp null)))
-      {}
-      (op_assign z (op_minus z 1))
+      f(1)
     }
     else {
-      (op_assign y (op_minus y d))
+      f(2)
+    }
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern void __VERIFIER_assume(int condition);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  _Bool __VERIFIER_nondet_bool();
+  int __VERIFIER_nondet_int();
+  void f(int d)
+  {
+    int x = __VERIFIER_nondet_int(), y = __VERIFIER_nondet_int(), k = __VERIFIER_nondet_int(), z = 1;
+    L1:
+    while(z < k){
+      z = 2 * z;
+    }
+    __VERIFIER_assert(z >= 1);
+    L2:
+    if(!(x <= 1000000 && x >= -1000000))
+    return;
+    if(!(y <= 1000000 && y >= -1000000))
+    return;
+    if(!(k <= 1000000 && k >= -1000000))
+    return;
+    while(x > 0 && y > 0){
+      _Bool c = __VERIFIER_nondet_bool();
+      if(c){
+        P1:
+        x = x - d;
+        y = __VERIFIER_nondet_bool();
+        ;
+        z = z - 1;
+      }else{
+        y = y - d;
+      }
     }
   }
-}
-t_int main(/* TODO: param list ... */) {
-  t_bool c = __VERIFIER_nondet_bool((exp null))
-  if c {
-    f(1)
+  int main()
+  {
+    _Bool c = __VERIFIER_nondet_bool();
+    if(c){
+      f(1);
+    }else{
+      f(2);
+    }
+    return 0;
   }
-  else {
-    f(2)
-  }
-  return 0
-}

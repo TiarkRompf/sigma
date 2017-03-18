@@ -1,31 +1,62 @@
-// loops/insertion_sort_false-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_uint
-t_int main(/* TODO: param list ... */) {
-  t_int SIZE = __VERIFIER_nondet_uint((exp null))
-  t_int ijkkey
-  t_int v
-  for ((op_assign j 1)
-  ;(op_lessThan j SIZE);(op_postFixIncr j)){
-    (op_assign key v[j])
-    (op_assign i (op_minus j 1))
-    while (op_logicalAnd (op_bracketedPrimary (op_greaterEqual i 0)) (op_bracketedPrimary (op_greaterThan v[i] key)))
-    {
-      if (op_lessThan i 2) (op_assign v[(op_plus i 1)] v[i])
-      else {}
-      (op_assign i (op_minus i 1))
+// # loops/insertion_sort_false-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
     }
-    (op_assign v[(op_plus i 1)] key)
+    else {}
+    return
   }
-  for ((op_assign k 1)
-  ;(op_lessThan k SIZE);(op_postFixIncr k))__VERIFIER_assert((op_lessEqual v[(op_minus k 1)] v[k]))
-  return 0
-}
+  t_int __VERIFIER_nondet_uint()
+  t_int main(){
+    t_int SIZE = __VERIFIER_nondet_uint()
+    t_int ijkkey
+    t_int v
+    for ((op_assign j 1)
+    ;(op_lessThan j SIZE);(op_postFixIncr j)){
+      (op_assign key v[j])
+      (op_assign i (op_minus j 1))
+      while (op_logicalAnd (op_bracketedPrimary (op_greaterEqual i 0)) (op_bracketedPrimary (op_greaterThan v[i] key)))
+      {
+        if (op_lessThan i 2) (op_assign v[(op_plus i 1)] v[i])
+        else {}
+        (op_assign i (op_minus i 1))
+      }
+      (op_assign v[(op_plus i 1)] key)
+    }
+    for ((op_assign k 1)
+    ;(op_lessThan k SIZE);(op_postFixIncr k))__VERIFIER_assert((op_lessEqual v[(op_minus k 1)] v[k]))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  unsigned int __VERIFIER_nondet_uint();
+  int main()
+  {
+    unsigned int SIZE = __VERIFIER_nondet_uint();
+    int i, j, k, key;
+    int v[SIZE];
+    for(j = 1;j < SIZE;j++){
+      key = v[j];
+      i = j - 1;
+      while((i >= 0) && (v[i] > key)){
+        if(i < 2)
+        v[i + 1] = v[i];
+        i = i - 1;
+      }
+      v[i + 1] = key;
+    }
+    for(k = 1;k < SIZE;k++)
+    __VERIFIER_assert(v[k - 1] <= v[k]);
+    return 0;
+  }

@@ -1,20 +1,41 @@
-// loop-acceleration/const_true-unreach-call1.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-acceleration/const_true-unreach-call1.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int main(/* TODO: param list ... */) {
-  t_int x = 1
-  t_int y = 0
-  while (op_lessThan y 1024)
+  t_int main(t_void ){
+    t_int x = 1
+    t_int y = 0
+    while (op_lessThan y 1024)
+    {
+      (op_assign x 0)
+      (op_postFixIncr y)
+    }
+    __VERIFIER_assert((op_equals x 0))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
   {
-    (op_assign x 0)
-    (op_postFixIncr y)
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  __VERIFIER_assert((op_equals x 0))
-}
+  int main(void)
+  {
+    unsigned int x = 1;
+    unsigned int y = 0;
+    while(y < 1024){
+      x = 0;
+      y++;
+    }
+    __VERIFIER_assert(x == 0);
+  }

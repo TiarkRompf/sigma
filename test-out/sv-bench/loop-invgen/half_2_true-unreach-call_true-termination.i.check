@@ -1,33 +1,66 @@
-// loop-invgen/half_2_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-invgen/half_2_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int nik
-  (op_assign n __VERIFIER_nondet_int((exp null)))
-  if (op_not (op_bracketedPrimary (op_lessEqual n 1000000))) return 0
-  else {}
-  (op_assign k n)
-  (op_assign i 0)
-  while (op_lessThan i n)
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int nik
+    (op_assign n __VERIFIER_nondet_int())
+    if (op_not (op_bracketedPrimary (op_lessEqual n 1000000))) return 0
+    else {}
+    (op_assign k n)
+    (op_assign i 0)
+    while (op_lessThan i n)
+    {
+      (op_postFixDecr k)
+      (op_assign i (op_plus i 2))
+    }
+    t_int j = 0
+    while (op_lessThan j (op_divide n 2))
+    {
+      __VERIFIER_assert((op_greaterThan k 0))
+      (op_postFixDecr k)
+      (op_postFixIncr j)
+    }
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
   {
-    (op_postFixDecr k)
-    (op_assign i (op_plus i 2))
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  t_int j = 0
-  while (op_lessThan j (op_divide n 2))
+  int __VERIFIER_nondet_int();
+  int main()
   {
-    __VERIFIER_assert((op_greaterThan k 0))
-    (op_postFixDecr k)
-    (op_postFixIncr j)
+    int n, i, k;
+    n = __VERIFIER_nondet_int();
+    if(!(n <= 1000000))
+    return 0;
+    k = n;
+    i = 0;
+    while(i < n){
+      k--;
+      i = i + 2;
+    }
+    int j = 0;
+    while(j < n / 2){
+      __VERIFIER_assert(k > 0);
+      k--;
+      j++;
+    }
+    return 0;
   }
-  return 0
-}

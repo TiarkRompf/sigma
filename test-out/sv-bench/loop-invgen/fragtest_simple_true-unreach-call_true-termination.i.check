@@ -1,49 +1,95 @@
-// loop-invgen/fragtest_simple_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int ipvlen
-  t_int tmp___1
-  t_int k = 0
-  t_int n
-  (op_assign i 0)
-  (op_assign pvlen __VERIFIER_nondet_int((exp null)))
-  while (op_logicalAnd __VERIFIER_nondet_int((exp null)) (op_lessEqual i 1000000))
-  {
-    (op_assign i (op_plus i 1))
-  }
-  if (op_greaterThan i pvlen) {
-    (op_assign pvlen i)
-  }
-  else {}
-  (op_assign i 0)
-  while (op_logicalAnd __VERIFIER_nondet_int((exp null)) (op_lessEqual i 1000000))
-  {
-    (op_assign tmp___1 i)
-    (op_assign i (op_plus i 1))
-    (op_assign k (op_plus k 1))
-  }
-  t_int j = 0
-  (op_assign n i)
-  while 1
-  {
-    __VERIFIER_assert((op_greaterEqual k 0))
-    (op_assign k (op_minus k 1))
-    (op_assign i (op_minus i 1))
-    (op_assign j (op_plus j 1))
-    if (op_greaterEqual j n) {
-      break
+// # loop-invgen/fragtest_simple_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
     }
     else {}
+    return
   }
-  return 0
-}
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int ipvlen
+    t_int tmp___1
+    t_int k = 0
+    t_int n
+    (op_assign i 0)
+    (op_assign pvlen __VERIFIER_nondet_int())
+    while (op_logicalAnd __VERIFIER_nondet_int() (op_lessEqual i 1000000))
+    {
+      (op_assign i (op_plus i 1))
+    }
+    if (op_greaterThan i pvlen) {
+      (op_assign pvlen i)
+    }
+    else {}
+    (op_assign i 0)
+    while (op_logicalAnd __VERIFIER_nondet_int() (op_lessEqual i 1000000))
+    {
+      (op_assign tmp___1 i)
+      (op_assign i (op_plus i 1))
+      (op_assign k (op_plus k 1))
+    }
+    t_int j = 0
+    (op_assign n i)
+    while 1
+    {
+      __VERIFIER_assert((op_greaterEqual k 0))
+      (op_assign k (op_minus k 1))
+      (op_assign i (op_minus i 1))
+      (op_assign j (op_plus j 1))
+      if (op_greaterEqual j n) {
+        break
+      }
+      else {}
+    }
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int i, pvlen;
+    int tmp___1;
+    int k = 0;
+    int n;
+    i = 0;
+    pvlen = __VERIFIER_nondet_int();
+    while(__VERIFIER_nondet_int() && i <= 1000000){
+      i = i + 1;
+    }
+    if(i > pvlen){
+      pvlen = i;
+    }
+    i = 0;
+    while(__VERIFIER_nondet_int() && i <= 1000000){
+      tmp___1 = i;
+      i = i + 1;
+      k = k + 1;
+    }
+    int j = 0;
+    n = i;
+    while(1){
+      __VERIFIER_assert(k >= 0);
+      k = k - 1;
+      i = i - 1;
+      j = j + 1;
+      if(j >= n){
+        break;
+      }
+    }
+    return 0;
+  }

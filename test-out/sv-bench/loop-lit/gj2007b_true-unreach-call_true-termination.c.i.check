@@ -1,28 +1,56 @@
-// loop-lit/gj2007b_true-unreach-call_true-termination.c.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int x = 0
-  t_int m = 0
-  t_int n = __VERIFIER_nondet_int((exp null))
-  while (op_lessThan x n)
-  {
-    if __VERIFIER_nondet_int((exp null)) {
-      (op_assign m x)
+// # loop-lit/gj2007b_true-unreach-call_true-termination.c.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
     }
     else {}
-    (op_assign x (op_plus x 1))
+    return
   }
-  __VERIFIER_assert((op_bracketedPrimary (op_logicalOr (op_greaterEqual m 0) (op_lessEqual n 0))))
-  __VERIFIER_assert((op_bracketedPrimary (op_logicalOr (op_lessThan m n) (op_lessEqual n 0))))
-  return 0
-}
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int x = 0
+    t_int m = 0
+    t_int n = __VERIFIER_nondet_int()
+    while (op_lessThan x n)
+    {
+      if __VERIFIER_nondet_int() {
+        (op_assign m x)
+      }
+      else {}
+      (op_assign x (op_plus x 1))
+    }
+    __VERIFIER_assert((op_bracketedPrimary (op_logicalOr (op_greaterEqual m 0) (op_lessEqual n 0))))
+    __VERIFIER_assert((op_bracketedPrimary (op_logicalOr (op_lessThan m n) (op_lessEqual n 0))))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int x = 0;
+    int m = 0;
+    int n = __VERIFIER_nondet_int();
+    while(x < n){
+      if(__VERIFIER_nondet_int()){
+        m = x;
+      }
+      x = x + 1;
+    }
+    __VERIFIER_assert((m >= 0 || n <= 0));
+    __VERIFIER_assert((m < n || n <= 0));
+    return 0;
+  }

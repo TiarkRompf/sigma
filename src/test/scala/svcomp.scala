@@ -224,12 +224,12 @@ Architecture: 32 bit
     test(key) { withOutFileChecked(out_prefix+key) {       
       println("// # "+key)
       val parsed = parseCFile(sv_bench_root+"/"+dir+"/"+file)
-      println("// # literal source")
-      println(readFile(sv_bench_root+"/"+key))
-      println("// # default pretty printer")
-      prettyPrintDefault(parsed)
+      //println("// # literal source")
+      //println(readFile(sv_bench_root+"/"+key))
       println("// # custom traverser")
       evalUnit(parsed)
+      println("// # default pretty printer")
+      prettyPrintDefault(parsed)
     }}
   }
 

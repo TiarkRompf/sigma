@@ -1,28 +1,56 @@
-// loop-new/half_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int i = 0
-  t_int n = 0
-  t_int k = __VERIFIER_nondet_int((exp null))
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual k 1000000) (op_greaterEqual k (op_minus 1000000))))) return 0
-  else {}
-  for ((op_assign i 0)
-  ;(op_lessThan i (op_multiply 2 k));(op_postFixIncr i)){
-    if (op_equals (op_modulo i 2) 0) {
-      (op_postFixIncr n)
+// # loop-new/half_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
     }
     else {}
+    return
   }
-  __VERIFIER_assert((op_logicalOr (op_lessThan k 0) (op_equals n k)))
-  return 0
-}
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int i = 0
+    t_int n = 0
+    t_int k = __VERIFIER_nondet_int()
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual k 1000000) (op_greaterEqual k (op_minus 1000000))))) return 0
+    else {}
+    for ((op_assign i 0)
+    ;(op_lessThan i (op_multiply 2 k));(op_postFixIncr i)){
+      if (op_equals (op_modulo i 2) 0) {
+        (op_postFixIncr n)
+      }
+      else {}
+    }
+    __VERIFIER_assert((op_logicalOr (op_lessThan k 0) (op_equals n k)))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int i = 0;
+    int n = 0;
+    int k = __VERIFIER_nondet_int();
+    if(!(k <= 1000000 && k >= -1000000))
+    return 0;
+    for(i = 0;i < 2 * k;i++){
+      if(i % 2 == 0){
+        n++;
+      }
+    }
+    __VERIFIER_assert(k < 0 || n == k);
+    return 0;
+  }

@@ -1,28 +1,56 @@
-// loop-acceleration/phases_false-unreach-call2.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_int __VERIFIER_nondet_uint
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-acceleration/phases_false-unreach-call2.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assume(t_int )
+  t_int __VERIFIER_nondet_uint(t_void )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int main(/* TODO: param list ... */) {
-  t_int x = 1
-  t_int y = __VERIFIER_nondet_uint((exp null))
-  if (op_not (op_bracketedPrimary (op_greaterThan y 0))) return 0
-  else {}
-  while (op_lessThan x y)
+  t_int main(t_void ){
+    t_int x = 1
+    t_int y = __VERIFIER_nondet_uint()
+    if (op_not (op_bracketedPrimary (op_greaterThan y 0))) return 0
+    else {}
+    while (op_lessThan x y)
+    {
+      if (op_lessThan x (op_divide y x)) {
+        (op_multiplyAssign x x)
+      }
+      else {
+        (op_postFixIncr x)
+      }
+    }
+    __VERIFIER_assert((op_notequals x y))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern void __VERIFIER_assume(int);
+  extern unsigned int __VERIFIER_nondet_uint(void);
+  void __VERIFIER_assert(int cond)
   {
-    if (op_lessThan x (op_divide y x)) {
-      (op_multiplyAssign x x)
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
     }
-    else {
-      (op_postFixIncr x)
-    }
+    return;
   }
-  __VERIFIER_assert((op_notequals x y))
-}
+  int main(void)
+  {
+    unsigned int x = 1;
+    unsigned int y = __VERIFIER_nondet_uint();
+    if(!(y > 0))
+    return 0;
+    while(x < y){
+      if(x < y / x){
+        x *= x;
+      }else{
+        x++;
+      }
+    }
+    __VERIFIER_assert(x != y);
+  }

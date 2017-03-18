@@ -1,66 +1,128 @@
-// loop-invgen/heapsort_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int nlrij
-  (op_assign n __VERIFIER_nondet_int((exp null)))
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 1 n) (op_lessEqual n 1000000)))) return 0
-  else {}
-  (op_assign l (op_plus (op_divide n 2) 1))
-  (op_assign r n)
-  if (op_greaterThan l 1) {
-    (op_postFixDecr l)
-  }
-  else {
-    (op_postFixDecr r)
-  }
-  while (op_greaterThan r 1)
-  {
-    (op_assign i l)
-    (op_assign j (op_multiply 2 l))
-    while (op_lessEqual j r)
-    {
-      if (op_lessThan j r) {
-        __VERIFIER_assert((op_lessEqual 1 j))
-        __VERIFIER_assert((op_lessEqual j n))
-        __VERIFIER_assert((op_lessEqual 1 (op_plus j 1)))
-        __VERIFIER_assert((op_lessEqual (op_plus j 1) n))
-        if __VERIFIER_nondet_int((exp null)) (op_assign j (op_plus j 1))
-        else {}
-      }
-      else {}
-      __VERIFIER_assert((op_lessEqual 1 j))
-      __VERIFIER_assert((op_lessEqual j n))
-      if __VERIFIER_nondet_int((exp null)) {
-        break
-      }
-      else {}
-      __VERIFIER_assert((op_lessEqual 1 i))
-      __VERIFIER_assert((op_lessEqual i n))
-      __VERIFIER_assert((op_lessEqual 1 j))
-      __VERIFIER_assert((op_lessEqual j n))
-      (op_assign i j)
-      (op_assign j (op_multiply 2 j))
+// # loop-invgen/heapsort_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
     }
+    else {}
+    return
+  }
+  t_int __VERIFIER_nondet_int()
+  t_int main(t_int argc,t_char argv){
+    t_int nlrij
+    (op_assign n __VERIFIER_nondet_int())
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 1 n) (op_lessEqual n 1000000)))) return 0
+    else {}
+    (op_assign l (op_plus (op_divide n 2) 1))
+    (op_assign r n)
     if (op_greaterThan l 1) {
-      __VERIFIER_assert((op_lessEqual 1 l))
-      __VERIFIER_assert((op_lessEqual l n))
       (op_postFixDecr l)
     }
     else {
-      __VERIFIER_assert((op_lessEqual 1 r))
-      __VERIFIER_assert((op_lessEqual r n))
       (op_postFixDecr r)
     }
+    while (op_greaterThan r 1)
+    {
+      (op_assign i l)
+      (op_assign j (op_multiply 2 l))
+      while (op_lessEqual j r)
+      {
+        if (op_lessThan j r) {
+          __VERIFIER_assert((op_lessEqual 1 j))
+          __VERIFIER_assert((op_lessEqual j n))
+          __VERIFIER_assert((op_lessEqual 1 (op_plus j 1)))
+          __VERIFIER_assert((op_lessEqual (op_plus j 1) n))
+          if __VERIFIER_nondet_int() (op_assign j (op_plus j 1))
+          else {}
+        }
+        else {}
+        __VERIFIER_assert((op_lessEqual 1 j))
+        __VERIFIER_assert((op_lessEqual j n))
+        if __VERIFIER_nondet_int() {
+          break
+        }
+        else {}
+        __VERIFIER_assert((op_lessEqual 1 i))
+        __VERIFIER_assert((op_lessEqual i n))
+        __VERIFIER_assert((op_lessEqual 1 j))
+        __VERIFIER_assert((op_lessEqual j n))
+        (op_assign i j)
+        (op_assign j (op_multiply 2 j))
+      }
+      if (op_greaterThan l 1) {
+        __VERIFIER_assert((op_lessEqual 1 l))
+        __VERIFIER_assert((op_lessEqual l n))
+        (op_postFixDecr l)
+      }
+      else {
+        __VERIFIER_assert((op_lessEqual 1 r))
+        __VERIFIER_assert((op_lessEqual r n))
+        (op_postFixDecr r)
+      }
+    }
+    return 0
   }
-  return 0
-}
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main(int argc, char *argv[])
+  {
+    int n, l, r, i, j;
+    n = __VERIFIER_nondet_int();
+    if(!(1 <= n && n <= 1000000))
+    return 0;
+    l = n / 2 + 1;
+    r = n;
+    if(l > 1){
+      l--;
+    }else{
+      r--;
+    }
+    while(r > 1){
+      i = l;
+      j = 2 * l;
+      while(j <= r){
+        if(j < r){
+          __VERIFIER_assert(1 <= j);
+          __VERIFIER_assert(j <= n);
+          __VERIFIER_assert(1 <= j + 1);
+          __VERIFIER_assert(j + 1 <= n);
+          if(__VERIFIER_nondet_int())
+          j = j + 1;
+        }
+        __VERIFIER_assert(1 <= j);
+        __VERIFIER_assert(j <= n);
+        if(__VERIFIER_nondet_int()){
+          break;
+        }
+        __VERIFIER_assert(1 <= i);
+        __VERIFIER_assert(i <= n);
+        __VERIFIER_assert(1 <= j);
+        __VERIFIER_assert(j <= n);
+        i = j;
+        j = 2 * j;
+      }
+      if(l > 1){
+        __VERIFIER_assert(1 <= l);
+        __VERIFIER_assert(l <= n);
+        l--;
+      }else{
+        __VERIFIER_assert(1 <= r);
+        __VERIFIER_assert(r <= n);
+        r--;
+      }
+    }
+    return 0;
+  }

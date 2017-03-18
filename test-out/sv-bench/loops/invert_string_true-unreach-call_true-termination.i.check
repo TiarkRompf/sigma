@@ -1,33 +1,65 @@
-// loops/invert_string_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loops/invert_string_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_char __VERIFIER_nondet_char
-t_int main(/* TODO: param list ... */) {
-  t_int max = 5
-  t_char str1str2
-  t_int ij
-  for ((op_assign i 0)
-  ;(op_lessThan i max);(op_postFixIncr i)){
-    (op_assign str1[i] __VERIFIER_nondet_char((exp null)))
+  t_char __VERIFIER_nondet_char()
+  t_int main(){
+    t_int max = 5
+    t_char str1str2
+    t_int ij
+    for ((op_assign i 0)
+    ;(op_lessThan i max);(op_postFixIncr i)){
+      (op_assign str1[i] __VERIFIER_nondet_char())
+    }
+    (op_assign str1[(op_minus max 1)] '\0')
+    (op_assign j 0)
+    for ((op_assign i (op_minus max 1))
+    ;(op_greaterEqual i 0);(op_postFixDecr i)){
+      (op_assign str2[j] str1[i])
+      (op_postFixIncr j)
+    }
+    (op_assign j (op_minus max 1))
+    for ((op_assign i 0)
+    ;(op_lessThan i max);(op_postFixIncr i)){
+      __VERIFIER_assert((op_equals str1[i] str2[j]))
+      (op_postFixDecr j)
+    }
   }
-  (op_assign str1[(op_minus max 1)] '\0')
-  (op_assign j 0)
-  for ((op_assign i (op_minus max 1))
-  ;(op_greaterEqual i 0);(op_postFixDecr i)){
-    (op_assign str2[j] str1[i])
-    (op_postFixIncr j)
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  (op_assign j (op_minus max 1))
-  for ((op_assign i 0)
-  ;(op_lessThan i max);(op_postFixIncr i)){
-    __VERIFIER_assert((op_equals str1[i] str2[j]))
-    (op_postFixDecr j)
+  char __VERIFIER_nondet_char();
+  int main()
+  {
+    unsigned int max = 5;
+    char str1[max], str2[max];
+    int i, j;
+    for(i = 0;i < max;i++){
+      str1[i] = __VERIFIER_nondet_char();
+    }
+    str1[max - 1] = '\0';
+    j = 0;
+    for(i = max - 1;i >= 0;i--){
+      str2[j] = str1[i];
+      j++;
+    }
+    j = max - 1;
+    for(i = 0;i < max;i++){
+      __VERIFIER_assert(str1[i] == str2[j]);
+      j--;
+    }
   }
-}

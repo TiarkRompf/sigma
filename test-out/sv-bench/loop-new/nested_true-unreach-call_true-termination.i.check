@@ -1,31 +1,62 @@
-// loop-new/nested_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int n = __VERIFIER_nondet_int((exp null))
-  t_int m = __VERIFIER_nondet_int((exp null))
-  t_int k = 0
-  t_int ij
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 10 n) (op_lessEqual n 10000)))) return 0
-  else {}
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 10 m) (op_lessEqual m 10000)))) return 0
-  else {}
-  for ((op_assign i 0)
-  ;(op_lessThan i n);(op_postFixIncr i)){
-    for ((op_assign j 0)
-    ;(op_lessThan j m);(op_postFixIncr j)){
-      (op_postFixIncr k)
+// # loop-new/nested_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
     }
+    else {}
+    return
   }
-  __VERIFIER_assert((op_greaterEqual k 100))
-  return 0
-}
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int n = __VERIFIER_nondet_int()
+    t_int m = __VERIFIER_nondet_int()
+    t_int k = 0
+    t_int ij
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 10 n) (op_lessEqual n 10000)))) return 0
+    else {}
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 10 m) (op_lessEqual m 10000)))) return 0
+    else {}
+    for ((op_assign i 0)
+    ;(op_lessThan i n);(op_postFixIncr i)){
+      for ((op_assign j 0)
+      ;(op_lessThan j m);(op_postFixIncr j)){
+        (op_postFixIncr k)
+      }
+    }
+    __VERIFIER_assert((op_greaterEqual k 100))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int n = __VERIFIER_nondet_int();
+    int m = __VERIFIER_nondet_int();
+    int k = 0;
+    int i, j;
+    if(!(10 <= n && n <= 10000))
+    return 0;
+    if(!(10 <= m && m <= 10000))
+    return 0;
+    for(i = 0;i < n;i++){
+      for(j = 0;j < m;j++){
+        k++;
+      }
+    }
+    __VERIFIER_assert(k >= 100);
+    return 0;
+  }

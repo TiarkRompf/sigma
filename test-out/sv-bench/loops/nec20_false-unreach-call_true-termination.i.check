@@ -1,36 +1,74 @@
-// loops/nec20_false-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loops/nec20_false-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int b
-t_bool __VERIFIER_nondet_bool
-t_int main(/* TODO: param list ... */) {
-  t_bool k = __VERIFIER_nondet_bool((exp null))
-  t_int inj
-  t_int a
-  if k {
-    (op_assign n 0)
+  t_int b
+  t_bool __VERIFIER_nondet_bool()
+  t_int main(){
+    t_bool k = __VERIFIER_nondet_bool()
+    t_int inj
+    t_int a
+    if k {
+      (op_assign n 0)
+    }
+    else {
+      (op_assign n 1023)
+    }
+    (op_assign i 0)
+    while (op_lessEqual i n)
+    {
+      (op_postFixIncr i)
+      (op_assign j (op_plus j 2))
+    }
+    (op_assign a[i] 0)
+    (op_assign a[j] 0)
+    __VERIFIER_assert((op_lessThan j 1025))
+    (op_assign a[b] 0)
+    if (op_logicalAnd (op_greaterEqual b 0) (op_lessThan b 1023)) (op_assign a[b] 1)
+    else (op_assign a[(op_modulo b 1023)] 1)
+    return 1
   }
-  else {
-    (op_assign n 1023)
-  }
-  (op_assign i 0)
-  while (op_lessEqual i n)
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
   {
-    (op_postFixIncr i)
-    (op_assign j (op_plus j 2))
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  (op_assign a[i] 0)
-  (op_assign a[j] 0)
-  __VERIFIER_assert((op_lessThan j 1025))
-  (op_assign a[b] 0)
-  if (op_logicalAnd (op_greaterEqual b 0) (op_lessThan b 1023)) (op_assign a[b] 1)
-  else (op_assign a[(op_modulo b 1023)] 1)
-  return 1
-}
+  int b;
+  _Bool __VERIFIER_nondet_bool();
+  int main()
+  {
+    _Bool k = __VERIFIER_nondet_bool();
+    int i, n, j;
+    int a[1025];
+    if(k){
+      n = 0;
+    }else{
+      n = 1023;
+    }
+    i = 0;
+    while(i <= n){
+      i++;
+      j = j + 2;
+    }
+    a[i] = 0;
+    a[j] = 0;
+    __VERIFIER_assert(j < 1025);
+    a[b] = 0;
+    if(b >= 0 && b < 1023)
+    a[b] = 1;
+    else
+    a[b % 1023] = 1;
+    return 1;
+  }

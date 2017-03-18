@@ -1,116 +1,236 @@
-// loops/n.c24_false-unreach-call.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loops/n.c24_false-unreach-call.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int size_t
-t_void memcpy
-t_void memmove
-t_void memccpy
-t_void memset
-t_int memcmp
-t_void memchr
-t_char strcpy
-t_char strncpy
-t_char strcat
-t_char strncat
-t_int strcmp
-t_int strncmp
-t_int strcoll
-size_t strxfrm
-__locale_struct __locale_t
-__locale_t locale_t
-t_int strcoll_l
-size_t strxfrm_l
-t_char strdup
-t_char strndup
-t_char strchr
-t_char strrchr
-size_t strcspn
-size_t strspn
-t_char strpbrk
-t_char strstr
-t_char strtok
-t_char __strtok_r
-t_char strtok_r
-size_t strlen
-size_t strnlen
-t_char strerror
-t_int strerror_r
-t_char strerror_l
-t_void __bzero
-t_void bcopy
-t_void bzero
-t_int bcmp
-t_char index
-t_char rindex
-t_int ffs
-t_int strcasecmp
-t_int strncasecmp
-t_char strsep
-t_char strsignal
-t_char __stpcpy
-t_char stpcpy
-t_char __stpncpy
-t_char stpncpy
-t_int __VERIFIER_nondet_int
-t_int bar(/* TODO: param list ... */) {
-  return __VERIFIER_nondet_int((exp null))
-}
-t_int foo(/* TODO: param list ... */) {
-  (op_assign (op_star x) __VERIFIER_nondet_int((exp null)))
-  return (op_star x)
-}
-t_int main(/* TODO: param list ... */) {
-  t_int ijretoffsettmp_cnttel_dataklen
-  t_char x
-  for ((op_assign i 0)
-  ;(op_lessThan i 1000);(op_prefixIncr i))(op_assign x[i] __VERIFIER_nondet_int((exp null)))
-  for ((op_assign i 0)
-  ;(op_lessThan i 1000);(op_prefixIncr i)){
-    (op_assign ret __VERIFIER_nondet_int((exp null)))
-    if (op_notequals ret 0) return (op_minus 1)
-    else {}
-    (op_assign tmp_cnt __VERIFIER_nondet_int((exp null)))
-    if (op_lessThan tmp_cnt 0) return (op_minus 1)
-    else {}
-    for ((op_assign offset 0)
-    ;(op_lessThan offset tmp_cnt);(op_postFixIncr offset)){
-      (op_assign ret foo((op_amper tel_data)))
-      if (op_logicalOr (op_bracketedPrimary (op_equals ret 0)) (op_bracketedPrimary (op_equals ret 1))) {
-        return 1
-      }
-      else if (op_equals ret (op_minus 1)) {
-        continue
-      }
+  t_int size_t
+  t_void memcpy(t_void __dest,t_void __src,size_t __n)
+  t_void memmove(t_void __dest,t_void __src,size_t __n)
+  t_void memccpy(t_void __dest,t_void __src,t_int __c,size_t __n)
+  t_void memset(t_void __s,t_int __c,size_t __n)
+  t_int memcmp(t_void __s1,t_void __s2,size_t __n)
+  t_void memchr(t_void __s,t_int __c,size_t __n)
+  t_char strcpy(t_char __dest,t_char __src)
+  t_char strncpy(t_char __dest,t_char __src,size_t __n)
+  t_char strcat(t_char __dest,t_char __src)
+  t_char strncat(t_char __dest,t_char __src,size_t __n)
+  t_int strcmp(t_char __s1,t_char __s2)
+  t_int strncmp(t_char __s1,t_char __s2,size_t __n)
+  t_int strcoll(t_char __s1,t_char __s2)
+  size_t strxfrm(t_char __dest,t_char __src,size_t __n)
+  __locale_struct __locale_t
+  __locale_t locale_t
+  t_int strcoll_l(t_char __s1,t_char __s2,__locale_t __l)
+  size_t strxfrm_l(t_char __dest,t_char __src,size_t __n,__locale_t __l)
+  t_char strdup(t_char __s)
+  t_char strndup(t_char __string,size_t __n)
+  t_char strchr(t_char __s,t_int __c)
+  t_char strrchr(t_char __s,t_int __c)
+  size_t strcspn(t_char __s,t_char __reject)
+  size_t strspn(t_char __s,t_char __accept)
+  t_char strpbrk(t_char __s,t_char __accept)
+  t_char strstr(t_char __haystack,t_char __needle)
+  t_char strtok(t_char __s,t_char __delim)
+  t_char __strtok_r(t_char __s,t_char __delim,t_char __save_ptr)
+  t_char strtok_r(t_char __s,t_char __delim,t_char __save_ptr)
+  size_t strlen(t_char __s)
+  size_t strnlen(t_char __string,size_t __maxlen)
+  t_char strerror(t_int __errnum)
+  t_int strerror_r(t_int __errnum,t_char __buf,size_t __buflen)
+  t_char strerror_l(t_int __errnum,__locale_t __l)
+  t_void __bzero(t_void __s,size_t __n)
+  t_void bcopy(t_void __src,t_void __dest,size_t __n)
+  t_void bzero(t_void __s,size_t __n)
+  t_int bcmp(t_void __s1,t_void __s2,size_t __n)
+  t_char index(t_char __s,t_int __c)
+  t_char rindex(t_char __s,t_int __c)
+  t_int ffs(t_int __i)
+  t_int strcasecmp(t_char __s1,t_char __s2)
+  t_int strncasecmp(t_char __s1,t_char __s2,size_t __n)
+  t_char strsep(t_char __stringp,t_char __delim)
+  t_char strsignal(t_int __sig)
+  t_char __stpcpy(t_char __dest,t_char __src)
+  t_char stpcpy(t_char __dest,t_char __src)
+  t_char __stpncpy(t_char __dest,t_char __src,size_t __n)
+  t_char stpncpy(t_char __dest,t_char __src,size_t __n)
+  t_int __VERIFIER_nondet_int(t_void )
+  t_int bar(t_char x){
+    return __VERIFIER_nondet_int()
+  }
+  t_int foo(t_int x){
+    (op_assign (op_star x) __VERIFIER_nondet_int())
+    return (op_star x)
+  }
+  t_int main(){
+    t_int ijretoffsettmp_cnttel_dataklen
+    t_char x
+    for ((op_assign i 0)
+    ;(op_lessThan i 1000);(op_prefixIncr i))(op_assign x[i] __VERIFIER_nondet_int())
+    for ((op_assign i 0)
+    ;(op_lessThan i 1000);(op_prefixIncr i)){
+      (op_assign ret __VERIFIER_nondet_int())
+      if (op_notequals ret 0) return (op_minus 1)
       else {}
-      for ((op_assign j 0)
-      ;(op_notequals x[j] 0);(op_postFixIncr j)){
-        if (op_equals x[i] 1) {
-          memmove(((op_amper x[i]),(op_amper x[(op_plus i 1)]),(op_minus (op_bracketedPrimary 1001) (op_bracketedPrimary (op_plus i 1)))))
+      (op_assign tmp_cnt __VERIFIER_nondet_int())
+      if (op_lessThan tmp_cnt 0) return (op_minus 1)
+      else {}
+      for ((op_assign offset 0)
+      ;(op_lessThan offset tmp_cnt);(op_postFixIncr offset)){
+        (op_assign ret foo((op_amper tel_data)))
+        if (op_logicalOr (op_bracketedPrimary (op_equals ret 0)) (op_bracketedPrimary (op_equals ret 1))) {
+          return 1
+        }
+        else if (op_equals ret (op_minus 1)) {
+          continue
+        }
+        else {}
+        for ((op_assign j 0)
+        ;(op_notequals x[j] 0);(op_postFixIncr j)){
+          if (op_equals x[i] 1) {
+            memmove(((op_amper x[i]),(op_amper x[(op_plus i 1)]),(op_minus (op_bracketedPrimary 1001) (op_bracketedPrimary (op_plus i 1)))))
+          }
+          else {}
+        }
+        (op_assign ret bar(x))
+        if (op_notequals ret (op_minus 1)) {
+          continue
+        }
+        else {}
+        (op_assign klen strlen(x))
+        if (op_greaterThan klen 20) {
+          (op_assign x[i] 0)
+        }
+        else if (op_greaterThan klen 0) {
+          (op_assign x[i] (op_minus 1))
         }
         else {}
       }
-      (op_assign ret bar(x))
-      if (op_notequals ret (op_minus 1)) {
-        continue
-      }
-      else {}
-      (op_assign klen strlen(x))
-      if (op_greaterThan klen 20) {
-        (op_assign x[i] 0)
-      }
-      else if (op_greaterThan klen 0) {
-        (op_assign x[i] (op_minus 1))
-      }
-      else {}
     }
+    __VERIFIER_assert((op_logicalAnd (op_greaterEqual offset 0) (op_lessEqual offset 1000)))
+    return 1
   }
-  __VERIFIER_assert((op_logicalAnd (op_greaterEqual offset 0) (op_lessEqual offset 1000)))
-  return 1
-}
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  typedef unsigned int size_t;
+  extern void *memcpy(void *restrict __dest, const void *restrict __src, size_t __n);
+  extern void *memmove(void *__dest, const void *__src, size_t __n);
+  extern void *memccpy(void *restrict __dest, const void *restrict __src, int __c, size_t __n);
+  extern void *memset(void *__s, int __c, size_t __n);
+  extern int memcmp(const void *__s1, const void *__s2, size_t __n);
+  extern void *memchr(const void *__s, int __c, size_t __n);
+  extern char *strcpy(char *restrict __dest, const char *restrict __src);
+  extern char *strncpy(char *restrict __dest, const char *restrict __src, size_t __n);
+  extern char *strcat(char *restrict __dest, const char *restrict __src);
+  extern char *strncat(char *restrict __dest, const char *restrict __src, size_t __n);
+  extern int strcmp(const char *__s1, const char *__s2);
+  extern int strncmp(const char *__s1, const char *__s2, size_t __n);
+  extern int strcoll(const char *__s1, const char *__s2);
+  extern size_t strxfrm(char *restrict __dest, const char *restrict __src, size_t __n);
+  typedef struct __locale_struct
+  {
+    struct __locale_data *__locales[13];
+    const unsigned short int *__ctype_b;
+    const int *__ctype_tolower;
+    const int *__ctype_toupper;
+    const char *__names[13];
+  } *__locale_t;
+  typedef __locale_t locale_t;
+  extern int strcoll_l(const char *__s1, const char *__s2, __locale_t __l);
+  extern size_t strxfrm_l(char *__dest, const char *__src, size_t __n, __locale_t __l);
+  extern char *strdup(const char *__s);
+  extern char *strndup(const char *__string, size_t __n);
+  extern char *strchr(const char *__s, int __c);
+  extern char *strrchr(const char *__s, int __c);
+  extern size_t strcspn(const char *__s, const char *__reject);
+  extern size_t strspn(const char *__s, const char *__accept);
+  extern char *strpbrk(const char *__s, const char *__accept);
+  extern char *strstr(const char *__haystack, const char *__needle);
+  extern char *strtok(char *restrict __s, const char *restrict __delim);
+  extern char *__strtok_r(char *restrict __s, const char *restrict __delim, char **restrict __save_ptr);
+  extern char *strtok_r(char *restrict __s, const char *restrict __delim, char **restrict __save_ptr);
+  extern size_t strlen(const char *__s);
+  extern size_t strnlen(const char *__string, size_t __maxlen);
+  extern char *strerror(int __errnum);
+  extern int strerror_r(int __errnum, char *__buf, size_t __buflen);
+  extern char *strerror_l(int __errnum, __locale_t __l);
+  extern void __bzero(void *__s, size_t __n);
+  extern void bcopy(const void *__src, void *__dest, size_t __n);
+  extern void bzero(void *__s, size_t __n);
+  extern int bcmp(const void *__s1, const void *__s2, size_t __n);
+  extern char *index(const char *__s, int __c);
+  extern char *rindex(const char *__s, int __c);
+  extern int ffs(int __i);
+  extern int strcasecmp(const char *__s1, const char *__s2);
+  extern int strncasecmp(const char *__s1, const char *__s2, size_t __n);
+  extern char *strsep(char **restrict __stringp, const char *restrict __delim);
+  extern char *strsignal(int __sig);
+  extern char *__stpcpy(char *restrict __dest, const char *restrict __src);
+  extern char *stpcpy(char *restrict __dest, const char *restrict __src);
+  extern char *__stpncpy(char *restrict __dest, const char *restrict __src, size_t __n);
+  extern char *stpncpy(char *restrict __dest, const char *restrict __src, size_t __n);
+  extern int __VERIFIER_nondet_int(void);
+  int bar(char *x)
+  {
+    return __VERIFIER_nondet_int();
+  }
+  int foo(int *x)
+  {
+    *x = __VERIFIER_nondet_int();
+    return *x;
+  }
+  int main()
+  {
+    int i, j, ret, offset, tmp_cnt, tel_data, klen;
+    char x[1000];
+    for(i = 0;i < 1000;++i)
+    x[i] = __VERIFIER_nondet_int();
+    for(i = 0;i < 1000;++i){
+      ret = __VERIFIER_nondet_int();
+      if(ret != 0)
+      return -1;
+      tmp_cnt = __VERIFIER_nondet_int();
+      if(tmp_cnt < 0)
+      return -1;
+      for(offset = 0;offset < tmp_cnt;offset++){
+        ret = foo(&tel_data);
+        if((ret == 0) || (ret == 1)){
+          return 1;
+        }else
+        if(ret == -1){
+          continue;
+        }
+        for(j = 0;x[j] != 0;j++){
+          if(x[i] == 1){
+            memmove(&x[i], &x[i + 1], (1001) - (i + 1));
+          }
+        }
+        ret = bar(x);
+        if(ret != -1){
+          continue;
+        }
+        klen = strlen(x);
+        if(klen > 20){
+          x[i] = 0;
+        }else
+        if(klen > 0){
+          x[i] = -1;
+        }
+      }
+    }
+    __VERIFIER_assert(offset >= 0 && offset <= 1000);
+    return 1;
+  }

@@ -1,81 +1,161 @@
-// loops/ludcmp_false-unreach-call.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_double abx
-t_int ludcmp
-t_double fabs(/* TODO: param list ... */) {
-  t_double f
-  if (op_greaterEqual n 0) (op_assign f n)
-  else (op_assign f (op_minus n))
-  return f
-}
-t_int main(/* TODO: param list ... */) {
-  t_int ijnmax = 50n = 5chkerr
-  t_double epsw
-  (op_assign eps 1.0e-6)
-  for ((op_assign i 0)
-  ;(op_lessEqual i n);(op_postFixIncr i)){
-    (op_assign w 0.0)
-    for ((op_assign j 0)
-    ;(op_lessEqual j n);(op_postFixIncr j)){
-      (op_assign a[i][j] (op_plus (op_bracketedPrimary (op_plus i 1)) (op_bracketedPrimary (op_plus j 1))))
-      if (op_equals i j) (op_multiplyAssign a[i][j] 10.0)
-      else {}
-      (op_plusAssign w a[i][j])
+// # loops/ludcmp_false-unreach-call.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
     }
-    __VERIFIER_assert((op_equals i 2))
-    (op_assign b[i] w)
-  }
-  (op_assign chkerr ludcmp((nmax,n,eps)))
-  return 0
-}
-t_int ludcmp(/* TODO: param list ... */) {
-  t_int ijk
-  t_double wy
-  if (op_logicalOr (op_greaterThan n 99) (op_lessEqual eps 0.0)) return (op_bracketedPrimary 999)
-  else {}
-  for ((op_assign i 0)
-  ;(op_lessThan i n);(op_postFixIncr i)){
-    if (op_lessEqual fabs(a[i][i]) eps) return (op_bracketedPrimary 1)
     else {}
-    for ((op_assign j (op_plus i 1))
-    ;(op_lessEqual j n);(op_postFixIncr j)){
-      (op_assign w a[j][i])
-      if (op_notequals i 0) for ((op_assign k 0)
-      ;(op_lessThan k i);(op_postFixIncr k))(op_minusAssign w (op_multiply a[j][k] a[k][i]))
+    return
+  }
+  t_double abx
+  t_int ludcmp(t_int nmax,t_int n,t_double eps)
+  t_double fabs(t_double n){
+    t_double f
+    if (op_greaterEqual n 0) (op_assign f n)
+    else (op_assign f (op_minus n))
+    return f
+  }
+  t_int main(){
+    t_int ijnmax = 50n = 5chkerr
+    t_double epsw
+    (op_assign eps 1.0e-6)
+    for ((op_assign i 0)
+    ;(op_lessEqual i n);(op_postFixIncr i)){
+      (op_assign w 0.0)
+      for ((op_assign j 0)
+      ;(op_lessEqual j n);(op_postFixIncr j)){
+        (op_assign a[i][j] (op_plus (op_bracketedPrimary (op_plus i 1)) (op_bracketedPrimary (op_plus j 1))))
+        if (op_equals i j) (op_multiplyAssign a[i][j] 10.0)
+        else {}
+        (op_plusAssign w a[i][j])
+      }
+      __VERIFIER_assert((op_equals i 2))
+      (op_assign b[i] w)
+    }
+    (op_assign chkerr ludcmp((nmax,n,eps)))
+    return 0
+  }
+  t_int ludcmp(t_int nmax,t_int n,t_double eps){
+    t_int ijk
+    t_double wy
+    if (op_logicalOr (op_greaterThan n 99) (op_lessEqual eps 0.0)) return (op_bracketedPrimary 999)
+    else {}
+    for ((op_assign i 0)
+    ;(op_lessThan i n);(op_postFixIncr i)){
+      if (op_lessEqual fabs(a[i][i]) eps) return (op_bracketedPrimary 1)
       else {}
-      (op_assign a[j][i] (op_divide w a[i][i]))
+      for ((op_assign j (op_plus i 1))
+      ;(op_lessEqual j n);(op_postFixIncr j)){
+        (op_assign w a[j][i])
+        if (op_notequals i 0) for ((op_assign k 0)
+        ;(op_lessThan k i);(op_postFixIncr k))(op_minusAssign w (op_multiply a[j][k] a[k][i]))
+        else {}
+        (op_assign a[j][i] (op_divide w a[i][i]))
+      }
+      for ((op_assign j (op_plus i 1))
+      ;(op_lessEqual j n);(op_postFixIncr j)){
+        (op_assign w a[(op_plus i 1)][j])
+        for ((op_assign k 0)
+        ;(op_lessEqual k i);(op_postFixIncr k))(op_minusAssign w (op_multiply a[(op_plus i 1)][k] a[k][j]))
+        (op_assign a[(op_plus i 1)][j] w)
+      }
     }
-    for ((op_assign j (op_plus i 1))
-    ;(op_lessEqual j n);(op_postFixIncr j)){
-      (op_assign w a[(op_plus i 1)][j])
-      for ((op_assign k 0)
-      ;(op_lessEqual k i);(op_postFixIncr k))(op_minusAssign w (op_multiply a[(op_plus i 1)][k] a[k][j]))
-      (op_assign a[(op_plus i 1)][j] w)
+    (op_assign y[0] b[0])
+    for ((op_assign i 1)
+    ;(op_lessEqual i n);(op_postFixIncr i)){
+      (op_assign w b[i])
+      for ((op_assign j 0)
+      ;(op_lessThan j i);(op_postFixIncr j))(op_minusAssign w (op_multiply a[i][j] y[j]))
+      (op_assign y[i] w)
     }
+    (op_assign x[n] (op_divide y[n] a[n][n]))
+    for ((op_assign i (op_minus n 1))
+    ;(op_greaterEqual i 0);(op_postFixDecr i)){
+      (op_assign w y[i])
+      for ((op_assign j (op_plus i 1))
+      ;(op_lessEqual j n);(op_postFixIncr j))(op_minusAssign w (op_multiply a[i][j] x[j]))
+      (op_assign x[i] (op_divide w a[i][i]))
+    }
+    return (op_bracketedPrimary 0)
   }
-  (op_assign y[0] b[0])
-  for ((op_assign i 1)
-  ;(op_lessEqual i n);(op_postFixIncr i)){
-    (op_assign w b[i])
-    for ((op_assign j 0)
-    ;(op_lessThan j i);(op_postFixIncr j))(op_minusAssign w (op_multiply a[i][j] y[j]))
-    (op_assign y[i] w)
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  (op_assign x[n] (op_divide y[n] a[n][n]))
-  for ((op_assign i (op_minus n 1))
-  ;(op_greaterEqual i 0);(op_postFixDecr i)){
-    (op_assign w y[i])
-    for ((op_assign j (op_plus i 1))
-    ;(op_lessEqual j n);(op_postFixIncr j))(op_minusAssign w (op_multiply a[i][j] x[j]))
-    (op_assign x[i] (op_divide w a[i][i]))
+  double a[50][50], b[50], x[50];
+  int ludcmp(int nmax, int n, double eps);
+  static double fabs(double n)
+  {
+    double f;
+    if(n >= 0)
+    f = n;
+    else
+    f = -n;
+    return f;
   }
-  return (op_bracketedPrimary 0)
-}
+  int main()
+  {
+    int i, j, nmax = 50, n = 5, chkerr;
+    double eps, w;
+    eps = 1.0e-6;
+    for(i = 0;i <= n;i++){
+      w = 0.0;
+      for(j = 0;j <= n;j++){
+        a[i][j] = (i + 1) + (j + 1);
+        if(i == j)
+        a[i][j] *= 10.0;
+        w += a[i][j];
+      }
+      __VERIFIER_assert(i == 2);
+      b[i] = w;
+    }
+    chkerr = ludcmp(nmax, n, eps);
+    return 0;
+  }
+  int ludcmp(int nmax, int n, double eps)
+  {
+    int i, j, k;
+    double w, y[100];
+    if(n > 99 || eps <= 0.0)
+    return (999);
+    for(i = 0;i < n;i++){
+      if(fabs(a[i][i]) <= eps)
+      return (1);
+      for(j = i + 1;j <= n;j++){
+        w = a[j][i];
+        if(i != 0)
+        for(k = 0;k < i;k++)
+        w -= a[j][k] * a[k][i];
+        a[j][i] = w / a[i][i];
+      }
+      for(j = i + 1;j <= n;j++){
+        w = a[i + 1][j];
+        for(k = 0;k <= i;k++)
+        w -= a[i + 1][k] * a[k][j];
+        a[i + 1][j] = w;
+      }
+    }
+    y[0] = b[0];
+    for(i = 1;i <= n;i++){
+      w = b[i];
+      for(j = 0;j < i;j++)
+      w -= a[i][j] * y[j];
+      y[i] = w;
+    }
+    x[n] = y[n] / a[n][n];
+    for(i = n - 1;i >= 0;i--){
+      w = y[i];
+      for(j = i + 1;j <= n;j++)
+      w -= a[i][j] * x[j];
+      x[i] = w / a[i][i];
+    }
+    return (0);
+  }

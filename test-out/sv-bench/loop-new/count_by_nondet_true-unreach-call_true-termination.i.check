@@ -1,26 +1,53 @@
-// loop-new/count_by_nondet_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int i = 0
-  t_int k = 0
-  while (op_lessThan i 1000000)
-  {
-    t_int j = __VERIFIER_nondet_int((exp null))
-    if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 1 j) (op_lessThan j 1000000)))) return 0
+// # loop-new/count_by_nondet_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
     else {}
-    (op_assign i (op_plus i j))
-    (op_postFixIncr k)
+    return
   }
-  __VERIFIER_assert((op_lessEqual k 1000000))
-  return 0
-}
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int i = 0
+    t_int k = 0
+    while (op_lessThan i 1000000)
+    {
+      t_int j = __VERIFIER_nondet_int()
+      if (op_not (op_bracketedPrimary (op_logicalAnd (op_lessEqual 1 j) (op_lessThan j 1000000)))) return 0
+      else {}
+      (op_assign i (op_plus i j))
+      (op_postFixIncr k)
+    }
+    __VERIFIER_assert((op_lessEqual k 1000000))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int i = 0;
+    int k = 0;
+    while(i < 1000000){
+      int j = __VERIFIER_nondet_int();
+      if(!(1 <= j && j < 1000000))
+      return 0;
+      i = i + j;
+      k++;
+    }
+    __VERIFIER_assert(k <= 1000000);
+    return 0;
+  }

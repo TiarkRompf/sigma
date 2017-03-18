@@ -1,31 +1,62 @@
-// loop-lit/jm2006_true-unreach-call_true-termination.c.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assume
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-lit/jm2006_true-unreach-call_true-termination.c.i
+// # custom traverser
+  t_void __VERIFIER_error(t_void )
+  t_void __VERIFIER_assume(t_int )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int ij
-  (op_assign i __VERIFIER_nondet_int((exp null)))
-  (op_assign j __VERIFIER_nondet_int((exp null)))
-  if (op_not (op_bracketedPrimary (op_logicalAnd (op_greaterEqual i 0) (op_greaterEqual j 0)))) return 0
-  else {}
-  t_int x = i
-  t_int y = j
-  while (op_notequals x 0)
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int ij
+    (op_assign i __VERIFIER_nondet_int())
+    (op_assign j __VERIFIER_nondet_int())
+    if (op_not (op_bracketedPrimary (op_logicalAnd (op_greaterEqual i 0) (op_greaterEqual j 0)))) return 0
+    else {}
+    t_int x = i
+    t_int y = j
+    while (op_notequals x 0)
+    {
+      (op_postFixDecr x)
+      (op_postFixDecr y)
+    }
+    if (op_equals i j) {
+      __VERIFIER_assert((op_equals y 0))
+    }
+    else {}
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond)
   {
-    (op_postFixDecr x)
-    (op_postFixDecr y)
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  if (op_equals i j) {
-    __VERIFIER_assert((op_equals y 0))
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int i, j;
+    i = __VERIFIER_nondet_int();
+    j = __VERIFIER_nondet_int();
+    if(!(i >= 0 && j >= 0))
+    return 0;
+    int x = i;
+    int y = j;
+    while(x != 0){
+      x--;
+      y--;
+    }
+    if(i == j){
+      __VERIFIER_assert(y == 0);
+    }
+    return 0;
   }
-  else {}
-  return 0
-}

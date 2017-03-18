@@ -1,265 +1,298 @@
-// ntdrivers-simplified/floppy_simpl4_true-unreach-call_true-valid-memsafety_true-termination.cil.c
-t_void __VERIFIER_error
-t_char __VERIFIER_nondet_char
-t_int __VERIFIER_nondet_int
-t_unspecified __VERIFIER_nondet_long
-t_void __VERIFIER_nondet_pointer
-t_int FlAcpiConfigureFloppy
-t_int FlQueueIrpToThread
-t_int FloppyPnp
-t_int FloppyStartDevice
-t_int FloppyPnpComplete
-t_int FlFdcDeviceIo
-t_int IoBuildDeviceIoControlRequest
-t_int IoDeleteSymbolicLink
-t_int IoQueryDeviceDescription
-t_int IoRegisterDeviceInterface
-t_int IoSetDeviceInterfaceState
-t_int IofCallDriver
-t_int KeSetEvent
-t_int KeWaitForSingleObject
-t_int ObReferenceObjectByHandle
-t_int PsCreateSystemThread
-t_int ZwClose
-t_int FloppyCreateClose
-t_int FloppyQueueRequest
-t_int FloppyDeviceControl
-t_int FlCheckFormatParameters
-t_int FloppyQueueRequest
-t_void errorFn
-t_void IofCompleteRequest
-t_int __VERIFIER_nondet_int
-t_int FloppyThread
-t_int KernelMode
-t_int Suspended
-t_int Executive
-t_int DiskController
-t_int FloppyDiskPeripheral
-t_int FlConfigCallBack
-t_int MaximumInterfaceType
-t_int MOUNTDEV_MOUNTED_DEVICE_GUID
-t_int myStatus
-t_int s
-t_int UNLOADED
-t_int NP
-t_int DC
-t_int SKIP1
-t_int SKIP2
-t_int MPR1
-t_int MPR3
-t_int IPC
-t_int pended
-t_int compRegistered
-t_int lowerDriverReturn
-t_int setEventCalled
-t_int customIrp
-t_void _BLAST_init(/* TODO: param list ... */) {
-  {
-    (op_assign UNLOADED 0)
-    (op_assign NP 1)
-    (op_assign DC 2)
-    (op_assign SKIP1 3)
-    (op_assign SKIP2 4)
-    (op_assign MPR1 5)
-    (op_assign MPR3 6)
-    (op_assign IPC 7)
-    (op_assign s UNLOADED)
-    (op_assign pended 0)
-    (op_assign compRegistered 0)
-    (op_assign lowerDriverReturn 0)
-    (op_assign setEventCalled 0)
-    (op_assign customIrp 0)
-    return (exp null)
-  }
-}
-t_int PagingReferenceCount = 0
-t_int PagingMutex = 0
-t_int FlAcpiConfigureFloppy(/* TODO: param list ... */) {
-  {
-    return (op_bracketedPrimary 0)
-  }
-}
-t_int FlQueueIrpToThread(/* TODO: param list ... */) {
-  t_int status
-  t_int threadHandle = __VERIFIER_nondet_int((exp null))
-  t_int DisketteExtension__PoweringDown = __VERIFIER_nondet_int((exp null))
-  t_int DisketteExtension__ThreadReferenceCount = __VERIFIER_nondet_int((exp null))
-  t_int DisketteExtension__FloppyThread = __VERIFIER_nondet_int((exp null))
-  t_int Irp__IoStatus__Status
-  t_int Irp__IoStatus__Information
-  t_int Irp__Tail__Overlay__CurrentStackLocation__Control
-  t_int ObjAttributes = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp12
-  t_int __cil_tmp13
-  {
-    if (op_equals DisketteExtension__PoweringDown 1) {
-      (op_assign myStatus (op_minus 1073741101))
-      (op_assign Irp__IoStatus__Status (op_minus 1073741101))
-      (op_assign Irp__IoStatus__Information 0)
-      return (op_bracketedPrimary (op_minus 1073741101))
+// # ntdrivers-simplified/floppy_simpl4_true-unreach-call_true-valid-memsafety_true-termination.cil.c
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_char __VERIFIER_nondet_char(t_void )
+  t_int __VERIFIER_nondet_int(t_void )
+  t_unspecified __VERIFIER_nondet_long(t_void )
+  t_void __VERIFIER_nondet_pointer(t_void )
+  t_int FlAcpiConfigureFloppy(t_int DisketteExtension,t_int FdcInfo)
+  t_int FlQueueIrpToThread(t_int Irp,t_int DisketteExtension)
+  t_int FloppyPnp(t_int DeviceObject,t_int Irp)
+  t_int FloppyStartDevice(t_int DeviceObject,t_int Irp)
+  t_int FloppyPnpComplete(t_int DeviceObject,t_int Irp,t_int Context)
+  t_int FlFdcDeviceIo(t_int DeviceObject,t_int Ioctl,t_int Data)
+  t_int IoBuildDeviceIoControlRequest(t_int IoControlCode,t_int DeviceObject,t_int InputBuffer,t_int InputBufferLength,t_int OutputBuffer,t_int OutputBufferLength,t_int InternalDeviceIoControl,t_int Event,t_int IoStatusBlock)
+  t_int IoDeleteSymbolicLink(t_int SymbolicLinkName)
+  t_int IoQueryDeviceDescription(t_int BusType,t_int BusNumber,t_int ControllerType,t_int ControllerNumber,t_int PeripheralType,t_int PeripheralNumber,t_int CalloutRoutine,t_int Context)
+  t_int IoRegisterDeviceInterface(t_int PhysicalDeviceObject,t_int InterfaceClassGuid,t_int ReferenceString,t_int SymbolicLinkName)
+  t_int IoSetDeviceInterfaceState(t_int SymbolicLinkName,t_int Enable)
+  t_int IofCallDriver(t_int DeviceObject,t_int Irp)
+  t_int KeSetEvent(t_int Event,t_int Increment,t_int Wait)
+  t_int KeWaitForSingleObject(t_int Object,t_int WaitReason,t_int WaitMode,t_int Alertable,t_int Timeout)
+  t_int ObReferenceObjectByHandle(t_int Handle,t_int DesiredAccess,t_int ObjectType,t_int AccessMode,t_int Object,t_int HandleInformation)
+  t_int PsCreateSystemThread(t_int ThreadHandle,t_int DesiredAccess,t_int ObjectAttributes,t_int ProcessHandle,t_int ClientId,t_int StartRoutine,t_int StartContext)
+  t_int ZwClose(t_int Handle)
+  t_int FloppyCreateClose(t_int DeviceObject,t_int Irp)
+  t_int FloppyQueueRequest(t_int DisketteExtension,t_int Irp)
+  t_int FloppyDeviceControl(t_int DeviceObject,t_int Irp)
+  t_int FlCheckFormatParameters(t_int DisketteExtension,t_int FormatParameters)
+  t_int FloppyQueueRequest(t_int DisketteExtension,t_int Irp)
+  t_void errorFn(t_void )
+  t_void IofCompleteRequest(t_int Irp,t_int PriorityBoost)
+  t_int __VERIFIER_nondet_int()
+  t_int FloppyThread
+  t_int KernelMode
+  t_int Suspended
+  t_int Executive
+  t_int DiskController
+  t_int FloppyDiskPeripheral
+  t_int FlConfigCallBack
+  t_int MaximumInterfaceType
+  t_int MOUNTDEV_MOUNTED_DEVICE_GUID
+  t_int myStatus
+  t_int s
+  t_int UNLOADED
+  t_int NP
+  t_int DC
+  t_int SKIP1
+  t_int SKIP2
+  t_int MPR1
+  t_int MPR3
+  t_int IPC
+  t_int pended
+  t_int compRegistered
+  t_int lowerDriverReturn
+  t_int setEventCalled
+  t_int customIrp
+  t_void _BLAST_init(t_void ){
+    {
+      (op_assign UNLOADED 0)
+      (op_assign NP 1)
+      (op_assign DC 2)
+      (op_assign SKIP1 3)
+      (op_assign SKIP2 4)
+      (op_assign MPR1 5)
+      (op_assign MPR3 6)
+      (op_assign IPC 7)
+      (op_assign s UNLOADED)
+      (op_assign pended 0)
+      (op_assign compRegistered 0)
+      (op_assign lowerDriverReturn 0)
+      (op_assign setEventCalled 0)
+      (op_assign customIrp 0)
+      return
     }
-    else {}
-    (op_postFixIncr DisketteExtension__ThreadReferenceCount)
-    if (op_equals DisketteExtension__ThreadReferenceCount 0) {
+  }
+  t_int PagingReferenceCount = 0
+  t_int PagingMutex = 0
+  t_int FlAcpiConfigureFloppy(t_int DisketteExtension,t_int FdcInfo){
+    {
+      return (op_bracketedPrimary 0)
+    }
+  }
+  t_int FlQueueIrpToThread(t_int Irp,t_int DisketteExtension){
+    t_int status
+    t_int threadHandle = __VERIFIER_nondet_int()
+    t_int DisketteExtension__PoweringDown = __VERIFIER_nondet_int()
+    t_int DisketteExtension__ThreadReferenceCount = __VERIFIER_nondet_int()
+    t_int DisketteExtension__FloppyThread = __VERIFIER_nondet_int()
+    t_int Irp__IoStatus__Status
+    t_int Irp__IoStatus__Information
+    t_int Irp__Tail__Overlay__CurrentStackLocation__Control
+    t_int ObjAttributes = __VERIFIER_nondet_int()
+    t_int __cil_tmp12
+    t_int __cil_tmp13
+    {
+      if (op_equals DisketteExtension__PoweringDown 1) {
+        (op_assign myStatus (op_minus 1073741101))
+        (op_assign Irp__IoStatus__Status (op_minus 1073741101))
+        (op_assign Irp__IoStatus__Information 0)
+        return (op_bracketedPrimary (op_minus 1073741101))
+      }
+      else {}
       (op_postFixIncr DisketteExtension__ThreadReferenceCount)
+      if (op_equals DisketteExtension__ThreadReferenceCount 0) {
+        (op_postFixIncr DisketteExtension__ThreadReferenceCount)
+        (op_postFixIncr PagingReferenceCount)
+        if (op_equals PagingReferenceCount 1) {
+        }
+        else {}
+        {
+          (op_assign status PsCreateSystemThread((threadHandle,0,ObjAttributes,0,0,FloppyThread,DisketteExtension)))
+        }
+        {
+          if (op_lessThan status 0) {
+            (op_assign DisketteExtension__ThreadReferenceCount (op_minus 1))
+            (op_postFixDecr PagingReferenceCount)
+            if (op_equals PagingReferenceCount 0) {
+            }
+            else {}
+            return (op_bracketedPrimary status)
+          }
+          else {}
+        }
+        {
+          (op_assign status ObReferenceObjectByHandle((threadHandle,1048576,0,KernelMode,DisketteExtension__FloppyThread,0)))
+          ZwClose(threadHandle)
+        }
+        {
+          if (op_lessThan status 0) {
+            return (op_bracketedPrimary status)
+          }
+          else {}
+        }
+      }
+      else {}
+      if (op_equals pended 0) {
+        (op_assign pended 1)
+      }
+      else {
+        {
+          errorFn()
+        }
+      }
+      return (op_bracketedPrimary 259)
+    }
+  }
+  t_int FloppyPnp(t_int DeviceObject,t_int Irp){
+    t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int()
+    t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int()
+    t_int Irp__IoStatus__Information
+    t_int Irp__IoStatus__Status
+    t_int Irp__CurrentLocation = __VERIFIER_nondet_int()
+    t_int disketteExtension__IsRemoved = __VERIFIER_nondet_int()
+    t_int disketteExtension__IsStarted = __VERIFIER_nondet_int()
+    t_int disketteExtension__TargetObject = __VERIFIER_nondet_int()
+    t_int disketteExtension__HoldNewRequests
+    t_int disketteExtension__FloppyThread = __VERIFIER_nondet_int()
+    t_int disketteExtension__InterfaceString__Buffer = __VERIFIER_nondet_int()
+    t_int disketteExtension__InterfaceString = __VERIFIER_nondet_int()
+    t_int disketteExtension__ArcName__Length = __VERIFIER_nondet_int()
+    t_int disketteExtension__ArcName = __VERIFIER_nondet_int()
+    t_int irpSp__MinorFunction = __VERIFIER_nondet_int()
+    t_int IoGetConfigurationInformation__FloppyCount = __VERIFIER_nondet_int()
+    t_int irpSp
+    t_int disketteExtension
+    t_int ntStatus
+    t_int doneEvent = __VERIFIER_nondet_int()
+    t_int irpSp___0
+    t_int nextIrpSp
+    t_int nextIrpSp__Control
+    t_int irpSp___1
+    t_int irpSp__Context
+    t_int irpSp__Control
+    t_unspecified __cil_tmp29
+    t_unspecified __cil_tmp30
+    {
+      (op_assign ntStatus 0)
       (op_postFixIncr PagingReferenceCount)
       if (op_equals PagingReferenceCount 1) {
       }
       else {}
-      {
-        (op_assign status PsCreateSystemThread((threadHandle,0,ObjAttributes,0,0,FloppyThread,DisketteExtension)))
-      }
-      {
-        if (op_lessThan status 0) {
-          (op_assign DisketteExtension__ThreadReferenceCount (op_minus 1))
-          (op_postFixDecr PagingReferenceCount)
-          if (op_equals PagingReferenceCount 0) {
-          }
-          else {}
-          return (op_bracketedPrimary status)
+      (op_assign disketteExtension DeviceObject__DeviceExtension)
+      (op_assign irpSp Irp__Tail__Overlay__CurrentStackLocation)
+      if disketteExtension__IsRemoved {
+        {
+          (op_assign Irp__IoStatus__Information 0)
+          (op_assign Irp__IoStatus__Status (op_minus 1073741738))
+          (op_assign myStatus (op_minus 1073741738))
+          IofCompleteRequest((Irp,0))
         }
-        else {}
+        return (op_bracketedPrimary (op_minus 1073741738))
       }
-      {
-        (op_assign status ObReferenceObjectByHandle((threadHandle,1048576,0,KernelMode,DisketteExtension__FloppyThread,0)))
-        ZwClose(threadHandle)
-      }
-      {
-        if (op_lessThan status 0) {
-          return (op_bracketedPrimary status)
-        }
-        else {}
-      }
-    }
-    else {}
-    if (op_equals pended 0) {
-      (op_assign pended 1)
-    }
-    else {
-      {
-        errorFn((exp null))
-      }
-    }
-    return (op_bracketedPrimary 259)
-  }
-}
-t_int FloppyPnp(/* TODO: param list ... */) {
-  t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
-  t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
-  t_int Irp__IoStatus__Information
-  t_int Irp__IoStatus__Status
-  t_int Irp__CurrentLocation = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__IsRemoved = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__IsStarted = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__TargetObject = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__HoldNewRequests
-  t_int disketteExtension__FloppyThread = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__InterfaceString__Buffer = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__InterfaceString = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__ArcName__Length = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__ArcName = __VERIFIER_nondet_int((exp null))
-  t_int irpSp__MinorFunction = __VERIFIER_nondet_int((exp null))
-  t_int IoGetConfigurationInformation__FloppyCount = __VERIFIER_nondet_int((exp null))
-  t_int irpSp
-  t_int disketteExtension
-  t_int ntStatus
-  t_int doneEvent = __VERIFIER_nondet_int((exp null))
-  t_int irpSp___0
-  t_int nextIrpSp
-  t_int nextIrpSp__Control
-  t_int irpSp___1
-  t_int irpSp__Context
-  t_int irpSp__Control
-  t_unspecified __cil_tmp29
-  t_unspecified __cil_tmp30
-  {
-    (op_assign ntStatus 0)
-    (op_postFixIncr PagingReferenceCount)
-    if (op_equals PagingReferenceCount 1) {
-    }
-    else {}
-    (op_assign disketteExtension DeviceObject__DeviceExtension)
-    (op_assign irpSp Irp__Tail__Overlay__CurrentStackLocation)
-    if disketteExtension__IsRemoved {
-      {
-        (op_assign Irp__IoStatus__Information 0)
-        (op_assign Irp__IoStatus__Status (op_minus 1073741738))
-        (op_assign myStatus (op_minus 1073741738))
-        IofCompleteRequest((Irp,0))
-      }
-      return (op_bracketedPrimary (op_minus 1073741738))
-    }
-    else {}
-    if (op_equals irpSp__MinorFunction 0) {
-      goto switch_0_0
-    }
-    else {
-      if (op_equals irpSp__MinorFunction 5) {
-        goto switch_0_5
+      else {}
+      if (op_equals irpSp__MinorFunction 0) {
+        goto switch_0_0
       }
       else {
-        if (op_equals irpSp__MinorFunction 1) {
+        if (op_equals irpSp__MinorFunction 5) {
           goto switch_0_5
         }
         else {
-          if (op_equals irpSp__MinorFunction 6) {
-            goto switch_0_6
+          if (op_equals irpSp__MinorFunction 1) {
+            goto switch_0_5
           }
           else {
-            if (op_equals irpSp__MinorFunction 3) {
+            if (op_equals irpSp__MinorFunction 6) {
               goto switch_0_6
             }
             else {
-              if (op_equals irpSp__MinorFunction 4) {
-                goto switch_0_4
+              if (op_equals irpSp__MinorFunction 3) {
+                goto switch_0_6
               }
               else {
-                if (op_equals irpSp__MinorFunction 2) {
-                  goto switch_0_2
+                if (op_equals irpSp__MinorFunction 4) {
+                  goto switch_0_4
                 }
                 else {
-                  goto switch_0_default
-                  if 0 {
-                    switch_0_0:
-                    {
-                      (op_assign ntStatus FloppyStartDevice((DeviceObject,Irp)))
-                    }
-                    goto switch_0_break
-                    switch_0_5:
-                    if (op_equals irpSp__MinorFunction 5) {
-                    }
-                    else {}
-                    if (op_not disketteExtension__IsStarted) {
-                      if (op_equals s NP) {
-                        (op_assign s SKIP1)
+                  if (op_equals irpSp__MinorFunction 2) {
+                    goto switch_0_2
+                  }
+                  else {
+                    goto switch_0_default
+                    if 0 {
+                      switch_0_0:
+                      {
+                        (op_assign ntStatus FloppyStartDevice((DeviceObject,Irp)))
                       }
-                      else {
-                        {
-                          errorFn((exp null))
+                      goto switch_0_break
+                      switch_0_5:
+                      if (op_equals irpSp__MinorFunction 5) {
+                      }
+                      else {}
+                      if (op_not disketteExtension__IsStarted) {
+                        if (op_equals s NP) {
+                          (op_assign s SKIP1)
                         }
+                        else {
+                          {
+                            errorFn()
+                          }
+                        }
+                        {
+                          (op_postFixIncr Irp__CurrentLocation)
+                          (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                          (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
+                        }
+                        return (op_bracketedPrimary ntStatus)
+                      }
+                      else {}
+                      {
+                        (op_assign disketteExtension__HoldNewRequests 1)
+                        (op_assign ntStatus FlQueueIrpToThread((Irp,disketteExtension)))
                       }
                       {
-                        (op_postFixIncr Irp__CurrentLocation)
-                        (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
-                        (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
+                        (op_assign __cil_tmp29 (t_unspecified)ntStatus)
+                        if (op_equals __cil_tmp29 259L) {
+                          {
+                            KeWaitForSingleObject((disketteExtension__FloppyThread,Executive,KernelMode,0,0))
+                          }
+                          if (op_notequals disketteExtension__FloppyThread 0) {
+                          }
+                          else {}
+                          (op_assign disketteExtension__FloppyThread 0)
+                          (op_assign Irp__IoStatus__Status 0)
+                          (op_assign myStatus 0)
+                          if (op_equals s NP) {
+                            (op_assign s SKIP1)
+                          }
+                          else {
+                            {
+                              errorFn()
+                            }
+                          }
+                          {
+                            (op_postFixIncr Irp__CurrentLocation)
+                            (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                            (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
+                          }
+                        }
+                        else {
+                          {
+                            (op_assign ntStatus (op_minus 1073741823))
+                            (op_assign Irp__IoStatus__Status ntStatus)
+                            (op_assign myStatus ntStatus)
+                            (op_assign Irp__IoStatus__Information 0)
+                            IofCompleteRequest((Irp,0))
+                          }
+                        }
                       }
-                      return (op_bracketedPrimary ntStatus)
-                    }
-                    else {}
-                    {
-                      (op_assign disketteExtension__HoldNewRequests 1)
-                      (op_assign ntStatus FlQueueIrpToThread((Irp,disketteExtension)))
-                    }
-                    {
-                      (op_assign __cil_tmp29 (t_unspecified)ntStatus)
-                      if (op_equals __cil_tmp29 259L) {
-                        {
-                          KeWaitForSingleObject((disketteExtension__FloppyThread,Executive,KernelMode,0,0))
-                        }
-                        if (op_notequals disketteExtension__FloppyThread 0) {
-                        }
-                        else {}
-                        (op_assign disketteExtension__FloppyThread 0)
+                      goto switch_0_break
+                      switch_0_6:
+                      if (op_equals irpSp__MinorFunction 6) {
+                      }
+                      else {}
+                      if (op_not disketteExtension__IsStarted) {
                         (op_assign Irp__IoStatus__Status 0)
                         (op_assign myStatus 0)
                         if (op_equals s NP) {
@@ -267,7 +300,7 @@ t_int FloppyPnp(/* TODO: param list ... */) {
                         }
                         else {
                           {
-                            errorFn((exp null))
+                            errorFn()
                           }
                         }
                         {
@@ -277,21 +310,53 @@ t_int FloppyPnp(/* TODO: param list ... */) {
                         }
                       }
                       else {
+                        (op_assign Irp__IoStatus__Status 0)
+                        (op_assign myStatus 0)
+                        (op_assign irpSp___0 Irp__Tail__Overlay__CurrentStackLocation)
+                        (op_assign nextIrpSp (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
+                        (op_assign nextIrpSp__Control 0)
+                        if (op_notequals s NP) {
+                          {
+                            errorFn()
+                          }
+                        }
+                        else {
+                          if (op_notequals compRegistered 0) {
+                            {
+                              errorFn()
+                            }
+                          }
+                          else {
+                            (op_assign compRegistered 1)
+                          }
+                        }
                         {
-                          (op_assign ntStatus (op_minus 1073741823))
+                          (op_assign irpSp___1 (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
+                          (op_assign irpSp__Context doneEvent)
+                          (op_assign irpSp__Control 224)
+                          (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
+                        }
+                        {
+                          (op_assign __cil_tmp30 (t_unspecified)ntStatus)
+                          if (op_equals __cil_tmp30 259L) {
+                            {
+                              KeWaitForSingleObject((doneEvent,Executive,KernelMode,0,0))
+                              (op_assign ntStatus myStatus)
+                            }
+                          }
+                          else {}
+                        }
+                        {
+                          (op_assign disketteExtension__HoldNewRequests 0)
                           (op_assign Irp__IoStatus__Status ntStatus)
                           (op_assign myStatus ntStatus)
                           (op_assign Irp__IoStatus__Information 0)
                           IofCompleteRequest((Irp,0))
                         }
                       }
-                    }
-                    goto switch_0_break
-                    switch_0_6:
-                    if (op_equals irpSp__MinorFunction 6) {
-                    }
-                    else {}
-                    if (op_not disketteExtension__IsStarted) {
+                      goto switch_0_break
+                      switch_0_4:
+                      (op_assign disketteExtension__IsStarted 0)
                       (op_assign Irp__IoStatus__Status 0)
                       (op_assign myStatus 0)
                       if (op_equals s NP) {
@@ -299,7 +364,56 @@ t_int FloppyPnp(/* TODO: param list ... */) {
                       }
                       else {
                         {
-                          errorFn((exp null))
+                          errorFn()
+                        }
+                      }
+                      {
+                        (op_postFixIncr Irp__CurrentLocation)
+                        (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                        (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
+                      }
+                      goto switch_0_break
+                      switch_0_2:
+                      (op_assign disketteExtension__HoldNewRequests 0)
+                      (op_assign disketteExtension__IsStarted 0)
+                      (op_assign disketteExtension__IsRemoved 1)
+                      if (op_equals s NP) {
+                        (op_assign s SKIP1)
+                      }
+                      else {
+                        {
+                          errorFn()
+                        }
+                      }
+                      {
+                        (op_postFixIncr Irp__CurrentLocation)
+                        (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                        (op_assign Irp__IoStatus__Status 0)
+                        (op_assign myStatus 0)
+                        (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
+                      }
+                      if (op_notequals disketteExtension__InterfaceString__Buffer 0) {
+                        {
+                          IoSetDeviceInterfaceState((disketteExtension__InterfaceString,0))
+                        }
+                      }
+                      else {}
+                      if (op_notequals disketteExtension__ArcName__Length 0) {
+                        {
+                          IoDeleteSymbolicLink(disketteExtension__ArcName)
+                        }
+                      }
+                      else {}
+                      (op_postFixDecr IoGetConfigurationInformation__FloppyCount)
+                      goto switch_0_break
+                      switch_0_default:
+                      {}
+                      if (op_equals s NP) {
+                        (op_assign s SKIP1)
+                      }
+                      else {
+                        {
+                          errorFn()
                         }
                       }
                       {
@@ -309,121 +423,9 @@ t_int FloppyPnp(/* TODO: param list ... */) {
                       }
                     }
                     else {
-                      (op_assign Irp__IoStatus__Status 0)
-                      (op_assign myStatus 0)
-                      (op_assign irpSp___0 Irp__Tail__Overlay__CurrentStackLocation)
-                      (op_assign nextIrpSp (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
-                      (op_assign nextIrpSp__Control 0)
-                      if (op_notequals s NP) {
-                        {
-                          errorFn((exp null))
-                        }
-                      }
-                      else {
-                        if (op_notequals compRegistered 0) {
-                          {
-                            errorFn((exp null))
-                          }
-                        }
-                        else {
-                          (op_assign compRegistered 1)
-                        }
-                      }
-                      {
-                        (op_assign irpSp___1 (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
-                        (op_assign irpSp__Context doneEvent)
-                        (op_assign irpSp__Control 224)
-                        (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
-                      }
-                      {
-                        (op_assign __cil_tmp30 (t_unspecified)ntStatus)
-                        if (op_equals __cil_tmp30 259L) {
-                          {
-                            KeWaitForSingleObject((doneEvent,Executive,KernelMode,0,0))
-                            (op_assign ntStatus myStatus)
-                          }
-                        }
-                        else {}
-                      }
-                      {
-                        (op_assign disketteExtension__HoldNewRequests 0)
-                        (op_assign Irp__IoStatus__Status ntStatus)
-                        (op_assign myStatus ntStatus)
-                        (op_assign Irp__IoStatus__Information 0)
-                        IofCompleteRequest((Irp,0))
-                      }
+                      switch_0_break:
+                      {}
                     }
-                    goto switch_0_break
-                    switch_0_4:
-                    (op_assign disketteExtension__IsStarted 0)
-                    (op_assign Irp__IoStatus__Status 0)
-                    (op_assign myStatus 0)
-                    if (op_equals s NP) {
-                      (op_assign s SKIP1)
-                    }
-                    else {
-                      {
-                        errorFn((exp null))
-                      }
-                    }
-                    {
-                      (op_postFixIncr Irp__CurrentLocation)
-                      (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
-                      (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
-                    }
-                    goto switch_0_break
-                    switch_0_2:
-                    (op_assign disketteExtension__HoldNewRequests 0)
-                    (op_assign disketteExtension__IsStarted 0)
-                    (op_assign disketteExtension__IsRemoved 1)
-                    if (op_equals s NP) {
-                      (op_assign s SKIP1)
-                    }
-                    else {
-                      {
-                        errorFn((exp null))
-                      }
-                    }
-                    {
-                      (op_postFixIncr Irp__CurrentLocation)
-                      (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
-                      (op_assign Irp__IoStatus__Status 0)
-                      (op_assign myStatus 0)
-                      (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
-                    }
-                    if (op_notequals disketteExtension__InterfaceString__Buffer 0) {
-                      {
-                        IoSetDeviceInterfaceState((disketteExtension__InterfaceString,0))
-                      }
-                    }
-                    else {}
-                    if (op_notequals disketteExtension__ArcName__Length 0) {
-                      {
-                        IoDeleteSymbolicLink(disketteExtension__ArcName)
-                      }
-                    }
-                    else {}
-                    (op_postFixDecr IoGetConfigurationInformation__FloppyCount)
-                    goto switch_0_break
-                    switch_0_default:
-                    {}
-                    if (op_equals s NP) {
-                      (op_assign s SKIP1)
-                    }
-                    else {
-                      {
-                        errorFn((exp null))
-                      }
-                    }
-                    {
-                      (op_postFixIncr Irp__CurrentLocation)
-                      (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
-                      (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
-                    }
-                  }
-                  else {
-                    switch_0_break:
-                    {}
                   }
                 }
               }
@@ -431,390 +433,393 @@ t_int FloppyPnp(/* TODO: param list ... */) {
           }
         }
       }
-    }
-    (op_postFixDecr PagingReferenceCount)
-    if (op_equals PagingReferenceCount 0) {
-    }
-    else {}
-    return (op_bracketedPrimary ntStatus)
-  }
-}
-t_int FloppyStartDevice(/* TODO: param list ... */) {
-  t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int((exp null))
-  t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
-  t_int Irp__IoStatus__Status
-  t_int disketteExtension__TargetObject = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__MaxTransferSize
-  t_int disketteExtension__DriveType = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__PerpendicularMode
-  t_int disketteExtension__DeviceUnit
-  t_int disketteExtension__DriveOnValue
-  t_int disketteExtension__UnderlyingPDO = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__InterfaceString = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__IsStarted
-  t_int disketteExtension__HoldNewRequests
-  t_int ntStatus
-  t_int pnpStatus
-  t_int doneEvent = __VERIFIER_nondet_int((exp null))
-  t_int fdcInfo = __VERIFIER_nondet_int((exp null))
-  t_int fdcInfo__BufferCount
-  t_int fdcInfo__BufferSize
-  t_int fdcInfo__MaxTransferSize = __VERIFIER_nondet_int((exp null))
-  t_int fdcInfo__AcpiBios = __VERIFIER_nondet_int((exp null))
-  t_int fdcInfo__AcpiFdiSupported = __VERIFIER_nondet_int((exp null))
-  t_int fdcInfo__PeripheralNumber = __VERIFIER_nondet_int((exp null))
-  t_int fdcInfo__BusType
-  t_int fdcInfo__ControllerNumber = __VERIFIER_nondet_int((exp null))
-  t_int fdcInfo__UnitNumber = __VERIFIER_nondet_int((exp null))
-  t_int fdcInfo__BusNumber = __VERIFIER_nondet_int((exp null))
-  t_int Dc
-  t_int Fp
-  t_int disketteExtension
-  t_int irpSp
-  t_int irpSp___0
-  t_int nextIrpSp
-  t_int nextIrpSp__Control
-  t_int irpSp___1
-  t_int irpSp__Control
-  t_int irpSp__Context
-  t_int InterfaceType
-  t_int KUSER_SHARED_DATA__AlternativeArchitecture_NEC98x86 = __VERIFIER_nondet_int((exp null))
-  t_unspecified __cil_tmp42
-  t_int __cil_tmp43
-  t_int __cil_tmp44
-  t_int __cil_tmp45
-  t_int __cil_tmp46 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp47
-  t_int __cil_tmp48
-  t_int __cil_tmp49
-  {
-    (op_assign Dc DiskController)
-    (op_assign Fp FloppyDiskPeripheral)
-    (op_assign disketteExtension DeviceObject__DeviceExtension)
-    (op_assign irpSp Irp__Tail__Overlay__CurrentStackLocation)
-    (op_assign irpSp___0 Irp__Tail__Overlay__CurrentStackLocation)
-    (op_assign nextIrpSp (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
-    (op_assign nextIrpSp__Control 0)
-    if (op_notequals s NP) {
-      {
-        errorFn((exp null))
+      (op_postFixDecr PagingReferenceCount)
+      if (op_equals PagingReferenceCount 0) {
       }
+      else {}
+      return (op_bracketedPrimary ntStatus)
     }
-    else {
-      if (op_notequals compRegistered 0) {
+  }
+  t_int FloppyStartDevice(t_int DeviceObject,t_int Irp){
+    t_int DeviceObject__DeviceExtension = __VERIFIER_nondet_int()
+    t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int()
+    t_int Irp__IoStatus__Status
+    t_int disketteExtension__TargetObject = __VERIFIER_nondet_int()
+    t_int disketteExtension__MaxTransferSize
+    t_int disketteExtension__DriveType = __VERIFIER_nondet_int()
+    t_int disketteExtension__PerpendicularMode
+    t_int disketteExtension__DeviceUnit
+    t_int disketteExtension__DriveOnValue
+    t_int disketteExtension__UnderlyingPDO = __VERIFIER_nondet_int()
+    t_int disketteExtension__InterfaceString = __VERIFIER_nondet_int()
+    t_int disketteExtension__IsStarted
+    t_int disketteExtension__HoldNewRequests
+    t_int ntStatus
+    t_int pnpStatus
+    t_int doneEvent = __VERIFIER_nondet_int()
+    t_int fdcInfo = __VERIFIER_nondet_int()
+    t_int fdcInfo__BufferCount
+    t_int fdcInfo__BufferSize
+    t_int fdcInfo__MaxTransferSize = __VERIFIER_nondet_int()
+    t_int fdcInfo__AcpiBios = __VERIFIER_nondet_int()
+    t_int fdcInfo__AcpiFdiSupported = __VERIFIER_nondet_int()
+    t_int fdcInfo__PeripheralNumber = __VERIFIER_nondet_int()
+    t_int fdcInfo__BusType
+    t_int fdcInfo__ControllerNumber = __VERIFIER_nondet_int()
+    t_int fdcInfo__UnitNumber = __VERIFIER_nondet_int()
+    t_int fdcInfo__BusNumber = __VERIFIER_nondet_int()
+    t_int Dc
+    t_int Fp
+    t_int disketteExtension
+    t_int irpSp
+    t_int irpSp___0
+    t_int nextIrpSp
+    t_int nextIrpSp__Control
+    t_int irpSp___1
+    t_int irpSp__Control
+    t_int irpSp__Context
+    t_int InterfaceType
+    t_int KUSER_SHARED_DATA__AlternativeArchitecture_NEC98x86 = __VERIFIER_nondet_int()
+    t_unspecified __cil_tmp42
+    t_int __cil_tmp43
+    t_int __cil_tmp44
+    t_int __cil_tmp45
+    t_int __cil_tmp46 = __VERIFIER_nondet_int()
+    t_int __cil_tmp47
+    t_int __cil_tmp48
+    t_int __cil_tmp49
+    {
+      (op_assign Dc DiskController)
+      (op_assign Fp FloppyDiskPeripheral)
+      (op_assign disketteExtension DeviceObject__DeviceExtension)
+      (op_assign irpSp Irp__Tail__Overlay__CurrentStackLocation)
+      (op_assign irpSp___0 Irp__Tail__Overlay__CurrentStackLocation)
+      (op_assign nextIrpSp (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
+      (op_assign nextIrpSp__Control 0)
+      if (op_notequals s NP) {
         {
-          errorFn((exp null))
+          errorFn()
         }
       }
       else {
-        (op_assign compRegistered 1)
-      }
-    }
-    {
-      (op_assign irpSp___1 (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
-      (op_assign irpSp__Context doneEvent)
-      (op_assign irpSp__Control 224)
-      (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
-    }
-    {
-      (op_assign __cil_tmp42 (t_unspecified)ntStatus)
-      if (op_equals __cil_tmp42 259L) {
-        {
-          (op_assign ntStatus KeWaitForSingleObject((doneEvent,Executive,KernelMode,0,0)))
-          (op_assign ntStatus myStatus)
+        if (op_notequals compRegistered 0) {
+          {
+            errorFn()
+          }
+        }
+        else {
+          (op_assign compRegistered 1)
         }
       }
-      else {}
-    }
-    {
-      (op_assign fdcInfo__BufferCount 0)
-      (op_assign fdcInfo__BufferSize 0)
-      (op_assign ntStatus FlFdcDeviceIo((disketteExtension__TargetObject,__cil_tmp46,fdcInfo)))
-    }
-    if (op_greaterEqual ntStatus 0) {
-      (op_assign disketteExtension__MaxTransferSize fdcInfo__MaxTransferSize)
-      if fdcInfo__AcpiBios {
-        if fdcInfo__AcpiFdiSupported {
+      {
+        (op_assign irpSp___1 (op_minus Irp__Tail__Overlay__CurrentStackLocation 1))
+        (op_assign irpSp__Context doneEvent)
+        (op_assign irpSp__Control 224)
+        (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
+      }
+      {
+        (op_assign __cil_tmp42 (t_unspecified)ntStatus)
+        if (op_equals __cil_tmp42 259L) {
           {
-            (op_assign ntStatus FlAcpiConfigureFloppy((disketteExtension,fdcInfo)))
+            (op_assign ntStatus KeWaitForSingleObject((doneEvent,Executive,KernelMode,0,0)))
+            (op_assign ntStatus myStatus)
           }
+        }
+        else {}
+      }
+      {
+        (op_assign fdcInfo__BufferCount 0)
+        (op_assign fdcInfo__BufferSize 0)
+        (op_assign ntStatus FlFdcDeviceIo((disketteExtension__TargetObject,__cil_tmp46,fdcInfo)))
+      }
+      if (op_greaterEqual ntStatus 0) {
+        (op_assign disketteExtension__MaxTransferSize fdcInfo__MaxTransferSize)
+        if fdcInfo__AcpiBios {
+          if fdcInfo__AcpiFdiSupported {
+            {
+              (op_assign ntStatus FlAcpiConfigureFloppy((disketteExtension,fdcInfo)))
+            }
+            if (op_equals disketteExtension__DriveType 4) {
+            }
+            else {}
+          }
+          else {
+            goto _L
+          }
+        }
+        else {
+          _L:
           if (op_equals disketteExtension__DriveType 4) {
           }
           else {}
-        }
-        else {
-          goto _L
-        }
-      }
-      else {
-        _L:
-        if (op_equals disketteExtension__DriveType 4) {
-        }
-        else {}
-        (op_assign InterfaceType 0)
-        {
-          while 1
+          (op_assign InterfaceType 0)
           {
-            while_0_continue:
-            {}
-            if (op_greaterEqual InterfaceType MaximumInterfaceType) {
-              goto while_1_break
-            }
-            else {}
+            while 1
             {
-              (op_assign fdcInfo__BusType InterfaceType)
-              (op_assign ntStatus IoQueryDeviceDescription((fdcInfo__BusType,fdcInfo__BusNumber,Dc,fdcInfo__ControllerNumber,Fp,fdcInfo__PeripheralNumber,FlConfigCallBack,disketteExtension)))
+              while_0_continue:
+              {}
+              if (op_greaterEqual InterfaceType MaximumInterfaceType) {
+                goto while_1_break
+              }
+              else {}
+              {
+                (op_assign fdcInfo__BusType InterfaceType)
+                (op_assign ntStatus IoQueryDeviceDescription((fdcInfo__BusType,fdcInfo__BusNumber,Dc,fdcInfo__ControllerNumber,Fp,fdcInfo__PeripheralNumber,FlConfigCallBack,disketteExtension)))
+              }
+              if (op_greaterEqual ntStatus 0) {
+                goto while_1_break
+              }
+              else {}
+              (op_postFixIncr InterfaceType)
             }
-            if (op_greaterEqual ntStatus 0) {
-              goto while_1_break
-            }
-            else {}
-            (op_postFixIncr InterfaceType)
+            while_0_break:
+            {}
           }
-          while_0_break:
+          while_1_break:
           {}
         }
-        while_1_break:
-        {}
-      }
-      if (op_greaterEqual ntStatus 0) {
-        if (op_notequals KUSER_SHARED_DATA__AlternativeArchitecture_NEC98x86 0) {
-          (op_assign disketteExtension__DeviceUnit fdcInfo__UnitNumber)
-          (op_assign disketteExtension__DriveOnValue fdcInfo__UnitNumber)
-        }
-        else {
-          (op_assign disketteExtension__DeviceUnit fdcInfo__PeripheralNumber)
-        }
-        {
-          (op_assign pnpStatus IoRegisterDeviceInterface((disketteExtension__UnderlyingPDO,MOUNTDEV_MOUNTED_DEVICE_GUID,0,disketteExtension__InterfaceString)))
-        }
-        if (op_greaterEqual pnpStatus 0) {
+        if (op_greaterEqual ntStatus 0) {
+          if (op_notequals KUSER_SHARED_DATA__AlternativeArchitecture_NEC98x86 0) {
+            (op_assign disketteExtension__DeviceUnit fdcInfo__UnitNumber)
+            (op_assign disketteExtension__DriveOnValue fdcInfo__UnitNumber)
+          }
+          else {
+            (op_assign disketteExtension__DeviceUnit fdcInfo__PeripheralNumber)
+          }
           {
-            (op_assign pnpStatus IoSetDeviceInterfaceState((disketteExtension__InterfaceString,1)))
+            (op_assign pnpStatus IoRegisterDeviceInterface((disketteExtension__UnderlyingPDO,MOUNTDEV_MOUNTED_DEVICE_GUID,0,disketteExtension__InterfaceString)))
+          }
+          if (op_greaterEqual pnpStatus 0) {
+            {
+              (op_assign pnpStatus IoSetDeviceInterfaceState((disketteExtension__InterfaceString,1)))
+            }
+          }
+          else {}
+          (op_assign disketteExtension__IsStarted 1)
+          (op_assign disketteExtension__HoldNewRequests 0)
+        }
+        else {}
+      }
+      else {}
+      {
+        (op_assign Irp__IoStatus__Status ntStatus)
+        (op_assign myStatus ntStatus)
+        IofCompleteRequest((Irp,0))
+      }
+      return (op_bracketedPrimary ntStatus)
+    }
+  }
+  t_int FloppyPnpComplete(t_int DeviceObject,t_int Irp,t_int Context){
+    {
+      {
+        KeSetEvent((Context,1,0))
+      }
+      return (op_bracketedPrimary (op_minus 1073741802))
+    }
+  }
+  t_int FlFdcDeviceIo(t_int DeviceObject,t_int Ioctl,t_int Data){
+    t_int ntStatus
+    t_int irp
+    t_int irpStack
+    t_int doneEvent = __VERIFIER_nondet_int()
+    t_int ioStatus = __VERIFIER_nondet_int()
+    t_int irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int()
+    t_int irpStack__Parameters__DeviceIoControl__Type3InputBuffer
+    t_unspecified __cil_tmp11
+    {
+      {
+        (op_assign irp IoBuildDeviceIoControlRequest((Ioctl,DeviceObject,0,0,0,0,1,doneEvent,ioStatus)))
+      }
+      if (op_equals irp 0) {
+        return (op_bracketedPrimary (op_minus 1073741670))
+      }
+      else {}
+      {
+        (op_assign irpStack (op_minus irp__Tail__Overlay__CurrentStackLocation 1))
+        (op_assign irpStack__Parameters__DeviceIoControl__Type3InputBuffer Data)
+        (op_assign ntStatus IofCallDriver((DeviceObject,irp)))
+      }
+      {
+        (op_assign __cil_tmp11 (t_unspecified)ntStatus)
+        if (op_equals __cil_tmp11 259L) {
+          {
+            KeWaitForSingleObject((doneEvent,Suspended,KernelMode,0,0))
+            (op_assign ntStatus myStatus)
           }
         }
         else {}
-        (op_assign disketteExtension__IsStarted 1)
-        (op_assign disketteExtension__HoldNewRequests 0)
       }
-      else {}
+      return (op_bracketedPrimary ntStatus)
     }
-    else {}
-    {
-      (op_assign Irp__IoStatus__Status ntStatus)
-      (op_assign myStatus ntStatus)
-      IofCompleteRequest((Irp,0))
-    }
-    return (op_bracketedPrimary ntStatus)
   }
-}
-t_int FloppyPnpComplete(/* TODO: param list ... */) {
-  {
+  t_void FloppyProcessQueuedRequests(t_int DisketteExtension){
     {
-      KeSetEvent((Context,1,0))
+      return
     }
-    return (op_bracketedPrimary (op_minus 1073741802))
   }
-}
-t_int FlFdcDeviceIo(/* TODO: param list ... */) {
-  t_int ntStatus
-  t_int irp
-  t_int irpStack
-  t_int doneEvent = __VERIFIER_nondet_int((exp null))
-  t_int ioStatus = __VERIFIER_nondet_int((exp null))
-  t_int irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
-  t_int irpStack__Parameters__DeviceIoControl__Type3InputBuffer
-  t_unspecified __cil_tmp11
-  {
+  t_void stub_driver_init(t_void ){
     {
-      (op_assign irp IoBuildDeviceIoControlRequest((Ioctl,DeviceObject,0,0,0,0,1,doneEvent,ioStatus)))
+      (op_assign s NP)
+      (op_assign pended 0)
+      (op_assign compRegistered 0)
+      (op_assign lowerDriverReturn 0)
+      (op_assign setEventCalled 0)
+      (op_assign customIrp 0)
+      return
     }
-    if (op_equals irp 0) {
-      return (op_bracketedPrimary (op_minus 1073741670))
-    }
-    else {}
-    {
-      (op_assign irpStack (op_minus irp__Tail__Overlay__CurrentStackLocation 1))
-      (op_assign irpStack__Parameters__DeviceIoControl__Type3InputBuffer Data)
-      (op_assign ntStatus IofCallDriver((DeviceObject,irp)))
-    }
-    {
-      (op_assign __cil_tmp11 (t_unspecified)ntStatus)
-      if (op_equals __cil_tmp11 259L) {
-        {
-          KeWaitForSingleObject((doneEvent,Suspended,KernelMode,0,0))
-          (op_assign ntStatus myStatus)
-        }
-      }
-      else {}
-    }
-    return (op_bracketedPrimary ntStatus)
   }
-}
-t_void FloppyProcessQueuedRequests(/* TODO: param list ... */) {
-  {
-    return (exp null)
-  }
-}
-t_void stub_driver_init(/* TODO: param list ... */) {
-  {
-    (op_assign s NP)
+  t_int main(t_void ){
+    t_int status
+    t_int irp = __VERIFIER_nondet_int()
+    t_int pirp
+    t_int pirp__IoStatus__Status
+    t_int irp_choice = __VERIFIER_nondet_int()
+    t_int devobj = __VERIFIER_nondet_int()
+    t_int __cil_tmp8
+    (op_assign FloppyThread 0)
+    (op_assign KernelMode 0)
+    (op_assign Suspended 0)
+    (op_assign Executive 0)
+    (op_assign DiskController 0)
+    (op_assign FloppyDiskPeripheral 0)
+    (op_assign FlConfigCallBack 0)
+    (op_assign MaximumInterfaceType 0)
+    (op_assign MOUNTDEV_MOUNTED_DEVICE_GUID 0)
+    (op_assign myStatus 0)
+    (op_assign s 0)
+    (op_assign UNLOADED 0)
+    (op_assign NP 0)
+    (op_assign DC 0)
+    (op_assign SKIP1 0)
+    (op_assign SKIP2 0)
+    (op_assign MPR1 0)
+    (op_assign MPR3 0)
+    (op_assign IPC 0)
     (op_assign pended 0)
     (op_assign compRegistered 0)
     (op_assign lowerDriverReturn 0)
     (op_assign setEventCalled 0)
     (op_assign customIrp 0)
-    return (exp null)
-  }
-}
-t_int main(/* TODO: param list ... */) {
-  t_int status
-  t_int irp = __VERIFIER_nondet_int((exp null))
-  t_int pirp
-  t_int pirp__IoStatus__Status
-  t_int irp_choice = __VERIFIER_nondet_int((exp null))
-  t_int devobj = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp8
-  (op_assign FloppyThread 0)
-  (op_assign KernelMode 0)
-  (op_assign Suspended 0)
-  (op_assign Executive 0)
-  (op_assign DiskController 0)
-  (op_assign FloppyDiskPeripheral 0)
-  (op_assign FlConfigCallBack 0)
-  (op_assign MaximumInterfaceType 0)
-  (op_assign MOUNTDEV_MOUNTED_DEVICE_GUID 0)
-  (op_assign myStatus 0)
-  (op_assign s 0)
-  (op_assign UNLOADED 0)
-  (op_assign NP 0)
-  (op_assign DC 0)
-  (op_assign SKIP1 0)
-  (op_assign SKIP2 0)
-  (op_assign MPR1 0)
-  (op_assign MPR3 0)
-  (op_assign IPC 0)
-  (op_assign pended 0)
-  (op_assign compRegistered 0)
-  (op_assign lowerDriverReturn 0)
-  (op_assign setEventCalled 0)
-  (op_assign customIrp 0)
-  {
     {
-      (op_assign status 0)
-      (op_assign pirp irp)
-      _BLAST_init((exp null))
-    }
-    if (op_greaterEqual status 0) {
-      (op_assign s NP)
-      (op_assign customIrp 0)
-      (op_assign setEventCalled customIrp)
-      (op_assign lowerDriverReturn setEventCalled)
-      (op_assign compRegistered lowerDriverReturn)
-      (op_assign pended compRegistered)
-      (op_assign pirp__IoStatus__Status 0)
-      (op_assign myStatus 0)
-      if (op_equals irp_choice 0) {
-        (op_assign pirp__IoStatus__Status (op_minus 1073741637))
-        (op_assign myStatus (op_minus 1073741637))
-      }
-      else {}
       {
-        stub_driver_init((exp null))
+        (op_assign status 0)
+        (op_assign pirp irp)
+        _BLAST_init()
       }
-      {
-        if (op_lessThan status 0) {
-          return (op_bracketedPrimary (op_minus 1))
+      if (op_greaterEqual status 0) {
+        (op_assign s NP)
+        (op_assign customIrp 0)
+        (op_assign setEventCalled customIrp)
+        (op_assign lowerDriverReturn setEventCalled)
+        (op_assign compRegistered lowerDriverReturn)
+        (op_assign pended compRegistered)
+        (op_assign pirp__IoStatus__Status 0)
+        (op_assign myStatus 0)
+        if (op_equals irp_choice 0) {
+          (op_assign pirp__IoStatus__Status (op_minus 1073741637))
+          (op_assign myStatus (op_minus 1073741637))
         }
         else {}
-      }
-      t_int tmp_ndt_1
-      (op_assign tmp_ndt_1 __VERIFIER_nondet_int((exp null)))
-      if (op_equals tmp_ndt_1 0) {
-        goto switch_2_0
-      }
-      else {
-        t_int tmp_ndt_2
-        (op_assign tmp_ndt_2 __VERIFIER_nondet_int((exp null)))
-        if (op_equals tmp_ndt_2 1) {
-          goto switch_2_1
+        {
+          stub_driver_init()
+        }
+        {
+          if (op_lessThan status 0) {
+            return (op_bracketedPrimary (op_minus 1))
+          }
+          else {}
+        }
+        t_int tmp_ndt_1
+        (op_assign tmp_ndt_1 __VERIFIER_nondet_int())
+        if (op_equals tmp_ndt_1 0) {
+          goto switch_2_0
         }
         else {
-          t_int tmp_ndt_3
-          (op_assign tmp_ndt_3 __VERIFIER_nondet_int((exp null)))
-          if (op_equals tmp_ndt_3 2) {
-            goto switch_2_2
+          t_int tmp_ndt_2
+          (op_assign tmp_ndt_2 __VERIFIER_nondet_int())
+          if (op_equals tmp_ndt_2 1) {
+            goto switch_2_1
           }
           else {
-            t_int tmp_ndt_4
-            (op_assign tmp_ndt_4 __VERIFIER_nondet_int((exp null)))
-            if (op_equals tmp_ndt_4 3) {
-              goto switch_2_3
+            t_int tmp_ndt_3
+            (op_assign tmp_ndt_3 __VERIFIER_nondet_int())
+            if (op_equals tmp_ndt_3 2) {
+              goto switch_2_2
             }
             else {
-              goto switch_2_default
-              if 0 {
-                switch_2_0:
-                {
-                  (op_assign status FloppyCreateClose((devobj,pirp)))
-                }
-                goto switch_2_break
-                switch_2_1:
-                {
-                  (op_assign status FloppyCreateClose((devobj,pirp)))
-                }
-                goto switch_2_break
-                switch_2_2:
-                {
-                  (op_assign status FloppyDeviceControl((devobj,pirp)))
-                }
-                goto switch_2_break
-                switch_2_3:
-                {
-                  (op_assign status FloppyPnp((devobj,pirp)))
-                }
-                goto switch_2_break
-                switch_2_default:
-                {}
-                return (op_bracketedPrimary (op_minus 1))
+              t_int tmp_ndt_4
+              (op_assign tmp_ndt_4 __VERIFIER_nondet_int())
+              if (op_equals tmp_ndt_4 3) {
+                goto switch_2_3
               }
               else {
-                switch_2_break:
-                {}
+                goto switch_2_default
+                if 0 {
+                  switch_2_0:
+                  {
+                    (op_assign status FloppyCreateClose((devobj,pirp)))
+                  }
+                  goto switch_2_break
+                  switch_2_1:
+                  {
+                    (op_assign status FloppyCreateClose((devobj,pirp)))
+                  }
+                  goto switch_2_break
+                  switch_2_2:
+                  {
+                    (op_assign status FloppyDeviceControl((devobj,pirp)))
+                  }
+                  goto switch_2_break
+                  switch_2_3:
+                  {
+                    (op_assign status FloppyPnp((devobj,pirp)))
+                  }
+                  goto switch_2_break
+                  switch_2_default:
+                  {}
+                  return (op_bracketedPrimary (op_minus 1))
+                }
+                else {
+                  switch_2_break:
+                  {}
+                }
               }
             }
           }
         }
       }
-    }
-    else {}
-    if (op_equals pended 1) {
-      if (op_equals s NP) {
-        (op_assign s NP)
-      }
-      else {
-        goto _L___2
-      }
-    }
-    else {
-      _L___2:
+      else {}
       if (op_equals pended 1) {
-        if (op_equals s MPR3) {
-          (op_assign s MPR3)
+        if (op_equals s NP) {
+          (op_assign s NP)
         }
         else {
-          goto _L___1
+          goto _L___2
         }
       }
       else {
-        _L___1:
-        if (op_notequals s UNLOADED) {
-          if (op_notequals status (op_minus 1)) {
-            if (op_notequals s SKIP2) {
-              if (op_notequals s IPC) {
-                if (op_notequals s DC) {
-                  {
-                    errorFn((exp null))
+        _L___2:
+        if (op_equals pended 1) {
+          if (op_equals s MPR3) {
+            (op_assign s MPR3)
+          }
+          else {
+            goto _L___1
+          }
+        }
+        else {
+          _L___1:
+          if (op_notequals s UNLOADED) {
+            if (op_notequals status (op_minus 1)) {
+              if (op_notequals s SKIP2) {
+                if (op_notequals s IPC) {
+                  if (op_notequals s DC) {
+                    {
+                      errorFn()
+                    }
+                  }
+                  else {
+                    goto _L___0
                   }
                 }
                 else {
@@ -822,728 +827,725 @@ t_int main(/* TODO: param list ... */) {
                 }
               }
               else {
-                goto _L___0
-              }
-            }
-            else {
-              _L___0:
-              if (op_equals pended 1) {
-                if (op_notequals status 259) {
-                  (op_assign status 0)
-                }
-                else {}
-              }
-              else {
-                if (op_equals s DC) {
-                  if (op_equals status 259) {
-                    {
-                      errorFn((exp null))
-                    }
+                _L___0:
+                if (op_equals pended 1) {
+                  if (op_notequals status 259) {
+                    (op_assign status 0)
                   }
                   else {}
                 }
                 else {
-                  if (op_notequals status lowerDriverReturn) {
-                    {
-                      errorFn((exp null))
+                  if (op_equals s DC) {
+                    if (op_equals status 259) {
+                      {
+                        errorFn()
+                      }
                     }
+                    else {}
                   }
-                  else {}
+                  else {
+                    if (op_notequals status lowerDriverReturn) {
+                      {
+                        errorFn()
+                      }
+                    }
+                    else {}
+                  }
                 }
               }
+            }
+            else {}
+          }
+          else {}
+        }
+      }
+      (op_assign status 0)
+      return (op_bracketedPrimary status)
+    }
+  }
+  t_int IoBuildDeviceIoControlRequest(t_int IoControlCode,t_int DeviceObject,t_int InputBuffer,t_int InputBufferLength,t_int OutputBuffer,t_int OutputBufferLength,t_int InternalDeviceIoControl,t_int Event,t_int IoStatusBlock){
+    t_int malloc = __VERIFIER_nondet_int()
+    {
+      (op_assign customIrp 1)
+      t_int tmp_ndt_5
+      (op_assign tmp_ndt_5 __VERIFIER_nondet_int())
+      if (op_equals tmp_ndt_5 0) {
+        goto switch_3_0
+      }
+      else {
+        goto switch_3_default
+        if 0 {
+          switch_3_0:
+          return (op_bracketedPrimary malloc)
+          switch_3_default:
+          {}
+          return (op_bracketedPrimary 0)
+        }
+        else {
+        }
+      }
+    }
+  }
+  t_int IoDeleteSymbolicLink(t_int SymbolicLinkName){
+    {
+      t_int tmp_ndt_6
+      (op_assign tmp_ndt_6 __VERIFIER_nondet_int())
+      if (op_equals tmp_ndt_6 0) {
+        goto switch_4_0
+      }
+      else {
+        goto switch_4_default
+        if 0 {
+          switch_4_0:
+          return (op_bracketedPrimary 0)
+          switch_4_default:
+          {}
+          return (op_bracketedPrimary (op_minus 1073741823))
+        }
+        else {
+        }
+      }
+    }
+  }
+  t_int IoQueryDeviceDescription(t_int BusType,t_int BusNumber,t_int ControllerType,t_int ControllerNumber,t_int PeripheralType,t_int PeripheralNumber,t_int CalloutRoutine,t_int Context){
+    {
+      t_int tmp_ndt_7
+      (op_assign tmp_ndt_7 __VERIFIER_nondet_int())
+      if (op_equals tmp_ndt_7 0) {
+        goto switch_5_0
+      }
+      else {
+        goto switch_5_default
+        if 0 {
+          switch_5_0:
+          return (op_bracketedPrimary 0)
+          switch_5_default:
+          {}
+          return (op_bracketedPrimary (op_minus 1073741823))
+        }
+        else {
+        }
+      }
+    }
+  }
+  t_int IoRegisterDeviceInterface(t_int PhysicalDeviceObject,t_int InterfaceClassGuid,t_int ReferenceString,t_int SymbolicLinkName){
+    {
+      t_int tmp_ndt_8
+      (op_assign tmp_ndt_8 __VERIFIER_nondet_int())
+      if (op_equals tmp_ndt_8 0) {
+        goto switch_6_0
+      }
+      else {
+        goto switch_6_default
+        if 0 {
+          switch_6_0:
+          return (op_bracketedPrimary 0)
+          switch_6_default:
+          {}
+          return (op_bracketedPrimary (op_minus 1073741808))
+        }
+        else {
+        }
+      }
+    }
+  }
+  t_int IoSetDeviceInterfaceState(t_int SymbolicLinkName,t_int Enable){
+    {
+      t_int tmp_ndt_9
+      (op_assign tmp_ndt_9 __VERIFIER_nondet_int())
+      if (op_equals tmp_ndt_9 0) {
+        goto switch_7_0
+      }
+      else {
+        goto switch_7_default
+        if 0 {
+          switch_7_0:
+          return (op_bracketedPrimary 0)
+          switch_7_default:
+          {}
+          return (op_bracketedPrimary (op_minus 1073741823))
+        }
+        else {
+        }
+      }
+    }
+  }
+  t_void stubMoreProcessingRequired(t_void ){
+    {
+      if (op_equals s NP) {
+        (op_assign s MPR1)
+      }
+      else {
+        {
+          errorFn()
+        }
+      }
+      return
+    }
+  }
+  t_int IofCallDriver(t_int DeviceObject,t_int Irp){
+    t_int returnVal2
+    t_int compRetStatus1
+    t_int lcontext = __VERIFIER_nondet_int()
+    t_unspecified __cil_tmp7
+    {
+      if compRegistered {
+        {
+          (op_assign compRetStatus1 FloppyPnpComplete((DeviceObject,Irp,lcontext)))
+        }
+        {
+          (op_assign __cil_tmp7 (t_unspecified)compRetStatus1)
+          if (op_equals __cil_tmp7 (op_minus 1073741802)) {
+            {
+              stubMoreProcessingRequired()
             }
           }
           else {}
         }
-        else {}
       }
-    }
-    (op_assign status 0)
-    return (op_bracketedPrimary status)
-  }
-}
-t_int IoBuildDeviceIoControlRequest(/* TODO: param list ... */) {
-  t_int malloc = __VERIFIER_nondet_int((exp null))
-  {
-    (op_assign customIrp 1)
-    t_int tmp_ndt_5
-    (op_assign tmp_ndt_5 __VERIFIER_nondet_int((exp null)))
-    if (op_equals tmp_ndt_5 0) {
-      goto switch_3_0
-    }
-    else {
-      goto switch_3_default
-      if 0 {
-        switch_3_0:
-        return (op_bracketedPrimary malloc)
-        switch_3_default:
-        {}
-        return (op_bracketedPrimary 0)
+      else {}
+      t_int tmp_ndt_10
+      (op_assign tmp_ndt_10 __VERIFIER_nondet_int())
+      if (op_equals tmp_ndt_10 0) {
+        goto switch_8_0
       }
       else {
-      }
-    }
-  }
-}
-t_int IoDeleteSymbolicLink(/* TODO: param list ... */) {
-  {
-    t_int tmp_ndt_6
-    (op_assign tmp_ndt_6 __VERIFIER_nondet_int((exp null)))
-    if (op_equals tmp_ndt_6 0) {
-      goto switch_4_0
-    }
-    else {
-      goto switch_4_default
-      if 0 {
-        switch_4_0:
-        return (op_bracketedPrimary 0)
-        switch_4_default:
-        {}
-        return (op_bracketedPrimary (op_minus 1073741823))
-      }
-      else {
-      }
-    }
-  }
-}
-t_int IoQueryDeviceDescription(/* TODO: param list ... */) {
-  {
-    t_int tmp_ndt_7
-    (op_assign tmp_ndt_7 __VERIFIER_nondet_int((exp null)))
-    if (op_equals tmp_ndt_7 0) {
-      goto switch_5_0
-    }
-    else {
-      goto switch_5_default
-      if 0 {
-        switch_5_0:
-        return (op_bracketedPrimary 0)
-        switch_5_default:
-        {}
-        return (op_bracketedPrimary (op_minus 1073741823))
-      }
-      else {
-      }
-    }
-  }
-}
-t_int IoRegisterDeviceInterface(/* TODO: param list ... */) {
-  {
-    t_int tmp_ndt_8
-    (op_assign tmp_ndt_8 __VERIFIER_nondet_int((exp null)))
-    if (op_equals tmp_ndt_8 0) {
-      goto switch_6_0
-    }
-    else {
-      goto switch_6_default
-      if 0 {
-        switch_6_0:
-        return (op_bracketedPrimary 0)
-        switch_6_default:
-        {}
-        return (op_bracketedPrimary (op_minus 1073741808))
-      }
-      else {
-      }
-    }
-  }
-}
-t_int IoSetDeviceInterfaceState(/* TODO: param list ... */) {
-  {
-    t_int tmp_ndt_9
-    (op_assign tmp_ndt_9 __VERIFIER_nondet_int((exp null)))
-    if (op_equals tmp_ndt_9 0) {
-      goto switch_7_0
-    }
-    else {
-      goto switch_7_default
-      if 0 {
-        switch_7_0:
-        return (op_bracketedPrimary 0)
-        switch_7_default:
-        {}
-        return (op_bracketedPrimary (op_minus 1073741823))
-      }
-      else {
-      }
-    }
-  }
-}
-t_void stubMoreProcessingRequired(/* TODO: param list ... */) {
-  {
-    if (op_equals s NP) {
-      (op_assign s MPR1)
-    }
-    else {
-      {
-        errorFn((exp null))
-      }
-    }
-    return (exp null)
-  }
-}
-t_int IofCallDriver(/* TODO: param list ... */) {
-  t_int returnVal2
-  t_int compRetStatus1
-  t_int lcontext = __VERIFIER_nondet_int((exp null))
-  t_unspecified __cil_tmp7
-  {
-    if compRegistered {
-      {
-        (op_assign compRetStatus1 FloppyPnpComplete((DeviceObject,Irp,lcontext)))
-      }
-      {
-        (op_assign __cil_tmp7 (t_unspecified)compRetStatus1)
-        if (op_equals __cil_tmp7 (op_minus 1073741802)) {
-          {
-            stubMoreProcessingRequired((exp null))
-          }
-        }
-        else {}
-      }
-    }
-    else {}
-    t_int tmp_ndt_10
-    (op_assign tmp_ndt_10 __VERIFIER_nondet_int((exp null)))
-    if (op_equals tmp_ndt_10 0) {
-      goto switch_8_0
-    }
-    else {
-      t_int tmp_ndt_11
-      (op_assign tmp_ndt_11 __VERIFIER_nondet_int((exp null)))
-      if (op_equals tmp_ndt_11 1) {
-        goto switch_8_1
-      }
-      else {
-        goto switch_8_default
-        if 0 {
-          switch_8_0:
-          (op_assign returnVal2 0)
-          goto switch_8_break
-          switch_8_1:
-          (op_assign returnVal2 (op_minus 1073741823))
-          goto switch_8_break
-          switch_8_default:
-          (op_assign returnVal2 259)
-          goto switch_8_break
+        t_int tmp_ndt_11
+        (op_assign tmp_ndt_11 __VERIFIER_nondet_int())
+        if (op_equals tmp_ndt_11 1) {
+          goto switch_8_1
         }
         else {
-          switch_8_break:
-          {}
-        }
-      }
-    }
-    if (op_equals s NP) {
-      (op_assign s IPC)
-      (op_assign lowerDriverReturn returnVal2)
-    }
-    else {
-      if (op_equals s MPR1) {
-        if (op_equals returnVal2 259) {
-          (op_assign s MPR3)
-          (op_assign lowerDriverReturn returnVal2)
-        }
-        else {
-          (op_assign s NP)
-          (op_assign lowerDriverReturn returnVal2)
-        }
-      }
-      else {
-        if (op_equals s SKIP1) {
-          (op_assign s SKIP2)
-          (op_assign lowerDriverReturn returnVal2)
-        }
-        else {
-          {
-            errorFn((exp null))
+          goto switch_8_default
+          if 0 {
+            switch_8_0:
+            (op_assign returnVal2 0)
+            goto switch_8_break
+            switch_8_1:
+            (op_assign returnVal2 (op_minus 1073741823))
+            goto switch_8_break
+            switch_8_default:
+            (op_assign returnVal2 259)
+            goto switch_8_break
+          }
+          else {
+            switch_8_break:
+            {}
           }
         }
       }
-    }
-    return (op_bracketedPrimary returnVal2)
-  }
-}
-t_void IofCompleteRequest(/* TODO: param list ... */) {
-  {
-    if (op_equals s NP) {
-      (op_assign s DC)
-    }
-    else {
-      {
-        errorFn((exp null))
-      }
-    }
-    return (exp null)
-  }
-}
-t_int KeSetEvent(/* TODO: param list ... */) {
-  t_int l = __VERIFIER_nondet_int((exp null))
-  {
-    (op_assign setEventCalled 1)
-    return (op_bracketedPrimary l)
-  }
-}
-t_int KeWaitForSingleObject(/* TODO: param list ... */) {
-  {
-    if (op_equals s MPR3) {
-      if (op_equals setEventCalled 1) {
-        (op_assign s NP)
-        (op_assign setEventCalled 0)
-      }
-      else {
-        goto _L
-      }
-    }
-    else {
-      _L:
-      if (op_equals customIrp 1) {
-        (op_assign s NP)
-        (op_assign customIrp 0)
-      }
-      else {
-        if (op_equals s MPR3) {
-          {
-            errorFn((exp null))
-          }
-        }
-        else {}
-      }
-    }
-    t_int tmp_ndt_12
-    (op_assign tmp_ndt_12 __VERIFIER_nondet_int((exp null)))
-    if (op_equals tmp_ndt_12 0) {
-      goto switch_9_0
-    }
-    else {
-      goto switch_9_default
-      if 0 {
-        switch_9_0:
-        return (op_bracketedPrimary 0)
-        switch_9_default:
-        {}
-        return (op_bracketedPrimary (op_minus 1073741823))
-      }
-      else {
-      }
-    }
-  }
-}
-t_int ObReferenceObjectByHandle(/* TODO: param list ... */) {
-  {
-    t_int tmp_ndt_13
-    (op_assign tmp_ndt_13 __VERIFIER_nondet_int((exp null)))
-    if (op_equals tmp_ndt_13 0) {
-      goto switch_10_0
-    }
-    else {
-      goto switch_10_default
-      if 0 {
-        switch_10_0:
-        return (op_bracketedPrimary 0)
-        switch_10_default:
-        {}
-        return (op_bracketedPrimary (op_minus 1073741823))
-      }
-      else {
-      }
-    }
-  }
-}
-t_int PsCreateSystemThread(/* TODO: param list ... */) {
-  {
-    t_int tmp_ndt_14
-    (op_assign tmp_ndt_14 __VERIFIER_nondet_int((exp null)))
-    if (op_equals tmp_ndt_14 0) {
-      goto switch_11_0
-    }
-    else {
-      goto switch_11_default
-      if 0 {
-        switch_11_0:
-        return (op_bracketedPrimary 0)
-        switch_11_default:
-        {}
-        return (op_bracketedPrimary (op_minus 1073741823))
-      }
-      else {
-      }
-    }
-  }
-}
-t_int ZwClose(/* TODO: param list ... */) {
-  {
-    t_int tmp_ndt_15
-    (op_assign tmp_ndt_15 __VERIFIER_nondet_int((exp null)))
-    if (op_equals tmp_ndt_15 0) {
-      goto switch_12_0
-    }
-    else {
-      goto switch_12_default
-      if 0 {
-        switch_12_0:
-        return (op_bracketedPrimary 0)
-        switch_12_default:
-        {}
-        return (op_bracketedPrimary (op_minus 1073741823))
-      }
-      else {
-      }
-    }
-  }
-}
-t_int FloppyCreateClose(/* TODO: param list ... */) {
-  t_int Irp__IoStatus__Status
-  t_int Irp__IoStatus__Information
-  {
-    {
-      (op_assign myStatus 0)
-      (op_assign Irp__IoStatus__Status 0)
-      (op_assign Irp__IoStatus__Information 1)
-      IofCompleteRequest((Irp,0))
-    }
-    return (op_bracketedPrimary 0)
-  }
-}
-t_int FloppyQueueRequest
-t_int FloppyDeviceControl(/* TODO: param list ... */) {
-  t_int disketteExtension__HoldNewRequests = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__IsRemoved = __VERIFIER_nondet_int((exp null))
-  t_int Irp__IoStatus__Information
-  t_int disketteExtension__IsStarted = __VERIFIER_nondet_int((exp null))
-  t_int Irp__CurrentLocation = __VERIFIER_nondet_int((exp null))
-  t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__TargetObject = __VERIFIER_nondet_int((exp null))
-  t_int irpSp__Parameters__DeviceIoControl__OutputBufferLength = __VERIFIER_nondet_int((exp null))
-  t_int sizeof__MOUNTDEV_NAME = __VERIFIER_nondet_int((exp null))
-  t_int Irp__AssociatedIrp__SystemBuffer = __VERIFIER_nondet_int((exp null))
-  t_int mountName__NameLength
-  t_int disketteExtension__DeviceName__Length = __VERIFIER_nondet_int((exp null))
-  t_int sizeof__USHORT = __VERIFIER_nondet_int((exp null))
-  t_int disketteExtension__InterfaceString__Buffer = __VERIFIER_nondet_int((exp null))
-  t_int uniqueId__UniqueIdLength
-  t_int disketteExtension__InterfaceString__Length = __VERIFIER_nondet_int((exp null))
-  t_int sizeof__MOUNTDEV_UNIQUE_ID = __VERIFIER_nondet_int((exp null))
-  t_int irpSp__Parameters__DeviceIoControl__InputBufferLength = __VERIFIER_nondet_int((exp null))
-  t_int sizeof__FORMAT_PARAMETERS = __VERIFIER_nondet_int((exp null))
-  t_int irpSp__Parameters__DeviceIoControl__IoControlCode___1 = __VERIFIER_nondet_int((exp null))
-  t_int sizeof__FORMAT_EX_PARAMETERS = __VERIFIER_nondet_int((exp null))
-  t_int formatExParameters__FormatGapLength = __VERIFIER_nondet_int((exp null))
-  t_int formatExParameters__SectorsPerTrack = __VERIFIER_nondet_int((exp null))
-  t_int sizeof__DISK_GEOMETRY = __VERIFIER_nondet_int((exp null))
-  t_int Irp__IoStatus__Status___0
-  t_int disketteExtension = __VERIFIER_nondet_int((exp null))
-  t_int ntStatus
-  t_int outputBufferLength
-  t_int lowestDriveMediaType = __VERIFIER_nondet_int((exp null))
-  t_int highestDriveMediaType = __VERIFIER_nondet_int((exp null))
-  t_int formatExParametersSize = __VERIFIER_nondet_int((exp null))
-  t_int formatExParameters
-  t_int tmp
-  t_int mountName
-  t_int uniqueId
-  t_int tmp___0
-  t_int __cil_tmp39
-  t_int __cil_tmp40
-  t_int __cil_tmp41 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp42
-  t_int __cil_tmp43
-  t_int __cil_tmp44 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp45 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp46
-  t_int __cil_tmp47
-  t_int __cil_tmp48
-  t_int __cil_tmp49
-  t_int __cil_tmp50 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp51
-  t_int __cil_tmp52
-  t_int __cil_tmp53
-  t_int __cil_tmp54
-  t_int __cil_tmp55 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp56
-  t_int __cil_tmp57
-  t_int __cil_tmp58
-  t_int __cil_tmp59
-  t_int __cil_tmp60 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp61
-  t_int __cil_tmp62
-  t_int __cil_tmp63
-  t_int __cil_tmp64
-  t_int __cil_tmp65 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp66 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp67
-  t_int __cil_tmp68
-  t_int __cil_tmp69 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp70
-  t_int __cil_tmp71
-  t_int __cil_tmp72 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp73
-  t_int __cil_tmp74
-  t_int __cil_tmp75 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp76
-  t_int __cil_tmp77
-  t_int __cil_tmp78 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp79
-  t_int __cil_tmp80
-  t_int __cil_tmp81 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp82
-  t_int __cil_tmp83
-  t_int __cil_tmp84
-  t_int __cil_tmp85
-  t_int __cil_tmp86
-  t_int __cil_tmp87
-  t_int __cil_tmp88 = __VERIFIER_nondet_int((exp null))
-  t_int __cil_tmp89
-  t_int __cil_tmp90
-  t_unspecified __cil_tmp91
-  {
-    if disketteExtension__HoldNewRequests {
-      {
-        if (op_notequals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp41) {
-          {
-            (op_assign ntStatus FloppyQueueRequest((disketteExtension,Irp)))
-          }
-          return (op_bracketedPrimary ntStatus)
-        }
-        else {}
-      }
-    }
-    else {}
-    if disketteExtension__IsRemoved {
-      {
-        (op_assign Irp__IoStatus__Information 0)
-        (op_assign Irp__IoStatus__Status___0 (op_minus 1073741738))
-        (op_assign myStatus (op_minus 1073741738))
-        IofCompleteRequest((Irp,0))
-      }
-      return (op_bracketedPrimary (op_minus 1073741738))
-    }
-    else {}
-    if (op_not disketteExtension__IsStarted) {
       if (op_equals s NP) {
-        (op_assign s SKIP1)
+        (op_assign s IPC)
+        (op_assign lowerDriverReturn returnVal2)
       }
       else {
-        {
-          errorFn((exp null))
+        if (op_equals s MPR1) {
+          if (op_equals returnVal2 259) {
+            (op_assign s MPR3)
+            (op_assign lowerDriverReturn returnVal2)
+          }
+          else {
+            (op_assign s NP)
+            (op_assign lowerDriverReturn returnVal2)
+          }
         }
-      }
-      {
-        (op_postFixIncr Irp__CurrentLocation)
-        (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
-        (op_assign tmp IofCallDriver((disketteExtension__TargetObject,Irp)))
-      }
-      return (op_bracketedPrimary tmp)
-    }
-    else {}
-    {
-      if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp44) {
-        goto switch_13_exp_0
-      }
-      else {
-        {
-          if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp45) {
-            goto switch_13_exp_1
+        else {
+          if (op_equals s SKIP1) {
+            (op_assign s SKIP2)
+            (op_assign lowerDriverReturn returnVal2)
           }
           else {
             {
-              if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp50) {
-                goto switch_13_exp_2
-              }
-              else {
-                {
-                  if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp55) {
-                    goto switch_13_exp_3
-                  }
-                  else {
-                    {
-                      if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp60) {
-                        goto switch_13_exp_4
-                      }
-                      else {
-                        {
-                          if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp65) {
-                            goto switch_13_exp_5
-                          }
-                          else {
-                            {
-                              if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp66) {
-                                goto switch_13_exp_6
-                              }
-                              else {
-                                {
-                                  if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp69) {
-                                    goto switch_13_exp_7
-                                  }
-                                  else {
-                                    {
-                                      if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp72) {
-                                        goto switch_13_exp_8
-                                      }
-                                      else {
-                                        {
-                                          if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp75) {
-                                            goto switch_13_exp_9
-                                          }
-                                          else {
-                                            {
-                                              if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp78) {
-                                                goto switch_13_exp_10
-                                              }
-                                              else {
-                                                {
-                                                  if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp81) {
-                                                    goto switch_13_exp_11
-                                                  }
-                                                  else {
-                                                    goto switch_13_default
-                                                    if 0 {
-                                                      switch_13_exp_0:
-                                                      {}
-                                                      if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength sizeof__MOUNTDEV_NAME) {
-                                                        (op_assign ntStatus (op_minus 1073741811))
-                                                        goto switch_13_break
-                                                      }
-                                                      else {}
-                                                      (op_assign mountName Irp__AssociatedIrp__SystemBuffer)
-                                                      (op_assign mountName__NameLength disketteExtension__DeviceName__Length)
-                                                      {
-                                                        (op_assign __cil_tmp82 (op_plus sizeof__USHORT mountName__NameLength))
-                                                        if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength __cil_tmp82) {
-                                                          (op_assign ntStatus (op_minus 2147483643))
-                                                          (op_assign Irp__IoStatus__Information sizeof__MOUNTDEV_NAME)
-                                                          goto switch_13_break
-                                                        }
-                                                        else {}
-                                                      }
-                                                      (op_assign ntStatus 0)
-                                                      (op_assign Irp__IoStatus__Information (op_plus sizeof__USHORT mountName__NameLength))
-                                                      goto switch_13_break
-                                                      switch_13_exp_1:
-                                                      {}
-                                                      if (op_not disketteExtension__InterfaceString__Buffer) {
-                                                        (op_assign ntStatus (op_minus 1073741811))
-                                                        goto switch_13_break
-                                                      }
-                                                      else {
-                                                        if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength sizeof__MOUNTDEV_UNIQUE_ID) {
+              errorFn()
+            }
+          }
+        }
+      }
+      return (op_bracketedPrimary returnVal2)
+    }
+  }
+  t_void IofCompleteRequest(t_int Irp,t_int PriorityBoost){
+    {
+      if (op_equals s NP) {
+        (op_assign s DC)
+      }
+      else {
+        {
+          errorFn()
+        }
+      }
+      return
+    }
+  }
+  t_int KeSetEvent(t_int Event,t_int Increment,t_int Wait){
+    t_int l = __VERIFIER_nondet_int()
+    {
+      (op_assign setEventCalled 1)
+      return (op_bracketedPrimary l)
+    }
+  }
+  t_int KeWaitForSingleObject(t_int Object,t_int WaitReason,t_int WaitMode,t_int Alertable,t_int Timeout){
+    {
+      if (op_equals s MPR3) {
+        if (op_equals setEventCalled 1) {
+          (op_assign s NP)
+          (op_assign setEventCalled 0)
+        }
+        else {
+          goto _L
+        }
+      }
+      else {
+        _L:
+        if (op_equals customIrp 1) {
+          (op_assign s NP)
+          (op_assign customIrp 0)
+        }
+        else {
+          if (op_equals s MPR3) {
+            {
+              errorFn()
+            }
+          }
+          else {}
+        }
+      }
+      t_int tmp_ndt_12
+      (op_assign tmp_ndt_12 __VERIFIER_nondet_int())
+      if (op_equals tmp_ndt_12 0) {
+        goto switch_9_0
+      }
+      else {
+        goto switch_9_default
+        if 0 {
+          switch_9_0:
+          return (op_bracketedPrimary 0)
+          switch_9_default:
+          {}
+          return (op_bracketedPrimary (op_minus 1073741823))
+        }
+        else {
+        }
+      }
+    }
+  }
+  t_int ObReferenceObjectByHandle(t_int Handle,t_int DesiredAccess,t_int ObjectType,t_int AccessMode,t_int Object,t_int HandleInformation){
+    {
+      t_int tmp_ndt_13
+      (op_assign tmp_ndt_13 __VERIFIER_nondet_int())
+      if (op_equals tmp_ndt_13 0) {
+        goto switch_10_0
+      }
+      else {
+        goto switch_10_default
+        if 0 {
+          switch_10_0:
+          return (op_bracketedPrimary 0)
+          switch_10_default:
+          {}
+          return (op_bracketedPrimary (op_minus 1073741823))
+        }
+        else {
+        }
+      }
+    }
+  }
+  t_int PsCreateSystemThread(t_int ThreadHandle,t_int DesiredAccess,t_int ObjectAttributes,t_int ProcessHandle,t_int ClientId,t_int StartRoutine,t_int StartContext){
+    {
+      t_int tmp_ndt_14
+      (op_assign tmp_ndt_14 __VERIFIER_nondet_int())
+      if (op_equals tmp_ndt_14 0) {
+        goto switch_11_0
+      }
+      else {
+        goto switch_11_default
+        if 0 {
+          switch_11_0:
+          return (op_bracketedPrimary 0)
+          switch_11_default:
+          {}
+          return (op_bracketedPrimary (op_minus 1073741823))
+        }
+        else {
+        }
+      }
+    }
+  }
+  t_int ZwClose(t_int Handle){
+    {
+      t_int tmp_ndt_15
+      (op_assign tmp_ndt_15 __VERIFIER_nondet_int())
+      if (op_equals tmp_ndt_15 0) {
+        goto switch_12_0
+      }
+      else {
+        goto switch_12_default
+        if 0 {
+          switch_12_0:
+          return (op_bracketedPrimary 0)
+          switch_12_default:
+          {}
+          return (op_bracketedPrimary (op_minus 1073741823))
+        }
+        else {
+        }
+      }
+    }
+  }
+  t_int FloppyCreateClose(t_int DeviceObject,t_int Irp){
+    t_int Irp__IoStatus__Status
+    t_int Irp__IoStatus__Information
+    {
+      {
+        (op_assign myStatus 0)
+        (op_assign Irp__IoStatus__Status 0)
+        (op_assign Irp__IoStatus__Information 1)
+        IofCompleteRequest((Irp,0))
+      }
+      return (op_bracketedPrimary 0)
+    }
+  }
+  t_int FloppyQueueRequest(t_int DisketteExtension,t_int Irp)
+  t_int FloppyDeviceControl(t_int DeviceObject,t_int Irp){
+    t_int disketteExtension__HoldNewRequests = __VERIFIER_nondet_int()
+    t_int disketteExtension__IsRemoved = __VERIFIER_nondet_int()
+    t_int Irp__IoStatus__Information
+    t_int disketteExtension__IsStarted = __VERIFIER_nondet_int()
+    t_int Irp__CurrentLocation = __VERIFIER_nondet_int()
+    t_int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int()
+    t_int disketteExtension__TargetObject = __VERIFIER_nondet_int()
+    t_int irpSp__Parameters__DeviceIoControl__OutputBufferLength = __VERIFIER_nondet_int()
+    t_int sizeof__MOUNTDEV_NAME = __VERIFIER_nondet_int()
+    t_int Irp__AssociatedIrp__SystemBuffer = __VERIFIER_nondet_int()
+    t_int mountName__NameLength
+    t_int disketteExtension__DeviceName__Length = __VERIFIER_nondet_int()
+    t_int sizeof__USHORT = __VERIFIER_nondet_int()
+    t_int disketteExtension__InterfaceString__Buffer = __VERIFIER_nondet_int()
+    t_int uniqueId__UniqueIdLength
+    t_int disketteExtension__InterfaceString__Length = __VERIFIER_nondet_int()
+    t_int sizeof__MOUNTDEV_UNIQUE_ID = __VERIFIER_nondet_int()
+    t_int irpSp__Parameters__DeviceIoControl__InputBufferLength = __VERIFIER_nondet_int()
+    t_int sizeof__FORMAT_PARAMETERS = __VERIFIER_nondet_int()
+    t_int irpSp__Parameters__DeviceIoControl__IoControlCode___1 = __VERIFIER_nondet_int()
+    t_int sizeof__FORMAT_EX_PARAMETERS = __VERIFIER_nondet_int()
+    t_int formatExParameters__FormatGapLength = __VERIFIER_nondet_int()
+    t_int formatExParameters__SectorsPerTrack = __VERIFIER_nondet_int()
+    t_int sizeof__DISK_GEOMETRY = __VERIFIER_nondet_int()
+    t_int Irp__IoStatus__Status___0
+    t_int disketteExtension = __VERIFIER_nondet_int()
+    t_int ntStatus
+    t_int outputBufferLength
+    t_int lowestDriveMediaType = __VERIFIER_nondet_int()
+    t_int highestDriveMediaType = __VERIFIER_nondet_int()
+    t_int formatExParametersSize = __VERIFIER_nondet_int()
+    t_int formatExParameters
+    t_int tmp
+    t_int mountName
+    t_int uniqueId
+    t_int tmp___0
+    t_int __cil_tmp39
+    t_int __cil_tmp40
+    t_int __cil_tmp41 = __VERIFIER_nondet_int()
+    t_int __cil_tmp42
+    t_int __cil_tmp43
+    t_int __cil_tmp44 = __VERIFIER_nondet_int()
+    t_int __cil_tmp45 = __VERIFIER_nondet_int()
+    t_int __cil_tmp46
+    t_int __cil_tmp47
+    t_int __cil_tmp48
+    t_int __cil_tmp49
+    t_int __cil_tmp50 = __VERIFIER_nondet_int()
+    t_int __cil_tmp51
+    t_int __cil_tmp52
+    t_int __cil_tmp53
+    t_int __cil_tmp54
+    t_int __cil_tmp55 = __VERIFIER_nondet_int()
+    t_int __cil_tmp56
+    t_int __cil_tmp57
+    t_int __cil_tmp58
+    t_int __cil_tmp59
+    t_int __cil_tmp60 = __VERIFIER_nondet_int()
+    t_int __cil_tmp61
+    t_int __cil_tmp62
+    t_int __cil_tmp63
+    t_int __cil_tmp64
+    t_int __cil_tmp65 = __VERIFIER_nondet_int()
+    t_int __cil_tmp66 = __VERIFIER_nondet_int()
+    t_int __cil_tmp67
+    t_int __cil_tmp68
+    t_int __cil_tmp69 = __VERIFIER_nondet_int()
+    t_int __cil_tmp70
+    t_int __cil_tmp71
+    t_int __cil_tmp72 = __VERIFIER_nondet_int()
+    t_int __cil_tmp73
+    t_int __cil_tmp74
+    t_int __cil_tmp75 = __VERIFIER_nondet_int()
+    t_int __cil_tmp76
+    t_int __cil_tmp77
+    t_int __cil_tmp78 = __VERIFIER_nondet_int()
+    t_int __cil_tmp79
+    t_int __cil_tmp80
+    t_int __cil_tmp81 = __VERIFIER_nondet_int()
+    t_int __cil_tmp82
+    t_int __cil_tmp83
+    t_int __cil_tmp84
+    t_int __cil_tmp85
+    t_int __cil_tmp86
+    t_int __cil_tmp87
+    t_int __cil_tmp88 = __VERIFIER_nondet_int()
+    t_int __cil_tmp89
+    t_int __cil_tmp90
+    t_unspecified __cil_tmp91
+    {
+      if disketteExtension__HoldNewRequests {
+        {
+          if (op_notequals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp41) {
+            {
+              (op_assign ntStatus FloppyQueueRequest((disketteExtension,Irp)))
+            }
+            return (op_bracketedPrimary ntStatus)
+          }
+          else {}
+        }
+      }
+      else {}
+      if disketteExtension__IsRemoved {
+        {
+          (op_assign Irp__IoStatus__Information 0)
+          (op_assign Irp__IoStatus__Status___0 (op_minus 1073741738))
+          (op_assign myStatus (op_minus 1073741738))
+          IofCompleteRequest((Irp,0))
+        }
+        return (op_bracketedPrimary (op_minus 1073741738))
+      }
+      else {}
+      if (op_not disketteExtension__IsStarted) {
+        if (op_equals s NP) {
+          (op_assign s SKIP1)
+        }
+        else {
+          {
+            errorFn()
+          }
+        }
+        {
+          (op_postFixIncr Irp__CurrentLocation)
+          (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+          (op_assign tmp IofCallDriver((disketteExtension__TargetObject,Irp)))
+        }
+        return (op_bracketedPrimary tmp)
+      }
+      else {}
+      {
+        if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp44) {
+          goto switch_13_exp_0
+        }
+        else {
+          {
+            if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp45) {
+              goto switch_13_exp_1
+            }
+            else {
+              {
+                if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp50) {
+                  goto switch_13_exp_2
+                }
+                else {
+                  {
+                    if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp55) {
+                      goto switch_13_exp_3
+                    }
+                    else {
+                      {
+                        if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp60) {
+                          goto switch_13_exp_4
+                        }
+                        else {
+                          {
+                            if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp65) {
+                              goto switch_13_exp_5
+                            }
+                            else {
+                              {
+                                if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp66) {
+                                  goto switch_13_exp_6
+                                }
+                                else {
+                                  {
+                                    if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp69) {
+                                      goto switch_13_exp_7
+                                    }
+                                    else {
+                                      {
+                                        if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp72) {
+                                          goto switch_13_exp_8
+                                        }
+                                        else {
+                                          {
+                                            if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp75) {
+                                              goto switch_13_exp_9
+                                            }
+                                            else {
+                                              {
+                                                if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp78) {
+                                                  goto switch_13_exp_10
+                                                }
+                                                else {
+                                                  {
+                                                    if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp81) {
+                                                      goto switch_13_exp_11
+                                                    }
+                                                    else {
+                                                      goto switch_13_default
+                                                      if 0 {
+                                                        switch_13_exp_0:
+                                                        {}
+                                                        if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength sizeof__MOUNTDEV_NAME) {
                                                           (op_assign ntStatus (op_minus 1073741811))
                                                           goto switch_13_break
                                                         }
                                                         else {}
-                                                      }
-                                                      (op_assign uniqueId Irp__AssociatedIrp__SystemBuffer)
-                                                      (op_assign uniqueId__UniqueIdLength disketteExtension__InterfaceString__Length)
-                                                      {
-                                                        (op_assign __cil_tmp83 (op_plus sizeof__USHORT uniqueId__UniqueIdLength))
-                                                        if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength __cil_tmp83) {
-                                                          (op_assign ntStatus (op_minus 2147483643))
-                                                          (op_assign Irp__IoStatus__Information sizeof__MOUNTDEV_UNIQUE_ID)
+                                                        (op_assign mountName Irp__AssociatedIrp__SystemBuffer)
+                                                        (op_assign mountName__NameLength disketteExtension__DeviceName__Length)
+                                                        {
+                                                          (op_assign __cil_tmp82 (op_plus sizeof__USHORT mountName__NameLength))
+                                                          if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength __cil_tmp82) {
+                                                            (op_assign ntStatus (op_minus 2147483643))
+                                                            (op_assign Irp__IoStatus__Information sizeof__MOUNTDEV_NAME)
+                                                            goto switch_13_break
+                                                          }
+                                                          else {}
+                                                        }
+                                                        (op_assign ntStatus 0)
+                                                        (op_assign Irp__IoStatus__Information (op_plus sizeof__USHORT mountName__NameLength))
+                                                        goto switch_13_break
+                                                        switch_13_exp_1:
+                                                        {}
+                                                        if (op_not disketteExtension__InterfaceString__Buffer) {
+                                                          (op_assign ntStatus (op_minus 1073741811))
                                                           goto switch_13_break
                                                         }
-                                                        else {}
-                                                      }
-                                                      (op_assign ntStatus 0)
-                                                      (op_assign Irp__IoStatus__Information (op_plus sizeof__USHORT uniqueId__UniqueIdLength))
-                                                      goto switch_13_break
-                                                      switch_13_exp_2:
-                                                      {}
-                                                      switch_13_exp_3:
-                                                      {}
-                                                      if (op_lessThan irpSp__Parameters__DeviceIoControl__InputBufferLength sizeof__FORMAT_PARAMETERS) {
-                                                        (op_assign ntStatus (op_minus 1073741811))
-                                                        goto switch_13_break
-                                                      }
-                                                      else {}
-                                                      {
-                                                        (op_assign tmp___0 FlCheckFormatParameters((disketteExtension,Irp__AssociatedIrp__SystemBuffer)))
-                                                      }
-                                                      if (op_not tmp___0) {
-                                                        (op_assign ntStatus (op_minus 1073741811))
-                                                        goto switch_13_break
-                                                      }
-                                                      else {}
-                                                      {
-                                                        if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp88) {
-                                                          if (op_lessThan irpSp__Parameters__DeviceIoControl__InputBufferLength sizeof__FORMAT_EX_PARAMETERS) {
+                                                        else {
+                                                          if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength sizeof__MOUNTDEV_UNIQUE_ID) {
                                                             (op_assign ntStatus (op_minus 1073741811))
                                                             goto switch_13_break
                                                           }
                                                           else {}
-                                                          (op_assign formatExParameters Irp__AssociatedIrp__SystemBuffer)
-                                                          if (op_lessThan irpSp__Parameters__DeviceIoControl__InputBufferLength formatExParametersSize) {
-                                                            (op_assign ntStatus (op_minus 1073741811))
+                                                        }
+                                                        (op_assign uniqueId Irp__AssociatedIrp__SystemBuffer)
+                                                        (op_assign uniqueId__UniqueIdLength disketteExtension__InterfaceString__Length)
+                                                        {
+                                                          (op_assign __cil_tmp83 (op_plus sizeof__USHORT uniqueId__UniqueIdLength))
+                                                          if (op_lessThan irpSp__Parameters__DeviceIoControl__OutputBufferLength __cil_tmp83) {
+                                                            (op_assign ntStatus (op_minus 2147483643))
+                                                            (op_assign Irp__IoStatus__Information sizeof__MOUNTDEV_UNIQUE_ID)
                                                             goto switch_13_break
                                                           }
-                                                          else {
-                                                            if (op_greaterEqual formatExParameters__FormatGapLength 256) {
+                                                          else {}
+                                                        }
+                                                        (op_assign ntStatus 0)
+                                                        (op_assign Irp__IoStatus__Information (op_plus sizeof__USHORT uniqueId__UniqueIdLength))
+                                                        goto switch_13_break
+                                                        switch_13_exp_2:
+                                                        {}
+                                                        switch_13_exp_3:
+                                                        {}
+                                                        if (op_lessThan irpSp__Parameters__DeviceIoControl__InputBufferLength sizeof__FORMAT_PARAMETERS) {
+                                                          (op_assign ntStatus (op_minus 1073741811))
+                                                          goto switch_13_break
+                                                        }
+                                                        else {}
+                                                        {
+                                                          (op_assign tmp___0 FlCheckFormatParameters((disketteExtension,Irp__AssociatedIrp__SystemBuffer)))
+                                                        }
+                                                        if (op_not tmp___0) {
+                                                          (op_assign ntStatus (op_minus 1073741811))
+                                                          goto switch_13_break
+                                                        }
+                                                        else {}
+                                                        {
+                                                          if (op_equals irpSp__Parameters__DeviceIoControl__IoControlCode___1 __cil_tmp88) {
+                                                            if (op_lessThan irpSp__Parameters__DeviceIoControl__InputBufferLength sizeof__FORMAT_EX_PARAMETERS) {
+                                                              (op_assign ntStatus (op_minus 1073741811))
+                                                              goto switch_13_break
+                                                            }
+                                                            else {}
+                                                            (op_assign formatExParameters Irp__AssociatedIrp__SystemBuffer)
+                                                            if (op_lessThan irpSp__Parameters__DeviceIoControl__InputBufferLength formatExParametersSize) {
                                                               (op_assign ntStatus (op_minus 1073741811))
                                                               goto switch_13_break
                                                             }
                                                             else {
-                                                              if (op_greaterEqual formatExParameters__SectorsPerTrack 256) {
+                                                              if (op_greaterEqual formatExParameters__FormatGapLength 256) {
                                                                 (op_assign ntStatus (op_minus 1073741811))
                                                                 goto switch_13_break
                                                               }
-                                                              else {}
+                                                              else {
+                                                                if (op_greaterEqual formatExParameters__SectorsPerTrack 256) {
+                                                                  (op_assign ntStatus (op_minus 1073741811))
+                                                                  goto switch_13_break
+                                                                }
+                                                                else {}
+                                                              }
                                                             }
                                                           }
+                                                          else {}
                                                         }
-                                                        else {}
-                                                      }
-                                                      switch_13_exp_4:
-                                                      {}
-                                                      switch_13_exp_5:
-                                                      {}
-                                                      switch_13_exp_6:
-                                                      {}
-                                                      switch_13_exp_7:
-                                                      {
-                                                        (op_assign ntStatus FlQueueIrpToThread((Irp,disketteExtension)))
-                                                      }
-                                                      goto switch_13_break
-                                                      switch_13_exp_8:
-                                                      {}
-                                                      switch_13_exp_9:
-                                                      (op_assign outputBufferLength irpSp__Parameters__DeviceIoControl__OutputBufferLength)
-                                                      if (op_lessThan outputBufferLength sizeof__DISK_GEOMETRY) {
-                                                        (op_assign ntStatus (op_minus 1073741789))
+                                                        switch_13_exp_4:
+                                                        {}
+                                                        switch_13_exp_5:
+                                                        {}
+                                                        switch_13_exp_6:
+                                                        {}
+                                                        switch_13_exp_7:
+                                                        {
+                                                          (op_assign ntStatus FlQueueIrpToThread((Irp,disketteExtension)))
+                                                        }
                                                         goto switch_13_break
-                                                      }
-                                                      else {}
-                                                      (op_assign ntStatus 0)
-                                                      {
-                                                        (op_assign __cil_tmp89 (op_minus highestDriveMediaType lowestDriveMediaType))
-                                                        (op_assign __cil_tmp90 (op_plus __cil_tmp89 1))
-                                                        if (op_lessThan outputBufferLength __cil_tmp90) {
-                                                          (op_assign ntStatus (op_minus 2147483643))
+                                                        switch_13_exp_8:
+                                                        {}
+                                                        switch_13_exp_9:
+                                                        (op_assign outputBufferLength irpSp__Parameters__DeviceIoControl__OutputBufferLength)
+                                                        if (op_lessThan outputBufferLength sizeof__DISK_GEOMETRY) {
+                                                          (op_assign ntStatus (op_minus 1073741789))
+                                                          goto switch_13_break
                                                         }
                                                         else {}
-                                                      }
-                                                      goto switch_13_break
-                                                      switch_13_exp_10:
-                                                      {}
-                                                      switch_13_exp_11:
-                                                      {}
-                                                      switch_13_default:
-                                                      {}
-                                                      if (op_equals s NP) {
-                                                        (op_assign s SKIP1)
+                                                        (op_assign ntStatus 0)
+                                                        {
+                                                          (op_assign __cil_tmp89 (op_minus highestDriveMediaType lowestDriveMediaType))
+                                                          (op_assign __cil_tmp90 (op_plus __cil_tmp89 1))
+                                                          if (op_lessThan outputBufferLength __cil_tmp90) {
+                                                            (op_assign ntStatus (op_minus 2147483643))
+                                                          }
+                                                          else {}
+                                                        }
+                                                        goto switch_13_break
+                                                        switch_13_exp_10:
+                                                        {}
+                                                        switch_13_exp_11:
+                                                        {}
+                                                        switch_13_default:
+                                                        {}
+                                                        if (op_equals s NP) {
+                                                          (op_assign s SKIP1)
+                                                        }
+                                                        else {
+                                                          {
+                                                            errorFn()
+                                                          }
+                                                        }
+                                                        {
+                                                          (op_postFixIncr Irp__CurrentLocation)
+                                                          (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
+                                                          (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
+                                                        }
+                                                        return (op_bracketedPrimary ntStatus)
                                                       }
                                                       else {
-                                                        {
-                                                          errorFn((exp null))
-                                                        }
+                                                        switch_13_break:
+                                                        {}
                                                       }
-                                                      {
-                                                        (op_postFixIncr Irp__CurrentLocation)
-                                                        (op_postFixIncr Irp__Tail__Overlay__CurrentStackLocation)
-                                                        (op_assign ntStatus IofCallDriver((disketteExtension__TargetObject,Irp)))
-                                                      }
-                                                      return (op_bracketedPrimary ntStatus)
-                                                    }
-                                                    else {
-                                                      switch_13_break:
-                                                      {}
                                                     }
                                                   }
                                                 }
@@ -1568,83 +1570,1596 @@ t_int FloppyDeviceControl(/* TODO: param list ... */) {
           }
         }
       }
-    }
-    {
-      (op_assign __cil_tmp91 (t_unspecified)ntStatus)
-      if (op_notequals __cil_tmp91 259L) {
-        {
-          (op_assign Irp__IoStatus__Status___0 ntStatus)
-          (op_assign myStatus ntStatus)
-          IofCompleteRequest((Irp,0))
+      {
+        (op_assign __cil_tmp91 (t_unspecified)ntStatus)
+        if (op_notequals __cil_tmp91 259L) {
+          {
+            (op_assign Irp__IoStatus__Status___0 ntStatus)
+            (op_assign myStatus ntStatus)
+            IofCompleteRequest((Irp,0))
+          }
         }
+        else {}
       }
-      else {}
+      return (op_bracketedPrimary ntStatus)
     }
-    return (op_bracketedPrimary ntStatus)
   }
-}
-t_int FlCheckFormatParameters(/* TODO: param list ... */) {
-  t_int DriveMediaConstants__driveMediaType__MediaType = __VERIFIER_nondet_int((exp null))
-  t_int FormatParameters__MediaType = __VERIFIER_nondet_int((exp null))
-  t_int FAKE_CONDITION = __VERIFIER_nondet_int((exp null))
-  {
-    if (op_notequals DriveMediaConstants__driveMediaType__MediaType FormatParameters__MediaType) {
-      return (op_bracketedPrimary 0)
-    }
-    else {
-      if FAKE_CONDITION {
+  t_int FlCheckFormatParameters(t_int DisketteExtension,t_int FormatParameters){
+    t_int DriveMediaConstants__driveMediaType__MediaType = __VERIFIER_nondet_int()
+    t_int FormatParameters__MediaType = __VERIFIER_nondet_int()
+    t_int FAKE_CONDITION = __VERIFIER_nondet_int()
+    {
+      if (op_notequals DriveMediaConstants__driveMediaType__MediaType FormatParameters__MediaType) {
         return (op_bracketedPrimary 0)
       }
       else {
-        return (op_bracketedPrimary 1)
-      }
-    }
-  }
-}
-t_int FloppyQueueRequest(/* TODO: param list ... */) {
-  t_int Irp__IoStatus__Status
-  t_int Irp__IoStatus__Information
-  t_int Irp__Tail__Overlay__CurrentStackLocation__Control
-  t_int ntStatus
-  t_int FAKE_CONDITION = __VERIFIER_nondet_int((exp null))
-  {
-    (op_postFixIncr PagingReferenceCount)
-    if (op_equals PagingReferenceCount 1) {
-    }
-    else {}
-    if FAKE_CONDITION {
-      {
-        (op_assign Irp__IoStatus__Status (op_minus 1073741536))
-        (op_assign myStatus (op_minus 1073741536))
-        (op_assign Irp__IoStatus__Information 0)
-        IofCompleteRequest((Irp,0))
-        (op_postFixDecr PagingReferenceCount)
-      }
-      if (op_equals PagingReferenceCount 0) {
-      }
-      else {}
-      (op_assign ntStatus (op_minus 1073741536))
-    }
-    else {
-      (op_assign Irp__IoStatus__Status 259)
-      (op_assign myStatus 259)
-      if (op_equals pended 0) {
-        (op_assign pended 1)
-      }
-      else {
-        {
-          errorFn((exp null))
+        if FAKE_CONDITION {
+          return (op_bracketedPrimary 0)
+        }
+        else {
+          return (op_bracketedPrimary 1)
         }
       }
-      (op_assign ntStatus 259)
     }
-    return (op_bracketedPrimary ntStatus)
   }
-}
-t_void errorFn(/* TODO: param list ... */) {
+  t_int FloppyQueueRequest(t_int DisketteExtension,t_int Irp){
+    t_int Irp__IoStatus__Status
+    t_int Irp__IoStatus__Information
+    t_int Irp__Tail__Overlay__CurrentStackLocation__Control
+    t_int ntStatus
+    t_int FAKE_CONDITION = __VERIFIER_nondet_int()
+    {
+      (op_postFixIncr PagingReferenceCount)
+      if (op_equals PagingReferenceCount 1) {
+      }
+      else {}
+      if FAKE_CONDITION {
+        {
+          (op_assign Irp__IoStatus__Status (op_minus 1073741536))
+          (op_assign myStatus (op_minus 1073741536))
+          (op_assign Irp__IoStatus__Information 0)
+          IofCompleteRequest((Irp,0))
+          (op_postFixDecr PagingReferenceCount)
+        }
+        if (op_equals PagingReferenceCount 0) {
+        }
+        else {}
+        (op_assign ntStatus (op_minus 1073741536))
+      }
+      else {
+        (op_assign Irp__IoStatus__Status 259)
+        (op_assign myStatus 259)
+        if (op_equals pended 0) {
+          (op_assign pended 1)
+        }
+        else {
+          {
+            errorFn()
+          }
+        }
+        (op_assign ntStatus 259)
+      }
+      return (op_bracketedPrimary ntStatus)
+    }
+  }
+  t_void errorFn(t_void ){
+    {
+      ERROR:
+      __VERIFIER_error()
+      return
+    }
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern char __VERIFIER_nondet_char(void);
+  extern int __VERIFIER_nondet_int(void);
+  extern long __VERIFIER_nondet_long(void);
+  extern void *__VERIFIER_nondet_pointer(void);
+  int FlAcpiConfigureFloppy(int DisketteExtension, int FdcInfo);
+  int FlQueueIrpToThread(int Irp, int DisketteExtension);
+  int FloppyPnp(int DeviceObject, int Irp);
+  int FloppyStartDevice(int DeviceObject, int Irp);
+  int FloppyPnpComplete(int DeviceObject, int Irp, int Context);
+  int FlFdcDeviceIo(int DeviceObject, int Ioctl, int Data);
+  int IoBuildDeviceIoControlRequest(int IoControlCode, int DeviceObject, int InputBuffer, int InputBufferLength, int OutputBuffer, int OutputBufferLength, int InternalDeviceIoControl, int Event, int IoStatusBlock);
+  int IoDeleteSymbolicLink(int SymbolicLinkName);
+  int IoQueryDeviceDescription(int BusType, int BusNumber, int ControllerType, int ControllerNumber, int PeripheralType, int PeripheralNumber, int CalloutRoutine, int Context);
+  int IoRegisterDeviceInterface(int PhysicalDeviceObject, int InterfaceClassGuid, int ReferenceString, int SymbolicLinkName);
+  int IoSetDeviceInterfaceState(int SymbolicLinkName, int Enable);
+  int IofCallDriver(int DeviceObject, int Irp);
+  int KeSetEvent(int Event, int Increment, int Wait);
+  int KeWaitForSingleObject(int Object, int WaitReason, int WaitMode, int Alertable, int Timeout);
+  int ObReferenceObjectByHandle(int Handle, int DesiredAccess, int ObjectType, int AccessMode, int Object, int HandleInformation);
+  int PsCreateSystemThread(int ThreadHandle, int DesiredAccess, int ObjectAttributes, int ProcessHandle, int ClientId, int StartRoutine, int StartContext);
+  int ZwClose(int Handle);
+  int FloppyCreateClose(int DeviceObject, int Irp);
+  int FloppyQueueRequest(int DisketteExtension, int Irp);
+  int FloppyDeviceControl(int DeviceObject, int Irp);
+  int FlCheckFormatParameters(int DisketteExtension, int FormatParameters);
+  int FloppyQueueRequest(int DisketteExtension, int Irp);
+  void errorFn(void);
+  void IofCompleteRequest(int Irp, int PriorityBoost);
+  extern int __VERIFIER_nondet_int();
+  int FloppyThread;
+  int KernelMode;
+  int Suspended;
+  int Executive;
+  int DiskController;
+  int FloppyDiskPeripheral;
+  int FlConfigCallBack;
+  int MaximumInterfaceType;
+  int MOUNTDEV_MOUNTED_DEVICE_GUID;
+  int myStatus;
+  int s;
+  int UNLOADED;
+  int NP;
+  int DC;
+  int SKIP1;
+  int SKIP2;
+  int MPR1;
+  int MPR3;
+  int IPC;
+  int pended;
+  int compRegistered;
+  int lowerDriverReturn;
+  int setEventCalled;
+  int customIrp;
+  void _BLAST_init(void)
   {
-    ERROR:
-    __VERIFIER_error((exp null))
-    return (exp null)
+    {
+      UNLOADED = 0;
+      NP = 1;
+      DC = 2;
+      SKIP1 = 3;
+      SKIP2 = 4;
+      MPR1 = 5;
+      MPR3 = 6;
+      IPC = 7;
+      s = UNLOADED;
+      pended = 0;
+      compRegistered = 0;
+      lowerDriverReturn = 0;
+      setEventCalled = 0;
+      customIrp = 0;
+      return;
+    }
   }
-}
+  int PagingReferenceCount = 0;
+  int PagingMutex = 0;
+  int FlAcpiConfigureFloppy(int DisketteExtension, int FdcInfo)
+  {
+    {
+      return (0);
+    }
+  }
+  int FlQueueIrpToThread(int Irp, int DisketteExtension)
+  {
+    int status;
+    int threadHandle = __VERIFIER_nondet_int();
+    int DisketteExtension__PoweringDown = __VERIFIER_nondet_int();
+    int DisketteExtension__ThreadReferenceCount = __VERIFIER_nondet_int();
+    int DisketteExtension__FloppyThread = __VERIFIER_nondet_int();
+    int Irp__IoStatus__Status;
+    int Irp__IoStatus__Information;
+    int Irp__Tail__Overlay__CurrentStackLocation__Control;
+    int ObjAttributes = __VERIFIER_nondet_int();
+    int __cil_tmp12;
+    int __cil_tmp13;
+    {
+      if(DisketteExtension__PoweringDown == 1){
+        myStatus = -1073741101;
+        Irp__IoStatus__Status = -1073741101;
+        Irp__IoStatus__Information = 0;
+        return (-1073741101);
+      }
+      DisketteExtension__ThreadReferenceCount++;
+      if(DisketteExtension__ThreadReferenceCount == 0){
+        DisketteExtension__ThreadReferenceCount++;
+        PagingReferenceCount++;
+        if(PagingReferenceCount == 1){
+        }
+        {
+          status = PsCreateSystemThread(threadHandle, 0, ObjAttributes, 0, 0, FloppyThread, DisketteExtension);
+        }
+        {
+          if(status < 0){
+            DisketteExtension__ThreadReferenceCount = -1;
+            PagingReferenceCount--;
+            if(PagingReferenceCount == 0){
+            }
+            return (status);
+          }
+        }
+        {
+          status = ObReferenceObjectByHandle(threadHandle, 1048576, 0, KernelMode, DisketteExtension__FloppyThread, 0);
+          ZwClose(threadHandle);
+        }
+        {
+          if(status < 0){
+            return (status);
+          }
+        }
+      }
+      if(pended == 0){
+        pended = 1;
+      }else{
+        {
+          errorFn();
+      }}
+      return (259);
+    }
+  }
+  int FloppyPnp(int DeviceObject, int Irp)
+  {
+    int DeviceObject__DeviceExtension = __VERIFIER_nondet_int();
+    int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int();
+    int Irp__IoStatus__Information;
+    int Irp__IoStatus__Status;
+    int Irp__CurrentLocation = __VERIFIER_nondet_int();
+    int disketteExtension__IsRemoved = __VERIFIER_nondet_int();
+    int disketteExtension__IsStarted = __VERIFIER_nondet_int();
+    int disketteExtension__TargetObject = __VERIFIER_nondet_int();
+    int disketteExtension__HoldNewRequests;
+    int disketteExtension__FloppyThread = __VERIFIER_nondet_int();
+    int disketteExtension__InterfaceString__Buffer = __VERIFIER_nondet_int();
+    int disketteExtension__InterfaceString = __VERIFIER_nondet_int();
+    int disketteExtension__ArcName__Length = __VERIFIER_nondet_int();
+    int disketteExtension__ArcName = __VERIFIER_nondet_int();
+    int irpSp__MinorFunction = __VERIFIER_nondet_int();
+    int IoGetConfigurationInformation__FloppyCount = __VERIFIER_nondet_int();
+    int irpSp;
+    int disketteExtension;
+    int ntStatus;
+    int doneEvent = __VERIFIER_nondet_int();
+    int irpSp___0;
+    int nextIrpSp;
+    int nextIrpSp__Control;
+    int irpSp___1;
+    int irpSp__Context;
+    int irpSp__Control;
+    long __cil_tmp29;
+    long __cil_tmp30;
+    {
+      ntStatus = 0;
+      PagingReferenceCount++;
+      if(PagingReferenceCount == 1){
+      }
+      disketteExtension = DeviceObject__DeviceExtension;
+      irpSp = Irp__Tail__Overlay__CurrentStackLocation;
+      if(disketteExtension__IsRemoved){
+        {
+          Irp__IoStatus__Information = 0;
+          Irp__IoStatus__Status = -1073741738;
+          myStatus = -1073741738;
+          IofCompleteRequest(Irp, 0);
+        }return (-1073741738);
+      }
+      if(irpSp__MinorFunction == 0){
+        goto switch_0_0;
+      }else{
+        if(irpSp__MinorFunction == 5){
+          goto switch_0_5;
+        }else{
+          if(irpSp__MinorFunction == 1){
+            goto switch_0_5;
+          }else{
+            if(irpSp__MinorFunction == 6){
+              goto switch_0_6;
+            }else{
+              if(irpSp__MinorFunction == 3){
+                goto switch_0_6;
+              }else{
+                if(irpSp__MinorFunction == 4){
+                  goto switch_0_4;
+                }else{
+                  if(irpSp__MinorFunction == 2){
+                    goto switch_0_2;
+                  }else{
+                    goto switch_0_default;
+                    if(0){
+                      switch_0_0:
+                      {
+                        ntStatus = FloppyStartDevice(DeviceObject, Irp);
+                      }goto switch_0_break;
+                      switch_0_5:
+                      if(irpSp__MinorFunction == 5){
+                      }
+                      if(!disketteExtension__IsStarted){
+                        if(s == NP){
+                          s = SKIP1;
+                        }else{
+                          {
+                            errorFn();
+                        }}
+                        {
+                          Irp__CurrentLocation++;
+                          Irp__Tail__Overlay__CurrentStackLocation++;
+                          ntStatus = IofCallDriver(disketteExtension__TargetObject, Irp);
+                        }
+                        return (ntStatus);
+                      }
+                      {
+                        disketteExtension__HoldNewRequests = 1;
+                        ntStatus = FlQueueIrpToThread(Irp, disketteExtension);
+                      }
+                      {
+                        __cil_tmp29 = (long )ntStatus;
+                        if(__cil_tmp29 == 259L){
+                          {
+                            KeWaitForSingleObject(disketteExtension__FloppyThread, Executive, KernelMode, 0, 0);
+                          }if(disketteExtension__FloppyThread != 0){
+                          }
+                          disketteExtension__FloppyThread = 0;
+                          Irp__IoStatus__Status = 0;
+                          myStatus = 0;
+                          if(s == NP){
+                            s = SKIP1;
+                          }else{
+                            {
+                              errorFn();
+                          }}
+                          {
+                            Irp__CurrentLocation++;
+                            Irp__Tail__Overlay__CurrentStackLocation++;
+                            ntStatus = IofCallDriver(disketteExtension__TargetObject, Irp);
+                          }
+                        }
+                        else{
+                          {
+                            ntStatus = -1073741823;
+                            Irp__IoStatus__Status = ntStatus;
+                            myStatus = ntStatus;
+                            Irp__IoStatus__Information = 0;
+                            IofCompleteRequest(Irp, 0);
+                        }}
+                      }
+                      goto switch_0_break;
+                      switch_0_6:
+                      if(irpSp__MinorFunction == 6){
+                      }
+                      if(!disketteExtension__IsStarted){
+                        Irp__IoStatus__Status = 0;
+                        myStatus = 0;
+                        if(s == NP){
+                          s = SKIP1;
+                        }else{
+                          {
+                            errorFn();
+                        }}
+                        {
+                          Irp__CurrentLocation++;
+                          Irp__Tail__Overlay__CurrentStackLocation++;
+                          ntStatus = IofCallDriver(disketteExtension__TargetObject, Irp);
+                        }
+                      }
+                      else{
+                        Irp__IoStatus__Status = 0;
+                        myStatus = 0;
+                        irpSp___0 = Irp__Tail__Overlay__CurrentStackLocation;
+                        nextIrpSp = Irp__Tail__Overlay__CurrentStackLocation - 1;
+                        nextIrpSp__Control = 0;
+                        if(s != NP){
+                          {
+                            errorFn();
+                        }}
+                        else{
+                          if(compRegistered != 0){
+                            {
+                              errorFn();
+                          }}
+                          else{
+                            compRegistered = 1;
+                          }
+                        }
+                        {
+                          irpSp___1 = Irp__Tail__Overlay__CurrentStackLocation - 1;
+                          irpSp__Context = doneEvent;
+                          irpSp__Control = 224;
+                          ntStatus = IofCallDriver(disketteExtension__TargetObject, Irp);
+                        }
+                        {
+                          __cil_tmp30 = (long )ntStatus;
+                          if(__cil_tmp30 == 259L){
+                            {
+                              KeWaitForSingleObject(doneEvent, Executive, KernelMode, 0, 0);
+                              ntStatus = myStatus;
+                          }}
+                        }
+                        {
+                          disketteExtension__HoldNewRequests = 0;
+                          Irp__IoStatus__Status = ntStatus;
+                          myStatus = ntStatus;
+                          Irp__IoStatus__Information = 0;
+                          IofCompleteRequest(Irp, 0);
+                        }
+                      }
+                      goto switch_0_break;
+                      switch_0_4:
+                      disketteExtension__IsStarted = 0;
+                      Irp__IoStatus__Status = 0;
+                      myStatus = 0;
+                      if(s == NP){
+                        s = SKIP1;
+                      }else{
+                        {
+                          errorFn();
+                      }}
+                      {
+                        Irp__CurrentLocation++;
+                        Irp__Tail__Overlay__CurrentStackLocation++;
+                        ntStatus = IofCallDriver(disketteExtension__TargetObject, Irp);
+                      }
+                      goto switch_0_break;
+                      switch_0_2:
+                      disketteExtension__HoldNewRequests = 0;
+                      disketteExtension__IsStarted = 0;
+                      disketteExtension__IsRemoved = 1;
+                      if(s == NP){
+                        s = SKIP1;
+                      }else{
+                        {
+                          errorFn();
+                      }}
+                      {
+                        Irp__CurrentLocation++;
+                        Irp__Tail__Overlay__CurrentStackLocation++;
+                        Irp__IoStatus__Status = 0;
+                        myStatus = 0;
+                        ntStatus = IofCallDriver(disketteExtension__TargetObject, Irp);
+                      }
+                      if(disketteExtension__InterfaceString__Buffer != 0){
+                        {
+                          IoSetDeviceInterfaceState(disketteExtension__InterfaceString, 0);
+                      }}
+                      if(disketteExtension__ArcName__Length != 0){
+                        {
+                          IoDeleteSymbolicLink(disketteExtension__ArcName);
+                      }}
+                      IoGetConfigurationInformation__FloppyCount--;
+                      goto switch_0_break;
+                      switch_0_default:
+                      ;
+                      if(s == NP){
+                        s = SKIP1;
+                      }else{
+                        {
+                          errorFn();
+                      }}
+                      {
+                        Irp__CurrentLocation++;
+                        Irp__Tail__Overlay__CurrentStackLocation++;
+                        ntStatus = IofCallDriver(disketteExtension__TargetObject, Irp);
+                      }
+                    }
+                    else{
+                      switch_0_break:
+                      ;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      PagingReferenceCount--;
+      if(PagingReferenceCount == 0){
+      }
+      return (ntStatus);
+    }
+  }
+  int FloppyStartDevice(int DeviceObject, int Irp)
+  {
+    int DeviceObject__DeviceExtension = __VERIFIER_nondet_int();
+    int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int();
+    int Irp__IoStatus__Status;
+    int disketteExtension__TargetObject = __VERIFIER_nondet_int();
+    int disketteExtension__MaxTransferSize;
+    int disketteExtension__DriveType = __VERIFIER_nondet_int();
+    int disketteExtension__PerpendicularMode;
+    int disketteExtension__DeviceUnit;
+    int disketteExtension__DriveOnValue;
+    int disketteExtension__UnderlyingPDO = __VERIFIER_nondet_int();
+    int disketteExtension__InterfaceString = __VERIFIER_nondet_int();
+    int disketteExtension__IsStarted;
+    int disketteExtension__HoldNewRequests;
+    int ntStatus;
+    int pnpStatus;
+    int doneEvent = __VERIFIER_nondet_int();
+    int fdcInfo = __VERIFIER_nondet_int();
+    int fdcInfo__BufferCount;
+    int fdcInfo__BufferSize;
+    int fdcInfo__MaxTransferSize = __VERIFIER_nondet_int();
+    int fdcInfo__AcpiBios = __VERIFIER_nondet_int();
+    int fdcInfo__AcpiFdiSupported = __VERIFIER_nondet_int();
+    int fdcInfo__PeripheralNumber = __VERIFIER_nondet_int();
+    int fdcInfo__BusType;
+    int fdcInfo__ControllerNumber = __VERIFIER_nondet_int();
+    int fdcInfo__UnitNumber = __VERIFIER_nondet_int();
+    int fdcInfo__BusNumber = __VERIFIER_nondet_int();
+    int Dc;
+    int Fp;
+    int disketteExtension;
+    int irpSp;
+    int irpSp___0;
+    int nextIrpSp;
+    int nextIrpSp__Control;
+    int irpSp___1;
+    int irpSp__Control;
+    int irpSp__Context;
+    int InterfaceType;
+    int KUSER_SHARED_DATA__AlternativeArchitecture_NEC98x86 = __VERIFIER_nondet_int();
+    long __cil_tmp42;
+    int __cil_tmp43;
+    int __cil_tmp44;
+    int __cil_tmp45;
+    int __cil_tmp46 = __VERIFIER_nondet_int();
+    int __cil_tmp47;
+    int __cil_tmp48;
+    int __cil_tmp49;
+    {
+      Dc = DiskController;
+      Fp = FloppyDiskPeripheral;
+      disketteExtension = DeviceObject__DeviceExtension;
+      irpSp = Irp__Tail__Overlay__CurrentStackLocation;
+      irpSp___0 = Irp__Tail__Overlay__CurrentStackLocation;
+      nextIrpSp = Irp__Tail__Overlay__CurrentStackLocation - 1;
+      nextIrpSp__Control = 0;
+      if(s != NP){
+        {
+          errorFn();
+      }}
+      else{
+        if(compRegistered != 0){
+          {
+            errorFn();
+        }}
+        else{
+          compRegistered = 1;
+        }
+      }
+      {
+        irpSp___1 = Irp__Tail__Overlay__CurrentStackLocation - 1;
+        irpSp__Context = doneEvent;
+        irpSp__Control = 224;
+        ntStatus = IofCallDriver(disketteExtension__TargetObject, Irp);
+      }
+      {
+        __cil_tmp42 = (long )ntStatus;
+        if(__cil_tmp42 == 259L){
+          {
+            ntStatus = KeWaitForSingleObject(doneEvent, Executive, KernelMode, 0, 0);
+            ntStatus = myStatus;
+        }}
+      }
+      {
+        fdcInfo__BufferCount = 0;
+        fdcInfo__BufferSize = 0;
+        ntStatus = FlFdcDeviceIo(disketteExtension__TargetObject, __cil_tmp46, fdcInfo);
+      }
+      if(ntStatus >= 0){
+        disketteExtension__MaxTransferSize = fdcInfo__MaxTransferSize;
+        if(fdcInfo__AcpiBios){
+          if(fdcInfo__AcpiFdiSupported){
+            {
+              ntStatus = FlAcpiConfigureFloppy(disketteExtension, fdcInfo);
+            }if(disketteExtension__DriveType == 4){
+            }
+          }
+          else{
+            goto _L;
+          }
+        }
+        else{
+          _L:
+          if(disketteExtension__DriveType == 4){
+          }
+          InterfaceType = 0;
+          {
+            while(1){
+              while_0_continue:
+              ;
+              if(InterfaceType >= MaximumInterfaceType){
+                goto while_1_break;
+              }
+              {
+                fdcInfo__BusType = InterfaceType;
+                ntStatus = IoQueryDeviceDescription(fdcInfo__BusType, fdcInfo__BusNumber, Dc, fdcInfo__ControllerNumber, Fp, fdcInfo__PeripheralNumber, FlConfigCallBack, disketteExtension);
+              }
+              if(ntStatus >= 0){
+                goto while_1_break;
+              }
+              InterfaceType++;
+            }
+            while_0_break:
+            ;
+          }
+          while_1_break:
+          ;
+        }
+        if(ntStatus >= 0){
+          if(KUSER_SHARED_DATA__AlternativeArchitecture_NEC98x86 != 0){
+            disketteExtension__DeviceUnit = fdcInfo__UnitNumber;
+            disketteExtension__DriveOnValue = fdcInfo__UnitNumber;
+          }else{
+            disketteExtension__DeviceUnit = fdcInfo__PeripheralNumber;
+          }
+          {
+            pnpStatus = IoRegisterDeviceInterface(disketteExtension__UnderlyingPDO, MOUNTDEV_MOUNTED_DEVICE_GUID, 0, disketteExtension__InterfaceString);
+          }
+          if(pnpStatus >= 0){
+            {
+              pnpStatus = IoSetDeviceInterfaceState(disketteExtension__InterfaceString, 1);
+          }}
+          disketteExtension__IsStarted = 1;
+          disketteExtension__HoldNewRequests = 0;
+        }
+      }
+      {
+        Irp__IoStatus__Status = ntStatus;
+        myStatus = ntStatus;
+        IofCompleteRequest(Irp, 0);
+      }
+      return (ntStatus);
+    }
+  }
+  int FloppyPnpComplete(int DeviceObject, int Irp, int Context)
+  {
+    {
+      {
+        KeSetEvent(Context, 1, 0);
+      }
+      return (-1073741802);
+    }
+  }
+  int FlFdcDeviceIo(int DeviceObject, int Ioctl, int Data)
+  {
+    int ntStatus;
+    int irp;
+    int irpStack;
+    int doneEvent = __VERIFIER_nondet_int();
+    int ioStatus = __VERIFIER_nondet_int();
+    int irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int();
+    int irpStack__Parameters__DeviceIoControl__Type3InputBuffer;
+    long __cil_tmp11;
+    {
+      {
+        irp = IoBuildDeviceIoControlRequest(Ioctl, DeviceObject, 0, 0, 0, 0, 1, doneEvent, ioStatus);
+      }
+      if(irp == 0){
+        return (-1073741670);
+      }
+      {
+        irpStack = irp__Tail__Overlay__CurrentStackLocation - 1;
+        irpStack__Parameters__DeviceIoControl__Type3InputBuffer = Data;
+        ntStatus = IofCallDriver(DeviceObject, irp);
+      }
+      {
+        __cil_tmp11 = (long )ntStatus;
+        if(__cil_tmp11 == 259L){
+          {
+            KeWaitForSingleObject(doneEvent, Suspended, KernelMode, 0, 0);
+            ntStatus = myStatus;
+        }}
+      }
+      return (ntStatus);
+    }
+  }
+  void FloppyProcessQueuedRequests(int DisketteExtension)
+  {
+    {
+      return;
+    }
+  }
+  void stub_driver_init(void)
+  {
+    {
+      s = NP;
+      pended = 0;
+      compRegistered = 0;
+      lowerDriverReturn = 0;
+      setEventCalled = 0;
+      customIrp = 0;
+      return;
+    }
+  }
+  int main(void)
+  {
+    int status;
+    int irp = __VERIFIER_nondet_int();
+    int pirp;
+    int pirp__IoStatus__Status;
+    int irp_choice = __VERIFIER_nondet_int();
+    int devobj = __VERIFIER_nondet_int();
+    int __cil_tmp8;
+    FloppyThread = 0;
+    KernelMode = 0;
+    Suspended = 0;
+    Executive = 0;
+    DiskController = 0;
+    FloppyDiskPeripheral = 0;
+    FlConfigCallBack = 0;
+    MaximumInterfaceType = 0;
+    MOUNTDEV_MOUNTED_DEVICE_GUID = 0;
+    myStatus = 0;
+    s = 0;
+    UNLOADED = 0;
+    NP = 0;
+    DC = 0;
+    SKIP1 = 0;
+    SKIP2 = 0;
+    MPR1 = 0;
+    MPR3 = 0;
+    IPC = 0;
+    pended = 0;
+    compRegistered = 0;
+    lowerDriverReturn = 0;
+    setEventCalled = 0;
+    customIrp = 0;
+    {
+      {
+        status = 0;
+        pirp = irp;
+        _BLAST_init();
+      }
+      if(status >= 0){
+        s = NP;
+        customIrp = 0;
+        setEventCalled = customIrp;
+        lowerDriverReturn = setEventCalled;
+        compRegistered = lowerDriverReturn;
+        pended = compRegistered;
+        pirp__IoStatus__Status = 0;
+        myStatus = 0;
+        if(irp_choice == 0){
+          pirp__IoStatus__Status = -1073741637;
+          myStatus = -1073741637;
+        }
+        {
+          stub_driver_init();
+        }
+        {
+          if(status < 0){
+            return (-1);
+          }
+        }
+        int tmp_ndt_1;
+        tmp_ndt_1 = __VERIFIER_nondet_int();
+        if(tmp_ndt_1 == 0){
+          goto switch_2_0;
+        }else{
+          int tmp_ndt_2;
+          tmp_ndt_2 = __VERIFIER_nondet_int();
+          if(tmp_ndt_2 == 1){
+            goto switch_2_1;
+          }else{
+            int tmp_ndt_3;
+            tmp_ndt_3 = __VERIFIER_nondet_int();
+            if(tmp_ndt_3 == 2){
+              goto switch_2_2;
+            }else{
+              int tmp_ndt_4;
+              tmp_ndt_4 = __VERIFIER_nondet_int();
+              if(tmp_ndt_4 == 3){
+                goto switch_2_3;
+              }else{
+                goto switch_2_default;
+                if(0){
+                  switch_2_0:
+                  {
+                    status = FloppyCreateClose(devobj, pirp);
+                  }goto switch_2_break;
+                  switch_2_1:
+                  {
+                    status = FloppyCreateClose(devobj, pirp);
+                  }
+                  goto switch_2_break;
+                  switch_2_2:
+                  {
+                    status = FloppyDeviceControl(devobj, pirp);
+                  }
+                  goto switch_2_break;
+                  switch_2_3:
+                  {
+                    status = FloppyPnp(devobj, pirp);
+                  }
+                  goto switch_2_break;
+                  switch_2_default:
+                  ;
+                  return (-1);
+                }
+                else{
+                  switch_2_break:
+                  ;
+                }
+              }
+            }
+          }
+        }
+      }
+      if(pended == 1){
+        if(s == NP){
+          s = NP;
+        }else{
+          goto _L___2;
+        }
+      }
+      else{
+        _L___2:
+        if(pended == 1){
+          if(s == MPR3){
+            s = MPR3;
+          }else{
+            goto _L___1;
+          }
+        }
+        else{
+          _L___1:
+          if(s != UNLOADED){
+            if(status != -1){
+              if(s != SKIP2){
+                if(s != IPC){
+                  if(s != DC){
+                    {
+                      errorFn();
+                  }}
+                  else{
+                    goto _L___0;
+                  }
+                }
+                else{
+                  goto _L___0;
+                }
+              }
+              else{
+                _L___0:
+                if(pended == 1){
+                  if(status != 259){
+                    status = 0;
+                  }
+                }
+                else{
+                  if(s == DC){
+                    if(status == 259){
+                      {
+                        errorFn();
+                    }}
+                  }
+                  else{
+                    if(status != lowerDriverReturn){
+                      {
+                        errorFn();
+                    }}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      status = 0;
+      return (status);
+    }
+  }
+  int IoBuildDeviceIoControlRequest(int IoControlCode, int DeviceObject, int InputBuffer, int InputBufferLength, int OutputBuffer, int OutputBufferLength, int InternalDeviceIoControl, int Event, int IoStatusBlock)
+  {
+    int malloc = __VERIFIER_nondet_int();
+    {
+      customIrp = 1;
+      int tmp_ndt_5;
+      tmp_ndt_5 = __VERIFIER_nondet_int();
+      if(tmp_ndt_5 == 0){
+        goto switch_3_0;
+      }else{
+        goto switch_3_default;
+        if(0){
+          switch_3_0:
+          return (malloc);
+          switch_3_default:
+          ;
+          return (0);
+        }else{
+        }
+      }
+    }
+  }
+  int IoDeleteSymbolicLink(int SymbolicLinkName)
+  {
+    {
+      int tmp_ndt_6;
+      tmp_ndt_6 = __VERIFIER_nondet_int();
+      if(tmp_ndt_6 == 0){
+        goto switch_4_0;
+      }else{
+        goto switch_4_default;
+        if(0){
+          switch_4_0:
+          return (0);
+          switch_4_default:
+          ;
+          return (-1073741823);
+        }else{
+        }
+      }
+    }
+  }
+  int IoQueryDeviceDescription(int BusType, int BusNumber, int ControllerType, int ControllerNumber, int PeripheralType, int PeripheralNumber, int CalloutRoutine, int Context)
+  {
+    {
+      int tmp_ndt_7;
+      tmp_ndt_7 = __VERIFIER_nondet_int();
+      if(tmp_ndt_7 == 0){
+        goto switch_5_0;
+      }else{
+        goto switch_5_default;
+        if(0){
+          switch_5_0:
+          return (0);
+          switch_5_default:
+          ;
+          return (-1073741823);
+        }else{
+        }
+      }
+    }
+  }
+  int IoRegisterDeviceInterface(int PhysicalDeviceObject, int InterfaceClassGuid, int ReferenceString, int SymbolicLinkName)
+  {
+    {
+      int tmp_ndt_8;
+      tmp_ndt_8 = __VERIFIER_nondet_int();
+      if(tmp_ndt_8 == 0){
+        goto switch_6_0;
+      }else{
+        goto switch_6_default;
+        if(0){
+          switch_6_0:
+          return (0);
+          switch_6_default:
+          ;
+          return (-1073741808);
+        }else{
+        }
+      }
+    }
+  }
+  int IoSetDeviceInterfaceState(int SymbolicLinkName, int Enable)
+  {
+    {
+      int tmp_ndt_9;
+      tmp_ndt_9 = __VERIFIER_nondet_int();
+      if(tmp_ndt_9 == 0){
+        goto switch_7_0;
+      }else{
+        goto switch_7_default;
+        if(0){
+          switch_7_0:
+          return (0);
+          switch_7_default:
+          ;
+          return (-1073741823);
+        }else{
+        }
+      }
+    }
+  }
+  void stubMoreProcessingRequired(void)
+  {
+    {
+      if(s == NP){
+        s = MPR1;
+      }else{
+        {
+          errorFn();
+      }}
+      return;
+    }
+  }
+  int IofCallDriver(int DeviceObject, int Irp)
+  {
+    int returnVal2;
+    int compRetStatus1;
+    int lcontext = __VERIFIER_nondet_int();
+    unsigned long __cil_tmp7;
+    {
+      if(compRegistered){
+        {
+          compRetStatus1 = FloppyPnpComplete(DeviceObject, Irp, lcontext);
+        }{
+          __cil_tmp7 = (unsigned long )compRetStatus1;
+          if(__cil_tmp7 == -1073741802){
+            {
+              stubMoreProcessingRequired();
+          }}
+        }
+      }
+      int tmp_ndt_10;
+      tmp_ndt_10 = __VERIFIER_nondet_int();
+      if(tmp_ndt_10 == 0){
+        goto switch_8_0;
+      }else{
+        int tmp_ndt_11;
+        tmp_ndt_11 = __VERIFIER_nondet_int();
+        if(tmp_ndt_11 == 1){
+          goto switch_8_1;
+        }else{
+          goto switch_8_default;
+          if(0){
+            switch_8_0:
+            returnVal2 = 0;
+            goto switch_8_break;
+            switch_8_1:
+            returnVal2 = -1073741823;
+            goto switch_8_break;
+            switch_8_default:
+            returnVal2 = 259;
+            goto switch_8_break;
+          }else{
+            switch_8_break:
+            ;
+          }
+        }
+      }
+      if(s == NP){
+        s = IPC;
+        lowerDriverReturn = returnVal2;
+      }else{
+        if(s == MPR1){
+          if(returnVal2 == 259){
+            s = MPR3;
+            lowerDriverReturn = returnVal2;
+          }else{
+            s = NP;
+            lowerDriverReturn = returnVal2;
+          }
+        }
+        else{
+          if(s == SKIP1){
+            s = SKIP2;
+            lowerDriverReturn = returnVal2;
+          }else{
+            {
+              errorFn();
+          }}
+        }
+      }
+      return (returnVal2);
+    }
+  }
+  void IofCompleteRequest(int Irp, int PriorityBoost)
+  {
+    {
+      if(s == NP){
+        s = DC;
+      }else{
+        {
+          errorFn();
+      }}
+      return;
+    }
+  }
+  int KeSetEvent(int Event, int Increment, int Wait)
+  {
+    int l = __VERIFIER_nondet_int();
+    {
+      setEventCalled = 1;
+      return (l);
+    }
+  }
+  int KeWaitForSingleObject(int Object, int WaitReason, int WaitMode, int Alertable, int Timeout)
+  {
+    {
+      if(s == MPR3){
+        if(setEventCalled == 1){
+          s = NP;
+          setEventCalled = 0;
+        }else{
+          goto _L;
+        }
+      }
+      else{
+        _L:
+        if(customIrp == 1){
+          s = NP;
+          customIrp = 0;
+        }else{
+          if(s == MPR3){
+            {
+              errorFn();
+          }}
+        }
+      }
+      int tmp_ndt_12;
+      tmp_ndt_12 = __VERIFIER_nondet_int();
+      if(tmp_ndt_12 == 0){
+        goto switch_9_0;
+      }else{
+        goto switch_9_default;
+        if(0){
+          switch_9_0:
+          return (0);
+          switch_9_default:
+          ;
+          return (-1073741823);
+        }else{
+        }
+      }
+    }
+  }
+  int ObReferenceObjectByHandle(int Handle, int DesiredAccess, int ObjectType, int AccessMode, int Object, int HandleInformation)
+  {
+    {
+      int tmp_ndt_13;
+      tmp_ndt_13 = __VERIFIER_nondet_int();
+      if(tmp_ndt_13 == 0){
+        goto switch_10_0;
+      }else{
+        goto switch_10_default;
+        if(0){
+          switch_10_0:
+          return (0);
+          switch_10_default:
+          ;
+          return (-1073741823);
+        }else{
+        }
+      }
+    }
+  }
+  int PsCreateSystemThread(int ThreadHandle, int DesiredAccess, int ObjectAttributes, int ProcessHandle, int ClientId, int StartRoutine, int StartContext)
+  {
+    {
+      int tmp_ndt_14;
+      tmp_ndt_14 = __VERIFIER_nondet_int();
+      if(tmp_ndt_14 == 0){
+        goto switch_11_0;
+      }else{
+        goto switch_11_default;
+        if(0){
+          switch_11_0:
+          return (0);
+          switch_11_default:
+          ;
+          return (-1073741823);
+        }else{
+        }
+      }
+    }
+  }
+  int ZwClose(int Handle)
+  {
+    {
+      int tmp_ndt_15;
+      tmp_ndt_15 = __VERIFIER_nondet_int();
+      if(tmp_ndt_15 == 0){
+        goto switch_12_0;
+      }else{
+        goto switch_12_default;
+        if(0){
+          switch_12_0:
+          return (0);
+          switch_12_default:
+          ;
+          return (-1073741823);
+        }else{
+        }
+      }
+    }
+  }
+  int FloppyCreateClose(int DeviceObject, int Irp)
+  {
+    int Irp__IoStatus__Status;
+    int Irp__IoStatus__Information;
+    {
+      {
+        myStatus = 0;
+        Irp__IoStatus__Status = 0;
+        Irp__IoStatus__Information = 1;
+        IofCompleteRequest(Irp, 0);
+      }
+      return (0);
+    }
+  }
+  int FloppyQueueRequest(int DisketteExtension, int Irp);
+  int FloppyDeviceControl(int DeviceObject, int Irp)
+  {
+    int disketteExtension__HoldNewRequests = __VERIFIER_nondet_int();
+    int disketteExtension__IsRemoved = __VERIFIER_nondet_int();
+    int Irp__IoStatus__Information;
+    int disketteExtension__IsStarted = __VERIFIER_nondet_int();
+    int Irp__CurrentLocation = __VERIFIER_nondet_int();
+    int Irp__Tail__Overlay__CurrentStackLocation = __VERIFIER_nondet_int();
+    int disketteExtension__TargetObject = __VERIFIER_nondet_int();
+    int irpSp__Parameters__DeviceIoControl__OutputBufferLength = __VERIFIER_nondet_int();
+    int sizeof__MOUNTDEV_NAME = __VERIFIER_nondet_int();
+    int Irp__AssociatedIrp__SystemBuffer = __VERIFIER_nondet_int();
+    int mountName__NameLength;
+    int disketteExtension__DeviceName__Length = __VERIFIER_nondet_int();
+    int sizeof__USHORT = __VERIFIER_nondet_int();
+    int disketteExtension__InterfaceString__Buffer = __VERIFIER_nondet_int();
+    int uniqueId__UniqueIdLength;
+    int disketteExtension__InterfaceString__Length = __VERIFIER_nondet_int();
+    int sizeof__MOUNTDEV_UNIQUE_ID = __VERIFIER_nondet_int();
+    int irpSp__Parameters__DeviceIoControl__InputBufferLength = __VERIFIER_nondet_int();
+    int sizeof__FORMAT_PARAMETERS = __VERIFIER_nondet_int();
+    int irpSp__Parameters__DeviceIoControl__IoControlCode___1 = __VERIFIER_nondet_int();
+    int sizeof__FORMAT_EX_PARAMETERS = __VERIFIER_nondet_int();
+    int formatExParameters__FormatGapLength = __VERIFIER_nondet_int();
+    int formatExParameters__SectorsPerTrack = __VERIFIER_nondet_int();
+    int sizeof__DISK_GEOMETRY = __VERIFIER_nondet_int();
+    int Irp__IoStatus__Status___0;
+    int disketteExtension = __VERIFIER_nondet_int();
+    int ntStatus;
+    int outputBufferLength;
+    int lowestDriveMediaType = __VERIFIER_nondet_int();
+    int highestDriveMediaType = __VERIFIER_nondet_int();
+    int formatExParametersSize = __VERIFIER_nondet_int();
+    int formatExParameters;
+    int tmp;
+    int mountName;
+    int uniqueId;
+    int tmp___0;
+    int __cil_tmp39;
+    int __cil_tmp40;
+    int __cil_tmp41 = __VERIFIER_nondet_int();
+    int __cil_tmp42;
+    int __cil_tmp43;
+    int __cil_tmp44 = __VERIFIER_nondet_int();
+    int __cil_tmp45 = __VERIFIER_nondet_int();
+    int __cil_tmp46;
+    int __cil_tmp47;
+    int __cil_tmp48;
+    int __cil_tmp49;
+    int __cil_tmp50 = __VERIFIER_nondet_int();
+    int __cil_tmp51;
+    int __cil_tmp52;
+    int __cil_tmp53;
+    int __cil_tmp54;
+    int __cil_tmp55 = __VERIFIER_nondet_int();
+    int __cil_tmp56;
+    int __cil_tmp57;
+    int __cil_tmp58;
+    int __cil_tmp59;
+    int __cil_tmp60 = __VERIFIER_nondet_int();
+    int __cil_tmp61;
+    int __cil_tmp62;
+    int __cil_tmp63;
+    int __cil_tmp64;
+    int __cil_tmp65 = __VERIFIER_nondet_int();
+    int __cil_tmp66 = __VERIFIER_nondet_int();
+    int __cil_tmp67;
+    int __cil_tmp68;
+    int __cil_tmp69 = __VERIFIER_nondet_int();
+    int __cil_tmp70;
+    int __cil_tmp71;
+    int __cil_tmp72 = __VERIFIER_nondet_int();
+    int __cil_tmp73;
+    int __cil_tmp74;
+    int __cil_tmp75 = __VERIFIER_nondet_int();
+    int __cil_tmp76;
+    int __cil_tmp77;
+    int __cil_tmp78 = __VERIFIER_nondet_int();
+    int __cil_tmp79;
+    int __cil_tmp80;
+    int __cil_tmp81 = __VERIFIER_nondet_int();
+    int __cil_tmp82;
+    int __cil_tmp83;
+    int __cil_tmp84;
+    int __cil_tmp85;
+    int __cil_tmp86;
+    int __cil_tmp87;
+    int __cil_tmp88 = __VERIFIER_nondet_int();
+    int __cil_tmp89;
+    int __cil_tmp90;
+    long __cil_tmp91;
+    {
+      if(disketteExtension__HoldNewRequests){
+        {
+          if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 != __cil_tmp41){
+            {
+              ntStatus = FloppyQueueRequest(disketteExtension, Irp);
+            }return (ntStatus);
+          }
+        }
+      }
+      if(disketteExtension__IsRemoved){
+        {
+          Irp__IoStatus__Information = 0;
+          Irp__IoStatus__Status___0 = -1073741738;
+          myStatus = -1073741738;
+          IofCompleteRequest(Irp, 0);
+        }return (-1073741738);
+      }
+      if(!disketteExtension__IsStarted){
+        if(s == NP){
+          s = SKIP1;
+        }else{
+          {
+            errorFn();
+        }}
+        {
+          Irp__CurrentLocation++;
+          Irp__Tail__Overlay__CurrentStackLocation++;
+          tmp = IofCallDriver(disketteExtension__TargetObject, Irp);
+        }
+        return (tmp);
+      }
+      {
+        if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp44){
+          goto switch_13_exp_0;
+        }else{
+          {
+            if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp45){
+              goto switch_13_exp_1;
+            }else{
+              {
+                if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp50){
+                  goto switch_13_exp_2;
+                }else{
+                  {
+                    if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp55){
+                      goto switch_13_exp_3;
+                    }else{
+                      {
+                        if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp60){
+                          goto switch_13_exp_4;
+                        }else{
+                          {
+                            if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp65){
+                              goto switch_13_exp_5;
+                            }else{
+                              {
+                                if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp66){
+                                  goto switch_13_exp_6;
+                                }else{
+                                  {
+                                    if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp69){
+                                      goto switch_13_exp_7;
+                                    }else{
+                                      {
+                                        if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp72){
+                                          goto switch_13_exp_8;
+                                        }else{
+                                          {
+                                            if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp75){
+                                              goto switch_13_exp_9;
+                                            }else{
+                                              {
+                                                if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp78){
+                                                  goto switch_13_exp_10;
+                                                }else{
+                                                  {
+                                                    if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp81){
+                                                      goto switch_13_exp_11;
+                                                    }else{
+                                                      goto switch_13_default;
+                                                      if(0){
+                                                        switch_13_exp_0:
+                                                        ;
+                                                        if(irpSp__Parameters__DeviceIoControl__OutputBufferLength < sizeof__MOUNTDEV_NAME){
+                                                          ntStatus = -1073741811;
+                                                          goto switch_13_break;
+                                                        }
+                                                        mountName = Irp__AssociatedIrp__SystemBuffer;
+                                                        mountName__NameLength = disketteExtension__DeviceName__Length;
+                                                        {
+                                                          __cil_tmp82 = sizeof__USHORT + mountName__NameLength;
+                                                          if(irpSp__Parameters__DeviceIoControl__OutputBufferLength < __cil_tmp82){
+                                                            ntStatus = -2147483643;
+                                                            Irp__IoStatus__Information = sizeof__MOUNTDEV_NAME;
+                                                            goto switch_13_break;
+                                                          }
+                                                        }
+                                                        ntStatus = 0;
+                                                        Irp__IoStatus__Information = sizeof__USHORT + mountName__NameLength;
+                                                        goto switch_13_break;
+                                                        switch_13_exp_1:
+                                                        ;
+                                                        if(!disketteExtension__InterfaceString__Buffer){
+                                                          ntStatus = -1073741811;
+                                                          goto switch_13_break;
+                                                        }else{
+                                                          if(irpSp__Parameters__DeviceIoControl__OutputBufferLength < sizeof__MOUNTDEV_UNIQUE_ID){
+                                                            ntStatus = -1073741811;
+                                                            goto switch_13_break;
+                                                          }
+                                                        }
+                                                        uniqueId = Irp__AssociatedIrp__SystemBuffer;
+                                                        uniqueId__UniqueIdLength = disketteExtension__InterfaceString__Length;
+                                                        {
+                                                          __cil_tmp83 = sizeof__USHORT + uniqueId__UniqueIdLength;
+                                                          if(irpSp__Parameters__DeviceIoControl__OutputBufferLength < __cil_tmp83){
+                                                            ntStatus = -2147483643;
+                                                            Irp__IoStatus__Information = sizeof__MOUNTDEV_UNIQUE_ID;
+                                                            goto switch_13_break;
+                                                          }
+                                                        }
+                                                        ntStatus = 0;
+                                                        Irp__IoStatus__Information = sizeof__USHORT + uniqueId__UniqueIdLength;
+                                                        goto switch_13_break;
+                                                        switch_13_exp_2:
+                                                        ;
+                                                        switch_13_exp_3:
+                                                        ;
+                                                        if(irpSp__Parameters__DeviceIoControl__InputBufferLength < sizeof__FORMAT_PARAMETERS){
+                                                          ntStatus = -1073741811;
+                                                          goto switch_13_break;
+                                                        }
+                                                        {
+                                                          tmp___0 = FlCheckFormatParameters(disketteExtension, Irp__AssociatedIrp__SystemBuffer);
+                                                        }
+                                                        if(!tmp___0){
+                                                          ntStatus = -1073741811;
+                                                          goto switch_13_break;
+                                                        }
+                                                        {
+                                                          if(irpSp__Parameters__DeviceIoControl__IoControlCode___1 == __cil_tmp88){
+                                                            if(irpSp__Parameters__DeviceIoControl__InputBufferLength < sizeof__FORMAT_EX_PARAMETERS){
+                                                              ntStatus = -1073741811;
+                                                              goto switch_13_break;
+                                                            }
+                                                            formatExParameters = Irp__AssociatedIrp__SystemBuffer;
+                                                            if(irpSp__Parameters__DeviceIoControl__InputBufferLength < formatExParametersSize){
+                                                              ntStatus = -1073741811;
+                                                              goto switch_13_break;
+                                                            }else{
+                                                              if(formatExParameters__FormatGapLength >= 256){
+                                                                ntStatus = -1073741811;
+                                                                goto switch_13_break;
+                                                              }else{
+                                                                if(formatExParameters__SectorsPerTrack >= 256){
+                                                                  ntStatus = -1073741811;
+                                                                  goto switch_13_break;
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                        switch_13_exp_4:
+                                                        ;
+                                                        switch_13_exp_5:
+                                                        ;
+                                                        switch_13_exp_6:
+                                                        ;
+                                                        switch_13_exp_7:
+                                                        {
+                                                          ntStatus = FlQueueIrpToThread(Irp, disketteExtension);
+                                                        }
+                                                        goto switch_13_break;
+                                                        switch_13_exp_8:
+                                                        ;
+                                                        switch_13_exp_9:
+                                                        outputBufferLength = irpSp__Parameters__DeviceIoControl__OutputBufferLength;
+                                                        if(outputBufferLength < sizeof__DISK_GEOMETRY){
+                                                          ntStatus = -1073741789;
+                                                          goto switch_13_break;
+                                                        }
+                                                        ntStatus = 0;
+                                                        {
+                                                          __cil_tmp89 = highestDriveMediaType - lowestDriveMediaType;
+                                                          __cil_tmp90 = __cil_tmp89 + 1;
+                                                          if(outputBufferLength < __cil_tmp90){
+                                                            ntStatus = -2147483643;
+                                                          }
+                                                        }
+                                                        goto switch_13_break;
+                                                        switch_13_exp_10:
+                                                        ;
+                                                        switch_13_exp_11:
+                                                        ;
+                                                        switch_13_default:
+                                                        ;
+                                                        if(s == NP){
+                                                          s = SKIP1;
+                                                        }else{
+                                                          {
+                                                            errorFn();
+                                                        }}
+                                                        {
+                                                          Irp__CurrentLocation++;
+                                                          Irp__Tail__Overlay__CurrentStackLocation++;
+                                                          ntStatus = IofCallDriver(disketteExtension__TargetObject, Irp);
+                                                        }
+                                                        return (ntStatus);
+                                                      }
+                                                      else{
+                                                        switch_13_break:
+                                                        ;
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      {
+        __cil_tmp91 = (long )ntStatus;
+        if(__cil_tmp91 != 259L){
+          {
+            Irp__IoStatus__Status___0 = ntStatus;
+            myStatus = ntStatus;
+            IofCompleteRequest(Irp, 0);
+        }}
+      }
+      return (ntStatus);
+    }
+  }
+  int FlCheckFormatParameters(int DisketteExtension, int FormatParameters)
+  {
+    int DriveMediaConstants__driveMediaType__MediaType = __VERIFIER_nondet_int();
+    int FormatParameters__MediaType = __VERIFIER_nondet_int();
+    int FAKE_CONDITION = __VERIFIER_nondet_int();
+    {
+      if(DriveMediaConstants__driveMediaType__MediaType != FormatParameters__MediaType){
+        return (0);
+      }else{
+        if(FAKE_CONDITION){
+          return (0);
+        }else{
+          return (1);
+        }
+      }
+    }
+  }
+  int FloppyQueueRequest(int DisketteExtension, int Irp)
+  {
+    int Irp__IoStatus__Status;
+    int Irp__IoStatus__Information;
+    int Irp__Tail__Overlay__CurrentStackLocation__Control;
+    int ntStatus;
+    int FAKE_CONDITION = __VERIFIER_nondet_int();
+    {
+      PagingReferenceCount++;
+      if(PagingReferenceCount == 1){
+      }
+      if(FAKE_CONDITION){
+        {
+          Irp__IoStatus__Status = -1073741536;
+          myStatus = -1073741536;
+          Irp__IoStatus__Information = 0;
+          IofCompleteRequest(Irp, 0);
+          PagingReferenceCount--;
+        }if(PagingReferenceCount == 0){
+        }
+        ntStatus = -1073741536;
+      }
+      else{
+        Irp__IoStatus__Status = 259;
+        myStatus = 259;
+        if(pended == 0){
+          pended = 1;
+        }else{
+          {
+            errorFn();
+        }}
+        ntStatus = 259;
+      }
+      return (ntStatus);
+    }
+  }
+  void errorFn(void)
+  {
+    {
+      ERROR:
+      __VERIFIER_error();
+      return;
+    }
+  }

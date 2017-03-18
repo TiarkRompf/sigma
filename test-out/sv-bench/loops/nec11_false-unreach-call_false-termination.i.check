@@ -1,26 +1,53 @@
-// loops/nec11_false-unreach-call_false-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_bool __VERIFIER_nondet_bool
-t_int main(/* TODO: param list ... */) {
-  t_int a
-  t_int len = 0
-  t_bool c = __VERIFIER_nondet_bool((exp null))
-  t_int i
-  while c
-  {
-    if (op_equals len 4) (op_assign len 0)
+// # loops/nec11_false-unreach-call_false-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
     else {}
-    (op_assign a[len] 0)
-    (op_postFixIncr len)
+    return
   }
-  __VERIFIER_assert((op_equals len 5))
-  return 1
-}
+  t_bool __VERIFIER_nondet_bool()
+  t_int main(){
+    t_int a
+    t_int len = 0
+    t_bool c = __VERIFIER_nondet_bool()
+    t_int i
+    while c
+    {
+      if (op_equals len 4) (op_assign len 0)
+      else {}
+      (op_assign a[len] 0)
+      (op_postFixIncr len)
+    }
+    __VERIFIER_assert((op_equals len 5))
+    return 1
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  _Bool __VERIFIER_nondet_bool();
+  int main()
+  {
+    int a[5];
+    int len = 0;
+    _Bool c = __VERIFIER_nondet_bool();
+    int i;
+    while(c){
+      if(len == 4)
+      len = 0;
+      a[len] = 0;
+      len++;
+    }
+    __VERIFIER_assert(len == 5);
+    return 1;
+  }

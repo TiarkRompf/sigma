@@ -1,39 +1,99 @@
-// loop-acceleration/diamond_true-unreach-call2.i
-t_void __VERIFIER_error
-t_int __VERIFIER_nondet_uint
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-acceleration/diamond_true-unreach-call2.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_uint(t_void )
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int main(/* TODO: param list ... */) {
-  t_int x = 0
-  t_int y = __VERIFIER_nondet_uint((exp null))
-  while (op_lessThan x 99)
+  t_int main(t_void ){
+    t_int x = 0
+    t_int y = __VERIFIER_nondet_uint()
+    while (op_lessThan x 99)
+    {
+      if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+      else (op_postFixIncr x)
+      if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+      else (op_minusAssign x 2)
+      if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+      else (op_plusAssign x 2)
+      if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+      else (op_minusAssign x 2)
+      if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+      else (op_plusAssign x 2)
+      if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+      else (op_minusAssign x 4)
+      if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+      else (op_plusAssign x 4)
+      if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+      else (op_plusAssign x 2)
+      if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+      else (op_minusAssign x 4)
+      if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
+      else (op_minusAssign x 4)
+    }
+    __VERIFIER_assert((op_equals (op_bracketedPrimary (op_modulo x 2)) (op_bracketedPrimary (op_modulo y 2))))
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  extern unsigned int __VERIFIER_nondet_uint(void);
+  void __VERIFIER_assert(int cond)
   {
-    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
-    else (op_postFixIncr x)
-    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
-    else (op_minusAssign x 2)
-    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
-    else (op_plusAssign x 2)
-    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
-    else (op_minusAssign x 2)
-    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
-    else (op_plusAssign x 2)
-    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
-    else (op_minusAssign x 4)
-    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
-    else (op_plusAssign x 4)
-    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
-    else (op_plusAssign x 2)
-    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
-    else (op_minusAssign x 4)
-    if (op_equals (op_modulo y 2) 0) (op_plusAssign x 2)
-    else (op_minusAssign x 4)
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
   }
-  __VERIFIER_assert((op_equals (op_bracketedPrimary (op_modulo x 2)) (op_bracketedPrimary (op_modulo y 2))))
-}
+  int main(void)
+  {
+    unsigned int x = 0;
+    unsigned int y = __VERIFIER_nondet_uint();
+    while(x < 99){
+      if(y % 2 == 0)
+      x += 2;
+      else
+      x++;
+      if(y % 2 == 0)
+      x += 2;
+      else
+      x -= 2;
+      if(y % 2 == 0)
+      x += 2;
+      else
+      x += 2;
+      if(y % 2 == 0)
+      x += 2;
+      else
+      x -= 2;
+      if(y % 2 == 0)
+      x += 2;
+      else
+      x += 2;
+      if(y % 2 == 0)
+      x += 2;
+      else
+      x -= 4;
+      if(y % 2 == 0)
+      x += 2;
+      else
+      x += 4;
+      if(y % 2 == 0)
+      x += 2;
+      else
+      x += 2;
+      if(y % 2 == 0)
+      x += 2;
+      else
+      x -= 4;
+      if(y % 2 == 0)
+      x += 2;
+      else
+      x -= 4;
+    }
+    __VERIFIER_assert((x % 2) == (y % 2));
+  }

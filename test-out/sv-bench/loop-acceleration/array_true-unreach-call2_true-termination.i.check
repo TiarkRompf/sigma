@@ -1,22 +1,45 @@
-// loop-acceleration/array_true-unreach-call2_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loop-acceleration/array_true-unreach-call2_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_int main(/* TODO: param list ... */) {
-  t_int A
-  t_int B
-  t_int i
-  t_int tmp
-  for ((op_assign i 0)
-  ;(op_lessThan i 2048);(op_postFixIncr i)){
-    (op_assign tmp A[i])
-    (op_assign B[i] tmp)
+  t_int main(t_void ){
+    t_int A
+    t_int B
+    t_int i
+    t_int tmp
+    for ((op_assign i 0)
+    ;(op_lessThan i 2048);(op_postFixIncr i)){
+      (op_assign tmp A[i])
+      (op_assign B[i] tmp)
+    }
+    __VERIFIER_assert((op_equals A[(op_divide 2048 2)] B[(op_divide 2048 2)]))
   }
-  __VERIFIER_assert((op_equals A[(op_divide 2048 2)] B[(op_divide 2048 2)]))
-}
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int main(void)
+  {
+    int A[2048];
+    int B[2048];
+    int i;
+    int tmp;
+    for(i = 0;i < 2048;i++){
+      tmp = A[i];
+      B[i] = tmp;
+    }
+    __VERIFIER_assert(A[2048 / 2] == B[2048 / 2]);
+  }

@@ -1,25 +1,51 @@
-// loops/array_false-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  return (exp null)
-}
-t_int __VERIFIER_nondet_int
-t_int main(/* TODO: param list ... */) {
-  t_int SIZE = 1
-  t_int jk
-  t_int arraymenor
-  (op_assign menor __VERIFIER_nondet_int((exp null)))
-  for ((op_assign j 0)
-  ;(op_lessThan j SIZE);(op_postFixIncr j)){
-    (op_assign array[j] __VERIFIER_nondet_int((exp null)))
-    if (op_lessEqual array[j] menor) (op_assign menor array[j])
+// # loops/array_false-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
     else {}
+    return
   }
-  __VERIFIER_assert((op_greaterThan array[0] menor))
-  return 0
-}
+  t_int __VERIFIER_nondet_int()
+  t_int main(){
+    t_int SIZE = 1
+    t_int jk
+    t_int arraymenor
+    (op_assign menor __VERIFIER_nondet_int())
+    for ((op_assign j 0)
+    ;(op_lessThan j SIZE);(op_postFixIncr j)){
+      (op_assign array[j] __VERIFIER_nondet_int())
+      if (op_lessEqual array[j] menor) (op_assign menor array[j])
+      else {}
+    }
+    __VERIFIER_assert((op_greaterThan array[0] menor))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
+  {
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    unsigned int SIZE = 1;
+    unsigned int j, k;
+    int array[SIZE], menor;
+    menor = __VERIFIER_nondet_int();
+    for(j = 0;j < SIZE;j++){
+      array[j] = __VERIFIER_nondet_int();
+      if(array[j] <= menor)
+      menor = array[j];
+    }
+    __VERIFIER_assert(array[0] > menor);
+    return 0;
+  }

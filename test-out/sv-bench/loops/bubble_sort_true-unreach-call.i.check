@@ -1,77 +1,151 @@
-// loops/bubble_sort_true-unreach-call.i
-t_void __VERIFIER_error
-t_void __VERIFIER_assert(/* TODO: param list ... */) {
-  if (op_not (op_bracketedPrimary cond)) {
-    ERROR:
-    __VERIFIER_error((exp null))
+// # loops/bubble_sort_true-unreach-call.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_void __VERIFIER_assert(t_int cond){
+    if (op_not (op_bracketedPrimary cond)) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    return
   }
-  else {}
-  return (exp null)
-}
-t_void bubblesort(/* TODO: param list ... */) {
-  t_int abt
-  for ((op_assign a 1)
-  ;(op_lessThan a size);(op_prefixIncr a)){
-    for ((op_assign b (op_minus size 1))
-    ;(op_greaterEqual b a);(op_prefixDecr b)){
-      if (op_logicalAnd (op_lessThan (op_minus b 1) size) (op_lessThan b size)) {
-        if (op_greaterThan item[(op_minus b 1)] item[b]) {
-          (op_assign t item[(op_minus b 1)])
-          (op_assign item[(op_minus b 1)] item[b])
-          (op_assign item[b] t)
+  t_void bubblesort(t_int size,t_int item){
+    t_int abt
+    for ((op_assign a 1)
+    ;(op_lessThan a size);(op_prefixIncr a)){
+      for ((op_assign b (op_minus size 1))
+      ;(op_greaterEqual b a);(op_prefixDecr b)){
+        if (op_logicalAnd (op_lessThan (op_minus b 1) size) (op_lessThan b size)) {
+          if (op_greaterThan item[(op_minus b 1)] item[b]) {
+            (op_assign t item[(op_minus b 1)])
+            (op_assign item[(op_minus b 1)] item[b])
+            (op_assign item[b] t)
+          }
+          else {}
         }
         else {}
       }
-      else {}
     }
   }
-}
-t_void bubblesort1(/* TODO: param list ... */) {
-  t_int jipivot
-  for ((op_assign j 1)
-  ;(op_lessThan j size);(op_prefixIncr j)){
-    (op_assign pivot item[j])
-    (op_assign i (op_minus j 1))
-    while (op_logicalAnd (op_greaterEqual i 0) (op_greaterThan item[i] pivot))
+  t_void bubblesort1(t_int size,t_int item){
+    t_int jipivot
+    for ((op_assign j 1)
+    ;(op_lessThan j size);(op_prefixIncr j)){
+      (op_assign pivot item[j])
+      (op_assign i (op_minus j 1))
+      while (op_logicalAnd (op_greaterEqual i 0) (op_greaterThan item[i] pivot))
+      {
+        (op_assign item[(op_plus i 1)] item[i])
+        (op_postFixDecr i)
+      }
+      (op_assign item[(op_plus i 1)] pivot)
+    }
+  }
+  t_int __VERIFIER_nondet_int()
+  t_void q1(t_int argc,t_char argv){
+    if (op_lessThan argc 2) return
+    else {}
+    t_int N = __VERIFIER_nondet_int()
+    t_int a
+    t_int i
+    switch 2
     {
-      (op_assign item[(op_plus i 1)] item[i])
-      (op_postFixDecr i)
+      case 0:
+      for ((op_assign i 0)
+      ;(op_lessThan i N);(op_prefixIncr i))(op_assign a[i] i)
+      break
+      case 1:
+      for ((op_assign i (op_bracketedPrimary (op_minus N 1)))
+      ;(op_greaterEqual i 0);(op_prefixDecr i))(op_assign a[i] (op_minus (op_minus N 1) i))
+      break
+      case 2:
+      for ((op_assign i 0)
+      ;(op_lessThan i N);(op_prefixIncr i))(op_assign a[i] i)
+      for ((op_assign i 0)
+      ;(op_lessThan i N);(op_postFixIncr i)){
+        t_int r = (op_plus i (op_bracketedPrimary (op_modulo __VERIFIER_nondet_int() (op_bracketedPrimary (op_minus N i)))))
+        t_int temp = a[i]
+        (op_assign a[i] a[r])
+        (op_assign a[r] temp)
+      }
+      break
     }
-    (op_assign item[(op_plus i 1)] pivot)
+    bubblesort((N,a))
   }
-}
-t_int __VERIFIER_nondet_int
-t_void q1(/* TODO: param list ... */) {
-  if (op_lessThan argc 2) return (exp null)
-  else {}
-  t_int N = __VERIFIER_nondet_int((exp null))
-  t_int a
-  t_int i
-  switch 2
+  t_int main(t_int argc,t_char argv){
+    q1((argc,argv))
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  void __VERIFIER_assert(int cond)
   {
-    case 0:
-    for ((op_assign i 0)
-    ;(op_lessThan i N);(op_prefixIncr i))(op_assign a[i] i)
-    break
-    case 1:
-    for ((op_assign i (op_bracketedPrimary (op_minus N 1)))
-    ;(op_greaterEqual i 0);(op_prefixDecr i))(op_assign a[i] (op_minus (op_minus N 1) i))
-    break
-    case 2:
-    for ((op_assign i 0)
-    ;(op_lessThan i N);(op_prefixIncr i))(op_assign a[i] i)
-    for ((op_assign i 0)
-    ;(op_lessThan i N);(op_postFixIncr i)){
-      t_int r = (op_plus i (op_bracketedPrimary (op_modulo __VERIFIER_nondet_int((exp null)) (op_bracketedPrimary (op_minus N i)))))
-      t_int temp = a[i]
-      (op_assign a[i] a[r])
-      (op_assign a[r] temp)
+    if(!(cond)){
+      ERROR:
+      __VERIFIER_error();
     }
-    break
+    return;
   }
-  bubblesort((N,a))
-}
-t_int main(/* TODO: param list ... */) {
-  q1((argc,argv))
-  return 0
-}
+  void bubblesort(int size, int item[])
+  {
+    int a, b, t;
+    for(a = 1;a < size;++a){
+      for(b = size - 1;b >= a;--b){
+        if(b - 1 < size && b < size){
+          if(item[b - 1] > item[b]){
+            t = item[b - 1];
+            item[b - 1] = item[b];
+            item[b] = t;
+          }
+        }
+      }
+    }
+  }
+  void bubblesort1(int size, int item[])
+  {
+    int j, i, pivot;
+    for(j = 1;j < size;++j){
+      pivot = item[j];
+      i = j - 1;
+      while(i >= 0 && item[i] > pivot){
+        item[i + 1] = item[i];
+        i--;
+      }
+      item[i + 1] = pivot;
+    }
+  }
+  int __VERIFIER_nondet_int();
+  void q1(int argc, char *argv[])
+  {
+    if(argc < 2)
+    return;
+    int N = __VERIFIER_nondet_int();
+    int a[N];
+    int i;
+    switch (2){
+      case 0:
+      for(i = 0;i < N;++i)
+      a[i] = i;
+      break;
+      case 1:
+      for(i = (N - 1);i >= 0;--i)
+      a[i] = N - 1 - i;
+      break;
+      case 2:
+      for(i = 0;i < N;++i)
+      a[i] = i;
+      for(i = 0;i < N;i++){
+        int r = i + (__VERIFIER_nondet_int() % (N - i));
+        int temp = a[i];
+        a[i] = a[r];
+        a[r] = temp;
+      }
+      break;
+    }
+    bubblesort(N, a);
+  }
+  int main(int argc, char *argv[])
+  {
+    q1(argc, argv);
+    return 0;
+  }

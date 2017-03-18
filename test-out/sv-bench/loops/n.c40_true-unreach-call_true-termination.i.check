@@ -1,22 +1,44 @@
-// loops/n.c40_true-unreach-call_true-termination.i
-t_void __VERIFIER_error
-t_int __VERIFIER_nondet_int
-t_char xy
-t_int ijk
-t_int main(/* TODO: param list ... */) {
-  (op_assign k __VERIFIER_nondet_int((exp null)))
-  (op_assign i 0)
-  while (op_notequals x[i] 0)
+// # loops/n.c40_true-unreach-call_true-termination.i
+// # custom traverser
+  t_void __VERIFIER_error()
+  t_int __VERIFIER_nondet_int()
+  t_char xy
+  t_int ijk
+  t_int main(){
+    (op_assign k __VERIFIER_nondet_int())
+    (op_assign i 0)
+    while (op_notequals x[i] 0)
+    {
+      (op_assign y[i] x[i])
+      (op_postFixIncr i)
+    }
+    (op_assign y[i] 0)
+    if (op_logicalAnd (op_greaterEqual k 0) (op_lessThan k i)) if (op_equals y[k] 0) {
+      ERROR:
+      __VERIFIER_error()
+    }
+    else {}
+    else {}
+    return 0
+  }
+// # default pretty printer
+  extern void __VERIFIER_error();
+  int __VERIFIER_nondet_int();
+  char x[100], y[100];
+  int i, j, k;
+  int main()
   {
-    (op_assign y[i] x[i])
-    (op_postFixIncr i)
+    k = __VERIFIER_nondet_int();
+    i = 0;
+    while(x[i] != 0){
+      y[i] = x[i];
+      i++;
+    }
+    y[i] = 0;
+    if(k >= 0 && k < i)
+    if(y[k] == 0){
+      ERROR:
+      __VERIFIER_error();
+    }
+    return 0;
   }
-  (op_assign y[i] 0)
-  if (op_logicalAnd (op_greaterEqual k 0) (op_lessThan k i)) if (op_equals y[k] 0) {
-    ERROR:
-    __VERIFIER_error((exp null))
-  }
-  else {}
-  else {}
-  return 0
-}
