@@ -621,6 +621,8 @@ object CFrontend {
             return println("{ ... skipping body ... }")
 
           println(" {")
+          println("# control-flow graph:")
+
           val entryLabel = freshLabel("Entry")
           startBlock(entryLabel)
           evalCfgStm(node.getBody)
@@ -655,6 +657,69 @@ object CFrontend {
 
             println(loopHeaders)
 
+            println("# restructure:")
+
+            var c = 0
+
+            def consume(l: String, stop: Set[String], cont: Set[String]): Unit = {
+              c += 1
+              if (c > 1000) {
+                println("XXX exceeded fuel at "+l)
+                return
+              }
+              
+              if (stop contains l) {
+                //println("// break "+l)
+                return
+              }
+              if (cont contains l) {
+                //println("// continue "+l)
+                println(s"${l}_more = true")
+                return
+              }
+
+              //println("// "+l)
+              val b = blockIndex(l)
+
+              // strict post-dominators (without self)
+              val sdom = postDom(l)-l
+              // immediate post-dominator (there can be at most one)
+              val idom = sdom.filter(n => sdom.forall(postDom(n)))
+              assert(idom.size <= 1)
+
+              // Simplifying assumption: the immediate post-dominator
+              // of a loop header is *outside* the loop. This is not
+              // necessarily true in general.
+              // TODO: refine to compute post-dom outside loop.
+              val isLoop = loopHeaders contains l
+              if (isLoop) {
+                println("do {")
+                println(s"bool ${l}_more = false")
+              }
+              val stop1 = idom
+              val cont1 = if (isLoop) cont + l else cont
+
+              b.stms.foreach(evalStm)
+              b.cnt match {
+                case Return(e) => 
+                  println("return "+evalExp(e))
+                  assert(idom.isEmpty)
+                case Jump(a) => 
+                  assert(idom == Set(a)) // handled below
+                case CJump(c,a,b) => 
+                  println("if "+evalExp(c)+" {")
+                  consume(a, stop1, cont + l)
+                  println("} else {")
+                  consume(b, stop1, cont + l)
+                  println("}")
+              }
+              if (isLoop)
+                println(s"} while (${l}_more)")
+
+              if (idom.nonEmpty)
+                consume(idom.head, stop, cont)
+            }
+            consume(entryLabel, Set.empty, Set.empty)
           }
 
           println("}")

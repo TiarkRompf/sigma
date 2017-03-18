@@ -237,7 +237,7 @@ Architecture: 32 bit
 
 
 class SVCompControlFlow extends SVCompSuite {
-    extractAll(controlFlow)
+    //extractAll(controlFlow)
 }
 
 class SVCompLoops extends SVCompSuite {
@@ -245,6 +245,6 @@ class SVCompLoops extends SVCompSuite {
 }
 
 class SVCompRecursive extends SVCompSuite {
-    extractAll(recursive)
+    //extractAll(recursive)
 }
 
