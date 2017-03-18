@@ -445,6 +445,167 @@ object CFrontend {
       case node: CASTTranslationUnit =>
           val decls = node.getDeclarations
           for (d <- decls) evalGlobalDecl(d)
-
   }
+
+  // CFG gen
+  def resetCFG() = {
+    nBlocks = 0
+  }
+
+  abstract class Continuation
+  case class Return(e: IASTExpression) extends Continuation
+  case class Jump(target: String) extends Continuation
+  case class CJump(c: IASTExpression, a: String, b: String) extends Continuation
+
+  case class Block(label: String, stms: Array[IASTStatement], cnt: Continuation)
+
+  import scala.collection.mutable._
+
+
+  
+  // state per function
+  var curFunction: String = null
+  var blocks: ArrayBuffer[Block] = new ArrayBuffer
+  var blockIndex: HashMap[String,Block] = new HashMap
+
+  // state per block
+  var blockName: String = null
+  var stms: ArrayBuffer[IASTStatement] = new ArrayBuffer
+
+
+  var nBlocks = 0
+  def freshLabel(s:String="") = try "b"+s+nBlocks finally nBlocks += 1
+
+  def endBlock(cnt: Continuation) = {
+    val b = Block(blockName,stms.toArray, cnt)
+    blocks += b
+    blockIndex(blockName) = b
+    stms.clear
+    blockName = null
+  }
+  def startBlock(s: String) = {
+    blockName = s
+    stms.clear
+  }
+
+  def evalCfgStm(node: IASTStatement): Unit = node match {
+      case node: CASTCompoundStatement =>
+          // TODO: push / pop scope
+          //println("{")
+          for (s <- node.getStatements) evalCfgStm(s)
+          //println("}")
+      case node: CASTWhileStatement =>
+          val c = node.getCondition
+          val b = node.getBody
+          val clabel = freshLabel("WhileHead")
+          val blabel = freshLabel("WhileBody")
+          val elabel = freshLabel("WhileExit")
+          endBlock(Jump(clabel))
+          startBlock(clabel)
+          endBlock(CJump(c,blabel,elabel))
+          startBlock(blabel)
+          evalCfgStm(b)
+          endBlock(Jump(clabel))
+          startBlock(elabel)
+      /*case node: CASTDoStatement =>
+          val c = node.getCondition
+          val b = node.getBody
+          print("do ")
+          evalCfgStm(b)      
+          println("while "+evalExp(c))*/
+      case node: CASTForStatement =>
+          val c = node.getConditionExpression
+          val i = node.getInitializerStatement
+          val p = node.getIterationExpression
+          val b = node.getBody
+          val clabel = freshLabel("ForHead")
+          val blabel = freshLabel("ForBody")
+          val elabel = freshLabel("ForExit")
+          evalCfgStm(i)
+          endBlock(Jump(clabel))
+          startBlock(clabel)
+          endBlock(CJump(c,blabel,elabel))
+          startBlock(blabel)
+          evalCfgStm(b)
+          if (p != null) evalCfgStm(new CASTExpressionStatement(p.copy))
+          endBlock(Jump(clabel))
+          startBlock(elabel)
+
+      case node: CASTIfStatement =>
+          val c = node.getConditionExpression
+          val a = node.getThenClause
+          val b = node.getElseClause
+          val alabel = freshLabel("IfThen")
+          val blabel = freshLabel("IfElse")
+          val elabel = freshLabel("IfExit")
+          endBlock(CJump(c,alabel,blabel))
+          startBlock(alabel)
+          evalCfgStm(a)
+          endBlock(Jump(elabel))
+          startBlock(blabel)
+          evalCfgStm(b)
+          endBlock(Jump(elabel))
+          startBlock(elabel)
+/*      case node: CASTSwitchStatement =>
+          val c = node.getControllerExpression()
+          val b = node.getBody
+          println("switch "+evalExp(c))
+          evalCfgStm(b)
+      case node: CASTCaseStatement =>
+          println("case "+evalExp(node.getExpression)+":")
+*/
+      case node: CASTLabelStatement =>
+          endBlock(Jump(node.getName.toString))
+          startBlock(node.getName.toString)
+          evalCfgStm(node.getNestedStatement)
+      case node: CASTGotoStatement =>
+          endBlock(Jump(node.getName.toString))
+          startBlock(freshLabel())
+/*      case node: CASTBreakStatement =>
+          println("break / TODO")
+      case node: CASTContinueStatement =>
+          println("continue / TODO")
+*/          
+      case node: CASTReturnStatement =>
+          endBlock(Return(node.getReturnValue))
+          startBlock(freshLabel())
+      case node: CASTNullStatement =>
+      case null => 
+      case _ => stms += node
+  }
+  def evalCfgGlobalDecl(node: IASTDeclaration): Unit = node match {
+      case node: CASTFunctionDefinition =>
+          nBlocks = 0
+          blocks.clear
+          blockIndex.clear
+          curFunction = node.getDeclarator.getName.toString
+
+          val declarator = node.getDeclarator()
+          val declSpecifier = node.getDeclSpecifier
+          print(evalType(declSpecifier))
+          print(" ")
+          evalDeclarator(declarator)
+          println(" {")
+          startBlock(freshLabel("Entry"))
+          evalCfgStm(node.getBody)
+          endBlock(Return(null))
+
+          for (v <- blocks) {
+            println(v.label+": {")
+            v.stms.foreach(evalStm)
+            println(v.cnt)
+            println("}")
+          }
+
+
+          println("}")
+      case _ =>
+          evalLocalDecl(node)
+  }
+  def evalCfgUnit(node: IASTTranslationUnit): Unit = node match {
+      case node: CASTTranslationUnit =>
+          val decls = node.getDeclarations
+          for (d <- decls) evalCfgGlobalDecl(d)
+  }
+
 }

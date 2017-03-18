@@ -227,7 +227,7 @@ Architecture: 32 bit
       //println("// # literal source")
       //println(readFile(sv_bench_root+"/"+key))
       println("// # custom traverser")
-      evalUnit(parsed)
+      evalCfgUnit(parsed)
       println("// # default pretty printer")
       prettyPrintDefault(parsed)
     }}
