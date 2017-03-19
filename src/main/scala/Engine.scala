@@ -7,6 +7,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
 
     // *** util
 
+    def time[S](block: =>S): S = {
+      val t0 = System.currentTimeMillis
+      try block finally {
+        val t1 = System.currentTimeMillis
+        println(s"took ${t1-t0}ms")
+      }
+    }
+
     def readFile(name: String): String = try {
       val buf = new Array[Byte](new File(name).length().toInt)
       val fis = new FileInputStream(name)

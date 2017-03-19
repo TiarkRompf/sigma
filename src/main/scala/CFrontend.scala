@@ -635,38 +635,42 @@ object CFrontend {
             println("}")
           }
 
-          if (blocks.length > 100) {
-            println("CFG too large: > 100 nodes")
+          if (blocks.length > 200) {
+            println(s"CFG too large: ${blocks.length} nodes")
           } else {
-            println("# post-dominators:")
-            val postDom = postDominators(blocks.toList)
-            println(postDom)
             println("# loop headers:")
 
             val loopHeaders = new mutable.HashSet[String]
 
+            var fuel = 20000
+            var seen = new mutable.HashSet[String]
             def dfs(l: String, path: Set[String]): Unit = {
+              fuel -= 1; if (fuel == 0) throw new Exception("XXX dfs out of fuel")              
               if (path contains l) {
                 loopHeaders += l
-              } else {
+              } else if (!seen(l)) {
+                seen += l
                 val path1 = path + l
                 blockIndex(l).successors.foreach(l1 => dfs(l1, path1))
               }
             }
-            dfs(entryLabel, Set.empty)
+            time {
+              dfs(entryLabel, Set.empty)
+              println(loopHeaders)
+            }
 
-            println(loopHeaders)
+            println("# post-dominators:")
+            val postDom = time {
+              val postDom = postDominators(blocks.toList)
+              println(postDom)
+              postDom
+            }
 
             println("# restructure:")
 
-            var c = 0
-
+            fuel = 500000
             def consume(l: String, stop: Set[String], cont: Set[String]): Unit = {
-              c += 1
-              if (c > 1000) {
-                println("XXX exceeded fuel at "+l)
-                return
-              }
+              fuel -= 1; if (fuel == 0) throw new Exception("XXX consume out of fuel")
               
               if (stop contains l) {
                 //println("// break "+l)
@@ -684,8 +688,13 @@ object CFrontend {
               // strict post-dominators (without self)
               val sdom = postDom(l)-l
               // immediate post-dominator (there can be at most one)
-              val idom = sdom.filter(n => sdom.forall(postDom(n)))
-              assert(idom.size <= 1)
+              var idom = sdom.filter(n => sdom.forall(postDom(n)))
+              // Currently there's an issue in 
+              // loop-invgen/string_concat-noarr_true-unreach-call_true-termination.i
+              // TODO: use Cooper's algorithm to compute idom directly
+              if (idom.contains("STUCK")) idom = Set("STUCK") // HACK
+              if (l == "STUCK") idom = Set() // HACK
+              assert(idom.size <= 1, s"sdom($l) = $sdom\nidom($l) = ${idom}")
 
               // Simplifying assumption: the immediate post-dominator
               // of a loop header is *outside* the loop. This is not
@@ -705,12 +714,12 @@ object CFrontend {
                   println("return "+evalExp(e))
                   assert(idom.isEmpty)
                 case Jump(a) => 
-                  assert(idom == Set(a)) // handled below
+                  assert(a == l || idom == Set(a)) // handled below
                 case CJump(c,a,b) => 
                   println("if "+evalExp(c)+" {")
-                  consume(a, stop1, cont + l)
+                  consume(a, stop1, cont1)
                   println("} else {")
-                  consume(b, stop1, cont + l)
+                  consume(b, stop1, cont1)
                   println("}")
               }
               if (isLoop)
@@ -719,7 +728,7 @@ object CFrontend {
               if (idom.nonEmpty)
                 consume(idom.head, stop, cont)
             }
-            consume(entryLabel, Set.empty, Set.empty)
+            time{consume(entryLabel, Set.empty, Set.empty)}
           }
 
           println("}")

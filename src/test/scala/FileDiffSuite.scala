@@ -58,6 +58,10 @@ trait FileDiffSuite extends FunSuite {
     val bstream = new ByteArrayOutputStream
     try withOutput(new PrintStream(bstream))(func) finally writeFileIndented(name,bstream.toString)
   }
+  def withOutFileDiscarded(name: String)(func: => Unit): Unit = {
+    val bstream = new ByteArrayOutputStream
+    withOutput(new PrintStream(bstream))(func)
+  }
   def captureOutput(func: => Unit): String = {
     val bstream = new ByteArrayOutputStream
     withOutput(new PrintStream(bstream))(func)

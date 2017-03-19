@@ -227,7 +227,7 @@ Architecture: 32 bit
       //println("// # literal source")
       //println(readFile(sv_bench_root+"/"+key))
       println("// # custom traverser")
-      evalCfgUnit(parsed)
+      Util.time{evalCfgUnit(parsed)}
       println("// # default pretty printer")
       prettyPrintDefault(parsed)
     }}
@@ -237,7 +237,7 @@ Architecture: 32 bit
 
 
 class SVCompControlFlow extends SVCompSuite {
-    //extractAll(controlFlow)
+    extractAll(controlFlow)
 }
 
 class SVCompLoops extends SVCompSuite {
@@ -245,6 +245,6 @@ class SVCompLoops extends SVCompSuite {
 }
 
 class SVCompRecursive extends SVCompSuite {
-    //extractAll(recursive)
+    extractAll(recursive)
 }
 
