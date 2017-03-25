@@ -8,7 +8,7 @@ trait RunAndCheckSuite extends FileDiffSuite {
 
   def clean(s: String) = s.replaceAll("\"","").replaceAll("\n","").replaceAll(" +","")
 
-  def testProg(name: String)(block: =>Frontend.Exp)(want: Any): Unit = 
+  def testProg(name: String)(block: =>SimpleFrontend.Exp)(want: Any): Unit = 
     test(name) { 
       withOutFileChecked(prefix+name) {
         val out = Main.runAndCheck { block }

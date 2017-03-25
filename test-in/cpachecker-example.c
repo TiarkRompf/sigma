@@ -1,6 +1,17 @@
+/*int main() {
+  int i = 0;
+  int a = 100;
+
+  while (i < a) {
+    i = i + 1
+  }
+  return rval;
+}*/
+
 int main() {
   int i = 0;
   int a = 0;
+  int rval;
 
   while (1) {
     if (i == 20) {
@@ -9,7 +20,7 @@ int main() {
        i++;
        a++;
     }
-
+    TEST:
     if (i != a) {
       goto ERROR;
     }
@@ -21,8 +32,11 @@ int main() {
      goto ERROR;
   }
 
-  return (0);
-  ERROR:
-  return (-1);
-}
+  rval = 0; goto EXIT;
 
+  ERROR:
+  rval = -1; goto EXIT;
+  
+  EXIT:
+  return rval;
+}

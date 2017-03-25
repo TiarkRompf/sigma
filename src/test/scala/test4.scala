@@ -1,6 +1,6 @@
 package analysis
 
-import Frontend._
+import SimpleFrontend._
 
 class TestAnalysis4 extends RunAndCheckSuite {
 

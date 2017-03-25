@@ -26,7 +26,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       we need assert() to signal verification failures
 */
 
-  object Frontend {
+  object SimpleFrontend {
     import Test1._
     import Approx._
 
@@ -295,7 +295,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
   object Main {
     import Test1._
-    import Frontend._
+    import SimpleFrontend._
     // *** run and test
 
     def run(testProg: Exp): Unit = runAndCheck(testProg)
