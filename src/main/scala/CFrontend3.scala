@@ -16,7 +16,7 @@ object CFGtoEngine {
 
   type Val = IR.From
 
-  val trackValid = false
+  val trackValid = true
 
   val store0 = if (trackValid) GConst(Map(GConst("valid") -> GConst(1))) else GConst(Map())
 
@@ -25,21 +25,146 @@ object CFGtoEngine {
   var store: Val = store0
   var itvec: Val = itvec0
 
-  def evalStm(x: IASTStatement): Any = {
-    CPrinter.evalStm(x)
+  def evalType(node: IASTDeclSpecifier) = node match {
+    case d: CASTSimpleDeclSpecifier     => CPrinter.types(d.getType)
+    case d: CASTTypedefNameSpecifier    => d.getName
+    case d: CASTElaboratedTypeSpecifier => d.getName // enough?
+    case d: CASTCompositeTypeSpecifier  => d.getName // enough?
   }
-  def evalExp(x: IASTNode): Val = {
-    GConst(CPrinter.evalExp(x))
+  def evalExp(node: IASTNode): Val = node match {
+      case node: CASTLiteralExpression =>
+          val lk = node.getKind
+          lk match {
+            case 0 => /* int const */
+              GConst(node.toString.toInt)
+          }
+      case node: CASTIdExpression =>
+          val name = node.getName.toString
+          IR.select(IR.select(store,IR.const("&"+name)), IR.const("val"))
+      case node: CASTUnaryExpression =>
+          val op = CPrinter.operators1(node.getOperator)
+          val arg = node.getOperand
+          op match {
+            case "op_prefixIncr" => 
+              val name = arg.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
+              val cur = IR.select(IR.select(store,IR.const("&"+name)), IR.const("val"))
+              val upd = IR.plus(cur,IR.const(1))
+              store = IR.update(store, IR.const("&"+name), IR.update(IR.const(Map()), IR.const("val"), upd))
+              upd
+          }
+      case node: CASTBinaryExpression =>
+          val op = CPrinter.operators2(node.getOperator)
+          val arg1 = evalExp(node.getOperand1)
+          val arg2 = evalExp(node.getOperand2)
+          op match {
+            case "op_equals" => IR.equal(arg1,arg2)
+          }
+      case node: CASTFunctionCallExpression =>
+          val fun = node.getFunctionNameExpression
+          val arg = node.getParameterExpression
+          fun.asInstanceOf[CASTIdExpression].getName.toString match {
+            case "assert" => 
+              val c1 = evalExp(arg)
+              val old = IR.select(store, IR.const("valid"))
+              store = IR.update(store, IR.const("valid"), IR.times(old,c1)) // IR.times means IR.and
+              IR.const(())
+            //case _ => evalExp(fun)+"("+evalExp(arg)+")"
+          }
+      /*case node: CASTArraySubscriptExpression =>
+          val a = node.getArrayExpression
+          val x = node.getSubscriptExpression
+          evalExp(a) + "["+ evalExp(x) + "]"
+      case node: CASTExpressionList =>
+          val as = node.getExpressions
+          as.map(evalExp).mkString("(",",",")")
+      case node: CASTInitializerList =>
+          val as = node.getInitializers
+          as.map(evalExp).mkString("{",",","}")
+      case node: CASTEqualsInitializer => // copy initializer
+          evalExp(node.getInitializerClause)
+      case node: CASTCastExpression =>
+          "("+CPrinter.types(node.getOperator)+")"+evalExp(node.getOperand)
+      case node: CASTTypeIdExpression => // sizeof
+          val op = CPrinter.type_ops(node.getOperator)
+          val tp = node.getTypeId
+          val declarator = tp.getAbstractDeclarator.asInstanceOf[CASTDeclarator]
+          val declSpecifier = tp.getDeclSpecifier
+          // TODO: pointer types, ...
+          op + "("+evalType(declSpecifier)+")"*/
+      case null => GConst(0)
+      //case _ => "(exp "+node+")"
   }
+  def evalDeclarator(node: IASTDeclarator): Unit = node match {
+    case d1: CASTDeclarator =>
+      val ptr = d1.getPointerOperators()
+      // TODO: pointer types, ...
+      val name = d1.getName
+      /* val nested = d1.getNestedDeclarator // used at all?
+      if (nested != null) {
+        print("(")
+        evalDeclarator(nested)
+        print(")")
+      }*/
+      val init = d1.getInitializer
+      if (init != null) {
+        val init1 = init.asInstanceOf[CASTEqualsInitializer].getInitializerClause
 
-  def handleReturn(e: Val): Unit = {
-    println("return "+e)
+        val v = evalExp(init1)
+        store = IR.update(store, IR.const("&"+name), IR.update(IR.const(Map()), IR.const("val"), v))
+      }
+  }
+  def evalLocalDecl(node: IASTDeclaration): Unit = node match {
+      case node: CASTSimpleDeclaration =>
+          val declSpecifier = node.getDeclSpecifier
+          val decls = node.getDeclarators
+          val tpe = (evalType(declSpecifier))
+          //print(tpe+" ")
+          for (d <- decls) {
+            evalDeclarator(d)
+          }
+      case _ => 
+  }
+  def evalStm(node: IASTStatement): Unit = node match {
+      case node: CASTCompoundStatement =>
+          for (s <- node.getStatements) evalStm(s)
+      case node: CASTDeclarationStatement =>
+          val decl = node.getDeclaration
+          evalLocalDecl(decl)
+      case node: CASTExpressionStatement =>
+          val exp = node.getExpression
+          evalExp(exp)
+      case node: CASTNullStatement =>
+      case null => 
+  }  
+
+  def handleReturn(v: Val): Unit = {
+    store = IR.update(store, IR.const("return"), v)
+    //println("goto exit") TODO handle abort?
   }
 
   def handleContinue(l: String): Unit = {
     println("${l}_more = true")
   }
 
+  def handleIf(c1: Val)(a: => Unit)(b: => Unit): Unit = {
+    val save = store
+    //assert(c1)
+    val e1 = a
+    val s1 = store
+    store = save
+    //assertNot(c1)
+    val e2 = b
+    val s2 = store
+    store = IR.iff(c1,s1,s2)
+    //IR.iff(c1,e1,e2)
+  }
+
+  def handleLoop(l:String)(body: => Unit): Unit = {
+    println("do {") /*}*/
+    println(s"bool ${l}_more = false")
+    body
+    println(s"} while (${l}_more)")
+  }
 
   def evalCFG(cfg: CFG): Unit = {
     import cfg._
@@ -82,11 +207,11 @@ object CFGtoEngine {
           case Jump(a) => 
             assert(a == l || idom == Set(a)) // handled below
           case CJump(c,a,b) => 
-            println("if "+evalExp(c)+" {")
-            consume(a, stop1, cont1)
-            println("} else {")
-            consume(b, stop1, cont1)
-            println("}")
+            handleIf(evalExp(c)) {
+              consume(a, stop1, cont1)
+            } {
+              consume(b, stop1, cont1)
+            }
         }
       }
 
@@ -96,10 +221,7 @@ object CFGtoEngine {
       // TODO: refine to compute post-dom outside loop.
       val isLoop = loopHeaders contains l
       if (isLoop) {
-        println("do {")
-        println(s"bool ${l}_more = false")
-        evalBody(idom, cont + l)
-        println(s"} while (${l}_more)")
+        handleLoop(l) { evalBody(idom, cont + l) }
       } else {
         evalBody(idom, cont)
       }
@@ -108,6 +230,12 @@ object CFGtoEngine {
         consume(idom.head, stop, cont)
     }
     time{consume(entryLabel, Set.empty, Set.empty)}
+
+    val store2 = store
+    println("## term:")
+    val out = IR.termToString(store2)
+    println(out)
+
   }
 
 }
