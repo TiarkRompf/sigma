@@ -10,30 +10,40 @@ import Util._
 
 object CFGtoEngine {
   import CFGBase._
+  import Test1._
+  import Approx._
+  val IR = IRD
 
-  import CPrinter._
-  import CFGBase._
+  type Val = IR.From
+
+  val trackValid = false
+
+  val store0 = if (trackValid) GConst(Map(GConst("valid") -> GConst(1))) else GConst(Map())
+
+  val itvec0 = IR.const("top")
+
+  var store: Val = store0
+  var itvec: Val = itvec0
+
+  def evalStm(x: IASTStatement): Any = {
+    CPrinter.evalStm(x)
+  }
+  def evalExp(x: IASTNode): Val = {
+    GConst(CPrinter.evalExp(x))
+  }
+
+  def handleReturn(e: Val): Unit = {
+    println("return "+e)
+  }
+
+  def handleContinue(l: String): Unit = {
+    println("${l}_more = true")
+  }
+
 
   def evalCFG(cfg: CFG): Unit = {
     import cfg._
     val blockIndex = cfg.blockIndex
-
-    println("# control-flow graph:")
-
-    for (v <- blocks) {
-      println(v.label+": {")
-      v.stms.foreach(evalStm)
-      println(v.cnt)
-      println("}")
-    }
-
-    println("# loop headers:")
-    println(loopHeaders)
-
-    println("# post dominators:")
-    println(postDom)
-
-    println("# restructure:")
 
     var fuel = 500*1000
     def consume(l: String, stop: Set[String], cont: Set[String]): Unit = {
@@ -45,8 +55,7 @@ object CFGtoEngine {
       }
       if (cont contains l) {
         //println("// continue "+l)
-        println(s"${l}_more = true")
-        return
+        return handleContinue(l)
       }
 
       //println("// "+l)
@@ -68,7 +77,7 @@ object CFGtoEngine {
         b.stms.foreach(evalStm)
         b.cnt match {
           case Return(e) => 
-            println("return "+evalExp(e))
+            handleReturn(evalExp(e))
             assert(idom.isEmpty)
           case Jump(a) => 
             assert(a == l || idom == Set(a)) // handled below

@@ -2,7 +2,7 @@ package analysis
 
 import CBase._
 import CtoCFG._
-import CFGPrinter._
+import CFGtoEngine._
 
 class CTest2 extends FileDiffSuite {
 
