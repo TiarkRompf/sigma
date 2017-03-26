@@ -1,6 +1,7 @@
 package analysis
 
-import CFrontend._
+import CBase._
+import CFrontend2._
 
 class CTest1 extends FileDiffSuite {
 

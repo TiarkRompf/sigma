@@ -1,8 +1,87 @@
 package analysis
 
-import CFrontend._
+import Util._
+import CBase._
+import CFrontend2._
 
 abstract class SVCompSuite extends FileDiffSuite {
+
+  // TODO: make path configurable 
+  val sv_bench_root = "/Users/me/Desktop/tryout/sv-benchmarks/c" 
+
+  val file_pat_re = """(.+)/\*_(true|false)-(.*)\*(.+)""".r // note: may cause heave backtracking!
+
+  val out_prefix = "test-out/sv-bench/"
+
+
+  val controlFlow = Array(
+    "ntdrivers-simplified/*_false-unreach-call*.cil.c",
+    "ntdrivers-simplified/*_true-unreach-call*.cil.c",
+    "ssh-simplified/*_false-unreach-call*.cil.c",
+    "ssh-simplified/*_true-unreach-call*.cil.c",
+    "locks/*_false-unreach-call*.c",
+    "locks/*_true-unreach-call*.c")
+
+  val loops = Array(
+    "loops/*_false-unreach-call*.i",
+    "loops/*_true-unreach-call*.i",
+    "loop-acceleration/*_false-unreach-call*.i",
+    "loop-acceleration/*_true-unreach-call*.i",
+    "loop-invgen/*_false-unreach-call*.i",
+    "loop-invgen/*_true-unreach-call*.i",
+    "loop-lit/*_true-unreach-call*.c.i",
+    "loop-new/*_true-unreach-call*.i")
+
+  val recursive = Array(
+    "recursive/*_false-unreach-call*.c",
+    "recursive/*_true-unreach-call*.c",
+    "recursive-simple/*_false-unreach-call*.c",
+    "recursive-simple/*_true-unreach-call*.c")
+
+  def extractAll(patterns: Array[String]) = {
+    for (p <- patterns) {
+      val file_pat_re(dir,outcome,prop,suffix) = p
+      val search = "_"+outcome+"-"+prop
+      val df = new java.io.File(sv_bench_root+"/"+dir)
+      assert(df.isDirectory)
+      val files = df.listFiles
+      for (f <- files) {
+        val name = f.getName
+        if (name.contains(search) && name.endsWith(suffix)) {
+          testOne(dir, name, Map(prop -> outcome.toBoolean))
+        }
+      }
+    }
+  }
+
+  def testOne(dir: String, file: String, props: Map[String,Boolean]) = {
+    val key = dir+"/"+file
+    test(key) { withOutFileChecked(out_prefix+key) {       
+      println("// # "+key)
+      val parsed = parseCFile(sv_bench_root+"/"+dir+"/"+file)
+      //println("// # literal source")
+      //println(readFile(sv_bench_root+"/"+key))
+      println("// # custom traverser")
+      Util.time{evalCfgUnit(parsed)}
+      println("// # default pretty printer")
+      prettyPrintDefault(parsed)
+    }}
+  }
+
+}
+
+
+class SVCompControlFlow extends SVCompSuite {
+    extractAll(controlFlow)
+}
+
+class SVCompLoops extends SVCompSuite {
+    extractAll(loops)
+}
+
+class SVCompRecursive extends SVCompSuite {
+    extractAll(recursive)
+}
 
 /*
 ------> see https://sv-comp.sosy-lab.org
@@ -169,82 +248,3 @@ Architecture: 32 bit
 
 
 */*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/ // annoying formatting ...
-
-  
-  // TODO: make path configurable 
-  val sv_bench_root = "/Users/me/Desktop/tryout/sv-benchmarks/c" 
-
-  val file_pat_re = """(.+)/\*_(true|false)-(.*)\*(.+)""".r // note: may cause heave backtracking!
-
-  val out_prefix = "test-out/sv-bench/"
-
-
-  val controlFlow = Array(
-    "ntdrivers-simplified/*_false-unreach-call*.cil.c",
-    "ntdrivers-simplified/*_true-unreach-call*.cil.c",
-    "ssh-simplified/*_false-unreach-call*.cil.c",
-    "ssh-simplified/*_true-unreach-call*.cil.c",
-    "locks/*_false-unreach-call*.c",
-    "locks/*_true-unreach-call*.c")
-
-  val loops = Array(
-    "loops/*_false-unreach-call*.i",
-    "loops/*_true-unreach-call*.i",
-    "loop-acceleration/*_false-unreach-call*.i",
-    "loop-acceleration/*_true-unreach-call*.i",
-    "loop-invgen/*_false-unreach-call*.i",
-    "loop-invgen/*_true-unreach-call*.i",
-    "loop-lit/*_true-unreach-call*.c.i",
-    "loop-new/*_true-unreach-call*.i")
-
-  val recursive = Array(
-    "recursive/*_false-unreach-call*.c",
-    "recursive/*_true-unreach-call*.c",
-    "recursive-simple/*_false-unreach-call*.c",
-    "recursive-simple/*_true-unreach-call*.c")
-
-  def extractAll(patterns: Array[String]) = {
-    for (p <- patterns) {
-      val file_pat_re(dir,outcome,prop,suffix) = p
-      val search = "_"+outcome+"-"+prop
-      val df = new java.io.File(sv_bench_root+"/"+dir)
-      assert(df.isDirectory)
-      val files = df.listFiles
-      for (f <- files) {
-        val name = f.getName
-        if (name.contains(search) && name.endsWith(suffix)) {
-          testOne(dir, name, Map(prop -> outcome.toBoolean))
-        }
-      }
-    }
-  }
-
-  def testOne(dir: String, file: String, props: Map[String,Boolean]) = {
-    val key = dir+"/"+file
-    test(key) { withOutFileChecked(out_prefix+key) {       
-      println("// # "+key)
-      val parsed = parseCFile(sv_bench_root+"/"+dir+"/"+file)
-      //println("// # literal source")
-      //println(readFile(sv_bench_root+"/"+key))
-      println("// # custom traverser")
-      Util.time{evalCfgUnit(parsed)}
-      println("// # default pretty printer")
-      prettyPrintDefault(parsed)
-    }}
-  }
-
-}
-
-
-class SVCompControlFlow extends SVCompSuite {
-    extractAll(controlFlow)
-}
-
-class SVCompLoops extends SVCompSuite {
-    extractAll(loops)
-}
-
-class SVCompRecursive extends SVCompSuite {
-    extractAll(recursive)
-}
-
