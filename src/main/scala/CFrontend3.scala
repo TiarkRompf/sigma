@@ -16,9 +16,7 @@ object CFGtoEngine {
 
   type Val = IR.From
 
-  val trackValid = true
-
-  val store0 = if (trackValid) GConst(Map(GConst("valid") -> GConst(1))) else GConst(Map())
+  val store0 = GConst(Map(GConst("valid") -> GConst(1)))
 
   val itvec0 = IR.const("top")
 
@@ -40,16 +38,16 @@ object CFGtoEngine {
           }
       case node: CASTIdExpression =>
           val name = node.getName.toString
-          IR.select(IR.select(store,IR.const("&"+name)), IR.const("val"))
+          IR.select(store,IR.const("&"+name))
       case node: CASTUnaryExpression =>
           val op = CPrinter.operators1(node.getOperator)
           val arg = node.getOperand
           op match {
             case "op_prefixIncr" => 
               val name = arg.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
-              val cur = IR.select(IR.select(store,IR.const("&"+name)), IR.const("val"))
+              val cur = IR.select(store,IR.const("&"+name))
               val upd = IR.plus(cur,IR.const(1))
-              store = IR.update(store, IR.const("&"+name), IR.update(IR.const(Map()), IR.const("val"), upd))
+              store = IR.update(store, IR.const("&"+name), upd)
               upd
           }
       case node: CASTBinaryExpression =>
@@ -57,7 +55,14 @@ object CFGtoEngine {
           val arg1 = evalExp(node.getOperand1)
           val arg2 = evalExp(node.getOperand2)
           op match {
+            case "op_plus" => IR.plus(arg1,arg2)
             case "op_equals" => IR.equal(arg1,arg2)
+            case "op_lessThan" => IR.less(arg1,arg2)
+            case "op_assign" => 
+              val name = node.getOperand1.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
+              val upd = arg2
+              store = IR.update(store, IR.const("&"+name), upd)
+              upd
           }
       case node: CASTFunctionCallExpression =>
           val fun = node.getFunctionNameExpression
@@ -110,7 +115,7 @@ object CFGtoEngine {
         val init1 = init.asInstanceOf[CASTEqualsInitializer].getInitializerClause
 
         val v = evalExp(init1)
-        store = IR.update(store, IR.const("&"+name), IR.update(IR.const(Map()), IR.const("val"), v))
+        store = IR.update(store, IR.const("&"+name), v)
       }
   }
   def evalLocalDecl(node: IASTDeclaration): Unit = node match {
@@ -143,7 +148,9 @@ object CFGtoEngine {
   }
 
   def handleContinue(l: String): Unit = {
-    println("${l}_more = true")
+    //println("${l}_more = true")
+    val name = l+"_more"
+    store = IR.update(store, IR.const(name), GConst(1))
   }
 
   def handleIf(c1: Val)(a: => Unit)(b: => Unit): Unit = {
@@ -160,10 +167,89 @@ object CFGtoEngine {
   }
 
   def handleLoop(l:String)(body: => Unit): Unit = {
-    println("do {") /*}*/
-    println(s"bool ${l}_more = false")
-    body
-    println(s"} while (${l}_more)")
+    import IR._
+    val saveit = itvec
+
+    val loop = GRef(freshVar)
+    val n0 = GRef(freshVar)
+
+    val before = store
+
+    itvec = pair(itvec,n0)
+
+    println(s"begin loop f(n)=$loop($n0), iteration vector $itvec {")
+
+    println(s"initial assumption: f(0)=$before, f($n0)=$before, f($n0+1)=$before")
+
+    var init = before
+    var path = Nil: List[GVal]
+
+    var iterCount = 0
+    def iter: GVal = {
+      if (iterCount > 3) { println("XXX ABORT XXX"); return GConst(0) }
+      println(s"## iteration $iterCount, f(0)=$before, f($n0)=$init")
+      assert(!path.contains(init), "hitting recursion: "+(init::path))
+      path = init::path
+
+      store = init
+
+      // s"bool ${l}_more = false"
+      val name = l+"_more"
+      store = IR.update(store, IR.const(name), GConst(0))
+
+      body // eval loop body ...
+
+      val cv = IR.select(store,IR.const(name))
+
+      store = subst(store,less(n0,const(0)),const(0)) // 0 <= i
+      store = subst(store,less(fixindex(n0.toString, cv),n0),const(0)) // i <= n-1
+
+      println("trip count: "+termToString(fixindex(n0.toString, cv)))
+
+      val afterB = store
+
+      // inside the loop we know the check succeeded.
+      val next = subst(afterB,cv,const(1))
+
+      // generalize init/next based on previous values
+      // and current observation
+      println(s"approx f(0)=$before, f($n0)=$init, f($n0+1)=$next) = {")
+
+      val (initNew,nextNew) = lub(before, init, next)(loop,n0)
+
+      println(s"} -> f($n0)=$initNew, f($n0+1)=$nextNew")
+
+      // are we done or do we need another iteration?
+      if (init != initNew) { init = initNew; iterCount += 1; iter } else {
+        // no further information was gained: go ahead
+        // and generate the final (set of) recursive 
+        // functions, or closed forms.
+        println(s"create function def f(n) = $loop($n0) {")
+
+        // given f(n+1) = nextNew, derive formula for f(n)
+        val body = iff(less(const(0),n0),
+                      subst(nextNew,n0,plus(n0,const(-1))),
+                      before)
+
+        // create function definition, which we call below
+        lubfun(loop,n0,body)
+
+        println("}")
+
+        // compute trip count
+        val nX = fixindex(n0.toString, cv)
+
+        // invoke computed function at trip count
+        store = call(loop,nX)
+
+        // wrap up
+        println(s"} end loop $loop, trip count $nX, state $store")
+        itvec = saveit
+        IR.const(())
+      }
+    }
+
+    iter
   }
 
   def evalCFG(cfg: CFG): Unit = {
