@@ -120,22 +120,23 @@ object CPrinter {
   )
   assert(types.length == 13)
 
-  /*
+  val literalKinds = Array(
   // An integer literal e.g. 5
-  public static final int lk_integer_constant = 0;
+  "lk_integer_constant", // = 0;
   // A floating point literal e.g. 6.0
-  public static final int lk_float_constant = 1;
+  "lk_float_constant", // = 1;
   // A char literal e.g. 'a'
-  public static final int lk_char_constant = 2;
+  "lk_char_constant", // = 2;
   // A string literal e.g. "a literal"
-  public static final int lk_string_literal = 3;
+  "lk_string_literal", // = 3;
   // <code>lk_this</code> represents the 'this' keyword for  c++ only.
-  public static final int lk_this = 4;
+  "lk_this", // = 4;
   // <code>lk_true</code> represents the 'true' keyword.
-  public static final int lk_true = 5;
+  "lk_true", // = 5;
   // <code>lk_false</code> represents the 'false' keyword.
-  public static final int lk_false = 6;
-  */
+  "lk_false" // = 6;
+  )
+  assert(literalKinds.length == 7)
 
 
 
