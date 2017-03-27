@@ -256,6 +256,14 @@ object CFGtoEngine {
     import cfg._
     val blockIndex = cfg.blockIndex
 
+    // global reset ...
+    store = store0
+    itvec = itvec0
+    varCount = varCount0
+    globalDefs = globalDefs0
+    rebuildGlobalDefsCache()
+
+
     var fuel = 500*1000
     def consume(l: String, stop: Set[String], cont: Set[String]): Unit = {
       fuel -= 1; if (fuel == 0) throw new Exception("XXX consume out of fuel")

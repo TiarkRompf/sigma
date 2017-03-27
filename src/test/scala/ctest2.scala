@@ -12,14 +12,6 @@ class CTest2 extends FileDiffSuite {
     val parsed = parseCString(code)
     val cfgs = fileToCFG(parsed)
 
-    import Test1._
-
-    store = store0
-    itvec = itvec0
-    varCount = varCount0
-    globalDefs = globalDefs0
-    rebuildGlobalDefsCache()
-
     evalCFG(cfgs("main"))
   }
 
