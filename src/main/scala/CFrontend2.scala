@@ -26,9 +26,9 @@ object CFGBase {
 
   class CFG (
     val entryLabel:  String,
-    val blocks:      ArrayBuffer[Block],
-    val blockIndex:  mutable.Map[String,Block],
-    val loopHeaders: mutable.Set[String],
+    val blocks:      Array[Block],
+    val blockIndex:  Map[String,Block],
+    val loopHeaders: Set[String],
     val postDom:     Map[String,Set[String]]
   )  
 }
@@ -122,10 +122,10 @@ object CtoCFG {
         }
       } while (PostDom != p0)
       PostDom
-    }              
+    }
     val postDom = postDominators(blocks.toList)
 
-    new CFG(entryLabel, blocks, blockIndex, loopHeaders, postDom)
+    new CFG(entryLabel, blocks.toArray, Map.empty ++ blockIndex, Set.empty ++ loopHeaders, postDom)
   }
 
 
@@ -279,7 +279,7 @@ object CFGPrinter {
             println("return "+evalExp(e))
             assert(idom.isEmpty)
           case Jump(a) => 
-            assert(a == l || idom == Set(a)) // handled below
+            assert(a == l || idom == Set(a), s"a=$a, l=$l, idom=$idom, pdom=${postDom(l)}") // handled below
           case CJump(c,a,b) => 
             println("if "+evalExp(c)+" {")
             consume(a, stop1, cont1)

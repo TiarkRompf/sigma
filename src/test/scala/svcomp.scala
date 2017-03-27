@@ -9,7 +9,7 @@ abstract class SVCompSuite extends FileDiffSuite {
   // TODO: make path configurable 
   val sv_bench_root = "/Users/me/Desktop/tryout/sv-benchmarks/c" 
 
-  val file_pat_re = """(.+)/\*_(true|false)-(.*)\*(.+)""".r // note: may cause heave backtracking!
+  val file_pat_re = """(.+)/\*_(true|false)-(.*)\*(.+)""".r // note: may cause heavy backtracking!
 
   val out_prefix = "test-out/sv-bench/"
 
@@ -59,8 +59,8 @@ abstract class SVCompSuite extends FileDiffSuite {
     test(key) { withOutFileChecked(out_prefix+key) {       
       println("// # "+key)
       val parsed = parseCFile(sv_bench_root+"/"+dir+"/"+file)
-      //println("// # literal source")
-      //println(readFile(sv_bench_root+"/"+key))
+      println("// # literal source")
+      println(readFile(sv_bench_root+"/"+key))
       println("// # custom traverser")
       Util.time{evalCfgUnit(parsed)}
       println("// # default pretty printer")
