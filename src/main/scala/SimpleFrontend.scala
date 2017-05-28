@@ -85,7 +85,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       case Times(x,y)     => IR.times(eval(x),eval(y))
       case Less(x,y)      => IR.less(eval(x),eval(y))
       case Equal(x,y)     => IR.equal(eval(x),eval(y))
-      case NotEqual(x,y)  => IR.notequal(eval(x),eval(y))
+      case NotEqual(x,y)  => IR.not(IR.equal(eval(x),eval(y)))
       case New(x) => 
         val a = IR.pair(IR.const(x),itvec)
         store = IR.update(store, a, IR.const(Map()))

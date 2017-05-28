@@ -79,7 +79,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     case class DTimes(x: GVal, y: GVal) extends Def
     case class DLess(x: GVal, y: GVal) extends Def
     case class DEqual(x: GVal, y: GVal) extends Def
-    case class DNotEqual(x: GVal, y: GVal) extends Def
+    case class DNot(x: GVal) extends Def
     case class DPair(x: GVal, y: GVal) extends Def
     case class DIf(c: GVal, x: GVal, y: GVal) extends Def
     case class DSum(n: GVal, x: String, c: GVal) extends Def
@@ -97,7 +97,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       case DTimes(x: GVal, y: GVal)                 => dst.times(x,y)
       case DLess(x: GVal, y: GVal)                  => dst.less(x,y)
       case DEqual(x: GVal, y: GVal)                 => dst.equal(x,y)
-      case DNotEqual(x: GVal, y: GVal)              => dst.notequal(x,y)
+      case DNot(x: GVal)                            => dst.not(x)
       case DPair(x: GVal, y: GVal)                  => dst.pair(x,y)
       case DIf(c: GVal, x: GVal, y: GVal)           => dst.iff(c,x,y)
       case DSum(n: GVal, x: String, c: GVal)        => dst.sum(n,x,c)
@@ -118,7 +118,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def times(x: From, y: From): To
       def less(x: From, y: From): To
       def equal(x: From, y: From): To
-      def notequal(x: From, y: From): To
+      def not(x: From): To
       def pair(x: From, y: From): To
       def iff(c: From, x: From, y: From): To
       def sum(n: From, x: String, c: From): To
@@ -139,7 +139,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def times(x: From, y: From)                  = s"$x * $y"
       def less(x: From, y: From)                   = s"$x < $y"
       def equal(x: From, y: From)                  = s"$x == $y"
-      def notequal(x: From, y: From)               = s"$x != $y"
+      def not(x: From)                             = s"!$x"
       def pair(x: From, y: From)                   = s"($x,$y)"
       def iff(c: From, x: From, y: From)           = s"if ($c) $x else $y"
       def sum(n: From, x: String, c: From)         = s"sum($n) { $x => $c }"
@@ -160,7 +160,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def times(x: From, y: From)                  = DTimes(x,y)
       def less(x: From, y: From)                   = DLess(x,y)
       def equal(x: From, y: From)                  = DEqual(x,y)
-      def notequal(x: From, y: From)               = DNotEqual(x,y)
+      def not(x: From)                             = DNot(x)
       def pair(x: From, y: From)                   = DPair(x,y)
       def iff(c: From, x: From, y: From)           = DIf(c,x,y)
       def sum(n: From, x: String, c: From)         = DSum(n,x,c)
@@ -184,7 +184,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def times(x: From, y: From)                  = post(next.times(pre(x),pre(y)))
       def less(x: From, y: From)                   = post(next.less(pre(x),pre(y)))
       def equal(x: From, y: From)                  = post(next.equal(pre(x),pre(y)))
-      def notequal(x: From, y: From)               = post(next.notequal(pre(x),pre(y)))
+      def not(x: From)                             = post(next.not(pre(x)))
       def pair(x: From, y: From)                   = post(next.pair(pre(x),pre(y)))
       def iff(c: From, x: From, y: From)           = post(next.iff(pre(c),pre(x),pre(y)))
       def sum(n: From, x: String, c: From)         = post(next.sum(pre(n),x,pre(c)))
@@ -440,7 +440,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           }
           less(subst(u,a,b),subst(v,a,b))
         case Def(DEqual(x,y))    => equal(subst(x,a,b),subst(y,a,b))
-        case Def(DNotEqual(x,y)) => notequal(subst(x,a,b),subst(y,a,b))
+        case Def(DNot(Def(DEqual(x,y))))=> not(equal(subst(x,a,b),subst(y,a,b)))
         case Def(DCall(f,y))     => call(subst(f,a,b),subst(y,a,b))
         case Def(DFun(f,x1,y))   => x//subst(y,a,b); x // binding??
         case Def(DSum(n,x,y))    => sum(subst(n,a,b),x,subst(y,a,b))
@@ -588,17 +588,18 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case _ if x == y => const(1)
         case _ => super.equal(x,y)
       }
-      override def notequal(x: From, y: From)         = (x,y) match {
-        case (GConst(x),GConst(y)) => GConst(if (x == y) 0 else 1)
-        case (GConst(x:Int),Def(DPair(_,_))) => const(1)
-        case (GConst(x:String),Def(DPair(_,_))) => const(1)
-        case (Def(DPair(_,_)),GConst(x:Int)) => const(1)
-        case (Def(DPair(_,_)),GConst(x:String)) => const(1)
-        case (Def(DPair(GConst(u1),_)),GConst((v1,v2))) if u1 != v1 => const(1) // generalize?
-        case (Def(DIf(c,x,z)),_) => iff(c,notequal(x,y),notequal(z,y))
-        case (_,Def(DIf(c,y,z))) => iff(c,notequal(x,y),notequal(x,z))
-        case _ if x == y => const(0)
-        case _ => super.notequal(x,y)
+      override def not(e: From)                      = e match {
+        case Def(DNot(x)) => x
+        case Def(DEqual(GConst(x),GConst(y))) => GConst(if (x == y) 0 else 1)
+        case Def(DEqual(GConst(x:Int),Def(DPair(_,_)))) => const(1)
+        case Def(DEqual(GConst(x:String),Def(DPair(_,_)))) => const(1)
+        case Def(DEqual(Def(DPair(_,_)),GConst(x:Int))) => const(1)
+        case Def(DEqual(Def(DPair(_,_)),GConst(x:String))) => const(1)
+        case Def(DEqual(Def(DPair(GConst(u1),_)),GConst((v1,v2)))) if u1 != v1 => const(1) // generalize?
+        case Def(DEqual(Def(DIf(c,x,z)),y)) => iff(c,not(equal(x,y)),not(equal(z,y)))
+        case Def(DEqual(x,Def(DIf(c,y,z)))) => iff(c,not(equal(x,y)),not(equal(x,z)))
+        case Def(DEqual(x,y)) if x == y => const(0)
+        case _ => super.not(e)
       }
       override def pair(x: From, y: From)            = (x,y) match {
         case (GConst(x),GConst(y)) => const((x,y))
@@ -607,7 +608,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       override def iff(c: From, x: From, y: From):GVal = c match {
         case GConst(0) => y
         case GConst(_) => x
+        case Def(DNot(c)) => iff(c,y,x)
         case Def(DIf(c1,x1,y1)) => iff(c1,iff(x1,x,y),iff(y1,x,y))
+        case _ if (x,y) == (GConst(1),GConst(0)) => c
+        case _ if (x,y) == (GConst(0),GConst(1)) => not(c)
         case _ if x == y => x
         // TODO: if (1 < x6) x6 < 100 else true = x6 < 100
         // Taking the else branch: x6 <= 1 implies x6 < 100, so both branches 
@@ -665,7 +669,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
 
       override def fixindex(x: String, c: From)       = c match {
         case GConst(0) => const(0)
+        //case GConst(1) => const("infty")
         case Def(DLess(GRef(`x`),u)) => u
+        case Def(DNot(Def(DEqual(GRef(`x`),u)))) => u
+        case Def(DNot(Def(DEqual(u,GRef(`x`))))) => u
         case _ =>
           super.fixindex(x,c)
       }
@@ -692,6 +699,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         //        else z                          --->    ?
         // (tricky because of recursion in condition: first
         // transform to non-recursive condition using monotonicity?)
+        //
+        // (1b)
+        // f(x) = if (0 < x) 
+        //            if (f(x-1) == c) f(x-1) else f(x-1) + d
+        //        else z                          --->    ?
         // 
         // TODO:
         // (2)
@@ -733,6 +745,17 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               println(s"result = $uprBound")
               val y0 = plus(times(GRef(x),const(1)), zeroRes)
               val y1 = iff(less(GRef(x),uprBound), y0, uprBound)
+              // Q: do we ever access below-zero values? need > 0 condition?
+              val y2 = iff(zc, y1, zeroRes)
+              fun(f,x,y2)
+
+            case Def(DIf(Def(DEqual(`prevRes`, uprBound)), // (1b)
+              `prevRes`,
+              Def(DPlus(`prevRes`, GConst(1))))) =>  // TODO: non-unit stride
+              println(s"upper bounded result")
+              println(s"result = $uprBound")
+              val y0 = plus(times(GRef(x),const(1)), zeroRes)
+              val y1 = iff(less(GRef(x),uprBound), y0, plus(y0,const(-1))) // -1 after uprBound
               // Q: do we ever access below-zero values? need > 0 condition?
               val y2 = iff(zc, y1, zeroRes)
               fun(f,x,y2)

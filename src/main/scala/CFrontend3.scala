@@ -34,7 +34,19 @@ object CFGtoEngine {
           val lk = node.getKind
           lk match {
             case 0 => /* int const */
-              GConst(node.toString.toInt)
+              // need to handle postfix like L, UL, ...
+              val str = node.toString
+              try {
+              if (str.endsWith("UL"))
+                GConst(str.substring(0,str.length-2).toInt) // what do we do with long and unsigned long?
+              else
+                GConst(str.toInt)
+              } catch { case e: Exception =>
+                println(str)
+                println(str.endsWith("UL"))
+                println(str.substring(0,str.length-2))
+                throw e
+              }
           }
       case node: CASTIdExpression =>
           val name = node.getName.toString
@@ -43,6 +55,12 @@ object CFGtoEngine {
           val op = CPrinter.operators1(node.getOperator)
           val arg = node.getOperand
           op match {
+            case "op_bracketedPrimary" => 
+              evalExp(arg) // OK?
+            case "op_not" => 
+              IR.not(evalExp(arg))
+            case "op_minus" => 
+              IR.times(IR.const(-1),evalExp(arg))
             case "op_prefixIncr" => 
               val name = arg.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
               val cur = IR.select(store,IR.const("&"+name))
@@ -56,8 +74,18 @@ object CFGtoEngine {
           val arg2 = evalExp(node.getOperand2)
           op match {
             case "op_plus" => IR.plus(arg1,arg2)
+            case "op_minus" => IR.plus(arg1,IR.times(IR.const(-1),arg2))
+
             case "op_equals" => IR.equal(arg1,arg2)
+            case "op_notequals" => IR.not(IR.equal(arg1,arg2))
+
             case "op_lessThan" => IR.less(arg1,arg2)
+            case "op_greaterEqual" => IR.less(arg2,arg1)
+            case "op_lessEqual" => IR.less(arg1,IR.plus(arg2,IR.const(1))) // OK
+            case "op_greaterThan" => IR.less(arg2,IR.plus(arg1,IR.const(1))) // OK
+
+            case "op_logicalAnd" => IR.iff(arg1,arg2,IR.const(0)) // OK
+
             case "op_assign" => 
               val name = node.getOperand1.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
               val upd = arg2
@@ -68,11 +96,15 @@ object CFGtoEngine {
           val fun = node.getFunctionNameExpression
           val arg = node.getParameterExpression
           fun.asInstanceOf[CASTIdExpression].getName.toString match {
+            case "__VERIFIER_nondet_int" => GConst("__VERIFIER_nondet_int")
             case "assert" => 
               val c1 = evalExp(arg)
               val old = IR.select(store, IR.const("valid"))
               store = IR.update(store, IR.const("valid"), IR.times(old,c1)) // IR.times means IR.and
               IR.const(())
+            case name => 
+              println("ERROR: unknown function call: "+name)
+              GConst("<call "+name+">")
             //case _ => evalExp(fun)+"("+evalExp(arg)+")"
           }
       /*case node: CASTArraySubscriptExpression =>
