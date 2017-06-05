@@ -346,7 +346,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       // subst a -> b in term x. we perform hereditary substition, 
       // i.e. normalize/optimize on the fly. of particular concern
       // are conditionals (if/else)
-      def subst(x: GVal, a: GVal, b: GVal): GVal = x match {
+      def subst(x: GVal, a: GVal, b: GVal): GVal = a match {
+        case Def(DNot(a))        => subst(x,a,not(b))
+        case _                   => subst1(x,a,b)
+      }
+      def subst1(x: GVal, a: GVal, b: GVal): GVal = x match {
         case `a`                 => b
         case GConst(_)           => x
         case Def(DUpdate(x,f,y)) => update(subst(x,a,b),subst(f,a,b),subst(y,a,b))
@@ -440,7 +444,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           }
           less(subst(u,a,b),subst(v,a,b))
         case Def(DEqual(x,y))    => equal(subst(x,a,b),subst(y,a,b))
-        case Def(DNot(Def(DEqual(x,y))))=> not(equal(subst(x,a,b),subst(y,a,b)))
+        case Def(DNot(x))        => not(subst(x,a,b))
         case Def(DCall(f,y))     => call(subst(f,a,b),subst(y,a,b))
         case Def(DFun(f,x1,y))   => x//subst(y,a,b); x // binding??
         case Def(DSum(n,x,y))    => sum(subst(n,a,b),x,subst(y,a,b))
@@ -589,6 +593,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case _ => super.equal(x,y)
       }
       override def not(e: From)                      = e match {
+        case GConst(0) => GConst(1)
+        case GConst(1) => GConst(0)
         case Def(DNot(x)) => x
         case Def(DEqual(GConst(x),GConst(y))) => GConst(if (x == y) 0 else 1)
         case Def(DEqual(GConst(x:Int),Def(DPair(_,_)))) => const(1)

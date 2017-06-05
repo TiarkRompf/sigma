@@ -49,8 +49,26 @@ class CTest2 extends FileDiffSuite {
     runAndCheck(code)
   }}
 
-  // CURRENTLY PENDING !!!
   test("A2") { withOutFileChecked(prefix+"A2") {
+    val code = """
+    int main() {
+      int i = 0;
+      while (1) {
+        if (i < 100)
+          i = i + 1;
+        else
+          goto out;
+      }
+      out:
+      //assert(i == 100);
+      return 0;
+    }
+    """
+    runAndCheck(code)
+  }}
+
+  // should be same as above (!= 100 vs < 100)
+  test("A3") { withOutFileChecked(prefix+"A3") {
     val code = """
     int main() {
       int i = 0;
@@ -67,5 +85,6 @@ class CTest2 extends FileDiffSuite {
     """
     runAndCheck(code)
   }}
+
 
 }
