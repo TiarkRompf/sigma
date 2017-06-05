@@ -181,8 +181,8 @@ object CFGtoEngine {
 
   def handleContinue(l: String): Unit = {
     //println("${l}_more = true")
-    val name = l+"_more"
-    store = IR.update(store, IR.const(name), GConst(1))
+    val more = l+"_more"
+    store = IR.update(store, IR.const(more), GConst(1))
   }
 
   def handleIf(c1: Val)(a: => Unit)(b: => Unit): Unit = {
@@ -226,12 +226,12 @@ object CFGtoEngine {
       store = init
 
       // s"bool ${l}_more = false"
-      val name = l+"_more"
-      store = IR.update(store, IR.const(name), GConst(0))
+      val more = l+"_more"
+      store = IR.update(store, IR.const(more), GConst(0))
 
       body // eval loop body ...
 
-      val cv = IR.select(store,IR.const(name))
+      val cv = IR.select(store,IR.const(more))
 
       store = subst(store,less(n0,const(0)),const(0)) // 0 <= i
       store = subst(store,less(fixindex(n0.toString, cv),n0),const(0)) // i <= n-1
