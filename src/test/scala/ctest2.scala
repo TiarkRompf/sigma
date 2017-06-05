@@ -4,6 +4,8 @@ import CBase._
 import CtoCFG._
 import CFGtoEngine._
 
+import CFrontend2._
+
 class CTest2 extends FileDiffSuite {
 
   val prefix = "test-out/test-c-2"
@@ -12,6 +14,7 @@ class CTest2 extends FileDiffSuite {
     val parsed = parseCString(code)
     val cfgs = fileToCFG(parsed)
 
+    evalCfgUnit(parsed)
     evalCFG(cfgs("main"))
   }
 
@@ -86,5 +89,24 @@ class CTest2 extends FileDiffSuite {
     runAndCheck(code)
   }}
 
+  test("A4") { withOutFileChecked(prefix+"A4") {
+    val code = """
+    int main() {
+      int i = 0;
+      loop: {
+        int more = 0;
+        if (i != 100) {
+          i = i + 1;
+          more = 1;
+        }
+        if (more)
+          goto loop;
+      }
+      //assert(i == 100);
+      return 0;
+    }
+    """
+    runAndCheck(code)
+  }}
 
 }

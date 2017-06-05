@@ -29,6 +29,7 @@ object CFGBase {
     val blocks:      Array[Block],
     val blockIndex:  Map[String,Block],
     val loopHeaders: Set[String],
+    val loopBodies:  Map[String,Set[String]],
     val postDom:     Map[String,Set[String]]
   )  
 }
@@ -92,18 +93,24 @@ object CtoCFG {
     endBlock(Return(null))
 
     val loopHeaders = new mutable.HashSet[String]
+    val loopBodies = new mutable.HashMap[String,Set[String]]
 
     var seen = new mutable.HashSet[String]
-    def dfs(l: String, path: Set[String]): Unit = {
+    def dfs(l: String, path: List[String]): Unit = {
       if (path contains l) {
         loopHeaders += l
+        // Note: may reach loop header on multiple paths 
+        // -> don't overwrite previous body nodes
+        val bodyNodes = path.takeWhile(_ != l)
+        val prev = loopBodies.getOrElseUpdate(l,Set())
+        loopBodies(l) = (prev ++ bodyNodes)
       } else if (!seen(l)) {
         seen += l
-        val path1 = path + l
+        val path1 = l::path
         blockIndex(l).successors.foreach(l1 => dfs(l1, path1))
       }
     }
-    dfs(entryLabel, Set.empty)
+    dfs(entryLabel, Nil)
 
     def postDominators(blocks: List[Block]) = {
       var PostDom: Map[String,Set[String]] = Map()
@@ -125,7 +132,7 @@ object CtoCFG {
     }
     val postDom = postDominators(blocks.toList)
 
-    new CFG(entryLabel, blocks.toArray, Map.empty ++ blockIndex, Set.empty ++ loopHeaders, postDom)
+    new CFG(entryLabel, blocks.toArray, Map.empty ++ blockIndex, Set.empty ++ loopHeaders, Map.empty ++ loopBodies, postDom)
   }
 
 
@@ -243,7 +250,7 @@ object CFGPrinter {
 
     println("# restructure:")
 
-    var fuel = 500*1000
+    var fuel = 1*1000
     def consume(l: String, stop: Set[String], cont: Set[String]): Unit = {
       fuel -= 1; if (fuel == 0) throw new Exception("XXX consume out of fuel")
       
@@ -260,10 +267,16 @@ object CFGPrinter {
       //println("// "+l)
       val b = blockIndex(l)
 
-      // strict post-dominators (without self)
-      val sdom = postDom(l)-l
+      // strict post-dominators (without self, and without loop body)
+      val sdom = postDom(l)-l -- loopBodies.getOrElse(l,Set())
       // immediate post-dominator (there can be at most one)
       var idom = sdom.filter(n => sdom.forall(postDom(n)))
+      // the same, but may be inside loop body
+      val sdomIn = postDom(l)-l
+      // immediate post-dominator (may be inside loop)
+      var idomIn = sdomIn.filter(n => sdomIn.forall(postDom(n)))
+
+
       // Currently there's an issue in 
       // loop-invgen/string_concat-noarr_true-unreach-call_true-termination.i
       // TODO: use Cooper's algorithm to compute idom directly
@@ -289,15 +302,16 @@ object CFGPrinter {
         }
       }
 
-      // Simplifying assumption: the immediate post-dominator
-      // of a loop header is *outside* the loop. This is not
-      // necessarily true in general.
-      // TODO: refine to compute post-dom outside loop.
+      // Some complication: the immediate post-dominator
+      // of a loop header may be *inside* the loop. 
+      // Need to consume rest of loop body, too.
       val isLoop = loopHeaders contains l
       if (isLoop) {
         println("do {")
         println(s"bool ${l}_more = false")
-        evalBody(idom, cont + l)
+        evalBody(idomIn, cont + l)
+        if (idomIn.nonEmpty) // continue consuming loop body
+          consume(idomIn.head, idom, cont + l)
         println(s"} while (${l}_more)")
       } else {
         evalBody(idom, cont)

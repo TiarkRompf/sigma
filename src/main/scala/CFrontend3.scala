@@ -296,9 +296,12 @@ object CFGtoEngine {
     rebuildGlobalDefsCache()
 
 
-    var fuel = 500*1000
+    var fuel = 1*1000
     def consume(l: String, stop: Set[String], cont: Set[String]): Unit = {
-      fuel -= 1; if (fuel == 0) throw new Exception("XXX consume out of fuel")
+      fuel -= 1; if (fuel == 0) {
+        println(l,stop,cont,postDom(l))
+        throw new Exception("XXX consume out of fuel")
+      }
       
       if (stop contains l) {
         //println("// break "+l)
@@ -312,10 +315,15 @@ object CFGtoEngine {
       //println("// "+l)
       val b = blockIndex(l)
 
-      // strict post-dominators (without self)
-      val sdom = postDom(l)-l
+      // strict post-dominators (without self, and without loop body)
+      val sdom = postDom(l)-l -- loopBodies.getOrElse(l,Set())
       // immediate post-dominator (there can be at most one)
       var idom = sdom.filter(n => sdom.forall(postDom(n)))
+      // the same, but may be inside loop body
+      val sdomIn = postDom(l)-l
+      // immediate post-dominator (may be inside loop)
+      var idomIn = sdomIn.filter(n => sdomIn.forall(postDom(n)))
+
       // Currently there's an issue in 
       // loop-invgen/string_concat-noarr_true-unreach-call_true-termination.i
       // TODO: use Cooper's algorithm to compute idom directly
@@ -341,13 +349,16 @@ object CFGtoEngine {
         }
       }
 
-      // Simplifying assumption: the immediate post-dominator
-      // of a loop header is *outside* the loop. This is not
-      // necessarily true in general.
-      // TODO: refine to compute post-dom outside loop.
+      // Some complication: the immediate post-dominator
+      // of a loop header may be *inside* the loop. 
+      // Need to consume rest of loop body, too.
       val isLoop = loopHeaders contains l
       if (isLoop) {
-        handleLoop(l) { evalBody(idom, cont + l) }
+        handleLoop(l) { 
+          evalBody(idomIn, cont + l) 
+          if (idomIn.nonEmpty) // continue consuming loop body
+            consume(idomIn.head, idom, cont + l)
+        }
       } else {
         evalBody(idom, cont)
       }
