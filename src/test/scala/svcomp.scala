@@ -3,11 +3,16 @@ package analysis
 import Util._
 import CBase._
 import CFrontend2._
+import scala.io.Source
 
 abstract class SVCompSuite extends FileDiffSuite {
 
-  // TODO: make path configurable 
-  val sv_bench_root = "/Users/me/Desktop/tryout/sv-benchmarks/c" 
+  // TODO: make path configurable
+  val sv_bench_root = {
+    val lines = Source.fromFile("application.conf").getLines().toList
+    def pathValid(s: String) = new java.io.File(s + "sv-benchmarks").exists
+    (lines find pathValid getOrElse (sys.error(s"""sv benchmark root not found in search path:\n\t- ${lines mkString "\n\t -" }"""))) + "sv-benchmarks/c/"
+  }
 
   val file_pat_re = """(.+)/\*_(true|false)-(.*)\*(.+)""".r // note: inefficent match, may cause heavy backtracking!
 
