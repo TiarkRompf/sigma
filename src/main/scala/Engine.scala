@@ -62,11 +62,18 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case GRef(s)   => s
         case GConst(x: String) => "\""+x+"\""
         case GConst(x) => s"$x"
+        case GError => "<error>"
       }
     }
 
     case class GRef(s: String) extends GVal
     case class GConst(x: Any) extends GVal
+    case object GError extends GVal
+
+    object GType {
+      val int = GConst("int")
+      val string = GConst("string")
+    }
 
     abstract class Def {
       override def toString: String = mirrorDef(this, DString)
@@ -88,6 +95,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     case class DCall(f: GVal, x: GVal) extends Def
     case class DFun(f: String, x: String, y: GVal) extends Def
     case class DOther(s: String) extends Def
+    case class DHasField(x: GVal, f: GVal) extends Def
 
     def mirrorDef(d: Def, dst: DIntf { type From >: GVal }): dst.To = d match {
       case DMap(m)                                  => dst.map(m.asInstanceOf[Map[dst.From, dst.From]])
@@ -106,6 +114,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       case DCall(f: GVal, x: GVal)                  => dst.call(f,x)
       case DFun(f: String, x: String, y: GVal)      => dst.fun(f,x,y)
       case DOther(s: String)                        => dst.other(s)
+      case DHasField(x: GVal, f: GVal)              => dst.hasfield(x,f)
     }
 
     trait DIntf {
@@ -127,6 +136,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def call(f: From, x: From): To
       def fun(f: String, x: String, y: From): To
       def other(s: String): To
+      def hasfield(x: From, f: From): To
     }
 
     object DString extends DIntf {
@@ -148,6 +158,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def call(f: From, x: From)                   = s"$f($x)"
       def fun(f: String, x: String, y: From)       = s"{ $x => $y }"
       def other(s: String)                         = s
+      def hasfield(x: From, f: From)               = s"$x contains $f"
     }
 
     object DDef extends DIntf {
@@ -169,6 +180,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def call(f: From, x: From)                   = DCall(f,x)
       def fun(f: String, x: String, y: From)       = DFun(f,x,y)
       def other(s: String)                         = DOther(s)
+      def hasfield(x: From, f: From)               = DHasField(x,f)
     }
 
     trait DXForm extends DIntf {
@@ -193,6 +205,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def call(f: From, x: From)                   = post(next.call(pre(f),pre(x)))
       def fun(f: String, x: String, y: From)       = post(next.fun(f,x,pre(y)))
       def other(s: String)                         = post(next.other(s))
+      def hasfield(x: From, f: From)               = post(next.hasfield(pre(x),pre(f)))
     }
 
 
@@ -202,7 +215,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     val varCount0 = 0
     var varCount = varCount0
 
-    val globalDefs0 = Nil 
+    val globalDefs0 = Nil
     var globalDefs: List[(String,Def)] = globalDefs0
 
     var globalDefsRhs: Map[String,Def] = Map()
@@ -221,14 +234,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       //globalDefs.reverse.collectFirst { case (`s`,d) => d }
 
     def dreflect(x0: => String, s: Def): GVal = globalDefsLhs.get(s).map(GRef).getOrElse {
-      val x = x0; 
+      val x = x0;
       globalDefs = (x->s)::globalDefs
       globalDefsRhs = globalDefsRhs + (x->s)
       globalDefsLhs = globalDefsLhs + (s->x)
       println(s"val $x = $s")
       GRef(x)
     }
-    //globalDefs.collect { case (k,`s`) => GRef(k) }.headOption getOrElse { 
+    //globalDefs.collect { case (k,`s`) => GRef(k) }.headOption getOrElse {
     //val x = x0; globalDefs = globalDefs :+ (x->s); println(s"val $x = $s"); GRef(x) }
     def dreflect(s: Def): GVal = dreflect(freshVar,s)
 
@@ -281,6 +294,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         def unapply(x:GVal): Option[Def] = x match {
           case GConst(_) => None
           case GRef(s)   => findDefinition(s)
+          case GError => None
         }
       }
 
@@ -343,7 +357,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         if (env == env0) env else substTrans(env)
       }
 
-      // subst a -> b in term x. we perform hereditary substition, 
+      // subst a -> b in term x. we perform hereditary substition,
       // i.e. normalize/optimize on the fly. of particular concern
       // are conditionals (if/else)
       def subst(x: GVal, a: GVal, b: GVal): GVal = a match {
@@ -355,15 +369,15 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case GConst(_)           => x
         case Def(DUpdate(x,f,y)) => update(subst(x,a,b),subst(f,a,b),subst(y,a,b))
         case Def(DSelect(x,f))   => select(subst(x,a,b),subst(f,a,b))
-        case Def(DMap(m))        => 
+        case Def(DMap(m))        =>
 
           // TODO: what if stuff is substituted to the same key??
           map(m.map(kv => subst(kv._1,a,b) -> subst(kv._2,a,b)))
 
-        case Def(dd@DIf(c@Def(o@DEqual(u,v)),x,y)) => 
+        case Def(dd@DIf(c@Def(o@DEqual(u,v)),x,y)) =>
           // in general, if a implies c we can take branch x; if a refutes c, y.
           // if a & c implies that something is a constant, propagate that
-          a match { 
+          a match {
             case Def(p@DEqual(`u`,s)) =>
               //println(s"another == flying by: $o, $p -> $b")
               if (b == const(1)) { // u == s
@@ -381,10 +395,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
             case _ =>
           }
           iff(subst(c,a,b),subst(x,a,b),subst(y,a,b))
-        case Def(dd@DIf(c@Def(o@DLess(u,v)),x,y)) => 
+        case Def(dd@DIf(c@Def(o@DLess(u,v)),x,y)) =>
           // in general, if a implies c we can take branch x; if a refutes c, y.
           // if a & c implies that something is a constant, propagate that
-          a match { 
+          a match {
             case Def(p@DLess(`u`,s)) =>
               // evaluate u < v  given that u < s or ¬(u < s)
               //println(s"another < flying by: $o, $p -> $b")
@@ -417,7 +431,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               }
 
             // look for: 0 < x6 && !(0 < x6 + -1) ---> x6 == 1
-                // if (0 < x6) if (0 < x6 + -1) if (0 < x6 + -2) if (x6 < 102) if (x6 < 101) x100 + 1 
+                // if (0 < x6) if (0 < x6 + -1) if (0 < x6 + -2) if (x6 < 102) if (x6 < 101) x100 + 1
                 // else x100 else x100 else x100 + 1 else x100 + 1 else 0
 
             case Def(p@DLess(`v`,s)) =>
@@ -429,14 +443,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
                 return subst(x,a,b)
               }
 
-            case _ => 
+            case _ =>
           }
           iff(subst(c,a,b),subst(x,a,b),subst(y,a,b))
         case Def(DIf(c,x,y))     => iff(subst(c,a,b),subst(x,a,b),subst(y,a,b))
         case Def(DPair(x,y))     => pair(subst(x,a,b),subst(y,a,b))
         case Def(DPlus(x,y))     => plus(subst(x,a,b),subst(y,a,b))
         case Def(DTimes(x,y))    => times(subst(x,a,b),subst(y,a,b))
-        case Def(o@DLess(u,v))     => 
+        case Def(o@DLess(u,v))     =>
           a match { // TODO
             case Def(p@DLess(`u`,s)) =>
               //if (v == s || less(s,v) == const(1)) return const(1)
@@ -450,6 +464,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DSum(n,x,y))    => sum(subst(n,a,b),x,subst(y,a,b))
         case Def(DCollect(n,x,y))=> collect(subst(n,a,b),x,subst(y,a,b))
         case Def(DFixIndex(x,y)) => fixindex(x,subst(y,a,b))
+        case Def(DHasField(x,y)) => hasfield(subst(x,a,b), subst(y,a,b))
         case Def(d)              => println("no subst: "+x+"="+d); x
         case _                   => x // TOOD
       }
@@ -463,22 +478,22 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       }
       // like update, but accept map to be empty/undefined
       // must be invoked as update(x,u,merge(select(x,u),v,y))
-      def merge(x: From, f: From, y: From): From = x match { 
+      def merge(x: From, f: From, y: From): From = x match {
         case GConst("undefined") => update(dreflect(DMap(Map())),f,y) // caveat: f may be non-const ?
         case _ => update(x,f,y)
       }
       override def update(x: From, f: From, y: From): From = x match {
         case GConst("undefined") => x // undefined
         //case GConst("undefined") => update(dreflect(DMap(Map())),f,y) // f may be non-const
-        //case GConst("undefined") => x 
+        //case GConst("undefined") => x
         case GConst(m:Map[GVal,GVal] @unchecked) /*if m.isEmpty*/ => update(dreflect(DMap(m)),f,y) // f may be non-const -- problem?
-        case Def(DMap(m)) => 
+        case Def(DMap(m)) =>
           f match {
             case GConst((u,v)) => update(x,const(u),merge(select(x,const(u)),const(v),y)) // store path!!
             case GConst(_) => map(m + (f -> y)) // TODO: y = DIf ??
             case Def(DIf(c,u,v)) => iff(c,update(x,u,y),update(x,v,y))
             case Def(DPair(u,v)) => update(x,u,merge(select(x,u),v,y)) // store path!!
-            case _ => 
+            case _ =>
               // It would be nice to use f as a key even if it
               // is not a constant:
               //    map(m + (f -> y))
@@ -498,13 +513,13 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         // TODO: should we really say "undefined".x = "undefined" ?
         case GConst("undefined") => GConst("undefined")
         case GConst(m:Map[_,_]) if m.isEmpty => GConst("undefined") // f may be non-const
-        case Def(DMap(m)) => 
+        case Def(DMap(m)) =>
           f match {
             case GConst((u,v)) => select(select(x,const(u)),const(v))
             case GConst(_) => m.getOrElse(f, GConst("undefined"))
             case Def(DIf(c,u,v)) => iff(c,select(x,u),select(x,v))
             case Def(DPair(u,v)) => select(select(x,u),v)
-            case _ => 
+            case _ =>
               var res: GVal = const("undefined")
               for ((k,v) <- m) {
                 res = iff(equal(f,k), v, res)
@@ -515,9 +530,32 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           }
         case Def(DUpdate(x2,f2,y2)) => iff(equal(f2,f), y2, select(x2,f))
         case Def(DIf(c,x,y)) => iff(c,select(x,f),select(y,f))
-        case Def(DPair(u,v)) => select(select(x,u),v)
+        case Def(DPair(u,v)) => select(select(x,u),v)  // FIXMEGreg: I don't understand that case
         case Def(DCollect(n,x,c)) => subst(c,GRef(x),f)// FIXME: check bounds!!
         case _ => super.select(x,f)
+      }
+      override def hasfield(x: From, f: From) = x match {
+        case GConst("undefined") => const(0)
+        case GConst(m:Map[_,_]) if m.isEmpty => const(0) // f may be non-const
+        case Def(DMap(m)) =>
+          f match {
+            case GConst((u,v)) => times(hasfield(x, const(u)), hasfield(select(x,const(u)),const(v)))
+            case GConst(_) => const(if (m.contains(f)) 1 else 0)
+            case Def(DIf(c,u,v)) => iff(c,hasfield(x,u),hasfield(x,v))
+            case Def(DPair(u,v)) => times(hasfield(x, u), hasfield(select(x,u),v))
+            case _ =>
+              var res: GVal = const(0)
+              for ((k,v) <- m) {
+                res = iff(equal(f,k), const(1), res)
+              }
+              res
+              //return super.select(x,f)
+              //m.getOrElse(f, GConst("undefined"))
+          }
+        case Def(DUpdate(x2,f2,y2)) => iff(equal(f2,f), const(1), hasfield(x2,f))
+        case Def(DIf(c,x,y)) => iff(c,hasfield(x,f),hasfield(y,f))
+        case Def(DCollect(n,x,c)) => ??? // FIXME: check bounds!!
+        case _ => super.hasfield(x, f)
       }
       override def plus(x: From, y: From)            = (x,y) match {
         case (GConst(x:Int),GConst(y:Int))       => const(x+y)
@@ -620,18 +658,18 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case _ if (x,y) == (GConst(0),GConst(1)) => not(c)
         case _ if x == y => x
         // TODO: if (1 < x6) x6 < 100 else true = x6 < 100
-        // Taking the else branch: x6 <= 1 implies x6 < 100, so both branches 
+        // Taking the else branch: x6 <= 1 implies x6 < 100, so both branches
         // would return true, ergo condition is redundant.
         // This is a bit of a hack:
-        case Def(DLess(GConst(a:Int),xx)) if { x match { 
+        case Def(DLess(GConst(a:Int),xx)) if { x match {
           case Def(DLess(`xx`, GConst(b:Int))) => a < b && y == const(1) case _ => false }} => x
-        // Another, similar case: if (1<x6) u-x6 else u-1 = 
+        // Another, similar case: if (1<x6) u-x6 else u-1 =
         // Here we extend to if (0<x6) u-x6 else u-1 in the hope that the condition
         // becomes redundant later
         case Def(DLess(GConst(1),xx)) if subst(x,xx,const(1)) == y => iff(less(const(0),xx),x,y)
-        case _ => 
+        case _ =>
           (x,y) match {
-            case (Def(DMap(m1)), Def(DMap(m2))) => 
+            case (Def(DMap(m1)), Def(DMap(m2))) =>
               // push inside maps
               map((m1.keys++m2.keys) map { k => k -> iff(c,m1.getOrElse(k,const("nil")),m2.getOrElse(k,const("nil")))} toMap)
             case _ =>
@@ -639,10 +677,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               val thenp = subst(x,c,GConst(1))
               val elsep = subst(y,c,GConst(0))
 
-              // maybe we don't need conditional: 
+              // maybe we don't need conditional:
               /*val thenpTry = subst(x,c,GConst(0))
               val elsepTry = subst(y,c,GConst(1))
-              
+
               if (thenp == elsepTry && elsep == thenpTry) {
                 println(s"### strange if $c $x $y")
                 return x
@@ -698,22 +736,22 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         // (0)
         // f(x) = if (0 < x) f(x-1) + d else z    --->    f(x) = x * d + z
         // f(x) = if (0 < x) f(x-1)     else z    --->    f(x) = z
-        // 
+        //
         // (1)
-        // f(x) = if (0 < x) 
+        // f(x) = if (0 < x)
         //            if (f(x-1) < u) f(x-1) + d else f(x-1)
         //        else z                          --->    ?
         // (tricky because of recursion in condition: first
         // transform to non-recursive condition using monotonicity?)
         //
         // (1b)
-        // f(x) = if (0 < x) 
+        // f(x) = if (0 < x)
         //            if (f(x-1) == c) f(x-1) else f(x-1) + d
         //        else z                          --->    ?
-        // 
+        //
         // TODO:
         // (2)
-        // f(x) = if (0 < x) 
+        // f(x) = if (0 < x)
         //            f(x-1) + x * c + d
         //        else z                          --->    ?
         // summing the loop variable
@@ -729,14 +767,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
             case `prevRes` =>
               fun(f,x,zeroRes)
 
-            case Def(DPlus(`prevRes`, d)) if true && !dependsOn(d,GRef(x)) => 
+            case Def(DPlus(`prevRes`, d)) if true && !dependsOn(d,GRef(x)) =>
               println(s"invariant stride $d")
               println(s"result = $zeroRes + $x * $d")
               val y0 = plus(times(GRef(x),d), zeroRes)
               // Q: do we ever access below-zero values? need > 0 condition?
               val y1 = iff(zc, y0, zeroRes) // CAREFUL!!
               fun(f,x,y1)
-            
+
             /*case d @ GConst(_) if !dependsOn(d,GRef(x)) =>  // error in iterateAll if not a const ??
               // Q: do we need this case ?? it doesn't seem to do anything
               println(s"invariant res $d")
@@ -767,7 +805,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               fun(f,x,y2)
 
             case Def(DPlus(`prevRes`,  // (2)
-              Def(DPlus(Def(DTimes(GRef(`x`), GConst(-1))), GConst(d))))) if true => 
+              Def(DPlus(Def(DTimes(GRef(`x`), GConst(-1))), GConst(d))))) if true =>
               println(s"summing the loop var: -$x+$d")
               println(s"result = - $x * ($x + 1)/2 + $x*$d")
               // (0 to n).sum = n*(n+1)/2
@@ -778,7 +816,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               fun(f,x,y2)
               // test case result: 405450
             case _ =>
-              dreflect(f,next.fun(f,x,pre(y)))            
+              dreflect(f,next.fun(f,x,pre(y)))
           }
 
         case _ =>
@@ -799,16 +837,16 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       // 2) when updating a structure at the loop index: assume we're building an array
       // 3) for primitives: compute diff d = f(n+1) - f(n)
       //    a) if expression for d is defined piecewise (i.e. if (n < c) ...), break into segments
-      //    b) for each segment: 
+      //    b) for each segment:
       //         identify polynomial degree of d
       //         integrate (with starting value f(0) = a) to derive new formula for f(n) and f(n+1))
 
       // signature:
-      // a: value before loop. b0: value before iteration. b1: value after iteration. 
+      // a: value before loop. b0: value before iteration. b1: value after iteration.
       // returns: new values before,after
       def lub(a: GVal, b0: GVal, b1: GVal)(fsym: GVal, n0: GVal): (GVal, GVal) = { println(s"lub_$fsym($a,$b0,$b1)"); (a,b0,b1) } match {
         case (a,b0,b1) if a == b1 => (a,a)
-        case (_, _, Def(DMap(m2))) => 
+        case (_, _, Def(DMap(m2))) =>
           val m = (m2.keys) map { k => (k, lub(select(a,k),select(b0,k),select(b1,k))(mkey(fsym,k),n0)) }
           println(m)
           (map(m.map(kv=>(kv._1,kv._2._1)).toMap), map(m.map(kv=>(kv._1,kv._2._2)).toMap))
@@ -816,12 +854,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           IRD.printTerm(a)
           IRD.printTerm(b0)
           IRD.printTerm(b1)
-          //use real index var !! 
+          //use real index var !!
           val nX = mkey(fsym,n0)
           println(s"hit update at loop index -- assume collect")
           val r = collect(plus(n0,const(1)), nX.toString, subst(y,n0,nX))
           (r, r)
-        case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_])) 
+        case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]))
           if !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] => // XXX diff op should take precedence
           // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
           IRD.printTerm(a)
@@ -867,10 +905,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
 
             def poly(x: GVal): List[GVal] = x match {
               case `n0` => List(const(0),const(1))
-              case Def(DTimes(`n0`,y)) => 
+              case Def(DTimes(`n0`,y)) =>
                 val py = poly(y)
                 if (py.isEmpty) Nil else const(0)::py
-              case Def(DPlus(a,b)) => 
+              case Def(DPlus(a,b)) =>
                 val (pa,pb) = (poly(a),poly(b))
                 if (pa.isEmpty || pb.isEmpty) Nil else {
                   val degree = pa.length max pb.length
@@ -895,7 +933,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
             def break(ulo: GVal, nlo: GVal, nhi: GVal, d: GVal): (GVal,GVal,GVal) = d match {
               // XX now handled in poly case below
               // loop invariant stride, i.e. constant delta i.e. linear in loop index
-              // case d if !IRD.dependsOn(d, n0) && d != const("undefined") => 
+              // case d if !IRD.dependsOn(d, n0) && d != const("undefined") =>
               //   println(s"confirmed iterative loop, d = $d")
               //   // before: ul + n * d
               //   // after:  ul + (n+1) * d
@@ -921,7 +959,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
                 val (u0,u1,uhi) = break(ulo,nlo,up,const(1))
                 val (v0,v1,vhi) = break(uhi,up,nhi,const(0))
                 (iff(less(n0,up), u0, v0), iff(less(n0,up), u1, v1), vhi)
-              case _ => 
+              case _ =>
 
                 val pp = poly(d)
                 println("poly: " + pp)
@@ -941,7 +979,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
                     println(s"found 2nd order polynomial: f'($n0)=$coeff1*$n0+$coeff0 -> f($n0)=$coeff1*$n0/2($n0+1)+$coeff0*$n0")
 
                     // f(n) = c1 * n/2*(n+1) + c0 * n + ul   <--- ul not added here but below
-                    def eval(nX: GVal) = 
+                    def eval(nX: GVal) =
                       plus(times(times(times(nX,plus(nX,const(-1))),const(0.5)), coeff1), times(nX, coeff0))
 
                     val r0 = eval(n0)
@@ -966,7 +1004,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
                 }
             }
 
-            try { 
+            try {
               val (u0,u1,uhi) = break(a,const(0),n0,d1)
               return (u0,u1)
             } catch {
@@ -989,13 +1027,13 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       // b: loop body
 
       def lubfun(fsym: GVal, n0: GVal, b: GVal): GVal = b match {
-        case Def(DMap(m2)) => 
+        case Def(DMap(m2)) =>
           val m = (m2.keys) map { k => k -> lubfun(mkey(fsym,k),n0,select(b,k)) }
           val b1 = map(m.toMap)
           fun(fsym.toString, n0.toString, b1)
           call(fsym,n0)
-        case _ => 
-          fun(fsym.toString, n0.toString, b) 
+        case _ =>
+          fun(fsym.toString, n0.toString, b)
           call(fsym,n0)
       }
 

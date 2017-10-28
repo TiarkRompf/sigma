@@ -29,6 +29,19 @@ object CFGtoEngine {
     case d: CASTElaboratedTypeSpecifier => d.getName // enough?
     case d: CASTCompositeTypeSpecifier  => d.getName // enough?
   }
+
+  val value = GConst("value")
+  val tpe = GConst("type")
+  def typedGVal(x: GVal, tp: GVal) = GConst(Map(value -> x, tpe -> tp))
+  def gValValue(x: GVal) = IR.select(x, value)
+  def gValType(x: GVal) = IR.select(x, tpe)
+
+  def gValTypeCheck(arg: GVal, tp: GVal)(eval: GVal => GVal) =
+    IR.iff(IR.times(IR.hasfield(arg, tpe), IR.equal(gValType(arg), tp)), eval(gValValue(arg)), GError)
+
+  def safeSelect(arg: GVal, field: GVal) =
+    IR.iff(IR.hasfield(arg, field), IR.select(arg, field), GError)
+
   def evalExp(node: IASTNode): Val = node match {
       case node: CASTLiteralExpression =>
           val lk = node.getKind
@@ -38,9 +51,9 @@ object CFGtoEngine {
               val str = node.toString
               try {
               if (str.endsWith("UL"))
-                GConst(str.substring(0,str.length-2).toInt) // what do we do with long and unsigned long?
+                typedGVal(GConst(str.substring(0,str.length-2).toInt), GType.int)// what do we do with long and unsigned long?
               else
-                GConst(str.toInt)
+                typedGVal(GConst(str.toInt), GType.int)
               } catch { case e: Exception =>
                 println(str)
                 println(str.endsWith("UL"))
@@ -55,16 +68,18 @@ object CFGtoEngine {
           val op = CPrinter.operators1(node.getOperator)
           val arg = node.getOperand
           op match {
-            case "op_bracketedPrimary" => 
+            case "op_bracketedPrimary" =>
               evalExp(arg) // OK?
-            case "op_not" => 
-              IR.not(evalExp(arg))
-            case "op_minus" => 
-              IR.times(IR.const(-1),evalExp(arg))
-            case "op_prefixIncr" => 
+            case "op_not" =>
+              gValTypeCheck(evalExp(arg), GType.int) { x => IR.not(x) }
+            case "op_minus" =>
+              gValTypeCheck(evalExp(arg), GType.int) { x => IR.times(IR.const(-1), x) }
+            case "op_prefixIncr" =>
               val name = arg.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
-              val cur = IR.select(store,IR.const("&"+name))
-              val upd = IR.plus(cur,IR.const(1))
+              val cur = safeSelect(store,IR.const("&"+name))
+              val upd = gValTypeCheck(cur, GType.int) {
+                cur => IR.plus(cur,IR.const(1))
+              }
               store = IR.update(store, IR.const("&"+name), upd)
               upd
           }
@@ -73,20 +88,49 @@ object CFGtoEngine {
           val arg1 = evalExp(node.getOperand1)
           val arg2 = evalExp(node.getOperand2)
           op match {
-            case "op_plus" => IR.plus(arg1,arg2)
-            case "op_minus" => IR.plus(arg1,IR.times(IR.const(-1),arg2))
-
+            case "op_plus" =>
+              gValTypeCheck(arg1, GType.int) { arg1 => // FIXME: what about pointer operation?
+                gValTypeCheck(arg2, GType.int) { arg2 =>
+                  IR.plus(arg1,arg2)
+                }
+              }
+            case "op_minus" =>
+              gValTypeCheck(arg1, GType.int) { arg1 =>
+                gValTypeCheck(arg2, GType.int) { arg2 =>
+                  IR.plus(arg1,IR.times(IR.const(-1),arg2))
+                }
+              }
             case "op_equals" => IR.equal(arg1,arg2)
             case "op_notequals" => IR.not(IR.equal(arg1,arg2))
 
-            case "op_lessThan" => IR.less(arg1,arg2)
-            case "op_greaterEqual" => IR.less(arg2,arg1)
-            case "op_lessEqual" => IR.less(arg1,IR.plus(arg2,IR.const(1))) // OK
-            case "op_greaterThan" => IR.less(arg2,IR.plus(arg1,IR.const(1))) // OK
+            case "op_lessThan" =>
+              gValTypeCheck(arg1, GType.int) { arg1 =>
+                gValTypeCheck(arg2, GType.int) { arg2 =>
+                  IR.less(arg1,arg2)
+                }
+              }
+            case "op_greaterEqual" =>
+              gValTypeCheck(arg1, GType.int) { arg1 =>
+                gValTypeCheck(arg2, GType.int) { arg2 =>
+                  IR.less(arg2,arg1)
+                }
+              }
+            case "op_lessEqual" =>
+              gValTypeCheck(arg1, GType.int) { arg1 =>
+                gValTypeCheck(arg2, GType.int) { arg2 =>
+                  IR.less(arg1,IR.plus(arg2,IR.const(1))) // OK
+                }
+              }
+            case "op_greaterThan" =>
+              gValTypeCheck(arg1, GType.int) { arg1 =>
+                gValTypeCheck(arg2, GType.int) { arg2 =>
+                  IR.less(arg2,IR.plus(arg1,IR.const(1))) // OK
+                }
+              }
 
             case "op_logicalAnd" => IR.iff(arg1,arg2,IR.const(0)) // OK
 
-            case "op_assign" => 
+            case "op_assign" =>
               val name = node.getOperand1.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
               val upd = arg2
               store = IR.update(store, IR.const("&"+name), upd)
@@ -96,13 +140,13 @@ object CFGtoEngine {
           val fun = node.getFunctionNameExpression
           val arg = node.getParameterExpression
           fun.asInstanceOf[CASTIdExpression].getName.toString match {
-            case "__VERIFIER_nondet_int" => GConst("__VERIFIER_nondet_int")
-            case "assert" => 
+            case "__VERIFIER_nondet_int" => typedGVal(GConst("__VERIFIER_nondet_int"), GType.int)
+            case "assert" =>
               val c1 = evalExp(arg)
               val old = IR.select(store, IR.const("valid"))
               store = IR.update(store, IR.const("valid"), IR.times(old,c1)) // IR.times means IR.and
               IR.const(())
-            case name => 
+            case name =>
               println("ERROR: unknown function call: "+name)
               GConst("<call "+name+">")
             //case _ => evalExp(fun)+"("+evalExp(arg)+")"
@@ -128,7 +172,7 @@ object CFGtoEngine {
           val declSpecifier = tp.getDeclSpecifier
           // TODO: pointer types, ...
           op + "("+evalType(declSpecifier)+")"*/
-      case null => GConst(0)
+      case null => typedGVal(GConst(0), GType.int)
       //case _ => "(exp "+node+")"
   }
   def evalDeclarator(node: IASTDeclarator): Unit = node match {
@@ -159,7 +203,7 @@ object CFGtoEngine {
           for (d <- decls) {
             evalDeclarator(d)
           }
-      case _ => 
+      case _ =>
   }
   def evalStm(node: IASTStatement): Unit = node match {
       case node: CASTCompoundStatement =>
@@ -171,8 +215,8 @@ object CFGtoEngine {
           val exp = node.getExpression
           evalExp(exp)
       case node: CASTNullStatement =>
-      case null => 
-  }  
+      case null =>
+  }
 
   def handleReturn(v: Val): Unit = {
     store = IR.update(store, IR.const("return"), v)
@@ -254,7 +298,7 @@ object CFGtoEngine {
       // are we done or do we need another iteration?
       if (init != initNew) { init = initNew; iterCount += 1; iter } else {
         // no further information was gained: go ahead
-        // and generate the final (set of) recursive 
+        // and generate the final (set of) recursive
         // functions, or closed forms.
         println(s"create function def f(n) = $loop($n0) {")
 
@@ -302,7 +346,7 @@ object CFGtoEngine {
         println(l,stop,cont,postDom(l))
         throw new Exception("XXX consume out of fuel")
       }
-      
+
       if (stop contains l) {
         //println("// break "+l)
         return
@@ -324,7 +368,7 @@ object CFGtoEngine {
       // immediate post-dominator (may be inside loop)
       var idomIn = sdomIn.filter(n => sdomIn.forall(postDom(n)))
 
-      // Currently there's an issue in 
+      // Currently there's an issue in
       // loop-invgen/string_concat-noarr_true-unreach-call_true-termination.i
       // TODO: use Cooper's algorithm to compute idom directly
       if (idom.contains("STUCK")) idom = Set("STUCK") // HACK
@@ -335,12 +379,12 @@ object CFGtoEngine {
       def evalBody(stop1: Set[String], cont1: Set[String]): Unit = {
         b.stms.foreach(evalStm)
         b.cnt match {
-          case Return(e) => 
+          case Return(e) =>
             handleReturn(evalExp(e))
             assert(idom.isEmpty)
-          case Jump(a) => 
+          case Jump(a) =>
             assert(a == l || idom == Set(a)) // handled below
-          case CJump(c,a,b) => 
+          case CJump(c,a,b) =>
             handleIf(evalExp(c)) {
               consume(a, stop1, cont1)
             } {
@@ -350,12 +394,12 @@ object CFGtoEngine {
       }
 
       // Some complication: the immediate post-dominator
-      // of a loop header may be *inside* the loop. 
+      // of a loop header may be *inside* the loop.
       // Need to consume rest of loop body, too.
       val isLoop = loopHeaders contains l
       if (isLoop) {
-        handleLoop(l) { 
-          evalBody(idomIn, cont + l) 
+        handleLoop(l) {
+          evalBody(idomIn, cont + l)
           if (idomIn.nonEmpty) // continue consuming loop body
             consume(idomIn.head, idom, cont + l)
         }
