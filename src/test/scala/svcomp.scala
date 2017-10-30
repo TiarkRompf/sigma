@@ -61,7 +61,7 @@ abstract class SVCompSuite extends FileDiffSuite {
 
   def testOne(dir: String, file: String, props: Map[String,Boolean]) = {
     val key = dir+"/"+file
-    test(key) { withOutFileChecked(out_prefix+key) {       
+    test(key) { withOutFileChecked(out_prefix+key) {
       println("// # "+key)
       val parsed = parseCFile(sv_bench_root+"/"+dir+"/"+file)
       println("// # literal source")

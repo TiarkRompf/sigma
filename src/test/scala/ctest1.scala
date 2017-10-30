@@ -11,7 +11,7 @@ class CTest1 extends FileDiffSuite {
 
     val file = "test-in/cpachecker-example.c"
     println("// # literal source")
-    println(readFile(file))    
+    println(readFile(file))
     val parsed = parseCFile(file)
     //evalUnit(parsed)
     evalCfgUnit(parsed)

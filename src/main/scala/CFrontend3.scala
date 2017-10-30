@@ -36,11 +36,26 @@ object CFGtoEngine {
   def gValValue(x: GVal) = IR.select(x, value)
   def gValType(x: GVal) = IR.select(x, tpe)
 
-  def gValTypeCheck(arg: GVal, tp: GVal)(eval: GVal => GVal) =
-    IR.iff(IR.times(IR.hasfield(arg, tpe), IR.equal(gValType(arg), tp)), eval(gValValue(arg)), GError)
+  def updateValid(check: GVal) = {
+    val valid = IR.const("valid") // GConst("valid")??
+    val oldValid = IR.select(store, valid)
+    val newValid = IR.times(oldValid, check)
+    IR.update(store, valid, newValid)
+  }
 
-  def safeSelect(arg: GVal, field: GVal) =
-    IR.iff(IR.hasfield(arg, field), IR.select(arg, field), GError)
+  def safeSelect(arg: GVal, field: GVal) = {
+    val check = IR.hasfield(arg, field)
+    store = updateValid(check)
+
+    IR.iff(check, IR.select(arg, field), GError)
+  }
+
+  def gValTypeCheck(arg: GVal, tp: GVal)(eval: GVal => GVal) = {
+    val check = IR.times(IR.hasfield(arg, tpe), IR.equal(gValType(arg), tp))
+    store = updateValid(check)
+
+    IR.iff(check, eval(gValValue(arg)), GError)
+  }
 
   def evalExp(node: IASTNode): Val = node match {
       case node: CASTLiteralExpression =>
@@ -63,7 +78,7 @@ object CFGtoEngine {
           }
       case node: CASTIdExpression =>
           val name = node.getName.toString
-          IR.select(store,IR.const("&"+name))
+          safeSelect(store,IR.const("&"+name))
       case node: CASTUnaryExpression =>
           val op = CPrinter.operators1(node.getOperator)
           val arg = node.getOperand

@@ -474,6 +474,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
 
       def const(x: Any) = x match {
         case x: Double if x.toInt.toDouble == x => GConst(x.toInt)
+        // case x: Double if x.toInt.toDouble == x => GConst(Map("value" -> x.toInt, "type" -> GType.int))
+        // case x: Int => GConst(Map("value" -> x, "type" -> GType.int))
+        // case x: String => GConst(Map("value" -> x, "type" -> GType.string))
         case _ => GConst(x)
       }
       // like update, but accept map to be empty/undefined
