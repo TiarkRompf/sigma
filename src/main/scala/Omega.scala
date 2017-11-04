@@ -428,12 +428,17 @@ object Problem {
 case class Problem(cs: List[Constraint[_]]) {
   import Problem._
   
-  //TODO: refactor this new variable generator
-  def generateNewVar(): String = {
-    val oldIdx = varIdx
+  def generateNewVar(): String = { 
+    val idx = varIdx
     varIdx += 1
-    if (varIdx == greeks.size) { varIdx = 0 }
-    greeks(oldIdx) + Random.nextInt(1000)
+
+    if (idx < greeks.length) greeks(idx)
+    else if (idx < (greeks.length * greeks.length)) {
+      val n = idx / greeks.length
+      val m = idx % greeks.length
+      greeks(n) + m
+    }
+    else { greeks(0) + idx }
   }
 
   val (eqs, geqs) = partition(cs)
