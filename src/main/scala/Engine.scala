@@ -73,6 +73,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     object GType {
       val int = GConst("int")
       val string = GConst("string")
+      val unit = GConst("unit")
     }
 
     abstract class Def {
@@ -720,6 +721,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DLess(GRef(`x`),u)) => u
         case Def(DNot(Def(DEqual(GRef(`x`),u)))) => u
         case Def(DNot(Def(DEqual(u,GRef(`x`))))) => u
+        case Def(DMap(d)) if d.contains(GConst("value")) => fixindex(x, select(c, GConst("value")))
         case _ =>
           super.fixindex(x,c)
       }
