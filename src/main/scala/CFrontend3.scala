@@ -117,8 +117,8 @@ object CFGtoEngine {
                   typedGVal(IR.plus(arg1,IR.times(IR.const(-1),arg2)), GType.int)
                 }
               }
-            case "op_equals" => typedGVal(IR.equal(gValValue(arg1),gValValue(arg2)), GType.int) // does Map == Map works?
-            case "op_notequals" => typedGVal(IR.not(gValValue(IR.equal(gValValue(arg1),gValValue(arg2)))), GType.int)
+            case "op_equals" => typedGVal(IR.equal(arg1,arg2), GType.int) // does Map == Map works?
+            case "op_notequals" => typedGVal(IR.not(IR.equal(arg1,arg2)), GType.int)
 
             case "op_lessThan" =>
               gValTypeCheck(arg1, GType.int) { arg1 =>
