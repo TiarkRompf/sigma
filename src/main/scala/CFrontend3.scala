@@ -352,7 +352,7 @@ object CFGtoEngine {
     iter
   }
 
-  def evalCFG(cfg: CFG): Unit = {
+  def evalCFG(cfg: CFG): GVal = {
     import cfg._
     val blockIndex = cfg.blockIndex
 
@@ -440,7 +440,7 @@ object CFGtoEngine {
     println("## term:")
     val out = IR.termToString(store2)
     println(out)
-
+    store2
   }
 
 }
