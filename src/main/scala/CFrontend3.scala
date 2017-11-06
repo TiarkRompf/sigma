@@ -18,9 +18,9 @@ object CFGtoEngine {
 
   val value = GConst("value")
   val tpe = GConst("type")
-  def typedGVal(x: GVal, tp: GVal) = IR.map(Map(value -> x, tpe -> tp))
-  def gValValue(x: GVal) = IR.select(x, value)
-  def gValType(x: GVal) = IR.select(x, tpe)
+  def typedGVal(x: Val, tp: Val) = IR.map(Map(value -> x, tpe -> tp))
+  def gValValue(x: Val) = IR.select(x, value)
+  def gValType(x: Val) = IR.select(x, tpe)
 
 
   val store0 = GConst(Map(GConst("valid") -> GConst(1)))
@@ -37,21 +37,21 @@ object CFGtoEngine {
     case d: CASTCompositeTypeSpecifier  => d.getName // enough?
   }
 
-  def updateValid(check: GVal) = {
+  def updateValid(check: Val) = {
     val valid = IR.const("valid") // GConst("valid")??
     val oldValid = IR.select(store, valid)
     val newValid = IR.times(oldValid, check)
     IR.update(store, valid, newValid)
   }
 
-  def safeSelect(arg: GVal, field: GVal) = {
+  def safeSelect(arg: Val, field: Val) = {
     val check = IR.hasfield(arg, field)
     store = updateValid(check)
 
     IR.iff(check, IR.select(arg, field), GError)
   }
 
-  def gValTypeCheck(arg: GVal, tp: GVal)(eval: GVal => GVal) = {
+  def gValTypeCheck(arg: Val, tp: Val)(eval: Val => Val) = {
     val check = IR.times(IR.hasfield(arg, tpe), IR.equal(gValType(arg), tp))
     store = updateValid(check)
 
@@ -262,7 +262,9 @@ object CFGtoEngine {
     //assertNot(c1)
     val e2 = b
     val s2 = store
-    store = IR.iff(c1,s1,s2)
+    store = gValTypeCheck(c1, GType.int) { c1 =>
+      IR.iff(c1,s1,s2)
+    }
     //IR.iff(c1,e1,e2)
   }
 

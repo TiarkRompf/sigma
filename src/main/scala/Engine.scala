@@ -666,12 +666,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case _ if (x,y) == (GConst(1),GConst(0)) => c
         case _ if (x,y) == (GConst(0),GConst(1)) => not(c)
         case _ if x == y => x
+        // case Def(DMap(d)) if d.contains(GConst("value")) =>
+        //   iff(select(c, GConst("value")), x, y)
         // TODO: if (1 < x6) x6 < 100 else true = x6 < 100
         // Taking the else branch: x6 <= 1 implies x6 < 100, so both branches
         // would return true, ergo condition is redundant.
         // This is a bit of a hack:
-        case Def(DMap(d)) if d.contains(GConst("value")) =>
-          iff(select(c, GConst("value")), x, y)
         case Def(DLess(GConst(a:Int),xx)) if { x match {
           case Def(DLess(`xx`, GConst(b:Int))) => a < b && y == const(1) case _ => false }} => x
         // Another, similar case: if (1<x6) u-x6 else u-1 =
