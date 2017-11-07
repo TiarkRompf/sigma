@@ -518,11 +518,11 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
         val unpVars = eq.getUnprotectedVars(pvars)
         println(s"unprotected vars: $unpVars")
         
-        val g = gcd(unpVars.map(_._1))
+        val g = if (unpVars.isEmpty) 0 else gcd(unpVars.map(_._1))
         
-        if (unpVars.isEmpty || g == 1) {
-          /* If unpVars is empty, there is no unprotected variables in this equality, 
-           * but we have to eliminate the equality anyway, go to the None case. 
+        if (g <= 1) {
+          /* If unpVars is empty(g == 0), there is no unprotected variables 
+           * in this equality, but we have to eliminate the equality anyway.
            * Just eliminate as normal, but need to record the substitution.
            * If g == 1 then do standard elimination on an unprotected variable.
            */
@@ -530,7 +530,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
           variable match {
             case Some((x, idx)) =>
               val term = eq.getEquation(idx)
-              val newSubsts = if (g == 1) {
+              val newSubsts = if (g == 0) {
                 Subst(x,term)::substs
               } else { substs }
               /* Debug */
@@ -548,7 +548,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
               val newVars = vars ++ List(v)
               val substTerm = newTerm(newCoefs, newVars)
 
-              val newSubsts = if (g == 1) {
+              val newSubsts = if (g == 0) {
                 Subst(xk,substTerm)::substs
               } else { substs }
 
