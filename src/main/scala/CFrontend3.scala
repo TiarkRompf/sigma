@@ -16,6 +16,13 @@ object CFGtoEngine {
 
   type Val = IR.From
 
+  val value = GConst("value")
+  val tpe = GConst("type")
+  def typedGVal(x: Val, tp: Val) = IR.map(Map(value -> x, tpe -> tp))
+  def gValValue(x: Val) = IR.select(x, value)
+  def gValType(x: Val) = IR.select(x, tpe)
+
+
   val store0 = GConst(Map(GConst("valid") -> GConst(1)))
 
   val itvec0 = IR.const("top")
@@ -30,27 +37,21 @@ object CFGtoEngine {
     case d: CASTCompositeTypeSpecifier  => d.getName // enough?
   }
 
-  val value = GConst("value")
-  val tpe = GConst("type")
-  def typedGVal(x: GVal, tp: GVal) = GConst(Map(value -> x, tpe -> tp))
-  def gValValue(x: GVal) = IR.select(x, value)
-  def gValType(x: GVal) = IR.select(x, tpe)
-
-  def updateValid(check: GVal) = {
+  def updateValid(check: Val) = {
     val valid = IR.const("valid") // GConst("valid")??
     val oldValid = IR.select(store, valid)
     val newValid = IR.times(oldValid, check)
     IR.update(store, valid, newValid)
   }
 
-  def safeSelect(arg: GVal, field: GVal) = {
+  def safeSelect(arg: Val, field: Val) = {
     val check = IR.hasfield(arg, field)
     store = updateValid(check)
 
     IR.iff(check, IR.select(arg, field), GError)
   }
 
-  def gValTypeCheck(arg: GVal, tp: GVal)(eval: GVal => GVal) = {
+  def gValTypeCheck(arg: Val, tp: Val)(eval: Val => Val) = {
     val check = IR.times(IR.hasfield(arg, tpe), IR.equal(gValType(arg), tp))
     store = updateValid(check)
 
@@ -75,6 +76,7 @@ object CFGtoEngine {
                 println(str.substring(0,str.length-2))
                 throw e
               }
+            case _ => ???
           }
       case node: CASTIdExpression =>
           val name = node.getName.toString
@@ -86,16 +88,16 @@ object CFGtoEngine {
             case "op_bracketedPrimary" =>
               evalExp(arg) // OK?
             case "op_not" =>
-              gValTypeCheck(evalExp(arg), GType.int) { x => IR.not(x) }
+              gValTypeCheck(evalExp(arg), GType.int) { x => typedGVal(IR.not(x), GType.int) }
             case "op_minus" =>
-              gValTypeCheck(evalExp(arg), GType.int) { x => IR.times(IR.const(-1), x) }
+              gValTypeCheck(evalExp(arg), GType.int) { x => typedGVal(IR.times(IR.const(-1), x), GType.int) }
             case "op_prefixIncr" =>
               val name = arg.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
               val cur = safeSelect(store,IR.const("&"+name))
               val upd = gValTypeCheck(cur, GType.int) {
-                cur => IR.plus(cur,IR.const(1))
+                cur => typedGVal(IR.plus(cur,IR.const(1)), GType.int)
               }
-              store = IR.update(store, IR.const("&"+name), upd)
+              store = IR.update(store, IR.const("&"+name), upd) // update always safe?
               upd
           }
       case node: CASTBinaryExpression =>
@@ -106,44 +108,49 @@ object CFGtoEngine {
             case "op_plus" =>
               gValTypeCheck(arg1, GType.int) { arg1 => // FIXME: what about pointer operation?
                 gValTypeCheck(arg2, GType.int) { arg2 =>
-                  IR.plus(arg1,arg2)
+                  typedGVal(IR.plus(arg1,arg2), GType.int)
                 }
               }
             case "op_minus" =>
               gValTypeCheck(arg1, GType.int) { arg1 =>
                 gValTypeCheck(arg2, GType.int) { arg2 =>
-                  IR.plus(arg1,IR.times(IR.const(-1),arg2))
+                  typedGVal(IR.plus(arg1,IR.times(IR.const(-1),arg2)), GType.int)
                 }
               }
-            case "op_equals" => IR.equal(arg1,arg2)
-            case "op_notequals" => IR.not(IR.equal(arg1,arg2))
+            case "op_equals" => typedGVal(IR.equal(arg1,arg2), GType.int) // does Map == Map works?
+            case "op_notequals" => typedGVal(IR.not(IR.equal(arg1,arg2)), GType.int)
 
             case "op_lessThan" =>
               gValTypeCheck(arg1, GType.int) { arg1 =>
                 gValTypeCheck(arg2, GType.int) { arg2 =>
-                  IR.less(arg1,arg2)
+                  typedGVal(IR.less(arg1,arg2), GType.int)
                 }
               }
             case "op_greaterEqual" =>
               gValTypeCheck(arg1, GType.int) { arg1 =>
                 gValTypeCheck(arg2, GType.int) { arg2 =>
-                  IR.less(arg2,arg1)
+                  typedGVal(IR.less(arg2,arg1), GType.int)
                 }
               }
             case "op_lessEqual" =>
               gValTypeCheck(arg1, GType.int) { arg1 =>
                 gValTypeCheck(arg2, GType.int) { arg2 =>
-                  IR.less(arg1,IR.plus(arg2,IR.const(1))) // OK
+                  typedGVal(IR.less(arg1,IR.plus(arg2,IR.const(1))), GType.int) // OK
                 }
               }
             case "op_greaterThan" =>
               gValTypeCheck(arg1, GType.int) { arg1 =>
                 gValTypeCheck(arg2, GType.int) { arg2 =>
-                  IR.less(arg2,IR.plus(arg1,IR.const(1))) // OK
+                  typedGVal(IR.less(arg2,IR.plus(arg1,IR.const(1))), GType.int) // OK
                 }
               }
 
-            case "op_logicalAnd" => IR.iff(arg1,arg2,IR.const(0)) // OK
+            case "op_logicalAnd" =>
+              gValTypeCheck(arg1, GType.int) { arg1 =>
+                gValTypeCheck(arg2, GType.int) { arg2 =>
+                  typedGVal(IR.iff(arg1,arg2,IR.const(0)), GType.int) // OK
+                }
+              }
 
             case "op_assign" =>
               val name = node.getOperand1.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
@@ -157,10 +164,12 @@ object CFGtoEngine {
           fun.asInstanceOf[CASTIdExpression].getName.toString match {
             case "__VERIFIER_nondet_int" => typedGVal(GConst("__VERIFIER_nondet_int"), GType.int)
             case "assert" =>
-              val c1 = evalExp(arg)
               val old = IR.select(store, IR.const("valid"))
-              store = IR.update(store, IR.const("valid"), IR.times(old,c1)) // IR.times means IR.and
-              IR.const(())
+              val c1 = gValTypeCheck(evalExp(arg), GType.int) {
+                arg => IR.times(old, arg)
+              }
+              store = IR.update(store, IR.const("valid"), c1) // IR.times means IR.and
+              typedGVal(IR.const(()), GType.unit)
             case name =>
               println("ERROR: unknown function call: "+name)
               GConst("<call "+name+">")
@@ -253,7 +262,9 @@ object CFGtoEngine {
     //assertNot(c1)
     val e2 = b
     val s2 = store
-    store = IR.iff(c1,s1,s2)
+    store = gValTypeCheck(c1, GType.int) { c1 =>
+      IR.iff(c1,s1,s2)
+    }
     //IR.iff(c1,e1,e2)
   }
 
@@ -343,7 +354,7 @@ object CFGtoEngine {
     iter
   }
 
-  def evalCFG(cfg: CFG): Unit = {
+  def evalCFG(cfg: CFG): GVal = {
     import cfg._
     val blockIndex = cfg.blockIndex
 
@@ -431,7 +442,7 @@ object CFGtoEngine {
     println("## term:")
     val out = IR.termToString(store2)
     println(out)
-
+    store2
   }
 
 }

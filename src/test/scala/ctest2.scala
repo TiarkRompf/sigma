@@ -5,6 +5,8 @@ import CtoCFG._
 import CFGtoEngine._
 
 import CFrontend2._
+import Test1._
+import IRD._
 
 class CTest2 extends FileDiffSuite {
 
@@ -15,7 +17,14 @@ class CTest2 extends FileDiffSuite {
     val cfgs = fileToCFG(parsed)
 
     evalCfgUnit(parsed)
-    evalCFG(cfgs("main"))
+    val store = evalCFG(cfgs("main"))
+    val valid = store match {
+      case GConst(m: Map[GVal,GVal]) => m.get(GConst("valid"))
+      case Def(DMap(m)) => m.get(GConst("valid"))
+      case _ => ???
+    }
+
+    assert(valid.getOrElse(GConst(0)) == GConst(1), s": valid -> ${valid.getOrElse(valid)}")
   }
 
 
@@ -63,7 +72,7 @@ class CTest2 extends FileDiffSuite {
           goto out;
       }
       out:
-      //assert(i == 100);
+      assert(i == 100);
       return 0;
     }
     """
@@ -82,7 +91,7 @@ class CTest2 extends FileDiffSuite {
           goto out;
       }
       out:
-      //assert(i == 100);
+      assert(i == 100);
       return 0;
     }
     """
@@ -102,7 +111,7 @@ class CTest2 extends FileDiffSuite {
         if (more)
           goto loop;
       }
-      //assert(i == 100);
+      assert(i == 100);
       return 0;
     }
     """

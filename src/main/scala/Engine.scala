@@ -73,6 +73,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     object GType {
       val int = GConst("int")
       val string = GConst("string")
+      val unit = GConst("unit")
     }
 
     abstract class Def {
@@ -149,7 +150,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def times(x: From, y: From)                  = s"$x * $y"
       def less(x: From, y: From)                   = s"$x < $y"
       def equal(x: From, y: From)                  = s"$x == $y"
-      def not(x: From)                             = s"!$x"
+      def not(x: From)                             = s"!($x)"
       def pair(x: From, y: From)                   = s"($x,$y)"
       def iff(c: From, x: From, y: From)           = s"if ($c) $x else $y"
       def sum(n: From, x: String, c: From)         = s"sum($n) { $x => $c }"
@@ -482,11 +483,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       // like update, but accept map to be empty/undefined
       // must be invoked as update(x,u,merge(select(x,u),v,y))
       def merge(x: From, f: From, y: From): From = x match {
-        case GConst("undefined") => update(dreflect(DMap(Map())),f,y) // caveat: f may be non-const ?
+        case GError => update(dreflect(DMap(Map())),f,y) // caveat: f may be non-const ?
         case _ => update(x,f,y)
       }
       override def update(x: From, f: From, y: From): From = x match {
-        case GConst("undefined") => x // undefined
+        case GError => x // undefined
         //case GConst("undefined") => update(dreflect(DMap(Map())),f,y) // f may be non-const
         //case GConst("undefined") => x
         case GConst(m:Map[GVal,GVal] @unchecked) /*if m.isEmpty*/ => update(dreflect(DMap(m)),f,y) // f may be non-const -- problem?
@@ -514,16 +515,16 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       }
       override def select(x: From, f: From): From          = x match {
         // TODO: should we really say "undefined".x = "undefined" ?
-        case GConst("undefined") => GConst("undefined")
-        case GConst(m:Map[_,_]) if m.isEmpty => GConst("undefined") // f may be non-const
+        case GError => GError
+        case GConst(m:Map[_,_]) if m.isEmpty => GError // f may be non-const
         case Def(DMap(m)) =>
           f match {
             case GConst((u,v)) => select(select(x,const(u)),const(v))
-            case GConst(_) => m.getOrElse(f, GConst("undefined"))
+            case GConst(_) => m.getOrElse(f, GError)
             case Def(DIf(c,u,v)) => iff(c,select(x,u),select(x,v))
             case Def(DPair(u,v)) => select(select(x,u),v)
             case _ =>
-              var res: GVal = const("undefined")
+              var res: GVal = GError
               for ((k,v) <- m) {
                 res = iff(equal(f,k), v, res)
               }
@@ -538,7 +539,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case _ => super.select(x,f)
       }
       override def hasfield(x: From, f: From) = x match {
-        case GConst("undefined") => const(0)
+        case GError => const(0)
         case GConst(m:Map[_,_]) if m.isEmpty => const(0) // f may be non-const
         case Def(DMap(m)) =>
           f match {
@@ -567,8 +568,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (GConst(x:Double),GConst(y:Double)) => const(x+y)
         case (GConst(0),_) => y
         case (_,GConst(0)) => x
-        case (GConst("undefined"),_) => GConst("undefined")
-        case (_,GConst("undefined")) => GConst("undefined")
+        case (GError,_) => GError
+        case (_,GError) => GError
         case (Def(DIf(c,x,z)),_) => iff(c,plus(x,y),plus(z,y))
         // random simplifications ...
         case (GConst(c),b:GRef) => plus(b,const(c)) // CAVE: non-int consts!
@@ -595,8 +596,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (_,GConst(0)) => GConst(0)
         case (GConst(1),_) => y
         case (_,GConst(1)) => x
-        case (GConst("undefined"),_) => GConst("undefined")
-        case (_,GConst("undefined")) => GConst("undefined")
+        case (GError,_) => GError
+        case (_,GError) => GError
         case (Def(DIf(c,x,z)),_) => iff(c,times(x,y),times(z,y))
         // random simplifications ...
         case (GConst(c),b:GRef) => times(b,const(c)) // CAVE: non-int consts!
@@ -630,6 +631,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (Def(DPair(_,_)),GConst(x:String)) => const(0)
         case (Def(DIf(c,x,z)),_) => iff(c,equal(x,y),equal(z,y))
         case (_,Def(DIf(c,y,z))) => iff(c,equal(x,y),equal(x,z))
+        case (Def(DMap(m)), Def(DMap(n))) if m.keySet != n.keySet => const(0)
+        case (Def(DMap(m)), Def(DMap(n))) =>
+          (m :\ (const(1): To)) {
+            case ((k1,v1), inner) => times(equal(v1, n(k1)), inner)
+          }
         case _ if x == y => const(1)
         case _ => super.equal(x,y)
       }
@@ -660,6 +666,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case _ if (x,y) == (GConst(1),GConst(0)) => c
         case _ if (x,y) == (GConst(0),GConst(1)) => not(c)
         case _ if x == y => x
+        // case Def(DMap(d)) if d.contains(GConst("value")) =>
+        //   iff(select(c, GConst("value")), x, y)
         // TODO: if (1 < x6) x6 < 100 else true = x6 < 100
         // Taking the else branch: x6 <= 1 implies x6 < 100, so both branches
         // would return true, ergo condition is redundant.
@@ -708,7 +716,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case _ =>
           super.sum(n,x,c) //subst(c,less(const(0),GRef(x)),const(1)))
       }
-
       override def collect(n: From, x: String, c: From) = c match {
         case _ =>
           super.collect(n,x,c) //subst(c,less(const(0),GRef(x)),const(1)))
@@ -720,6 +727,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DLess(GRef(`x`),u)) => u
         case Def(DNot(Def(DEqual(GRef(`x`),u)))) => u
         case Def(DNot(Def(DEqual(u,GRef(`x`))))) => u
+        // case Def(DMap(d)) if d.contains(GConst("value")) => fixindex(x, select(c, GConst("value")))
         case _ =>
           super.fixindex(x,c)
       }
@@ -853,7 +861,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           val m = (m2.keys) map { k => (k, lub(select(a,k),select(b0,k),select(b1,k))(mkey(fsym,k),n0)) }
           println(m)
           (map(m.map(kv=>(kv._1,kv._2._1)).toMap), map(m.map(kv=>(kv._1,kv._2._2)).toMap))
-        case (a,b0, Def(DUpdate(bX, `n0`, y))) if bX == b0 || (bX == map(Map()) && b0 == const("undefined")) => // array creation
+        case (a,b0, Def(DUpdate(bX, `n0`, y))) if bX == b0 || (bX == map(Map()) && b0 == GError) => // array creation
           IRD.printTerm(a)
           IRD.printTerm(b0)
           IRD.printTerm(b1)
@@ -904,7 +912,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
 
           println("} = " + IRD.termToString(d1))
 
-          if (d1 != const("undefined")) { // do we have an integer?
+          if (d1 != GError) { // do we have an integer?
 
             def poly(x: GVal): List[GVal] = x match {
               case `n0` => List(const(0),const(1))
