@@ -58,6 +58,18 @@ object CFGtoEngine {
     IR.iff(check, eval(gValValue(arg)), GError)
   }
 
+  def gValPointerTypeCheck(arg: Val)(eval: (Val, Val) => Val) = {
+    val check = IR.times(IR.hasfield(arg, tpe), IR.const(if (gValType(arg) match { // FIXME
+      case GConst(s: String) => s.endsWith(" *")
+      case _ => false }) 1 else 0))
+
+    store = updateValid(check)
+
+    IR.iff(check, eval(gValValue(arg), gValType(arg) match {
+      case GConst(s: String) => GConst(s.substring(0, s.length - 2))
+      case _ => GError}), GError)
+  }
+
   def evalExp(node: IASTNode): Val = node match {
       case node: CASTLiteralExpression =>
           val lk = node.getKind
@@ -79,8 +91,8 @@ object CFGtoEngine {
             case _ => ???
           }
       case node: CASTIdExpression =>
-          val name = node.getName.toString
-          safeSelect(store,IR.const("&"+name))
+        val name = node.getName.toString
+        safeSelect(store,IR.const("&"+name))
       case node: CASTUnaryExpression =>
           val op = CPrinter.operators1(node.getOperator)
           val arg = node.getOperand
@@ -99,6 +111,14 @@ object CFGtoEngine {
               }
               store = IR.update(store, IR.const("&"+name), upd) // update always safe?
               upd
+            case "op_postFixIncr" =>
+              val name = arg.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
+              val cur = safeSelect(store,IR.const("&"+name))
+              val upd = gValTypeCheck(cur, GType.int) {
+                cur => typedGVal(IR.plus(cur,IR.const(1)), GType.int)
+              }
+              store = IR.update(store, IR.const("&"+name), upd) // update always safe?
+              cur
           }
       case node: CASTBinaryExpression =>
           val op = CPrinter.operators2(node.getOperator)
@@ -117,7 +137,14 @@ object CFGtoEngine {
                   typedGVal(IR.plus(arg1,IR.times(IR.const(-1),arg2)), GType.int)
                 }
               }
-            case "op_equals" => typedGVal(IR.equal(arg1,arg2), GType.int) // does Map == Map works?
+            case "op_multiply" =>
+              gValTypeCheck(arg1, GType.int) { arg1 =>
+                gValTypeCheck(arg2, GType.int) { arg2 =>
+                  typedGVal(IR.times(arg1,arg2), GType.int)
+                }
+              }
+            case "op_equals" =>
+              typedGVal(IR.equal(arg1,arg2), GType.int) // does Map == Map works?
             case "op_notequals" => typedGVal(IR.not(IR.equal(arg1,arg2)), GType.int)
 
             case "op_lessThan" =>
@@ -227,7 +254,7 @@ object CFGtoEngine {
           for (d <- decls) {
             evalDeclarator(d)
           }
-      case _ =>
+      case _ => ???
   }
   def evalStm(node: IASTStatement): Unit = node match {
       case node: CASTCompoundStatement =>
@@ -239,6 +266,7 @@ object CFGtoEngine {
           val exp = node.getExpression
           evalExp(exp)
       case node: CASTNullStatement =>
+      case node: CASTProblemStatement => // FIXME
       case null =>
   }
 
@@ -364,7 +392,6 @@ object CFGtoEngine {
     varCount = varCount0
     globalDefs = globalDefs0
     rebuildGlobalDefsCache()
-
 
     var fuel = 1*1000
     def consume(l: String, stop: Set[String], cont: Set[String]): Unit = {

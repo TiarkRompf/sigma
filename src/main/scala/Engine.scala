@@ -73,7 +73,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     object GType {
       val int = GConst("int")
       val string = GConst("string")
-      val unit = GConst("unit")
+      val void = GConst("void")
+      def pointer(x: GConst) = x match {
+        case GConst(tpe) => GConst(tpe+" *")
+      }
+
+      def apply(s: String) = GConst(s)
     }
 
     abstract class Def {
@@ -516,7 +521,18 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       override def select(x: From, f: From): From          = x match {
         // TODO: should we really say "undefined".x = "undefined" ?
         case GError => GError
-        case GConst(m:Map[_,_]) if m.isEmpty => GError // f may be non-const
+        case GConst(m:Map[From,From]) =>
+          f match {
+            case GConst(_) =>
+              m.getOrElse(f, GError)
+            case _ =>
+              var res: From = GError
+              for ((k,v) <- m) {
+                res = iff(equal(f,k), v, res)
+              }
+              res
+          }
+
         case Def(DMap(m)) =>
           f match {
             case GConst((u,v)) => select(select(x,const(u)),const(v))
@@ -540,7 +556,16 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       }
       override def hasfield(x: From, f: From) = x match {
         case GError => const(0)
-        case GConst(m:Map[_,_]) if m.isEmpty => const(0) // f may be non-const
+        case GConst(m:Map[From,From]) =>
+          f match {
+            case GConst(_) => const(if (m.contains(f)) 1 else 0)
+            case _ =>
+              var res: From = const(0)
+              for ((k,v) <- m) {
+                res = times(equal(f,k), res)
+              }
+              res
+          }
         case Def(DMap(m)) =>
           f match {
             case GConst((u,v)) => times(hasfield(x, const(u)), hasfield(select(x,const(u)),const(v)))
@@ -558,7 +583,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           }
         case Def(DUpdate(x2,f2,y2)) => iff(equal(f2,f), const(1), hasfield(x2,f))
         case Def(DIf(c,x,y)) => iff(c,hasfield(x,f),hasfield(y,f))
-        case Def(DCollect(n,x,c)) => ??? // FIXME: check bounds!!
+        case Def(DCollect(n,x,c)) => const(1) // FIXME: check bounds!!
         case _ => super.hasfield(x, f)
       }
       override def plus(x: From, y: From)            = (x,y) match {
@@ -634,7 +659,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (Def(DMap(m)), Def(DMap(n))) if m.keySet != n.keySet => const(0)
         case (Def(DMap(m)), Def(DMap(n))) =>
           (m :\ (const(1): To)) {
-            case ((k1,v1), inner) => times(equal(v1, n(k1)), inner)
+            case ((k1,v1), inner) =>
+              times(equal(v1, n(k1)), inner)
           }
         case _ if x == y => const(1)
         case _ => super.equal(x,y)
