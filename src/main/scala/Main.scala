@@ -10,10 +10,13 @@ import IRD._
 
 object MyMain {
   def main(arr: Array[String]) = {
-    val code1 = """
+    val code = """
     int main() {
-      int a[1];
-      return a[0];
+      int n = __VERIFIER_nondet_int();
+      if (n > 100)
+        n = 100;
+      assert(n <= 100);
+      return 0;
     }
     """
     val code2 = """
