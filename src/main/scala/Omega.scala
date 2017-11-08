@@ -129,6 +129,8 @@ trait Constraint[C <: Constraint[C]] extends Term {
 
   def getVars = vars.tail
 
+  def hasVars = getVars.nonEmpty
+
   def getConstant = coefficients.head
 
   def getCoefficients = coefficients.tail
@@ -237,7 +239,8 @@ case class EQ(coefficients: List[Int], vars: List[String]) extends Constraint[EQ
     assert(idx != 0)
     assert(abs(coefficients(idx)) == 1)
     val (coefs, vars) = removeVarByIdx(idx)
-    newTerm(coefs.map(_ * -1), vars)
+    if (coefficients(idx) > 0) newTerm(coefs.map(_ * -1), vars)
+    else newTerm(coefs, vars)
   }
   
   override def subst(x: String, term: Term): EQ = {
@@ -496,12 +499,17 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
    * greatest common divisor of the coefficients (not including a_0) is 1.
    */
   def normalize(): Option[Problem] = {
-    val newCs: List[Constraint[_]] = for (c <- cs) yield 
-      c.normalize match {
-        case None => return None
-        case Some(cn) => cn
+    val newCs = mutable.Set[Constraint[_]]()
+    for (c <- cs) {
+      if (c.hasVars) {
+        c.normalize match {
+          case Some(cn) => newCs += cn
+          case None => return None
+        }
       }
-    Some(copy(newCs))
+      else { if (!c.trivial) return None }
+    }
+    Some(copy(newCs.toList))
   }
   
   /* Elminates the equalities in the problem, returns a new problem that
@@ -515,14 +523,15 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
         println("current constraints:")
         for (eq <- (eqs++geqs)) { println(s"  $eq") }
 
+        if (eq.trivial) return eliminate(eqs.tail, geqs, substs)
+
         val unpVars = eq.getUnprotectedVars(pvars)
         println(s"unprotected vars: $unpVars")
         
-        val g = gcd(unpVars.map(_._1))
-        
-        if (unpVars.isEmpty || g == 1) {
-          /* If unpVars is empty, there is no unprotected variables in this equality, 
-           * but we have to eliminate the equality anyway, go to the None case. 
+        val g = if (unpVars.isEmpty) 0 else gcd(unpVars.map(_._1))
+        if (g <= 1) {
+          /* If unpVars is empty(g == 0), there is no unprotected variables 
+           * in this equality, but we have to eliminate the equality anyway.
            * Just eliminate as normal, but need to record the substitution.
            * If g == 1 then do standard elimination on an unprotected variable.
            */
@@ -530,7 +539,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
           variable match {
             case Some((x, idx)) =>
               val term = eq.getEquation(idx)
-              val newSubsts = if (g == 1) {
+              val newSubsts = if (g == 0) {
                 Subst(x,term)::substs
               } else { substs }
               /* Debug */
@@ -548,7 +557,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
               val newVars = vars ++ List(v)
               val substTerm = newTerm(newCoefs, newVars)
 
-              val newSubsts = if (g == 1) {
+              val newSubsts = if (g == 0) {
                 Subst(xk,substTerm)::substs
               } else { substs }
 
@@ -622,40 +631,40 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
   def hasIntSolutions(): Boolean = {
     normalize match {
       case Some(p) if p.cs.isEmpty => true
-      case Some(p) if p.hasMostOneVar => 
-        println(s"only one variable left: ${p.getVars.head}")
-        return p.reduce.nonEmpty
       case Some(p) if p.hasEq => p.elimEq.hasIntSolutions
+      case Some(p) if p.hasMostOneVar => 
+        return p.reduce.nonEmpty
       case Some(p) => 
         p.reduce match {
-          case Some(p) =>
-            val x0 = chooseVar()
+          case Some(p) if p.numVars > 1 =>
+            val x0 = p.chooseVar()
             val realSet = p.realShadowSet(x0)
             val darkSet = p.darkShadowSet(x0)
-            if (realSet == darkSet) { copy(realSet.toList).hasIntSolutions } // exact elimination
-            else if (! copy(realSet.toList).hasIntSolutions) false            
-            else if (copy(darkSet.toList).hasIntSolutions) true       // inexact elimination
+            if (realSet == darkSet) { p.copy(realSet.toList).hasIntSolutions } // exact elimination
+            else if (! p.copy(realSet.toList).hasIntSolutions) false            
+            else if (p.copy(darkSet.toList).hasIntSolutions) true       // inexact elimination
             else {
               /* real shadow has int solution; but dark shadow does not */
-              val x = chooseVarMinCoef()
+              val x = p.chooseVarMinCoef()
               /* m is the most negative coefficient of x */
-              val m = (for (c <- cs if c.containsVar(x)) yield {
+              val m = (for (c <- p.cs if c.containsVar(x)) yield {
                 c.getCoefficientByVar(x)
               }).sorted.head 
 
-              for (lb <- lowerBounds(x)) {
+              for (lb <- p.lowerBounds(x)) {
                 val coefx = lb.getCoefficientByVar(x)
                 val j = (floor(abs(m * coefx) - abs(m) - coefx) / abs(m)).toInt
                 println(s"### x: $x m: $m, j: $j, coefx: $coefx ###")
                 for (j <- 0 to j) {
                   val (newCoefs, newVars) = reorder((-1*j)::lb.coefficients, const::lb.vars)
-                  if (copy(EQ(newCoefs, newVars)::p.cs).hasIntSolutions) return true
+                  if (p.copy(EQ(newCoefs, newVars)::p.cs).hasIntSolutions) return true
                 }
               }
               // TODO: There is another step desribed in conference paper but not in journal paper,
               //       it is may not necessay, but need to carefully think about it
               false
             }
+          case Some(p) => p.hasIntSolutions
           case None => false
         }
       case None => false
@@ -794,37 +803,33 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
     normalize match {
       case Some(p) if p.getVars.subsetOf(p.pvars.toSet) =>
         if (p.hasIntSolutions) Some(p) else None
-      case Some(p) if p.cs.isEmpty => Some(p)
-      case Some(p) if p.hasMostOneVar => 
-        println(s"only one variable left: ${p.getVars.head}")
-        if (p.reduce.nonEmpty) Some(p) else None
       case Some(p) if p.hasEq => p.elimEq.simplify
       case Some(p) => 
         p.reduce match {
           case Some(p) =>
-            val x0 = chooseVar()
+            val x0 = p.chooseVar()
             val realSet = p.realShadowSet(x0)
             val darkSet = p.darkShadowSet(x0)
-            if (realSet == darkSet) { copy(realSet.toList).simplify } // exact elimination
-            else if (copy(realSet.toList).simplify.isEmpty) None
+            if (realSet == darkSet) { p.copy(realSet.toList).simplify } // exact elimination
+            else if (p.copy(realSet.toList).simplify.isEmpty) None
             else {
-              val pd = copy(darkSet.toList).simplify
+              val pd = p.copy(darkSet.toList).simplify
               if (pd.nonEmpty) pd
               else {
                 /* real shadow has int solution; but dark shadow does not */
-                val x = chooseVarMinCoef()
+                val x = p.chooseVarMinCoef()
                 /* m is the most negative coefficient of x */
-                val m = (for (c <- cs if c.containsVar(x)) yield {
+                val m = (for (c <- p.cs if c.containsVar(x)) yield {
                   c.getCoefficientByVar(x)
                 }).sorted.head 
 
-                for (lb <- lowerBounds(x)) {
+                for (lb <- p.lowerBounds(x)) {
                   val coefx = lb.getCoefficientByVar(x)
                   val j = (floor(abs(m * coefx) - abs(m) - coefx) / abs(m)).toInt
                   println(s"### x: $x m: $m, j: $j, coefx: $coefx ###")
                   for (j <- 0 to j) {
                     val (newCoefs, newVars) = reorder((-1*j)::lb.coefficients, const::lb.vars)
-                    val newP = copy(EQ(newCoefs, newVars)::p.cs).simplify
+                    val newP = p.copy(EQ(newCoefs, newVars)::p.cs).simplify
                     if (newP.nonEmpty) return newP
                   }
                 }
@@ -887,12 +892,10 @@ object OmegaTest {
     println(p3)
 
     val p3elim = p3.elimEq.normalize.get
-    println(s"eq eliminated:\n $p3elim")
     val p3reduced = p3elim.reduce.get
-    println(s"reduced:\n $p3reduced")
-    
     val p3ans = p3.hasIntSolutions
     assert(p3ans)
+
     println(s"p3 has integer solutions: ${p3ans}")
 
     val ineq5 = GEQ(List(11, 13), List(const, "a")).normalize.get
@@ -904,16 +907,18 @@ object OmegaTest {
 
     val ineq7 = GEQ(List(-2, 3, 5), List(const, "x", "y"))
     val ineq8 = GEQ(List(0, -3,-5), List(const, "x", "y"))
-    println(s"contraWith: ${ineq7.contraWith(ineq8)}") //true
 
-    println(s"contraWith: ${GEQ(List(-5, 2, 3), List(const, "a", "b"))
-                .contraWith(GEQ(List(-9, -2, -3), List(const, "a", "b")))}") //true
+    println(ineq7.contraWith(ineq8))
 
-    println(s"contraWith: ${GEQ(List(9, 2, 3), List(const, "a", "b"))
-                .contraWith(GEQ(List(-5, -2, -3), List(const, "a", "b")))}") //false
+    assert(GEQ(List(-5, 2, 3), List(const, "a", "b"))
+              .contraWith(GEQ(List(-9, -2, -3), List(const, "a", "b"))))
 
-    println(s"contraWith: ${GEQ(List(0, 2, 3), List(const, "a", "b"))
-                .contraWith(GEQ(List(2, -2, -3), List(const, "a", "b")))}") //false
+    assert(!GEQ(List(9, 2, 3), List(const, "a", "b"))
+               .contraWith(GEQ(List(-5, -2, -3), List(const, "a", "b"))))
+
+    assert(!GEQ(List(0, 2, 3), List(const, "a", "b"))
+                .contraWith(GEQ(List(2, -2, -3), List(const, "a", "b"))))
+
 
     ///////////////////////////////
 
@@ -940,6 +945,7 @@ object OmegaTest {
     println(GEQ(List(-3, 1), List(const, "x")).join(GEQ(List(5, -1), List(const, "x")), "x")) // 2 >= 0
     println(GEQ(List(5, -1), List(const, "x")).join(GEQ(List(-3, 1), List(const, "x")), "x")) // 2 >= 0
 
+
     ///////////////////////////////
     
     val p5 = Problem(List(GEQ(List(7, -3, -2), List(const, "x", "y")),  // 7 - 3x - 2y >= 0
@@ -954,6 +960,7 @@ object OmegaTest {
     assert(p5ans)
     println(s"p5 has integer solutions: ${p5ans}")
 
+
     val p5_sim = p5.simplify(List("x"))
     assert(p5_sim.nonEmpty)
     println(s"p5 simplified: $p5_sim")
@@ -961,11 +968,15 @@ object OmegaTest {
     val p6 = Problem(List(GEQ(List(4, -3, -2), List(const, "x", "y")),  // 4 - 3x - 2y >= 0
                           GEQ(List(-1, 1), List(const, "x")),           // -1 + x >= 0
                           GEQ(List(-1, 1), List(const, "y"))))          // -1 + y >= 0
+    println(s"p6 normalized: ${p6.normalize}")
     val p6ans = p6.hasIntSolutions
     assert(!p6ans)
     assert(p6.simplify.isEmpty)
     println(s"p6 has integer solutions: ${p6ans}")
     println("---")
+
+    assert(Problem(List(GEQ(List(10, 1), List(const, "x")))).hasIntSolutions)
+    assert(Problem(List(GEQ(List(-10, 1), List(const, "x")))).hasIntSolutions)
 
     ///////////////////////////////
 
@@ -1026,5 +1037,13 @@ object OmegaTest {
     println(p10.simplify(List("a")))
     println("---")
     println(p10.simplify(List("a", "b")))
+    println("---")
+    println(Problem(List(GEQ(List(-10, 1), List(const, "x")),
+                         GEQ(List(-20, 1), List(const, "x")))).simplify(List("x")))
+
+    assert(Problem(List(GEQ(List(10), List(const)))).hasIntSolutions)
+    assert(Problem(List(EQ(List(0), List(const)))).hasIntSolutions)
+    assert(!Problem(List(GEQ(List(-10), List(const)))).hasIntSolutions)
   }
 }
+
