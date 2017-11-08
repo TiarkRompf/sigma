@@ -180,23 +180,47 @@ object CFGtoEngine {
               }
 
             case "op_assign" =>
-              val name = node.getOperand1.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
-              val upd = arg2
-              store = IR.update(store, IR.const("&"+name), upd)
-              upd
+              node.getOperand1 match {
+                case id: CASTIdExpression =>
+                  val name = id.getName.toString // TODO: proper lval?
+                  store = IR.update(store, IR.const("&"+name), arg2)
+                  arg2
+                case array: CASTArraySubscriptExpression =>
+                  val name = array.getArrayExpression.asInstanceOf[CASTIdExpression].getName.toString
+                  val x = array.getSubscriptExpression
+                  val ex = evalExp(x)
+                  val ref = IR.const("&"+name)
+                  gValPointerTypeCheck(safeSelect(store, ref)) { (arr, tp) =>
+                    gValTypeCheck(ex, GType.int) { ex =>
+                      gValTypeCheck(arg2, tp) { arg2 =>
+                        arr match {
+                          case IR.Def(DCollect(n, x, c)) =>
+                            store = updateValid(IR.times(IR.less(IR.const(-1), ex), IR.less(ex, n)))
+                            store = IR.update(store, ref, typedGVal(IR.collect(n, x, IR.iff(IR.equal(GRef(x), ex), arg2, c)), GType.pointer(tp.asInstanceOf[GConst]))) // FIXME
+                            arg2
+                          case _ => GError // FIXME
+                        }
+                      }
+                    }
+                  }
+                case node: CASTFieldReference => GConst("FieldRefAss")
+              }
           }
       case node: CASTFunctionCallExpression =>
           val fun = node.getFunctionNameExpression
           val arg = node.getParameterExpression
           fun.asInstanceOf[CASTIdExpression].getName.toString match {
-            case "__VERIFIER_nondet_int" => typedGVal(GConst("__VERIFIER_nondet_int"), GType.int)
-            case "assert" =>
-              val old = IR.select(store, IR.const("valid"))
-              val c1 = gValTypeCheck(evalExp(arg), GType.int) {
-                arg => IR.times(old, arg)
+            case "__VERIFIER_nondet_int" => typedGVal(GRef(freshVar + "?"), GType.int)
+            case "assert" | "__VERIFIER_assert" =>
+              gValTypeCheck(evalExp(arg), GType.int) {
+                arg =>
+                  store = updateValid(arg)
+                  typedGVal(IR.const(()), GType.void)
               }
-              store = IR.update(store, IR.const("valid"), c1) // IR.times means IR.and
-              typedGVal(IR.const(()), GType.unit)
+            case "malloc" =>
+              gValTypeCheck(evalExp(arg), GType.int) {
+                arg => typedGVal(IR.map(Map()), GType.pointer(GType.void))
+              }
             case name =>
               println("ERROR: unknown function call: "+name)
               GConst("<call "+name+">")
