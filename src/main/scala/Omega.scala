@@ -247,6 +247,10 @@ case class EQ(coefficients: List[Int], vars: List[String]) extends Constraint[EQ
     val (c, v)= _subst(x, term)
     EQ(c, v)
   }
+
+  def negation(): List[GEQ] = {
+    NEQ(coefficients, vars).toGEQ
+  }
 }
 
 /* Linear Inequality: \Sigma a_i x_i >= 0 where x_0 = 1
@@ -400,6 +404,10 @@ case class GEQ(coefficients: List[Int], vars: List[String]) extends Constraint[G
     assert(c != 0)
     containsVar(x) && c < 0
   }
+
+  def negation(): List[GEQ] = {
+    LT(coefficients, vars).toGEQ
+  }
 }
 
 case class GT(coefficients: List[Int], vars: List[String]) {
@@ -408,6 +416,10 @@ case class GT(coefficients: List[Int], vars: List[String]) {
   def toGEQ: List[GEQ] = {
     val (newCoefs, newVars) = reorder(-1::coefficients, const::vars)
     List(GEQ(newCoefs, newVars))
+  }
+
+  def negation: List[GEQ] = {
+    LEQ(coefficients, vars).toGEQ
   }
 }
 
@@ -418,6 +430,10 @@ case class LT(coefficients: List[Int], vars: List[String]) {
     val (newCoefs, newVars) = reorder(-1::scale(coefficients, -1), const::vars)
     List(GEQ(newCoefs, newVars))
   }
+
+  def negation: List[GEQ] = {
+    List(GEQ(coefficients, vars))
+  }
 }
 
 case class LEQ(coefficients: List[Int], vars: List[String]) {
@@ -425,6 +441,10 @@ case class LEQ(coefficients: List[Int], vars: List[String]) {
    */
   def toGEQ: List[GEQ] = {
     List(GEQ(scale(coefficients, -1), vars))
+  }
+
+  def negation: List[GEQ] = {
+    GT(coefficients, vars).toGEQ
   }
 }
 
@@ -435,6 +455,10 @@ case class NEQ(coefficients: List[Int], vars: List[String]) {
     val (coefs1, vars1) = reorder(-1::coefficients, const::vars)
     val (coefs2, vars2) = reorder(-1::scale(coefficients, -1), const::vars)
     List(GEQ(coefs1, vars1), GEQ(coefs2, vars2))
+  }
+
+  def negation: EQ = {
+    EQ(coefficients, vars)
   }
 }
 
@@ -460,7 +484,9 @@ object Problem {
     }
     else { greeks(0) + idx }
   }
-
+  
+  val TRUE = EQ(List(0), List(const))
+  val FALSE = EQ(List(1), List(const))
 }
 
 case class Subst(x: String, term: Term) {
@@ -845,6 +871,11 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
   def simplify(pvars: List[String]): Option[Problem] = {
     Problem(cs, pvars).simplify
   }
+
+  def implies(p: Problem): Boolean = {
+    if (hasIntSolutions) return Problem(cs++p.cs).hasIntSolutions
+    true
+  }
 }
 
 object OmegaTest {
@@ -1038,12 +1069,19 @@ object OmegaTest {
     println("---")
     println(p10.simplify(List("a", "b")))
     println("---")
+
+    assert(Problem(List(GEQ(List(-10, 1), List(const, "x")), 
+                        GEQ(List(-20, 1), List(const, "x")))).hasIntSolutions)
+
     println(Problem(List(GEQ(List(-10, 1), List(const, "x")),
                          GEQ(List(-20, 1), List(const, "x")))).simplify(List("x")))
 
+    println(Problem(List(GEQ(List(-10, 1), List(const, "x")),
+                         GEQ(List(-20, 1), List(const, "x")))).reduce)
+
     assert(Problem(List(GEQ(List(10), List(const)))).hasIntSolutions)
     assert(Problem(List(EQ(List(0), List(const)))).hasIntSolutions)
+    assert(!Problem(List(EQ(List(1), List(const)))).hasIntSolutions)
     assert(!Problem(List(GEQ(List(-10), List(const)))).hasIntSolutions)
   }
 }
-
