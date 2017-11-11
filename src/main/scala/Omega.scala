@@ -1,9 +1,15 @@
-package omega
+package analysis
 
 import scala.math._
 import scala.util.Random
-
 import scala.collection._
+
+import CBase._
+import CtoCFG._
+import CFGtoEngine._
+import CFrontend2._
+import Test1._
+import IRD._
 
 object Utils {
 
@@ -55,7 +61,7 @@ object Utils {
 }
 
 object Constraint {
-  val const = "_"
+  val PConst = "_"
 
   def removeByIdx[T](lst: List[T], idx: Int): List[T] = {
     lst.take(idx) ++ lst.drop(idx+1)
@@ -69,7 +75,7 @@ object Constraint {
   }
 
   def removeZeroCoef(coefs: List[Int], vars: List[String]): (List[Int], List[String]) = {
-    val cvpairs = for ((c, v) <- (coefs zip vars) if !(c == 0 && v != const)) yield (c, v)
+    val cvpairs = for ((c, v) <- (coefs zip vars) if !(c == 0 && v != PConst)) yield (c, v)
     // TODO: may refactor this to only use one pass
     (cvpairs.map(_._1), cvpairs.map(_._2))
   }
@@ -119,7 +125,7 @@ import Constraint._
 
 trait Constraint[C <: Constraint[C]] extends Term {
   assert(coefficients.length == vars.length)
-  assert(vars(0) == const)
+  assert(vars(0) == PConst)
 
   def normalize(): Option[Constraint[C]]
 
@@ -384,10 +390,10 @@ case class GEQ(coefficients: List[Int], vars: List[String]) extends Constraint[G
     val m = (thisXCoef - 1) * (thatXCoef - 1)
     val (newCoefs, newVars) = if (thatXCoef < 0 && thisXCoef > 0) {
       /* this is an upper bound; that is a lower bound */
-      reorder(m::scale(thisCoefs, -1*thatXCoef)++scale(thatCoefs, thisXCoef), const::thisVars++thatVars)
+      reorder(m::scale(thisCoefs, -1*thatXCoef)++scale(thatCoefs, thisXCoef), PConst::thisVars++thatVars)
     } else if (thisXCoef < 0 && thatXCoef > 0) {
       /* this is a lower bound; that is an upper bound */
-      reorder((-m)::scale(thisCoefs, thatXCoef)++scale(thatCoefs, -1*thisXCoef), const::thisVars++thatVars)
+      reorder((-m)::scale(thisCoefs, thatXCoef)++scale(thatCoefs, -1*thisXCoef), PConst::thisVars++thatVars)
     } else return None
     
     Some(GEQ(newCoefs, newVars))
@@ -414,7 +420,7 @@ case class GT(coefficients: List[Int], vars: List[String]) {
   /* Transforms \Sigma a_i x_i > 0 to \Sigma a_i x_i >= 1
    */
   def toGEQ: List[GEQ] = {
-    val (newCoefs, newVars) = reorder(-1::coefficients, const::vars)
+    val (newCoefs, newVars) = reorder(-1::coefficients, PConst::vars)
     List(GEQ(newCoefs, newVars))
   }
 
@@ -427,7 +433,7 @@ case class LT(coefficients: List[Int], vars: List[String]) {
   /* Transforms \Sigma a_i x_i < 0 to \Sigma -1 * a_i x_i >= 1
    */
   def toGEQ: List[GEQ] = {
-    val (newCoefs, newVars) = reorder(-1::scale(coefficients, -1), const::vars)
+    val (newCoefs, newVars) = reorder(-1::scale(coefficients, -1), PConst::vars)
     List(GEQ(newCoefs, newVars))
   }
 
@@ -452,8 +458,8 @@ case class NEQ(coefficients: List[Int], vars: List[String]) {
   /* Transforms \Sigma a_i x_i =/= 0 to \Sigma a_i x_i >= 1 and \Sigma a_i x_i <= -1
    */
   def toGEQ: List[GEQ] = {
-    val (coefs1, vars1) = reorder(-1::coefficients, const::vars)
-    val (coefs2, vars2) = reorder(-1::scale(coefficients, -1), const::vars)
+    val (coefs1, vars1) = reorder(-1::coefficients, PConst::vars)
+    val (coefs2, vars2) = reorder(-1::scale(coefficients, -1), PConst::vars)
     List(GEQ(coefs1, vars1), GEQ(coefs2, vars2))
   }
 
@@ -485,8 +491,8 @@ object Problem {
     else { greeks(0) + idx }
   }
   
-  val TRUE = EQ(List(0), List(const))
-  val FALSE = EQ(List(1), List(const))
+  val TRUE = EQ(List(0), List(PConst))
+  val FALSE = EQ(List(1), List(PConst))
 }
 
 case class Subst(x: String, term: Term) {
@@ -682,7 +688,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
                 val j = (floor(abs(m * coefx) - abs(m) - coefx) / abs(m)).toInt
                 println(s"### x: $x m: $m, j: $j, coefx: $coefx ###")
                 for (j <- 0 to j) {
-                  val (newCoefs, newVars) = reorder((-1*j)::lb.coefficients, const::lb.vars)
+                  val (newCoefs, newVars) = reorder((-1*j)::lb.coefficients, PConst::lb.vars)
                   if (p.copy(EQ(newCoefs, newVars)::p.cs).hasIntSolutions) return true
                 }
               }
@@ -854,7 +860,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
                   val j = (floor(abs(m * coefx) - abs(m) - coefx) / abs(m)).toInt
                   println(s"### x: $x m: $m, j: $j, coefx: $coefx ###")
                   for (j <- 0 to j) {
-                    val (newCoefs, newVars) = reorder((-1*j)::lb.coefficients, const::lb.vars)
+                    val (newCoefs, newVars) = reorder((-1*j)::lb.coefficients, PConst::lb.vars)
                     val newP = p.copy(EQ(newCoefs, newVars)::p.cs).simplify
                     if (newP.nonEmpty) return newP
                   }
@@ -906,19 +912,19 @@ object OmegaTest {
 
     ///////////////////////////////
 
-    val eq3 = EQ(List(-17, 7, 12, 31), List(const, "x", "y", "z"))
-    val eq4 = EQ(List(-7,  3, 5,  14), List(const, "x", "y", "z"))
+    val eq3 = EQ(List(-17, 7, 12, 31), List(PConst, "x", "y", "z"))
+    val eq4 = EQ(List(-7,  3, 5,  14), List(PConst, "x", "y", "z"))
 
     val p2 = Problem(List(eq3, eq4)).normalize.get
     println(p2)
     val p2elim = p2.elimEq
     println(s"eq eliminated: $p2elim")
     
-    val ineq1 = GEQ(List(-1, 1), List(const, "x"))
-    val ineq2 = GEQ(List(40, -1), List(const, "x"))
+    val ineq1 = GEQ(List(-1, 1), List(PConst, "x"))
+    val ineq2 = GEQ(List(40, -1), List(PConst, "x"))
     //println(ineq2.normalize.get)
-    val ineq3 = GEQ(List(50, 1), List(const, "y"))
-    val ineq4 = GEQ(List(50, -1), List(const, "y"))
+    val ineq3 = GEQ(List(50, 1), List(PConst, "y"))
+    val ineq4 = GEQ(List(50, -1), List(PConst, "y"))
     val p3 = Problem(List(eq3, eq4, ineq1, ineq2, ineq3, ineq4))
     println(p3)
 
@@ -929,37 +935,37 @@ object OmegaTest {
 
     println(s"p3 has integer solutions: ${p3ans}")
 
-    val ineq5 = GEQ(List(11, 13), List(const, "a")).normalize.get
+    val ineq5 = GEQ(List(11, 13), List(PConst, "a")).normalize.get
     println(ineq5)
-    val ineq6 = GEQ(List(28, -13), List(const, "a")).normalize.get
+    val ineq6 = GEQ(List(28, -13), List(PConst, "a")).normalize.get
     println(ineq6)
 
     ///////////////////////////////
 
-    val ineq7 = GEQ(List(-2, 3, 5), List(const, "x", "y"))
-    val ineq8 = GEQ(List(0, -3,-5), List(const, "x", "y"))
+    val ineq7 = GEQ(List(-2, 3, 5), List(PConst, "x", "y"))
+    val ineq8 = GEQ(List(0, -3,-5), List(PConst, "x", "y"))
 
     println(ineq7.contraWith(ineq8))
 
-    assert(GEQ(List(-5, 2, 3), List(const, "a", "b"))
-              .contraWith(GEQ(List(-9, -2, -3), List(const, "a", "b"))))
+    assert(GEQ(List(-5, 2, 3), List(PConst, "a", "b"))
+              .contraWith(GEQ(List(-9, -2, -3), List(PConst, "a", "b"))))
 
-    assert(!GEQ(List(9, 2, 3), List(const, "a", "b"))
-               .contraWith(GEQ(List(-5, -2, -3), List(const, "a", "b"))))
+    assert(!GEQ(List(9, 2, 3), List(PConst, "a", "b"))
+               .contraWith(GEQ(List(-5, -2, -3), List(PConst, "a", "b"))))
 
-    assert(!GEQ(List(0, 2, 3), List(const, "a", "b"))
-                .contraWith(GEQ(List(2, -2, -3), List(const, "a", "b"))))
+    assert(!GEQ(List(0, 2, 3), List(PConst, "a", "b"))
+                .contraWith(GEQ(List(2, -2, -3), List(PConst, "a", "b"))))
 
 
     ///////////////////////////////
 
-    println(s"can be merged: ${GEQ(List(-6, 2, 3), List(const, "a", "b"))
-                        .tighten(GEQ(List(6, -2, -3), List(const, "a", "b")))}")
+    println(s"can be merged: ${GEQ(List(-6, 2, 3), List(PConst, "a", "b"))
+                        .tighten(GEQ(List(6, -2, -3), List(PConst, "a", "b")))}")
 
-    val p4 = Problem(List(GEQ(List(-6, 2, 3), List(const, "a", "b")),
-                          GEQ(List(6, -2, -3), List(const, "a", "b")),
-                          GEQ(List(-5, 2, 3), List(const, "a", "c")),
-                          GEQ(List(-10, 2, 3), List(const, "a", "c"))))
+    val p4 = Problem(List(GEQ(List(-6, 2, 3), List(PConst, "a", "b")),
+                          GEQ(List(6, -2, -3), List(PConst, "a", "b")),
+                          GEQ(List(-5, 2, 3), List(PConst, "a", "c")),
+                          GEQ(List(-10, 2, 3), List(PConst, "a", "c"))))
     println(p4)
     val p4reduced = p4.reduce.get
     println(p4reduced)
@@ -968,21 +974,21 @@ object OmegaTest {
 
     ///////////////////////////////
     
-    val ineq9 = GEQ(List(0, 3, 2), List(const, "x", "y"))
-    val ineq10 = GEQ(List(5, -2, 4), List(const, "x", "y"))
+    val ineq9 = GEQ(List(0, 3, 2), List(PConst, "x", "y"))
+    val ineq10 = GEQ(List(5, -2, 4), List(PConst, "x", "y"))
     println(ineq9.join(ineq10, "x")) // 15 + 16y >= 0
     println(ineq10.join(ineq9, "x")) // 15 + 16y >= 0
 
-    println(GEQ(List(-3, 1), List(const, "x")).join(GEQ(List(5, -1), List(const, "x")), "x")) // 2 >= 0
-    println(GEQ(List(5, -1), List(const, "x")).join(GEQ(List(-3, 1), List(const, "x")), "x")) // 2 >= 0
+    println(GEQ(List(-3, 1), List(PConst, "x")).join(GEQ(List(5, -1), List(PConst, "x")), "x")) // 2 >= 0
+    println(GEQ(List(5, -1), List(PConst, "x")).join(GEQ(List(-3, 1), List(PConst, "x")), "x")) // 2 >= 0
 
 
     ///////////////////////////////
     
-    val p5 = Problem(List(GEQ(List(7, -3, -2), List(const, "x", "y")),  // 7 - 3x - 2y >= 0
-                          GEQ(List(15, -6, -4), List(const, "x", "y")), // 15 - 6x - 4y >= 0
-                          GEQ(List(1, 1), List(const, "x")),            // 1 + x >= 0
-                          GEQ(List(0, 2), List(const, "y"))))           // 0 + 2y >= 0
+    val p5 = Problem(List(GEQ(List(7, -3, -2), List(PConst, "x", "y")),  // 7 - 3x - 2y >= 0
+                          GEQ(List(15, -6, -4), List(PConst, "x", "y")), // 15 - 6x - 4y >= 0
+                          GEQ(List(1, 1), List(PConst, "x")),            // 1 + x >= 0
+                          GEQ(List(0, 2), List(PConst, "y"))))           // 0 + 2y >= 0
     
     val v = p5.chooseVarMinCoef
     assert(v == "x")
@@ -996,9 +1002,9 @@ object OmegaTest {
     assert(p5_sim.nonEmpty)
     println(s"p5 simplified: $p5_sim")
 
-    val p6 = Problem(List(GEQ(List(4, -3, -2), List(const, "x", "y")),  // 4 - 3x - 2y >= 0
-                          GEQ(List(-1, 1), List(const, "x")),           // -1 + x >= 0
-                          GEQ(List(-1, 1), List(const, "y"))))          // -1 + y >= 0
+    val p6 = Problem(List(GEQ(List(4, -3, -2), List(PConst, "x", "y")),  // 4 - 3x - 2y >= 0
+                          GEQ(List(-1, 1), List(PConst, "x")),           // -1 + x >= 0
+                          GEQ(List(-1, 1), List(PConst, "y"))))          // -1 + y >= 0
     println(s"p6 normalized: ${p6.normalize}")
     val p6ans = p6.hasIntSolutions
     assert(!p6ans)
@@ -1006,18 +1012,18 @@ object OmegaTest {
     println(s"p6 has integer solutions: ${p6ans}")
     println("---")
 
-    assert(Problem(List(GEQ(List(10, 1), List(const, "x")))).hasIntSolutions)
-    assert(Problem(List(GEQ(List(-10, 1), List(const, "x")))).hasIntSolutions)
+    assert(Problem(List(GEQ(List(10, 1), List(PConst, "x")))).hasIntSolutions)
+    assert(Problem(List(GEQ(List(-10, 1), List(PConst, "x")))).hasIntSolutions)
 
     ///////////////////////////////
 
-    println(GEQ(List(10, -1, 5), List(const, "x", "y"))
-            .tightJoin(GEQ(List(-12, 1, 8), List(const, "x", "y")), "x"))
-    println(GEQ(List(-12, 1, 8), List(const, "x", "y"))
-            .tightJoin(GEQ(List(10, -1, 5), List(const, "x", "y")), "x"))
+    println(GEQ(List(10, -1, 5), List(PConst, "x", "y"))
+            .tightJoin(GEQ(List(-12, 1, 8), List(PConst, "x", "y")), "x"))
+    println(GEQ(List(-12, 1, 8), List(PConst, "x", "y"))
+            .tightJoin(GEQ(List(10, -1, 5), List(PConst, "x", "y")), "x"))
     
-    val p7 = Problem(List(GEQ(List(10, -1, 5), List(const, "x", "y")),
-                          GEQ(List(-12, 1, 8), List(const, "x", "y"))))
+    val p7 = Problem(List(GEQ(List(10, -1, 5), List(PConst, "x", "y")),
+                          GEQ(List(-12, 1, 8), List(PConst, "x", "y"))))
 
     assert(p7.realShadowSet("x") == p7.darkShadowSet("x"))
     println(p7.realShadowSet("x"))
@@ -1025,15 +1031,15 @@ object OmegaTest {
     
     /* a <> b can be transformed to a >= b + 1 /\ a <= b -1 */
     /* 1 + 2m <> 2n */
-    val p8 = Problem(List(GEQ(List(0, 2, -2), List(const, "m", "n")),
-                          GEQ(List(-2, -2, 2), List(const, "m", "n"))))
+    val p8 = Problem(List(GEQ(List(0, 2, -2), List(PConst, "m", "n")),
+                          GEQ(List(-2, -2, 2), List(PConst, "m", "n"))))
     val p8ans = p8.hasIntSolutions
     assert(!p8ans)
     assert(p8.simplify.isEmpty)
     println(s"p8 has integer solutions: ${p8ans}")
     println("---")
     
-    val p8_1 = Problem(NEQ(List(1, 2, 2), List(const, "m", "n")).toGEQ)
+    val p8_1 = Problem(NEQ(List(1, 2, 2), List(PConst, "m", "n")).toGEQ)
     println(s"p8_1: $p8_1")
     val p8_1ans = p8_1.hasIntSolutions
     assert(!p8_1ans)
@@ -1047,10 +1053,10 @@ object OmegaTest {
      *  4 + -7x + 9y >= 0
      *  10 + 7x - 9y >= 0
      */
-    val p9 = Problem(List(GEQ(List(45, -11, -13), List(const, "x", "y")),
-                          GEQ(List(-27, 11, 13), List(const, "x", "y")),
-                          GEQ(List(4, -7, 9), List(const, "x", "y")),
-                          GEQ(List(10, 7, -9), List(const, "x", "y"))))
+    val p9 = Problem(List(GEQ(List(45, -11, -13), List(PConst, "x", "y")),
+                          GEQ(List(-27, 11, 13), List(PConst, "x", "y")),
+                          GEQ(List(4, -7, 9), List(PConst, "x", "y")),
+                          GEQ(List(10, 7, -9), List(PConst, "x", "y"))))
     val t0 = System.nanoTime()
     val p9ans = p9.hasIntSolutions
     val t1 = System.nanoTime()
@@ -1060,8 +1066,8 @@ object OmegaTest {
     println(s"p9 has integer solution: ${p9ans}. time: ${(t1-t0)/1000000000.0}s")
     println("---")
 
-    val p10 = Problem(List(EQ(List(0, -1, 10, 25), List(const, "a", "b", "c")),
-                          GEQ(List(-13, 1), List(const, "a"))))
+    val p10 = Problem(List(EQ(List(0, -1, 10, 25), List(PConst, "a", "b", "c")),
+                          GEQ(List(-13, 1), List(PConst, "a"))))
     val p10ans = p10.hasIntSolutions
     assert(p10ans)
     println("---")
@@ -1070,18 +1076,18 @@ object OmegaTest {
     println(p10.simplify(List("a", "b")))
     println("---")
 
-    assert(Problem(List(GEQ(List(-10, 1), List(const, "x")), 
-                        GEQ(List(-20, 1), List(const, "x")))).hasIntSolutions)
+    assert(Problem(List(GEQ(List(-10, 1), List(PConst, "x")), 
+                        GEQ(List(-20, 1), List(PConst, "x")))).hasIntSolutions)
 
-    println(Problem(List(GEQ(List(-10, 1), List(const, "x")),
-                         GEQ(List(-20, 1), List(const, "x")))).simplify(List("x")))
+    println(Problem(List(GEQ(List(-10, 1), List(PConst, "x")),
+                         GEQ(List(-20, 1), List(PConst, "x")))).simplify(List("x")))
 
-    println(Problem(List(GEQ(List(-10, 1), List(const, "x")),
-                         GEQ(List(-20, 1), List(const, "x")))).reduce)
+    println(Problem(List(GEQ(List(-10, 1), List(PConst, "x")),
+                         GEQ(List(-20, 1), List(PConst, "x")))).reduce)
 
-    assert(Problem(List(GEQ(List(10), List(const)))).hasIntSolutions)
-    assert(Problem(List(EQ(List(0), List(const)))).hasIntSolutions)
-    assert(!Problem(List(EQ(List(1), List(const)))).hasIntSolutions)
-    assert(!Problem(List(GEQ(List(-10), List(const)))).hasIntSolutions)
+    assert(Problem(List(GEQ(List(10), List(PConst)))).hasIntSolutions)
+    assert(Problem(List(EQ(List(0), List(PConst)))).hasIntSolutions)
+    assert(!Problem(List(EQ(List(1), List(PConst)))).hasIntSolutions)
+    assert(!Problem(List(GEQ(List(-10), List(PConst)))).hasIntSolutions)
   }
 }
