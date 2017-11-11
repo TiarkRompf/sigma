@@ -114,7 +114,7 @@ Notation "e1 '>>>=' e2"
 
 
 
-Fixpoint eval_exp (e: exp) (sto: store) :=
+Fixpoint eval_exp (e: exp) (sto: store): option val :=
   match e with
   | AId x => sto x
   | ANum n => Some (VNum n)
@@ -233,3 +233,117 @@ Compute
 Compute (test_ceval (t_update empty_store X (Some (VNum 4))) fact_in_coq).
 (*   ====>
       Some (4, 24, 0)   *)
+
+
+
+Inductive gxp : Type :=
+  | GNum : nat -> gxp
+  | GMap : (total_map (option gxp)) -> gxp
+  | GGet : gxp -> id -> gxp
+  | GPut : gxp -> id -> gxp -> gxp
+  
+  | GPlus : gxp -> gxp -> gxp
+  | GMinus : gxp -> gxp -> gxp
+  | GMult : gxp -> gxp -> gxp
+                            
+  | GBool : bool -> gxp
+  | GEq : gxp -> gxp -> gxp
+  | GLe : gxp -> gxp -> gxp
+  | GNot : gxp -> gxp
+  | GAnd : gxp -> gxp -> gxp
+
+  | GIf : gxp -> gxp -> gxp -> gxp
+.
+
+Definition fval : id := Id "$val".
+Definition ftpe : id := Id "$tpe".
+Definition fvalid : id := Id "$valid".
+Definition fdata : id := Id "$data".
+
+Definition tnat : gxp := GNum 0.
+Definition tbool : gxp := GNum 1.
+Definition tloc : gxp := GNum 2.
+
+Definition GEmpty : gxp := GMap (t_empty None).
+
+Definition GNone : gxp := GPut GEmpty fvalid (GBool false).
+Definition GSome a : gxp := GPut (GPut GEmpty fvalid (GBool true)) fdata a.
+
+Definition GMatch (scrutinee: gxp) (none: gxp) (some: gxp -> gxp): gxp :=
+  GIf (GGet scrutinee fvalid) none (some (GGet scrutinee fdata)).
+
+Definition GVNum (a: gxp): gxp :=
+  GPut (GPut GEmpty ftpe tnat) fval a.
+
+Definition GVBool (a: gxp): gxp :=
+  GPut (GPut GEmpty ftpe tbool) fval a.
+
+
+
+Definition sym_store := total_map (option gxp).
+
+Definition toNatG (v:gxp): gxp :=
+  GIf (GEq (GGet v ftpe) tnat) (GSome (GGet v fval)) GNone.
+
+Definition toBoolG (v:gxp): gxp :=
+  GIf (GEq (GGet v ftpe) tbool) (GSome (GGet v fval)) GNone.
+
+Definition toLocG (v:gxp): gxp :=
+  GIf (GEq (GGet v ftpe) tloc) (GSome (GGet v fval)) GNone.
+
+
+
+
+Notation "'LETG' x <-- e1 'IN' e2"
+   := (GMatch e1 GNone (fun x => e2))
+   (right associativity, at level 60).
+(* Notation "'LETG' x <--- e1 'IN' e2"
+   := (match e1 with
+         | Some (Some x) => e2
+         | Some None => Some None
+         | None => None
+       end)
+   (right associativity, at level 60). *)
+
+Notation "e1 '>>g=' e2"
+   := (GMatch e1 GNone e2)
+   (right associativity, at level 80).
+(* Notation "e1 '>>>g=' e2"
+   := (match e1 with
+         | Some (Some x) => e2 x
+         | Some None => Some None
+         | None => None
+       end)
+   (right associativity, at level 80). *)
+
+
+
+Fixpoint trans_exp (e: exp) (sto: gxp): gxp :=
+  match e with
+  | AId x => GGet sto x
+  | ANum n => GNum n
+  | APlus a b =>  LETG a <-- trans_exp a sto >>g= toNatG IN
+                  LETG b <-- trans_exp b sto >>g= toNatG IN
+                  GSome (GVNum (GPlus a b))
+  | AMinus a b => LETG a <-- trans_exp a sto >>g= toNatG IN
+                  LETG b <-- trans_exp b sto >>g= toNatG IN
+                  GSome (GVNum (GMinus a b))
+  | AMult a b =>  LETG a <-- trans_exp a sto >>g= toNatG IN
+                  LETG b <-- trans_exp b sto >>g= toNatG IN
+                  GSome (GVNum (GMult a b))
+  | BTrue =>      GSome (GVBool (GBool true))
+  | BFalse =>     GSome (GVBool (GBool false))
+  | BEq a b =>    LETG a <-- trans_exp a sto >>g= toNatG IN
+                  LETG b <-- trans_exp b sto >>g= toNatG IN
+                  GSome (GVBool (GEq a b))
+  | BLe a b =>    LETG a <-- trans_exp a sto >>g= toNatG IN
+                  LETG b <-- trans_exp b sto >>g= toNatG IN
+                  GSome (GVBool (GLe a b))
+  | BAnd a b =>   LETG a <-- trans_exp a sto >>g= toBoolG IN
+                  LETG b <-- trans_exp b sto >>g= toBoolG IN
+                  GSome (GVBool (GAnd a b))
+  | BNot a =>     LETG a <-- trans_exp a sto >>g= toBoolG IN
+                  GSome (GVBool (GNot a))
+  end.
+
+
