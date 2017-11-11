@@ -49,6 +49,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         //System.setErr(oldStdErr)
       }
     }
+
+    val debugF = false
+    def debug(s: => String) = if (debugF) println("DEBUG: " + s)
   }
 
 
@@ -501,7 +504,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
             case GConst((u,v)) => update(x,const(u),merge(select(x,const(u)),const(v),y)) // store path!!
             case GConst(_) => map(m + (f -> y)) // TODO: y = DIf ??
             case Def(DIf(c,u,v)) => iff(c,update(x,u,y),update(x,v,y))
-            case Def(DPair(u,v)) => update(x,u,merge(select(x,u),v,y)) // store path!!
+            case Def(DPair(u,v)) =>
+              debug(s"m - $m")
+              debug(s"u - ${termToString(u)}")
+              debug(s"v - ${termToString(v)}")
+              debug(s"y - ${termToString(y)}")
+              update(x,u,merge(select(x,u),v,y)) // store path!!
             case _ =>
               // It would be nice to use f as a key even if it
               // is not a constant:
@@ -509,14 +517,21 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               // At present it is not quite clear under what conditions
               // this would work. Clearly, all keys in the map must
               // be statically known to be definitely different.
+              debug(s"default 1 - ${termToString(f)}")
               super.update(x,f,y)
           }
         // TODO: DUpdate
         // case Def(DUpdate(x2,f2,y2)) => if (f2 == f) y2 else select(x2,f)
         case Def(DUpdate(x2,f2,y2)) if f2 == f => update(x2,f,y) // this one is conservative: m + (f -> y1) + (f -> y2)   --->  m + (f -> y2)  TODO: more aggressive, e.g. remove f in m, too?
         case Def(DIf(c,u,v)) => iff(c,update(u,f,y),update(v,f,y))
-        case Def(DPair(u,v)) => update(x,u,merge(select(x,u),v,y))
-        case _ => super.update(x,f,y)
+        case Def(DPair(u,v)) =>
+          debug(s"u - ${termToString(u)}")
+          debug(s"v - ${termToString(v)}")
+          debug(s"f - ${termToString(f)}")
+          ??? // update(x,u,merge(select(x,u),v,y))
+        case _ =>
+          debug(s"default 2\n- ${termToString(x)}\n- ${termToString(f)})")
+          super.update(x,f,y)
       }
       override def select(x: From, f: From): From          = x match {
         // TODO: should we really say "undefined".x = "undefined" ?
@@ -550,7 +565,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           }
         case Def(DUpdate(x2,f2,y2)) => iff(equal(f2,f), y2, select(x2,f))
         case Def(DIf(c,x,y)) => iff(c,select(x,f),select(y,f))
-        case Def(DPair(u,v)) => select(select(x,u),v)  // FIXMEGreg: I don't understand that case
+        case Def(DPair(u,v)) =>
+          debug(s"u - ${termToString(u)}")
+          debug(s"v - ${termToString(v)}")
+          debug(s"f - ${termToString(v)}")
+          // ???
+          select(u, select(v,f))  // FIXMEGreg: I don't understand that case
         case Def(DCollect(n,x,c)) => subst(c,GRef(x),f)// FIXME: check bounds!!
         case _ => super.select(x,f)
       }
@@ -584,6 +604,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DUpdate(x2,f2,y2)) => iff(equal(f2,f), const(1), hasfield(x2,f))
         case Def(DIf(c,x,y)) => iff(c,hasfield(x,f),hasfield(y,f))
         case Def(DCollect(n,x,c)) => const(1) // FIXME: check bounds!!
+        case Def(DPair(u,v)) => times(hasfield(v, f), hasfield(u, select(v,f)))  // FIXMEGreg: I don't understand that case
         case _ => super.hasfield(x, f)
       }
       override def plus(x: From, y: From)            = (x,y) match {
