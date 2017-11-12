@@ -1054,8 +1054,15 @@ object Omega {
   def translateArithExpr(e: Def): List[(Int, String)]= {
     e match {
       case DPlus(x, y) => translateArithExpr(x) ++ translateArithExpr(y)
-      case DTimes(x, y) => 
-        //TODO consider x is const, or y is const, or both, otherwise is not linear
+      case DTimes(GConst(x: Int), GConst(y: Int)) => List(((x*y), PConst))
+      case DTimes(GConst(x: Int), y) =>
+        val rhs = translateArithExpr(y)
+        rhs.map({ case t: (Int,String) => (t._1 * x, t._2) })
+      case DTimes(x, GConst(y: Int)) =>
+        val lhs = translateArithExpr(x)
+        lhs.map({ case t: (Int,String) => (t._1 * y, t._2) })
+      case DTimes(GRef(x), GRef(y)) if (x.endsWith("?") && y.endsWith("?")) =>
+        // TODO: two variables multiplication
         ???
       case _ => ???
     }
