@@ -991,7 +991,7 @@ object Omega {
     e match {
       case GConst(1) => PTRUE
       case GConst(0) => PFALSE
-      case GRef(x) if x.endsWith("?") => Problem(List(EQ(List(1, 1), List(PConst, x))))
+      case GRef(x) if x.endsWith("?") => Problem(List(EQ(List(0, 1), List(PConst, x)))) // x = 0
       case GRef(x) => findDefinition(x) match {
         case Some(d) => translateBoolExpr(d)
         case None => ??? //TODO free variable?
@@ -1009,8 +1009,33 @@ object Omega {
         val lhs = translateArithExpr(x)
         val rhs = translateArithExpr(y)
         Problem(List(EQ.create(lhs, rhs)))
-      case DNot(x) =>
-        ???
+      case DNot(x) => negBoolExpr(x) //TODO need test this case
+    }
+  }
+
+  def negBoolExpr(e: GVal): Problem = {
+    e match {
+      case GConst(1) => PFALSE
+      case GConst(0) => PTRUE
+      case GRef(x) if x.endsWith("?") => Problem(NEQ(List(0, 1), List(PConst, x)).toGEQ) // x =/= 0
+      case GRef(x) => findDefinition(x) match {
+        case Some(d) => negBoolExpr(d)
+        case None => ???
+      }
+    }
+  }
+
+  def negBoolExpr(e: Def): Problem = {
+    e match {
+      case DLess(x, y) => 
+        val lhs = translateArithExpr(x)
+        val rhs = translateArithExpr(y)
+        Problem(LT.create(lhs, rhs).negation)
+      case DEqual(x, y) =>
+        val lhs = translateArithExpr(x)
+        val rhs = translateArithExpr(y)
+        Problem(EQ.create(lhs, rhs).negation)
+      case DNot(x) => translateBoolExpr(x)
     }
   }
   
