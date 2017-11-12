@@ -129,6 +129,8 @@ trait Constraint[C <: Constraint[C]] extends Term {
 
   def normalize(): Option[Constraint[C]]
 
+  def negation(): List[GEQ]
+
   def subst(x: String, term: Term): C
 
   def trivial: Boolean
@@ -185,6 +187,12 @@ trait Constraint[C <: Constraint[C]] extends Term {
   }
 
   def noZeroCoef(): Boolean = { !coefficients.tail.contains(0) }
+}
+
+object EQ {
+  def create(lhs: List[(Int, String)], rhs: List[(Int, String)]): EQ = {
+    EQ(lhs.map(_._1)++scale(rhs.map(_._1), -1), lhs.map(_._2)++rhs.map(_._2))
+  }
 }
 
 /* Linear Equality: \Sigma a_i x_i = 0 where x_0 = 1,
@@ -429,6 +437,13 @@ case class GT(coefficients: List[Int], vars: List[String]) {
   }
 }
 
+object LT {
+  def create(lhs: List[(Int, String)], rhs: List[(Int, String)]): LT = {
+    LT(lhs.map(_._1)++scale(rhs.map(_._1), -1), lhs.map(_._2)++rhs.map(_._2))
+  }
+
+}
+
 case class LT(coefficients: List[Int], vars: List[String]) {
   /* Transforms \Sigma a_i x_i < 0 to \Sigma -1 * a_i x_i >= 1
    */
@@ -493,7 +508,12 @@ object Problem {
   
   val TRUE = EQ(List(0), List(PConst))
   val FALSE = EQ(List(1), List(PConst))
+
+  val PTRUE = Problem(List(TRUE))
+  val PFALSE = Problem(List(FALSE))
 }
+
+import Problem._
 
 case class Subst(x: String, term: Term) {
   override def toString: String = {
@@ -502,8 +522,6 @@ case class Subst(x: String, term: Term) {
 }
 
 case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs: List[Subst] = List()) {
-  import Problem._
-  
   val (eqs, geqs) = partition(cs)
 
   def getEqs= eqs
@@ -524,7 +542,12 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
     cs.foldLeft(false)((acc, c) => acc || c.containsVar(x))
 
   override def toString(): String = { 
-    "{ " + cs.mkString("\n  ")  + "\n" + substs.mkString("\n  ") + " }" 
+    if (substs.isEmpty) {
+      "{ " + cs.mkString("\n  ") + " }" 
+    }
+    else {
+      "{ " + cs.mkString("\n  ")  + "\n" + substs.mkString("\n  ") + " }" 
+    }
   }
 
   /* A constraint is normalized if all coefficients are integers, and the
@@ -881,6 +904,136 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
   def implies(p: Problem): Boolean = {
     if (hasIntSolutions) return Problem(cs++p.cs).hasIntSolutions
     true
+  }
+}
+
+abstract class OStruct 
+
+case class OProb(p: Problem) extends OStruct {
+  override def toString: String = { p.toString }
+}
+
+case class OConj(ps: List[OStruct]) extends OStruct {
+  override def toString: String = {
+    ps.map(_.toString).mkString(" && ")
+  }
+}
+
+case class ODisj(ps: List[OStruct]) extends OStruct {
+  override def toString: String = {
+    ps.map(_.toString).mkString(" || ")
+  }
+}
+
+case class OImplies(cnd: OStruct, thn: OStruct) extends OStruct {
+  override def toString: String = {
+    cnd.toString + " ==> " + thn.toString
+  }
+}
+
+object Omega {
+  def verify(os: OStruct): Boolean = {
+    def verifyConj(oss: List[OStruct]): Boolean = {
+      oss match {
+        case Nil => true
+        case os::rest => verify(os) && verifyConj(rest)
+      }
+    }
+    def verifyDisj(oss: List[OStruct]): Boolean = {
+      oss match {
+        case Nil => false
+        case os::rest => verify(os) || verifyConj(rest)
+      }
+    }
+    os match {
+      case OProb(p) => p.hasIntSolutions
+      case OConj(oss) => verifyConj(oss)
+      case ODisj(oss) => verifyDisj(oss)
+      case OImplies(cnd, thn) =>
+        if (verify(cnd)) return verify(thn)
+        return true
+    }
+  }
+
+  def translate(e: GVal): OStruct = {
+    e match {
+      case GConst(1) => OProb(PTRUE)
+      case GConst(0) => OProb(PFALSE)
+      case GRef(x) if x.endsWith("?") =>
+        OProb(translateBoolExpr(e))
+      case GRef(s) => findDefinition(s) match {
+        case Some(d) => translate(d)
+        case None => ??? // TODO free variables?
+      }
+      case _ => ???
+    }
+  }
+
+  def translate(e: Def): OStruct = {
+    e match {
+      case DIf(cnd, thn, els) => 
+        val cndProb = translateBoolExpr(cnd)
+        val thnProb = translate(thn)
+        val elsProb = translate(els)
+        /* Note: Assume that there is only one constraint in cnd 
+         * (since there is no bool operators), so that we can 
+         * safely use `cndProb.cs.head`.
+         */
+        OConj(List(OImplies(OProb(cndProb), thnProb),
+                   OImplies(OProb(Problem(cndProb.cs.head.negation)), elsProb)))
+      case dl: DLess => OProb(translateBoolExpr(dl))
+      case eq: DEqual => OProb(translateBoolExpr(eq))
+      case _ => ???
+    }
+  }
+
+  def translateBoolExpr(e: GVal): Problem = {
+    e match {
+      case GConst(1) => PTRUE
+      case GConst(0) => PFALSE
+      case GRef(x) if x.endsWith("?") => Problem(List(EQ(List(1, 1), List(PConst, x))))
+      case GRef(x) => findDefinition(x) match {
+        case Some(d) => translateBoolExpr(d)
+        case None => ??? //TODO free variable?
+      }
+    }
+  }
+
+  def translateBoolExpr(e: Def): Problem = {
+    e match {
+      case DLess(x, y) =>
+        val lhs = translateArithExpr(x)
+        val rhs = translateArithExpr(y)
+        Problem(LT.create(lhs, rhs).toGEQ)
+      case DEqual(x, y) => 
+        val lhs = translateArithExpr(x)
+        val rhs = translateArithExpr(y)
+        Problem(List(EQ.create(lhs, rhs)))
+      case DNot(x) =>
+        ???
+    }
+  }
+  
+  def translateArithExpr(e: GVal): List[(Int, String)] = {
+    e match {
+      case GConst(n: Int) => List((n, PConst))
+      case GRef(x) if x.endsWith("?") => List((1, x))
+      case GRef(x) => findDefinition(x) match {
+        case Some(gval) => translateArithExpr(gval)
+        case None => ??? //TODO free variable?
+      }
+      case _ => ???
+    }
+  }
+
+  def translateArithExpr(e: Def): List[(Int, String)]= {
+    e match {
+      case DPlus(x, y) => translateArithExpr(x) ++ translateArithExpr(y)
+      case DTimes(x, y) => 
+        //TODO consider x is const, or y is const, or both, otherwise is not linear
+        ???
+      case _ => ???
+    }
   }
 }
 
