@@ -2,16 +2,16 @@ package analysis
 
 import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutputStream}
 
-/* 
+/*
   make loop ranges explicit, reason about
   an infinite number of memory addresses
   (allocation site indexed by loop iteration)
 
   TODO -- WORK IN PROGRESS
 
-  TODO/DONE: 
-  + switch to optimistic? (done) 
-      can we even talk about opt/pess here? 
+  TODO/DONE:
+  + switch to optimistic? (done)
+      can we even talk about opt/pess here?
       yes, see testProg1c: indirect store updates in
       loops rely on the address being loop invariant
   + make sense of inequalities/recurrences (mostly done)
@@ -77,7 +77,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       case Const(x)    => IR.const(x)
       case Direct(x)   => IR.const(x)
       case Ref(x)      => IR.select(IR.select(store,IR.const("&"+x)), IR.const("val"))
-      case Assign(x,y) => 
+      case Assign(x,y) =>
         val v = eval(y)
         store = IR.update(store, IR.const("&"+x), IR.update(IR.const(Map()), IR.const("val"), v))
         IR.const(())
@@ -86,15 +86,15 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       case Less(x,y)      => IR.less(eval(x),eval(y))
       case Equal(x,y)     => IR.equal(eval(x),eval(y))
       case NotEqual(x,y)  => IR.not(IR.equal(eval(x),eval(y)))
-      case New(x) => 
+      case New(x) =>
         val a = IR.pair(IR.const(x),itvec)
         store = IR.update(store, a, IR.const(Map()))
         a
-      case Get(x, f) => 
+      case Get(x, f) =>
         val x1 = eval(x)
         val f1 = eval(f)
         IR.select(IR.select(store, x1), f1)
-      case Put(x, f, y) => 
+      case Put(x, f, y) =>
         val x1 = eval(x)
         val f1 = eval(f)
         val y1 = eval(y)
@@ -106,7 +106,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
         val old = IR.select(store, IR.const("valid"))
         store = IR.update(store, IR.const("valid"), IR.times(old,c1)) // IR.times means IR.and
         IR.const(())
-      case If(c,a,b) => 
+      case If(c,a,b) =>
         val c1 = eval(c)
         //if (!mayZero(c1)) eval(a) else if (mustZero(c1)) eval(b) else {
           val save = store
@@ -120,7 +120,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           store = IR.iff(c1,s1,s2)
           IR.iff(c1,e1,e2)
         //}
-      case While(c,b) =>  
+      case While(c,b) =>
 
         /* Example:
             var y = 0
@@ -145,7 +145,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
               y1 = if (y0 < 0) y0-1 else y0+1
                  = if (0 < 0) 0-1 else 0+1
                  = 1
-              pick ŷ(i) so that it fits ŷ(0)=y0, ŷ(1)=y1 and extrapolate the rest 
+              pick ŷ(i) so that it fits ŷ(0)=y0, ŷ(1)=y1 and extrapolate the rest
                                                    ^ why 1, really?
 
                 ŷ(i) = if (0 < i) i else 0
@@ -220,7 +220,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           // are we done or do we need another iteration?
           if (init != initNew) { init = initNew; iterCount += 1; iter } else {
             // no further information was gained: go ahead
-            // and generate the final (set of) recursive 
+            // and generate the final (set of) recursive
             // functions, or closed forms.
             println(s"create function def f(n) = $loop($n0) {")
 
@@ -260,7 +260,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
             // A note about the intended semantics:
             // Elem i is the value _after i iterations_,
             // i.e. the value _before iteration i_.
-            // An alternative, based on the analogy of 
+            // An alternative, based on the analogy of
             // modeling values computed in loops
             // as arrays indexed by iteration count would
             // suggest the meaning 'computed in iteration i'.
@@ -271,14 +271,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
             // With this model, we'd have f(i) = i+1 for a
             // simple counting loop, which is somewhat
             // less intuitive.
-            // On the other hand, for dynamic allocations, 
+            // On the other hand, for dynamic allocations,
             // we'd get f(i) = new A_i, which makes sense
             // intuitively.
 
 
             // wrap up
             itvec = saveit
-            
+
             println(s"} end loop $loop, trip count $nX, state $store")
 
             IR.const(())
@@ -310,7 +310,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
       println("# eval:")
       val res = eval(testProg)
-      
+
       println("# result:")
       println("res: " + res)
       println("store: " + store)
@@ -328,4 +328,21 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       println("# done")
       out
     }
+    def xmain(arr: Array[String]) = {
+      val prog =  Block(List(
+        If(Less(Ref("n"), Const(1)), Assign("n", Const(0)), Const(())),
+        Assign("x", Const(0)),
+        Assign("a", Const(0)),
+        While(Less(Ref("x"),Ref("n")), Block(List(
+          Assign("a", Plus(Ref("a"), Ref("x"))),
+          Assign("x", Plus(Ref("x"), Const(1)))
+        ))),
+        Assign("r", Ref("a"))
+      ))
+
+      Main.runAndCheck(prog)
+      ()
+    }
+
   }
+

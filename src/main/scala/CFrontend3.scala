@@ -7,6 +7,7 @@ import scala.collection.{mutable,immutable}
 import mutable.ArrayBuffer
 
 import Util._
+import Omega._
 
 object CFGtoEngine {
   import CFGBase._
@@ -404,12 +405,22 @@ object CFGtoEngine {
     //IR.iff(c1,e1,e2)
   }
 
+  def printSeq(seq: Seq[Val]) = println(seq map("\t" + IR.termToString(_)) mkString("\n"))
+  def assumeTrue(cond: Val): Seq[Val] = { println(s"${IR.termToString(cond)}"); cond } match {
+    case GConst(_) => Seq()
+    case IR.Def(DIf(c, a, b)) if !verify(translate(b)) => Seq(c, a)
+    case IR.Def(DIf(c, a, b)) if !verify(translate(a)) => Seq(IR.not(c), b)
+    case _ => println(s"Nothing as been simplified: ${IR.termToString(cond)}"); Seq()
+  }
+
+  // def simplify(term:
+
   def handleLoop(l:String)(body: => Unit): Unit = {
     import IR._
     val saveit = itvec
 
     val loop = GRef(freshVar)
-    val n0 = GRef(freshVar)
+    val n0 = GRef(freshVar + "?")
 
     val before = store
 
@@ -438,16 +449,29 @@ object CFGtoEngine {
       body // eval loop body ...
 
       val cv = IR.select(store,IR.const(more))
+      println(s"Cv: ${IR.termToString(cv)}")
 
-      store = subst(store,less(n0,const(0)),const(0)) // 0 <= i
+      // val constraints = Seq(not(less(n0,const(0))), not(less(fixindex(n0.toString, cv),n0))) map(translate)
+
       store = subst(store,less(fixindex(n0.toString, cv),n0),const(0)) // i <= n-1
+      store = subst(store,less(n0,const(0)),const(0)) // 0 <= i
+      println(s"Store after iter: ${IR.termToString(store)}")
 
       println("trip count: "+termToString(fixindex(n0.toString, cv)))
 
       val afterB = store
 
       // inside the loop we know the check succeeded.
-      val next = subst(afterB,cv,const(1))
+      // gtggtval next = subst(afterB,cv,const(1))
+
+      val trueClauses = cv +: assumeTrue(cv)
+      println(s"TrueClauses:\n")
+      printSeq(trueClauses)
+
+      val next = (afterB /: trueClauses) {
+        case (agg, t) => subst(subst(agg, t, const(1)), not(t), const(0))
+      }
+      println(s"Store after subst: ${IR.termToString(next)}")
 
       // generalize init/next based on previous values
       // and current observation

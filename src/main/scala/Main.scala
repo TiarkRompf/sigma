@@ -22,7 +22,7 @@ object MyMain {
     assert(alwaysValid)
     println(s"alwaysValid: $alwaysValid")
 
-    val alwaysValid1 = Problem(cond.toGEQ).implies(Problem(List(TRUE))) && 
+    val alwaysValid1 = Problem(cond.toGEQ).implies(Problem(List(TRUE))) &&
                        Problem(cond.negation).implies(Problem(GT(List(101, -1), List(PConst, "x0")).toGEQ))
     assert(alwaysValid1)
   }
@@ -34,6 +34,23 @@ object MyMain {
       if (n > 100)
         n = 100;
       assert(n <= 100);
+      return 0;
+    }
+    """
+    val simple_code1 = """
+    int main() {
+      int n = __VERIFIER_nondet_int();
+      if (n <= 0)  n = 0;
+      // int n = 5;
+
+      int i = 0;
+      int agg = 0;
+      while (i < n) {
+        agg = agg + i;
+        i = i + 1;
+      }
+
+      assert(2 * agg == n * (n - 1));
       return 0;
     }
     """
@@ -108,7 +125,7 @@ object MyMain {
     };
     int main() {
       int n = __VERIFIER_nondet_int();
-      if (n < 0) n = 0;
+      if (n <= 0) n = 0;
       struct list* x = (struct list *) NULL; // malloc(sizeof(struct list));
       int i = 0;
       while (i < n) {
@@ -162,7 +179,7 @@ object MyMain {
       return 0;
     }
     """
-    val parsed = parseCString(code)
+    val parsed = parseCString(simple_code1)
     val cfgs = fileToCFG(parsed)
 
     evalCfgUnit(parsed)
@@ -174,14 +191,14 @@ object MyMain {
     }
     println(s"Valid: ${valid.getOrElse(valid)}")
     println(s"Valid: ${termToString(valid.get)}")
-    
+
     // Should be something like this for simple_code
-    // { -100 + 1x0? >= 0 } ==> { 0 = 0 } && 
+    // { -100 + 1x0? >= 0 } ==> { 0 = 0 } &&
     // { 99 - 1x0? >= 0 } ==> { 100 - 1x0? >= 0 }
     val validOmega = translate(valid.get)
     println(validOmega)
     assert(verify(validOmega))
-    
+
     val example = IR.iff(IR.less(GRef("x?"), IR.const(1)), IR.const(0), IR.less(IR.const(0), GRef("x?")))
     val t = translate(example)
     println(s"translated: $t")

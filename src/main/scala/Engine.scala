@@ -160,7 +160,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def equal(x: From, y: From)                  = s"$x == $y"
       def not(x: From)                             = s"!($x)"
       def pair(x: From, y: From)                   = s"($x,$y)"
-      def iff(c: From, x: From, y: From)           = s"if ($c) $x else $y"
+      def iff(c: From, x: From, y: From)           = s"if ($c) { $x } else { $y }"
       def sum(n: From, x: String, c: From)         = s"sum($n) { $x => $c }"
       def collect(n: From, x: String, c: From)     = s"collect($n) { $x => $c }"
       def fixindex(x: String, c: From)             = s"fixindex { $x => $c }"
@@ -690,6 +690,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case GConst(0) => GConst(1)
         case GConst(1) => GConst(0)
         case Def(DNot(x)) => x
+        case Def(DLess(x, y)) => less(y, plus(x, const(1)))
         case Def(DEqual(GConst(x),GConst(y))) => GConst(if (x == y) 0 else 1)
         case Def(DEqual(GConst(x:Int),Def(DPair(_,_)))) => const(1)
         case Def(DEqual(GConst(x:String),Def(DPair(_,_)))) => const(1)
