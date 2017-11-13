@@ -671,8 +671,8 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
       }
     }
 
-    println(s"constraints: $cons")
-    println(s"junks: $junks")
+    // println(s"constraints: $cons")
+    // println(s"junks: $junks")
     Some(this.copy((cons -- junks).toList))
   }
 
@@ -972,7 +972,7 @@ object Omega {
         OProb(translateBoolExpr(e))
       case GRef(s) => findDefinition(s) match {
         case Some(d) => translate(d)
-        case None => ??? 
+        case None => ???
       }
       case _ => ???
     }
@@ -1003,7 +1003,7 @@ object Omega {
       case GRef(x) if x.endsWith("?") => Problem(List(EQ(List(0, 1), List(PConst, x)))) // x = 0
       case GRef(x) => findDefinition(x) match {
         case Some(d) => translateBoolExpr(d)
-        case None => ??? 
+        case None => ???
       }
     }
   }
@@ -1075,6 +1075,7 @@ object Omega {
         // Instantiate one variable, bounded check if we can have integer solutions
         println(s"Missing $e")
         ???
+      // case DCall(f, x) => List((1, s"$f($x)"))
       case _ => ???
     }
   }

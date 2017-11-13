@@ -174,7 +174,7 @@ locks/*_false-unreach-call*.c
 locks/*_true-unreach-call*.c
 The programs were taken from the source code repositories of the tools BLAST and CPAchecker.
 
-Memory Model: Precise 
+Memory Model: Precise
 Architecture: 32 bit
 
 Simple
@@ -185,7 +185,7 @@ ntdrivers/*_false-unreach-call*.i.cil.c
 ntdrivers/*_true-unreach-call*.i.cil.c
 ssh/*_false-unreach-call*.i.cil.c
 ssh/*_true-unreach-call*.i.cil.c
-Memory Model: Simple 
+Memory Model: Simple
 Architecture: 32 bit
 
 ECA (Event-Condition-Action Systems)
@@ -194,7 +194,7 @@ This set contains programs that represent event-condition-action systems.
 
 eca-rers2012/*_false-unreach-call*.c
 eca-rers2012/*_true-unreach-call*.c
-Memory Model: Precise 
+Memory Model: Precise
 Architecture: 32 bit
 
 Loops
@@ -209,7 +209,7 @@ loop-invgen/*_false-unreach-call*.i
 loop-invgen/*_true-unreach-call*.i
 loop-lit/*_true-unreach-call*.c.i
 loop-new/*_true-unreach-call*.i
-Memory Model: Precise 
+Memory Model: Precise
 Architecture: 32 bit
 
 Recursive
@@ -220,10 +220,10 @@ recursive/*_false-unreach-call*.c
 recursive/*_true-unreach-call*.c
 recursive-simple/*_false-unreach-call*.c
 recursive-simple/*_true-unreach-call*.c
-The benchmark set was provided by the Ultimate project. 
+The benchmark set was provided by the Ultimate project.
 Description: recursive
 
-Memory Model: Precise 
+Memory Model: Precise
 Architecture: 32 bit
 
 ProductLines
@@ -236,10 +236,10 @@ product-lines/email*_false-unreach-call.*.c
 product-lines/email*_true-unreach-call.*.c
 product-lines/minepump*_false-unreach-call.*.c
 product-lines/minepump*_true-unreach-call.*.c
-The directories 'ntdriver', 'ssh', and 'locks' were taken from the source code repositories of the tools BLAST and CPAchecker. The ECA programs were taken from the RERS Challenge 2012. The directory 'loops' was provided by the ESBMC project. The products were contributed by the SPLverifier project. 
+The directories 'ntdriver', 'ssh', and 'locks' were taken from the source code repositories of the tools BLAST and CPAchecker. The ECA programs were taken from the RERS Challenge 2012. The directory 'loops' was provided by the ESBMC project. The products were contributed by the SPLverifier project.
 Descriptions: eca, loops, product-lines
 
-Memory Model: Precise 
+Memory Model: Precise
 Architecture: 32 bit
 
 Sequentialized
@@ -252,10 +252,10 @@ seq-mthreaded/*_false-unreach-call.*.c
 seq-mthreaded/*_true-unreach-call.*.c
 seq-pthread/*_false-unreach-call*.i
 seq-pthread/*_true-unreach-call*.i
-The SystemC benchmarks were provided by the SyCMC project. The other sequentialized programs are from the projects CSeq and HCCPS. 
+The SystemC benchmarks were provided by the SyCMC project. The other sequentialized programs are from the projects CSeq and HCCPS.
 Descriptions: systemc, seq-mthreaded, seq-pthread
 
-Memory Model: Precise 
+Memory Model: Precise
 Architecture: 32 bit
 
 

@@ -26,11 +26,11 @@ class TestAnalysis7 extends RunAndCheckSuite {
     } {
       """
         Map(
-          "&i" -> Map("val" -> 100), 
-          "B"  -> Map("top" -> Map("head" -> 7, "tail" -> (A,top))), 
-          "A"  -> Map("top" -> Map()), 
-          "&x" -> Map("val" -> (B,top)), 
-          "&z" -> Map("val" -> (A,top)), 
+          "&i" -> Map("val" -> 100),
+          "B"  -> Map("top" -> Map("head" -> 7, "tail" -> (A,top))),
+          "A"  -> Map("top" -> Map()),
+          "&x" -> Map("val" -> (B,top)),
+          "&z" -> Map("val" -> (A,top)),
           "&y" -> Map("val" -> (B,top))
         )
       """
@@ -57,10 +57,10 @@ class TestAnalysis7 extends RunAndCheckSuite {
     }{
       """
         Map(
-          "B"  -> Map("top" -> Map("foo" -> 5)), 
-          "A"  -> Map("top" -> Map("a" -> (B,top))), 
-          "&x" -> Map("val" -> (A,top)), 
-          "&bar" -> Map("val" -> "undefined"), 
+          "B"  -> Map("top" -> Map("foo" -> 5)),
+          "A"  -> Map("top" -> Map("a" -> (B,top))),
+          "&x" -> Map("val" -> (A,top)),
+          "&bar" -> Map("val" -> <error>),
           "&foo" -> Map("val" -> 5)
         )
       """
@@ -86,10 +86,10 @@ class TestAnalysis7 extends RunAndCheckSuite {
     }{
       """
         Map(
-          "B"  -> Map("top" -> Map("foo" -> 5, "bar" -> 7)), 
-          "A2" -> Map("top" -> Map("baz" -> 3)), 
-          "A"  -> Map("top" -> Map("a" -> (B,top))), 
-          "&x" -> Map("val" -> (A,top)), 
+          "B"  -> Map("top" -> Map("foo" -> 5, "bar" -> 7)),
+          "A2" -> Map("top" -> Map("baz" -> 3)),
+          "A"  -> Map("top" -> Map("a" -> (B,top))),
+          "&x" -> Map("val" -> (A,top)),
           "&xbar" -> Map("val" -> 7)
         )
       """
@@ -119,22 +119,22 @@ class TestAnalysis7 extends RunAndCheckSuite {
       """
       if(COUNT < 0) Map() else
       Map(
-        "&i" -> Map("val" -> if (0 < "COUNT") "COUNT" else 0), 
-        "B"  -> if(0 < COUNT) Map("top" -> 
-          if (1 < "COUNT") 
-            collect("COUNT") { x15_B_top_x16 => Map("foo" -> 5) } 
-            + ("COUNT" + -1 -> Map("foo" -> 5, "baz" -> "nil", "bar" -> 7)) 
-          else 
+        "&i" -> Map("val" -> if (0 < "COUNT") "COUNT" else 0),
+        "B"  -> if(0 < COUNT) Map("top" ->
+          if (1 < "COUNT")
             collect("COUNT") { x15_B_top_x16 => Map("foo" -> 5) }
-        ) else nil, 
-        "X"  -> Map("top" -> Map("a" -> 
-          if(0<COUNT){ if (1 < "COUNT") 
-            ("B",("top","COUNT" + -1)) 
-          else 
+            + ("COUNT" + -1 -> Map("foo" -> 5, "baz" -> "nil", "bar" -> 7))
+          else
+            collect("COUNT") { x15_B_top_x16 => Map("foo" -> 5) }
+        ) else nil,
+        "X"  -> Map("top" -> Map("a" ->
+          if(0<COUNT){ if (1 < "COUNT")
+            ("B",("top","COUNT" + -1))
+          else
             (A,top) } else (A,top)
-        )), 
-        "A"  -> Map("top" -> Map("baz" -> 3, "foo" -> "nil", "bar" -> if(0<COUNT){ if (1 < "COUNT") "nil" else 7 } else 7)), 
-        "&x" -> Map("val" -> (X,top)), 
+        )),
+        "A"  -> Map("top" -> Map("baz" -> 3, "foo" -> "nil", "bar" -> if(0<COUNT){ if (1 < "COUNT") "nil" else 7 } else 7)),
+        "&x" -> Map("val" -> (X,top)),
         "&xbar" -> Map("val" -> 7)
       )
       """
@@ -142,22 +142,22 @@ class TestAnalysis7 extends RunAndCheckSuite {
       Note: above is more complicated that we'd like. should optimize (at least) to:
       """
       Map(
-        "&i" -> Map("val" -> "COUNT"), 
-        "B"  -> Map("top" -> 
-          if (1 < "COUNT") 
-            collect("COUNT") { x14_B_top_x15 => Map("foo" -> 5) } 
-            + ("COUNT" + -1 -> Map("foo" -> 5, "baz" -> "nil", "bar" -> 7)) 
-          else 
+        "&i" -> Map("val" -> "COUNT"),
+        "B"  -> Map("top" ->
+          if (1 < "COUNT")
             collect("COUNT") { x14_B_top_x15 => Map("foo" -> 5) }
-        ), 
-        "X"  -> Map("top" -> Map("a" -> 
-          if (1 < "COUNT") 
-            ("B",("top","COUNT" + -1)) 
-          else 
+            + ("COUNT" + -1 -> Map("foo" -> 5, "baz" -> "nil", "bar" -> 7))
+          else
+            collect("COUNT") { x14_B_top_x15 => Map("foo" -> 5) }
+        ),
+        "X"  -> Map("top" -> Map("a" ->
+          if (1 < "COUNT")
+            ("B",("top","COUNT" + -1))
+          else
             (A,top)
-        )), 
-        "A"  -> Map("top" -> Map("baz" -> 3, "foo" -> "nil", "bar" -> if (1 < "COUNT") "nil" else 7)), 
-        "&x" -> Map("val" -> (X,top)), 
+        )),
+        "A"  -> Map("top" -> Map("baz" -> 3, "foo" -> "nil", "bar" -> if (1 < "COUNT") "nil" else 7)),
+        "&x" -> Map("val" -> (X,top)),
         "&xbar" -> Map("val" -> 7)
       )
       """
@@ -181,8 +181,8 @@ class TestAnalysis7 extends RunAndCheckSuite {
       """
         val x7_&r_val = { x8 => if (0 < x8) x7_&r_val(x8 + -1) * x8 else 1 }
         Map(
-          "&n" -> Map("val" -> "N"), 
-          "&i" -> Map("val" -> if (0 < "N") "N" else 0), 
+          "&n" -> Map("val" -> "N"),
+          "&i" -> Map("val" -> if (0 < "N") "N" else 0),
           "&r" -> Map("val" -> x7_&r_val("N"))
         )
       """
