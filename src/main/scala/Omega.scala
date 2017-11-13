@@ -932,7 +932,7 @@ case class OImplies(cnd: OStruct, thn: OStruct) extends OStruct {
 }
 
 object Omega {
-  def verify(os: OStruct): Boolean = {
+  def verify(os: OStruct, const: List[OProb] = List()): Boolean = {
     def verifyConj(oss: List[OStruct]): Boolean = {
       oss match {
         case Nil => true
@@ -945,7 +945,17 @@ object Omega {
         case os::rest => verify(os) || verifyConj(rest)
       }
     }
-    os match {
+    def inject(os: OStruct, extCs: List[Constraint[_]]): OStruct = {
+      os match {
+        case OProb(p) => OProb(p.copy(p.cs++extCs))
+        case OConj(oss) => OConj(oss.map(inject(_, extCs)))
+        case ODisj(oss) => ODisj(oss.map(inject(_, extCs)))
+        case OImplies(cnd, thn) => OImplies(inject(cnd, extCs), inject(thn, extCs))
+      }
+    }
+
+    val extCs: List[Constraint[_]] = const.flatMap(_.p.cs)
+    inject(os, extCs) match {
       case OProb(p) => p.hasIntSolutions
       case OConj(oss) => verifyConj(oss)
       case ODisj(oss) => verifyDisj(oss)
