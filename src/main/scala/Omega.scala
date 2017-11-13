@@ -57,7 +57,31 @@ object Utils {
     if (a % b > b / 2) a % b
     else (a % b) - b
   }
+}
 
+trait Term {
+  val coefficients: List[Int]
+  val vars: List[String]
+
+  override def toString(): String = {
+    val s = coefficients.head.toString
+    (coefficients.tail zip vars.tail).foldLeft(s)({
+      case (acc, (c,v)) =>
+        val cstr = if (c > 0) " + " + c.toString
+                   else " - " + abs(c).toString
+        val cvstr = cstr + v
+        acc + cvstr
+    })
+  }
+}
+
+object Term {
+  def newTerm(coefs: List[Int], variables: List[String]) = {
+    new Term {
+      val coefficients = coefs
+      val vars = variables
+    }
+  }
 }
 
 object Constraint {
@@ -92,31 +116,6 @@ object Constraint {
   }
 
   def scale(coefficients: List[Int], x: Int): List[Int] = { coefficients.map(_ * x) }
-}
-
-object Term {
-  def newTerm(coefs: List[Int], variables: List[String]) = {
-    new Term {
-      val coefficients = coefs
-      val vars = variables
-    }
-  }
-}
-
-trait Term {
-  val coefficients: List[Int]
-  val vars: List[String]
-
-  override def toString(): String = {
-    val s = coefficients.head.toString
-    (coefficients.tail zip vars.tail).foldLeft(s)({
-      case (acc, (c,v)) =>
-        val cstr = if (c > 0) " + " + c.toString
-                   else " - " + abs(c).toString
-        val cvstr = cstr + v
-        acc + cvstr
-    })
-  }
 }
 
 import Term._
@@ -1073,6 +1072,8 @@ object Omega {
         lhs.map({ case t: (Int,String) => (t._1 * y, t._2) })
       case DTimes(GRef(x), GRef(y)) if (x.endsWith("?") && y.endsWith("?")) =>
         // TODO: two variables multiplication
+        // Instantiate one variable, bounded check if we can have integer solutions
+        println(s"Missing $e")
         ???
       case _ => ???
     }
