@@ -182,5 +182,9 @@ object MyMain {
     println(validOmega)
     assert(verify(validOmega))
     
+    val example = IR.iff(IR.less(GRef("x?"), IR.const(1)), IR.const(0), IR.less(IR.const(0), GRef("x?")))
+    val t = translate(example)
+    println(s"translated: $t")
+    println(s"result: ${verify(t)}")
   }
 }

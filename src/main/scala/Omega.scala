@@ -963,7 +963,7 @@ object Omega {
         OProb(translateBoolExpr(e))
       case GRef(s) => findDefinition(s) match {
         case Some(d) => translate(d)
-        case None => ??? // TODO free variables?
+        case None => ??? 
       }
       case _ => ???
     }
@@ -981,7 +981,7 @@ object Omega {
          */
         OConj(List(OImplies(OProb(cndProb), thnProb),
                    OImplies(OProb(Problem(cndProb.cs.head.negation)), elsProb)))
-      case dl: DLess => OProb(translateBoolExpr(dl))
+      case le: DLess => OProb(translateBoolExpr(le))
       case eq: DEqual => OProb(translateBoolExpr(eq))
       case _ => ???
     }
@@ -994,7 +994,7 @@ object Omega {
       case GRef(x) if x.endsWith("?") => Problem(List(EQ(List(0, 1), List(PConst, x)))) // x = 0
       case GRef(x) => findDefinition(x) match {
         case Some(d) => translateBoolExpr(d)
-        case None => ??? //TODO free variable?
+        case None => ??? 
       }
     }
   }
