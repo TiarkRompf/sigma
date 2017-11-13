@@ -378,6 +378,215 @@ Fixpoint trans_exp (e: exp) (sto: gxp): gxp :=
 
 (* ---------- normal-order simplification semantics for FUN --------- *)
 
+
+(* simplification / normalization *)
+Fixpoint sms_eval_exp (e: gxp): gxp :=
+  match e with
+(*  | GNum n => e
+  | GMap m => e (* simpl in Map? *) *)
+  | GGet a x => match sms_eval_exp a with
+                | GMap m => match m x with Some y => y | None => GGet (GMap m) x end
+                | a' => GGet a' x
+                end 
+  | GPut a x b => match sms_eval_exp a, sms_eval_exp b with
+                  | GMap m, b' => GMap (t_update m x (Some b'))
+                  | a', b' => GPut a' x b'
+                  end 
+  | GPlus a b => match sms_eval_exp a, sms_eval_exp b with
+                 | GNum a', GNum b' => GNum (a' + b')
+                 | a', b' => GPlus a' b'
+                 end 
+  | GMinus a b => match sms_eval_exp a, sms_eval_exp b with
+                 | GNum a', GNum b' => GNum (a' - b')
+                 | a', b' => GMinus a' b'
+                 end
+  | GMult a b => match sms_eval_exp a, sms_eval_exp b with
+                 | GNum a', GNum b' => GNum (a' * b')
+                 | a', b' => GMult a' b'
+                 end 
+  | GEq a b => match sms_eval_exp a, sms_eval_exp b with
+                 | GNum a', GNum b' => GBool (beq_nat a' b')
+                 | a', b' => GEq a' b'
+                 end 
+  | GIf c a b => match sms_eval_exp c with
+                 | GBool c' => if c' then sms_eval_exp a else sms_eval_exp b
+                 | c' => GIf c' (sms_eval_exp a) (sms_eval_exp b)
+                 end 
+  | _ => e (* TODO *)                                   
+  end.
+
+
+(* examples, sanity checks *)
+Definition testprog := (trans_exp (APlus (ANum 2) (ANum 3)) (GMap (t_empty None))).
+
+Definition testprog2 := fun e1 e2 => (trans_exp (APlus e1 e2) (GMap (t_empty None))).
+                              
+Definition testprog1 := (trans_exp (ANum 2)) (GMap (t_empty None)).
+
+(* WARNING: computing of GMao unfolds string comparison (<-- huge term!!!) *)
+Compute testprog.
+Compute testprog1.
+Compute testprog2. 
+
+Compute (sms_eval_exp (GPut GEmpty fvalid (GBool true))).
+
+(* Compute (fun e1 e2 => sms_eval_exp (testprog2 e1 e2)).  *)
+
+
+(* ----- equivalence with respect to simplification ----- *)
+Definition geq a b := sms_eval_exp a = sms_eval_exp b.
+
+
+Lemma GEQ_trans: forall a b c, geq a b -> geq b c -> geq a c.
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
+Qed.
+
+
+
+(* ----- prove some congruence rules ----- *)
+
+
+Lemma GEQ_SOME: forall a b, geq a (GSome b) -> geq (GGet a fdata) b.
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
+Qed.
+
+Lemma GEQ_BIND: forall a f, geq a (GSome (GGet a fdata)) -> geq (a >>g= f) (f (GGet a fdata)).
+Proof.
+  intros. unfold GMatch. unfold geq. unfold geq in H. simpl sms_eval_exp at 1. rewrite H. simpl. auto.
+Qed.
+
+Lemma GEQ_BIND2: forall a b c f, geq a (GSome b) -> geq (f (GGet a fdata)) c -> geq (a >>g= f) c.
+Proof.
+  intros. unfold GMatch. unfold geq. unfold geq in H. simpl sms_eval_exp at 1. rewrite H. simpl. auto.
+Qed.
+
+Lemma GEQ_BIND3: forall a f, geq a (GNone) -> geq (a >>g= f) GNone.
+Proof.
+  intros. unfold GMatch. unfold geq. unfold geq in H. simpl sms_eval_exp at 1. rewrite H. simpl. auto.
+Qed.
+    
+Lemma GEQ_SOMEC: forall a b, geq a b -> geq (GSome a) (GSome b).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
+Qed.
+
+Lemma GEQ_VNumC: forall a b, geq a b -> geq (GVNum a) (GVNum b).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
+Qed.
+
+Lemma GEQ_Plus: forall a1 a2 n1 n2, geq a1 (GNum n1) -> geq a2 (GNum n2) -> geq (GPlus a1 a2) (GNum (n1 + n2)).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. rewrite H0. simpl. auto.
+Qed.
+
+Lemma GEQ_ToNat: forall a b, geq a (GVNum b) -> geq (toNatG a) (GSome b).
+Proof. 
+  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
+Qed.
+
+Lemma GEQ_ToNat3: forall a b, geq a (GVBool b) -> geq (toNatG a) GNone.
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
+Qed.
+
+
+
+(* ----- equivalence between IMP and FUN ----- *)
+Inductive veq : val -> gxp -> Prop :=
+| VEQ_Num : forall n r,
+    geq r (GVNum (GNum n)) ->
+    veq (VNum n) r
+| VEQ_Bool : forall n r,
+    geq  r (GVBool (GBool n)) ->
+    veq (VBool n) r.
+
+Inductive req : option val -> gxp -> Prop :=
+| REQ_Some : forall v g r,
+    veq v g ->
+    geq r (GSome g) ->
+    req (Some v) r
+| REQ_None : forall r,
+    geq r GNone ->
+    req None r.
+
+
+(*
+  req (LET a <-- a1 >>= toNat IN LET b <-- a2 >>= toNat IN Some (VNum (a + b)))
+    ((b1 >>g= toNatG) >>g= (fun a : gxp => (b2 >>g= toNatG) >>g= (fun b : gxp => GSome (GVNum (GPlus a b)))))
+ *)
+
+Lemma REQ_BIND: forall a1 a2 f1 f2, req a1 a2 -> (forall b1 b2, veq b1 b2 -> req (f1 b1) (f2 b2)) -> (forall b c, geq b c -> geq (f2 b) (f2 c)) -> req (a1 >>= f1) (a2 >>g= f2).
+  intros.
+  inversion H.
+  specialize (H0 _ _ H2). subst a1 r.
+  inversion H0. subst r. eapply REQ_Some. eauto. eapply GEQ_BIND2. eauto. eapply GEQ_trans. eapply H1. eapply GEQ_SOME. eauto. eauto. 
+  eapply REQ_None. eapply GEQ_BIND2. eauto. eapply GEQ_trans. eapply H1. eapply GEQ_SOME. eauto. eauto. 
+  eapply REQ_None. eapply GEQ_BIND3. eauto.
+Qed.
+
+
+(* ----- soundness of IMP -> FUN translation ----- *)
+Theorem soundness: forall e,
+    req (eval_exp e (empty_store)) (trans_exp e (GMap (t_empty None))).
+Proof.
+  intros e. induction e.
+  - (* var *) simpl.  admit. (* fixme *)
+  - (* num *) simpl. eapply REQ_Some. eapply VEQ_Num. reflexivity. reflexivity. 
+  - (* plus *)
+    simpl eval_exp. simpl trans_exp.
+
+    remember (eval_exp e1 empty_store) as a1.
+    remember (eval_exp e2 empty_store) as a2.
+    remember (trans_exp e1 (GMap (t_empty None))) as b1.
+    remember (trans_exp e2 (GMap (t_empty None))) as b2.
+
+    (* TODO: use REQ_BIND *)
+    
+    inversion IHe1. subst a1 r. inversion H. subst v r. simpl toNat. cbn iota beta.
+    inversion IHe2. subst a2 r. inversion H3. subst v r. simpl toNat. cbn iota beta.
+
+    eapply REQ_Some. eapply VEQ_Num. reflexivity.
+
+    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H0. eapply H2.
+    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H4. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H4. eapply H6.
+    eapply GEQ_SOMEC. eapply GEQ_VNumC. eapply GEQ_Plus.
+    eapply GEQ_SOME. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H0. eapply H2.
+    eapply GEQ_SOME. eapply GEQ_BIND2. eapply H4. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H4. eapply H6.
+    (* ---- 2nd arg is bool *)
+    subst v r. simpl toNat. cbn iota beta.
+    eapply REQ_None. 
+    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H0. eapply H2.
+    eapply GEQ_BIND3. eapply GEQ_BIND2. eapply H4. eapply GEQ_ToNat3. eapply GEQ_trans. eapply GEQ_SOME. eapply H4. eapply H6.
+    (* ---- 2nd arg is none *)
+    subst a2 r. simpl toNat. cbn iota beta.
+    eapply REQ_None. 
+    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H0. eapply H2.
+    eapply GEQ_BIND3. eapply GEQ_BIND3. eapply H3. 
+    (* ---- 1nd arg is bool *)
+    subst v r. simpl toNat. cbn iota beta.
+    eapply REQ_None. 
+    eapply GEQ_BIND3. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat3. eapply GEQ_trans. eapply GEQ_SOME. eapply H0. eapply H2.
+    (* ---- 1nd arg is bool *)
+    subst a2 r. simpl toNat. cbn iota beta.
+    eapply REQ_None. 
+    eapply GEQ_BIND3. eapply GEQ_BIND3. eapply H. 
+
+  - (* minus *) admit.
+  - admit.
+  - admit.
+  - admit.
+  - admit.
+  - admit.
+  - admit.
+  - admit.
+Admitted. 
+
+
+(* ---------- small-step rules for FUN: experimental / not currently used ---------- *)
+
 (*NOTE: small-step not currently used *)
 Inductive value : gxp -> Prop :=
 | v_num : forall n, value (GNum n)
@@ -414,208 +623,8 @@ Inductive multi {X:Type} (R: relation X) : relation X :=
 
 Notation " t '==>*' t' " := (multi step t t') (at level 40).
 
-(* simplification *)
-Fixpoint sms_eval_exp (e: gxp): gxp :=
-  match e with
-(*  | GNum n => e
-  | GMap m => e (* simpl in Map? *) *)
-  | GGet a x => match sms_eval_exp a with
-                | GMap m => match m x with Some y => y | None => GGet (GMap m) x end
-                | a' => GGet a' x
-                end 
-  | GPut a x b => match sms_eval_exp a, sms_eval_exp b with
-                  | GMap m, b' => GMap (t_update m x (Some b'))
-                  | a', b' => GPut a' x b'
-                  end 
-  | GPlus a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GNum (a' + b')
-                 | a', b' => GPlus a' b'
-                 end 
-  | GMinus a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GNum (a' - b')
-                 | a', b' => GMinus a' b'
-                 end
-  | GMult a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GNum (a' * b')
-                 | a', b' => GMult a' b'
-                 end 
-  | GEq a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GBool (beq_nat a' b')
-                 | a', b' => GEq a' b'
-                 end 
-  | GIf c a b => match sms_eval_exp c with
-                 | GBool c' => if c' then sms_eval_exp a else sms_eval_exp b
-                 | c' => GIf c' (sms_eval_exp a) (sms_eval_exp b)
-                 end 
-  | _ => e (* TODO *)                                   
-  end.
-
-Lemma sms_unfold: forall e, sms_eval_exp e = 
-  match e with
-(*  | GNum n => e
-  | GMap m => e (* simpl in Map? *) *)
-  | GGet a x => match sms_eval_exp a with
-                | GMap m => match m x with Some y => y | None => GGet (GMap m) x end
-                | a' => GGet a' x
-                end 
-  | GPut a x b => match sms_eval_exp a, sms_eval_exp b with
-                  | GMap m, b' => GMap (t_update m x (Some b'))
-                  | a', b' => GPut a' x b'
-                  end 
-  | GPlus a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GNum (a' + b')
-                 | a', b' => GPlus a' b'
-                 end 
-  | GMinus a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GNum (a' - b')
-                 | a', b' => GMinus a' b'
-                 end
-  | GMult a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GNum (a' * b')
-                 | a', b' => GMult a' b'
-                 end 
-  | GEq a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GBool (beq_nat a' b')
-                 | a', b' => GEq a' b'
-                 end 
-  | GIf c a b => match sms_eval_exp c with
-                 | GBool c' => if c' then sms_eval_exp a else sms_eval_exp b
-                 | c' => GIf c' (sms_eval_exp a) (sms_eval_exp b)
-                 end 
-  | _ => e (* TODO *)                                   
-  end.
-Proof.
-  intros e. induction e; reflexivity.
-Qed.
-
-(* examples, sanity checks *)
-Definition testprog := (trans_exp (APlus (ANum 2) (ANum 3)) (GMap (t_empty None))).
-
-Definition testprog2 := fun e1 e2 => (trans_exp (APlus e1 e2) (GMap (t_empty None))).
-                              
-Definition testprog1 := (trans_exp (ANum 2)) (GMap (t_empty None)).
-
-(* WARNING: computing of GMao unfolds string comparison (<-- huge term!!!) *)
-Compute testprog.
-Compute testprog1.
-Compute testprog2. 
-
-Compute (sms_eval_exp (GPut GEmpty fvalid (GBool true))).
-
-(* Compute (fun e1 e2 => sms_eval_exp (testprog2 e1 e2)).  *)
-
-
-(* equivalence / congruence, soundness proof *)
-Definition geq a b := sms_eval_exp a = sms_eval_exp b.
-
-(* TODO: note that rhs may not be values yet !!! *)
-Inductive veq : val -> gxp -> Prop :=
-| VEQ_Num : forall n r,
-    geq r (GVNum (GNum n)) ->
-    veq (VNum n) r
-| VEQ_Bool : forall n r,
-    geq  r (GVBool (GBool n)) ->
-    veq (VBool n) r.
-
-Inductive req : option val -> gxp -> Prop :=
-| REQ_Some : forall v g r,
-    veq v g ->
-    geq r (GSome g) ->
-    req (Some v) r
-| REQ_None : forall r,
-    geq r GNone ->
-    req None r.
-
-
-
-Theorem soundness: forall e,
-    req (eval_exp e (empty_store)) (trans_exp e (GMap (t_empty None))).
-Proof.
-  intros e. induction e.
-  - (* var *) simpl.  admit. (* fixme *)
-  - (* num *) simpl. eapply REQ_Some. eapply VEQ_Num. reflexivity. reflexivity. 
-  - (* plus *)
-    simpl eval_exp. simpl trans_exp.
-
-    remember (eval_exp e1 empty_store) as a1.
-    remember (eval_exp e2 empty_store) as a2.
-    remember (trans_exp e1 (GMap (t_empty None))) as b1.
-    remember (trans_exp e2 (GMap (t_empty None))) as b2.
-
-    assert (forall a b, geq a (GSome b) -> geq (GGet a fdata) b) as GEQ_SOME.
-    intros. unfold geq in *. simpl. rewrite H. simpl. auto. 
-
-
-    assert (forall a f, geq a (GSome (GGet a fdata)) -> geq (a >>g= f) (f (GGet a fdata))) as GEQ_BIND.
-    intros. unfold GMatch. unfold geq. unfold geq in H. simpl sms_eval_exp at 1. rewrite H. simpl. auto.
-
-    assert (forall a b c f, geq a (GSome b) -> geq (f (GGet a fdata)) c -> geq (a >>g= f) c) as GEQ_BIND2.
-    intros. unfold GMatch. unfold geq. unfold geq in H. simpl sms_eval_exp at 1. rewrite H. simpl. auto.
-
-    assert (forall a f, geq a (GNone) -> geq (a >>g= f) GNone) as GEQ_BIND3.
-    intros. unfold GMatch. unfold geq. unfold geq in H. simpl sms_eval_exp at 1. rewrite H. simpl. auto.
-
-    
-    assert (forall a b, geq a b -> geq (GSome a) (GSome b)) as GEQ_SOMEC.
-    intros. unfold geq in *. simpl. rewrite H. simpl. auto. 
-
-    assert (forall a b, geq a b -> geq (GVNum a) (GVNum b)) as GEQ_VNumC.
-    intros. unfold geq in *. simpl. rewrite H. simpl. auto. 
-
-    assert (forall a1 a2 n1 n2, geq a1 (GNum n1) -> geq a2 (GNum n2) -> geq (GPlus a1 a2) (GNum (n1 + n2))) as GEQ_Plus.
-    intros. unfold geq in *. simpl. rewrite H. rewrite H0. simpl. auto. 
-
-    assert (forall a b, geq a (GVNum b) -> geq (toNatG a) (GSome b)) as GEQ_ToNat.
-    intros. unfold geq in *. simpl. rewrite H. simpl. auto. 
-
-    assert (forall a b, geq a (GVBool b) -> geq (toNatG a) GNone) as GEQ_ToNat3.
-    intros. unfold geq in *. simpl. rewrite H. simpl. auto. 
-
-    
-    inversion IHe1. subst a1 r. inversion H. subst v r. simpl toNat. cbn iota beta.
-    inversion IHe2. subst a2 r. inversion H3. subst v r. simpl toNat. cbn iota beta.
-
-    eapply REQ_Some. eapply VEQ_Num. reflexivity.
-
-    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. unfold geq. rewrite <-H2. eapply GEQ_SOME. eapply H0.
-    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H4. eapply GEQ_ToNat. unfold geq. rewrite <-H6. eapply GEQ_SOME. eapply H4.
-    eapply GEQ_SOMEC. eapply GEQ_VNumC. eapply GEQ_Plus.
-    eapply GEQ_SOME. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. unfold geq. rewrite <-H2. eapply GEQ_SOME. eapply H0.
-    eapply GEQ_SOME. eapply GEQ_BIND2. eapply H4. eapply GEQ_ToNat. unfold geq. rewrite <-H6. eapply GEQ_SOME. eapply H4.
-    (* ---- 2nd arg is bool *)
-    subst v r. simpl toNat. cbn iota beta.
-    eapply REQ_None. 
-    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. unfold geq. rewrite <-H2. eapply GEQ_SOME. eapply H0.
-    eapply GEQ_BIND3. eapply GEQ_BIND2. eapply H4. eapply GEQ_ToNat3. unfold geq. rewrite <-H6. eapply GEQ_SOME. eapply H4.
-    (* ---- 2nd arg is none *)
-    subst a2 r. simpl toNat. cbn iota beta.
-    eapply REQ_None. 
-    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. unfold geq. rewrite <-H2. eapply GEQ_SOME. eapply H0.
-    eapply GEQ_BIND3. eapply GEQ_BIND3. eapply H3. 
-    (* ---- 1nd arg is bool *)
-    subst v r. simpl toNat. cbn iota beta.
-    eapply REQ_None. 
-    eapply GEQ_BIND3. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat3.  unfold geq. rewrite <-H2. eapply GEQ_SOME. eapply H0.
-    (* ---- 1nd arg is bool *)
-    subst a2 r. simpl toNat. cbn iota beta.
-    eapply REQ_None. 
-    eapply GEQ_BIND3. eapply GEQ_BIND3. eapply H. 
-
-  - (* minus *) admit.
-  - admit.
-  - admit.
-  - admit.
-  - admit.
-  - admit.
-  - admit.
-  - admit.
-Admitted.
-    
-
-
-
 (* small-step: not currently used *)
-Theorem soundness: forall e,
+Theorem soundness1: forall e,
     exists g, (trans_exp e (GMap (t_empty None))) ==>* g /\
     req (eval_exp e (empty_store)) g.
 Proof.
@@ -629,9 +638,9 @@ Proof.
     remember (eval_exp e2 empty_store) as b2.
     unfold toNatG. unfold toNat. unfold GMatch. 
 
-    
+(*    
     destruct IHe1 as [g1 [T1 R1]]. destruct IHe2 as [g2 [T2 R2]].
-    destruct (eval_exp e1 empty_store). inversion R1. subst v0 g1. 
+    destruct (eval_exp e1 empty_store). inversion R1. subst b1 g1. 
     inversion H0. subst v g. simpl.
 
     destruct (eval_exp e2 empty_store). inversion R2. subst v0 g2.
@@ -649,5 +658,7 @@ Proof.
       exists GNone. subst v g. simpl. split. simpl.
       admit. (* reduction *)
       eapply REQ_None. 
+ *)
 
+Admitted.
     
