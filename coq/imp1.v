@@ -436,61 +436,101 @@ Compute (sms_eval_exp (GPut GEmpty fvalid (GBool true))).
 (* ----- equivalence with respect to simplification ----- *)
 Definition geq a b := sms_eval_exp a = sms_eval_exp b.
 
+Definition fgeq f1 f2 := forall b1 b2, geq b1 b2 -> geq (f1 b1) (f2 b2).
 
 Lemma GEQ_trans: forall a b c, geq a b -> geq b c -> geq a c.
 Proof.
   intros. unfold geq in *. simpl. rewrite H. simpl. auto.
 Qed.
 
-
+Lemma FGEQ_refl: forall f, (forall b1 b2, geq b1 b2 -> geq (f b1) (f b2)) -> fgeq f f.
+Proof. intros. unfold fgeq. intros. eapply H. eauto. Qed. 
 
 (* ----- prove some congruence rules ----- *)
 
+Lemma GEQ_IfC: forall c1 c2 a1 a2 b1 b2,
+    geq c1 c2 -> geq a1 a2 -> geq b1 b2 -> geq (GIf c1 a1 b1) (GIf c2 a2 b2).
+Proof. intros. unfold geq in *. simpl. rewrite H. rewrite H0. rewrite H1. simpl. auto. Qed.
 
-Lemma GEQ_SOME: forall a b, geq a (GSome b) -> geq (GGet a fdata) b.
-Proof.
-  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
-Qed.
+Lemma GEQ_GetC: forall a1 a2 x,
+    geq a1 a2 -> geq (GGet a1 x) (GGet a2 x).
+Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
 
-Lemma GEQ_BIND: forall a f, geq a (GSome (GGet a fdata)) -> geq (a >>g= f) (f (GGet a fdata)).
-Proof.
-  intros. unfold GMatch. unfold geq. unfold geq in H. simpl sms_eval_exp at 1. rewrite H. simpl. auto.
-Qed.
+Lemma GEQ_PlusC: forall a1 a2 b1 b2,
+    geq a1 a2 -> geq b1 b2 -> geq (GPlus a1 b1) (GPlus a2 b2).
+Proof. intros. unfold geq in *. simpl. rewrite H. rewrite H0. simpl. auto. Qed.
 
-Lemma GEQ_BIND2: forall a b c f, geq a (GSome b) -> geq (f (GGet a fdata)) c -> geq (a >>g= f) c.
-Proof.
-  intros. unfold GMatch. unfold geq. unfold geq in H. simpl sms_eval_exp at 1. rewrite H. simpl. auto.
-Qed.
-
-Lemma GEQ_BIND3: forall a f, geq a (GNone) -> geq (a >>g= f) GNone.
-Proof.
-  intros. unfold GMatch. unfold geq. unfold geq in H. simpl sms_eval_exp at 1. rewrite H. simpl. auto.
-Qed.
-    
-Lemma GEQ_SOMEC: forall a b, geq a b -> geq (GSome a) (GSome b).
-Proof.
-  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
-Qed.
+Lemma GEQ_SomeC: forall a b, geq a b -> geq (GSome a) (GSome b).
+Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
 
 Lemma GEQ_VNumC: forall a b, geq a b -> geq (GVNum a) (GVNum b).
+Proof.  intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
+
+Lemma GEQ_toNatC: forall a b, geq a b -> geq (toNatG a) (toNatG b).
+Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
+
+Lemma GEQ_BindC: forall a1 a2 f1 f2,
+    geq a1 a2 -> fgeq f1 f2 ->
+    geq (a1 >>g= f1) (a2 >>g= f2).
 Proof.
-  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
+  intros.
+  unfold GMatch. eapply GEQ_IfC. eapply GEQ_GetC. eauto. eapply H0. eapply GEQ_GetC. eauto. reflexivity.
 Qed.
 
-Lemma GEQ_Plus: forall a1 a2 n1 n2, geq a1 (GNum n1) -> geq a2 (GNum n2) -> geq (GPlus a1 a2) (GNum (n1 + n2)).
+(* ----- and reduction rules ----- *)
+
+Lemma GEQ_PlusR: forall a1 a2 n1 n2,
+    geq a1 (GNum n1) -> geq a2 (GNum n2) -> geq (GPlus a1 a2) (GNum (n1 + n2)).
+Proof. intros. eapply GEQ_trans. eapply GEQ_PlusC; eauto.  unfold geq in *. simpl. reflexivity. Qed.
+
+Lemma GEQ_SomeR: forall a b, geq a (GSome b) -> geq (GGet a fdata) b.
+Proof. intros. eapply GEQ_trans. eapply GEQ_GetC; eauto. unfold geq in *. simpl. reflexivity. Qed. 
+
+Lemma GEQ_BindSomeR: forall a b c f, geq a (GSome b) -> geq (f b) c -> fgeq f f -> geq (a >>g= f) c.
+Proof. intros. eapply GEQ_trans. eapply GEQ_BindC; eauto.
+       unfold GMatch. unfold fgeq in *. unfold geq in *. simpl. rewrite <-H0. eapply H1. eapply GEQ_SomeR. reflexivity. Qed.
+       
+
+Lemma GEQ_BindNoneR: forall a f, geq a GNone -> geq (a >>g= f) GNone.
 Proof.
-  intros. unfold geq in *. simpl. rewrite H. rewrite H0. simpl. auto.
+  intros. unfold GMatch. unfold geq in *. simpl. rewrite H. simpl. reflexivity. 
 Qed.
 
-Lemma GEQ_ToNat: forall a b, geq a (GVNum b) -> geq (toNatG a) (GSome b).
+
+Lemma GEQ_toNatR: forall a b, geq a (GVNum b) -> geq (toNatG a) (GSome b).
+Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed.
+
+Lemma GEQ_toNatBoolR: forall a b, geq a (GVBool b) -> geq (toNatG a) GNone.
+Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed. 
+
+
+(*
+Lemma GEQ_PlusR: forall n1 n2, geq (GPlus (GNum n1) (GNum n2)) (GNum (n1 + n2)).
+Proof. intros. unfold geq in *. simpl. reflexivity. Qed.
+
+Lemma GEQ_SomeR: forall a, geq (GGet (GSome a) fdata) a.
+Proof. intros. unfold geq in *. simpl. reflexivity. Qed. 
+
+Lemma GEQ_BindSomeR: forall a f, geq ((GSome a) >>g= f) (f (GGet (GSome a) fdata)).
+Proof. intros. unfold GMatch. unfold geq in *. simpl. reflexivity. Qed. 
+
+Lemma GEQ_BindNoneR: forall f, geq ((GNone) >>g= f) GNone.
+Proof.
+  intros. unfold GMatch. unfold geq in *. simpl. reflexivity. 
+Qed.
+
+
+Lemma GEQ_toNatR: forall a, geq (toNatG (GVNum a)) (GSome a).
 Proof. 
-  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
+  intros. unfold geq in *. simpl. reflexivity. 
 Qed.
 
-Lemma GEQ_ToNat3: forall a b, geq a (GVBool b) -> geq (toNatG a) GNone.
+Lemma GEQ_toNatBoolR: forall a, geq (toNatG (GVBool a)) GNone.
 Proof.
-  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
+  intros. unfold geq in *. simpl. reflexivity.
 Qed.
+*)
+
 
 
 
@@ -503,30 +543,41 @@ Inductive veq : val -> gxp -> Prop :=
     geq  r (GVBool (GBool n)) ->
     veq (VBool n) r.
 
-Inductive req : option val -> gxp -> Prop :=
+Inductive oeq {X:Type} (peq: X -> gxp -> Prop): option X -> gxp -> Prop :=
 | REQ_Some : forall v g r,
-    veq v g ->
+    peq v g ->
     geq r (GSome g) ->
-    req (Some v) r
+    oeq peq (Some v) r
 | REQ_None : forall r,
     geq r GNone ->
-    req None r.
+    oeq peq None r.
+
+Definition req := oeq veq.
+
+Definition neq (n1: nat) (n2: gxp) := n2 = (GNum n1).
 
 
-(*
-  req (LET a <-- a1 >>= toNat IN LET b <-- a2 >>= toNat IN Some (VNum (a + b)))
-    ((b1 >>g= toNatG) >>g= (fun a : gxp => (b2 >>g= toNatG) >>g= (fun b : gxp => GSome (GVNum (GPlus a b)))))
- *)
-
-Lemma REQ_BIND: forall a1 a2 f1 f2, req a1 a2 -> (forall b1 b2, veq b1 b2 -> req (f1 b1) (f2 b2)) -> (forall b c, geq b c -> geq (f2 b) (f2 c)) -> req (a1 >>= f1) (a2 >>g= f2).
-  intros.
-  inversion H.
-  specialize (H0 _ _ H2). subst a1 r.
-  inversion H0. subst r. eapply REQ_Some. eauto. eapply GEQ_BIND2. eauto. eapply GEQ_trans. eapply H1. eapply GEQ_SOME. eauto. eauto. 
-  eapply REQ_None. eapply GEQ_BIND2. eauto. eapply GEQ_trans. eapply H1. eapply GEQ_SOME. eauto. eauto. 
-  eapply REQ_None. eapply GEQ_BIND3. eauto.
+Lemma REQ_BindC: forall X Y (peq: X -> gxp -> Prop)  (qeq: Y -> gxp -> Prop) a1 a2 f1 f2,
+    oeq peq a1 a2 ->
+    (forall b1 b2, peq b1 b2 -> oeq qeq (f1 b1) (f2 b2)) ->
+    (forall b c, geq b c -> geq (f2 b) (f2 c)) ->
+    oeq qeq (a1 >>= f1) (a2 >>g= f2).
+Proof.
+  intros. inversion H; subst a1 r.
+  - specialize (H0 _ _ H2). inversion H0; subst r.
+    + eapply REQ_Some. eauto. eapply GEQ_BindSomeR; eauto.
+    + eapply REQ_None. eapply GEQ_BindSomeR; eauto. 
+  - eapply REQ_None. eapply GEQ_BindNoneR; eauto. 
 Qed.
 
+Lemma REQ_toNatC: forall (b0 : val) (b3 : gxp), veq b0 b3 -> oeq neq (toNat b0) (toNatG b3).
+Proof.
+  intros. inversion H; subst b0 r.
+  - eapply REQ_Some. reflexivity. eapply GEQ_toNatR. eauto. 
+  - eapply REQ_None. eapply GEQ_toNatBoolR. eauto. 
+Qed.
+
+  
 
 (* ----- soundness of IMP -> FUN translation ----- *)
 Theorem soundness: forall e,
@@ -536,6 +587,15 @@ Proof.
   - (* var *) simpl.  admit. (* fixme *)
   - (* num *) simpl. eapply REQ_Some. eapply VEQ_Num. reflexivity. reflexivity. 
   - (* plus *)
+    simpl.
+
+    (* eapply REQ_BindC. eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC.
+    intros. eapply REQ_BindC. eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC.
+    intros. eapply REQ_Some. eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_PlusR. reflexivity. reflexivity. rewrite H. rewrite H0. reflexivity.
+    intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. reflexivity. eauto.
+    intros. eapply GEQ_BindC. eapply GEQ_BindC. reflexivity. intros ? ? ?. eapply GEQ_toNatC. eauto. intros ? ? ?.
+    eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. eauto. eauto. *)
+    
     simpl eval_exp. simpl trans_exp.
 
     remember (eval_exp e1 empty_store) as a1.
@@ -543,36 +603,14 @@ Proof.
     remember (trans_exp e1 (GMap (t_empty None))) as b1.
     remember (trans_exp e2 (GMap (t_empty None))) as b2.
 
-    (* TODO: use REQ_BIND *)
+    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)). eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC.
+    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)). eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC.
     
-    inversion IHe1. subst a1 r. inversion H. subst v r. simpl toNat. cbn iota beta.
-    inversion IHe2. subst a2 r. inversion H3. subst v r. simpl toNat. cbn iota beta.
+    eapply REQ_BindC. eauto. intros. eapply REQ_BindC. eauto.
+    intros. eapply REQ_Some. eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_PlusR. reflexivity. reflexivity. rewrite H1. rewrite H2. reflexivity.
+    intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. reflexivity. eauto. 
 
-    eapply REQ_Some. eapply VEQ_Num. reflexivity.
-
-    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H0. eapply H2.
-    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H4. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H4. eapply H6.
-    eapply GEQ_SOMEC. eapply GEQ_VNumC. eapply GEQ_Plus.
-    eapply GEQ_SOME. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H0. eapply H2.
-    eapply GEQ_SOME. eapply GEQ_BIND2. eapply H4. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H4. eapply H6.
-    (* ---- 2nd arg is bool *)
-    subst v r. simpl toNat. cbn iota beta.
-    eapply REQ_None. 
-    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H0. eapply H2.
-    eapply GEQ_BIND3. eapply GEQ_BIND2. eapply H4. eapply GEQ_ToNat3. eapply GEQ_trans. eapply GEQ_SOME. eapply H4. eapply H6.
-    (* ---- 2nd arg is none *)
-    subst a2 r. simpl toNat. cbn iota beta.
-    eapply REQ_None. 
-    eapply GEQ_BIND2. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat. eapply GEQ_trans. eapply GEQ_SOME. eapply H0. eapply H2.
-    eapply GEQ_BIND3. eapply GEQ_BIND3. eapply H3. 
-    (* ---- 1nd arg is bool *)
-    subst v r. simpl toNat. cbn iota beta.
-    eapply REQ_None. 
-    eapply GEQ_BIND3. eapply GEQ_BIND2. eapply H0. eapply GEQ_ToNat3. eapply GEQ_trans. eapply GEQ_SOME. eapply H0. eapply H2.
-    (* ---- 1nd arg is bool *)
-    subst a2 r. simpl toNat. cbn iota beta.
-    eapply REQ_None. 
-    eapply GEQ_BIND3. eapply GEQ_BIND3. eapply H. 
+    intros. eapply GEQ_BindC. reflexivity. intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. eauto. eauto. 
 
   - (* minus *) admit.
   - admit.
