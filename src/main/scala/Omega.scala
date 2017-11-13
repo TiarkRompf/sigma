@@ -672,8 +672,8 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
       }
     }
 
-    println(s"constraints: $cons")
-    println(s"junks: $junks")
+    // println(s"constraints: $cons")
+    // println(s"junks: $junks")
     Some(this.copy((cons -- junks).toList))
   }
 
@@ -973,7 +973,7 @@ object Omega {
         OProb(translateBoolExpr(e))
       case GRef(s) => findDefinition(s) match {
         case Some(d) => translate(d)
-        case None => ??? 
+        case None => ???
       }
       case _ => ???
     }
@@ -1004,7 +1004,7 @@ object Omega {
       case GRef(x) if x.endsWith("?") => Problem(List(EQ(List(0, 1), List(PConst, x)))) // x = 0
       case GRef(x) => findDefinition(x) match {
         case Some(d) => translateBoolExpr(d)
-        case None => ??? 
+        case None => ???
       }
     }
   }
@@ -1074,6 +1074,7 @@ object Omega {
       case DTimes(GRef(x), GRef(y)) if (x.endsWith("?") && y.endsWith("?")) =>
         // TODO: two variables multiplication
         ???
+      // case DCall(f, x) => List((1, s"$f($x)"))
       case _ => ???
     }
   }
