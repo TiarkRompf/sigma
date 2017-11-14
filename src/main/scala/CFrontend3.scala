@@ -407,27 +407,29 @@ object CFGtoEngine {
 
   def printList(seq: List[Val]) = println(seq map("\t" + IR.termToString(_)) mkString("\n"))
 
-  def toOProb(term: Val): Option[OProb] = try {
-    translate(term) match {
-      case op@OProb(_) => Some(op)
-      case _ => None
-    }
+  def toOStruct(term: Val): Option[OStruct] = try {
+    Some(translate(term))
   } catch {
     case _: NotImplementedError => None
   }
 
-  def alwaysFalse(cond: Val)(implicit constraints: List[OProb]) = {
-    toOProb(cond) match {
-      case Some(cond) => !verify(cond, constraints)
-      case _ => false
-    }
+  def toOProb(term: Val): Option[OProb] = toOStruct(term) match {
+    case Some(op@OProb(_)) => Some(op)
+    case _ => None
+  }
+
+  def alwaysFalse(cond: Val)(implicit constraints: List[OProb]) = toOStruct(cond) match {
+    case Some(cond) => !verify(cond, constraints)
+    case _ => false
   }
 
   def assumeTrue(cond: Val)(implicit constraints: List[OProb]): List[Val] = { println(s"${IR.termToString(cond)}"); cond } match {
     case GConst(0) => println("Error"); ???
     case IR.Def(DIf(c, a, b)) if alwaysFalse(b)(toOProb(IR.not(c)) ++: constraints) => c :: assumeTrue(a)
     case IR.Def(DIf(c, a, b)) if alwaysFalse(a)(toOProb(c) ++: constraints) => IR.not(c) :: assumeTrue(b)
-    case a@_ => println(s"Nothing as been simplified: ${IR.termToString(cond)}"); List(a)
+    case IR.Def(DIf(c, a, b)) if alwaysFalse(c) => assumeTrue(b)
+    case IR.Def(DIf(c, a, b)) if alwaysFalse(IR.not(c)) => assumeTrue(a)
+    case a@_ => println(s"Nothing as been simplified: ${IR.termToString(a)}"); List(a)
   }
 
   def simplify(term: Val)(implicit constraints: List[OProb]): Val = term match {
@@ -440,18 +442,13 @@ object CFGtoEngine {
       else
         IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
     case IR.Def(DIf(c, a, b)) if alwaysFalse(IR.not(c)) => simplify(a)
-    case IR.Def(DFixIndex(x, c)) =>
-      val sc = simplify(c)
-      sc match {
-        case IR.Def(DLess(GRef(`x`), n)) => n
-        case _ => IR.fixindex(x, sc)
-      }
+    case IR.Def(DFixIndex(x, c)) => IR.fixindex(x, simplify(c))
     case IR.Def(DMap(m)) =>
       IR.map(m map { case (key, value) => simplify(key) -> simplify(value) }) // FIXME ???
     case IR.Def(DUpdate(x, f, y))  => IR.update(simplify(x), simplify(f), simplify(y))
     case IR.Def(DSelect(x, f))     => IR.select(simplify(x), simplify(f))
     case IR.Def(DPlus(x, y))       => IR.plus(simplify(x), simplify(y))
-    case IR.Def(DTimes(x, y))      => IR.plus(simplify(x), simplify(y))
+    case IR.Def(DTimes(x, y))      => IR.times(simplify(x), simplify(y))
     case IR.Def(DLess(x, y))       => IR.less(simplify(x), simplify(y))
     case IR.Def(DEqual(x, y))      => IR.equal(simplify(x), simplify(y))
     case IR.Def(DNot(x))           => IR.not(simplify(x))
@@ -497,13 +494,15 @@ object CFGtoEngine {
 
       body // eval loop body ...
 
-      implicit var constraints: List[OProb] = toOProb(not(less(n0,const(0)))) ++: Nil
-      val cv = simplify(IR.select(store,IR.const(more)))
+      var constraints: List[OProb] = toOProb(not(less(n0,const(0)))) ++: Nil
+      val cv = simplify(IR.select(store,IR.const(more)))(constraints)
 
-      constraints ++= List(not(less(fixindex(n0.toString, cv),n0))) flatMap(c => toOProb(simplify(c)))
+      constraints ++= toOProb(simplify(not(less(fixindex(n0.toString, cv),n0)))(constraints))
 
+      // FIXME: is it still necessary? Should be handle by simplification step.
       store = subst(store,less(fixindex(n0.toString, cv),n0),const(0)) // i <= n-1
       store = subst(store,less(n0,const(0)),const(0)) // 0 <= i
+
       println(s"Store after iter: ${IR.termToString(store)}")
       store = simplify(store)(constraints)
       println(s"Store after simplifications: ${IR.termToString(store)}")
@@ -531,7 +530,7 @@ object CFGtoEngine {
       // and current observation
       println(s"approx f(0)=$before, f($n0)=$init, f($n0+1)=$next) = {")
 
-      val (initNew,nextNew) = lub(before, init, next)(loop,n0)
+      val (initNew,nextNew) = lub(before, simplify(init)(constraints), next)(loop,n0)
 
       println(s"} -> f($n0)=$initNew, f($n0+1)=$nextNew")
 
