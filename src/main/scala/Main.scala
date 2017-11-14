@@ -28,6 +28,8 @@ object MyMain {
   }
 
   def main(arr: Array[String]) = {
+    OmegaTest.test
+
     val simple_code = """
     int main() {
       int n = __VERIFIER_nondet_int();

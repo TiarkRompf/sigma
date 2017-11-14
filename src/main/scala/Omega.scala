@@ -190,7 +190,8 @@ trait Constraint[C <: Constraint[C]] extends Term {
 
 object EQ {
   def create(lhs: List[(Int, String)], rhs: List[(Int, String)]): EQ = {
-    EQ(lhs.map(_._1)++scale(rhs.map(_._1), -1), lhs.map(_._2)++rhs.map(_._2))
+    val (coefs, vars) = reorder(0::lhs.map(_._1)++scale(rhs.map(_._1), -1), PConst::lhs.map(_._2)++rhs.map(_._2))
+    EQ(coefs, vars)
   }
 }
 
@@ -438,7 +439,8 @@ case class GT(coefficients: List[Int], vars: List[String]) {
 
 object LT {
   def create(lhs: List[(Int, String)], rhs: List[(Int, String)]): LT = {
-    LT(lhs.map(_._1)++scale(rhs.map(_._1), -1), lhs.map(_._2)++rhs.map(_._2))
+    val (coefs, vars) = reorder(0::lhs.map(_._1)++scale(rhs.map(_._1), -1), PConst::PConst::lhs.map(_._2)++rhs.map(_._2))
+    LT(coefs, vars)
   }
 
 }
@@ -686,10 +688,10 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
     normalize match {
       case Some(p) if p.cs.isEmpty => true
       case Some(p) if p.hasEq => p.elimEq.hasIntSolutions
-      case Some(p) if p.hasMostOneVar =>
-        return p.reduce.nonEmpty
+      case Some(p) if p.hasMostOneVar => return p.reduce.nonEmpty
       case Some(p) =>
         p.reduce match {
+          case Some(p) if p.hasEq => p.elimEq.hasIntSolutions
           case Some(p) if p.numVars > 1 =>
             val x0 = p.chooseVar()
             val realSet = p.realShadowSet(x0)
@@ -972,7 +974,7 @@ object Omega {
         OProb(translateBoolExpr(e))
       case GRef(s) => findDefinition(s) match {
         case Some(d) => translate(d)
-        case None => println(s"Missing variable: $x"); ???
+        case None => println(s"Missing variable: $s"); ???
       }
       case _ => println(s"Missing $e"); ???
     }
@@ -1074,9 +1076,9 @@ object Omega {
         // TODO: two variables multiplication
         // Instantiate one variable, bounded check if we can have integer solutions
         println(s"Missing $e")
-        ???
-      // case DCall(f, x) => List((1, s"$f($x)"))
-      case _ => ???
+        List((1, s"$x*$y"))   //FIXME
+      case DCall(f, x) => List((1, s"$f($x)")) //FIXME
+      case _ => println(s"Missing $e"); ???
     }
   }
 }
