@@ -994,6 +994,7 @@ object Omega {
                    OImplies(OProb(Problem(cndProb.cs.head.negation)), elsProb)))
       case le: DLess => OProb(translateBoolExpr(le))
       case eq: DEqual => OProb(translateBoolExpr(eq))
+      case n: DNot => OProb(translateBoolExpr(n))
       case _ => println(s"Missing $e"); ???
     }
   }
@@ -1082,6 +1083,7 @@ object Omega {
         println(s"Missing $e")
         List((1, s"$x*$y"))   //FIXME
       case DCall(f, x) => 
+        println(s"Missing $e")
         List((1, s"$f($x)")) //FIXME
       case _ => println(s"Missing $e"); ???
     }
