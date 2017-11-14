@@ -439,7 +439,7 @@ case class GT(coefficients: List[Int], vars: List[String]) {
 
 object LT {
   def create(lhs: List[(Int, String)], rhs: List[(Int, String)]): LT = {
-    val (coefs, vars) = reorder(0::lhs.map(_._1)++scale(rhs.map(_._1), -1), PConst::PConst::lhs.map(_._2)++rhs.map(_._2))
+    val (coefs, vars) = reorder(0::lhs.map(_._1)++scale(rhs.map(_._1), -1), PConst::lhs.map(_._2)++rhs.map(_._2))
     LT(coefs, vars)
   }
 

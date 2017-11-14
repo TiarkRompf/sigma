@@ -198,7 +198,7 @@ object MyMain {
     // { -100 + 1x0? >= 0 } ==> { 0 = 0 } &&
     // { 99 - 1x0? >= 0 } ==> { 100 - 1x0? >= 0 }
     val validOmega = translate(valid.get)
-    println(validOmega)
+    println(s"valid: $validOmega")
     assert(verify(validOmega))
 
     val example = IR.iff(IR.less(GRef("x?"), IR.const(1)), IR.const(0), IR.less(IR.const(0), GRef("x?")))
