@@ -1012,10 +1012,6 @@ object Omega {
         val cndProb = translateBoolExpr(cnd)
         val thnProb = translate(thn)
         val elsProb = translate(els)
-        /* Note: Assume that there is only one constraint in cnd
-         * (since there is no bool operators), so that we can
-         * safely use `cndProb.cs.head`.
-         */
         OConj(List(OImplies(cndProb, thnProb),
                    OImplies(cndProb.negation, elsProb)))
       case le: DLess => translateBoolExpr(le)
