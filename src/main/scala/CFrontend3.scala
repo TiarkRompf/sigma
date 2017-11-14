@@ -77,6 +77,9 @@ object CFGtoEngine {
       case _ => GError}), GError)
   }
 
+  val location = new mutable.HashMap[Any,String]()
+  var nextV = 0
+  def next = { nextV += 1; s"&new:$nextV" }
   def evalExp(node: IASTNode): Val = { /* println(s"NODE: $node"); */ node } match {
       case node: CASTLiteralExpression =>
           val lk = node.getKind
@@ -267,7 +270,7 @@ object CFGtoEngine {
                 typedGVal(IR.map(Map(GConst("value") -> typedGVal(GConst(0), GType.int), GConst("next") -> typedGVal(GConst(0), GType.pointer(GConst("list"))))), GConst("list"))
               }
 
-              val idx = IR.pair(GConst(node.hashCode),itvec)
+              val idx = IR.pair(GConst(location.getOrElseUpdate(node.hashCode, next)),itvec)
               store = IR.update(store, idx, newV)
               typedGVal(idx, GType.pointer(GConst("list")))
             case name =>
@@ -408,7 +411,7 @@ object CFGtoEngine {
   def printList(seq: List[Val]) = println(seq map("\t" + IR.termToString(_)) mkString("\n"))
 
   def toOStruct(term: Val): Option[OStruct] = try {
-    Some(translate(term))
+    Some(translateBoolExpr(term))
   } catch {
     case _: NotImplementedError => None
   }
@@ -437,9 +440,10 @@ object CFGtoEngine {
   def simplifyBool(term: Val)(implicit constraints: List[OProb]): Val = {
     if (alwaysFalse(term))
       IR.const(0)
-    else if (alwaysFalse(IR.not(term))) {
+    else if (alwaysFalse(IR.not(term)))
       IR.const(1)
-    } else term
+    else
+      term
   }
 
   def simplify(term: Val)(implicit constraints: List[OProb]): Val = { debug(s"> ${IR.termToString(term)} - contraints: $constraints"); term } match {
@@ -468,11 +472,11 @@ object CFGtoEngine {
     case IR.Def(DCall(f, x))       => IR.call(simplify(f), simplify(x))
     case IR.Def(DFun(f, x, y))     => IR.fun(f, x, simplify(y))
     case IR.Def(DHasField(x, f))   => IR.hasfield(simplify(x), simplify(f))
-    // case x@GRef(_) =>
-    //   simplifyBool(IR.equal(x, IR.const(0))) match { // FIXME: hack if GRef(x) == 0
-    //     case GConst(1) => println(s"Simplifed $x"); IR.const(0)
-    //     case z@_ => println(s"Simplify ref: ${IR.termToString(z)} - $constraints"); x
-    //   }
+    case x@GRef(_) =>
+      simplifyBool(IR.equal(x, IR.const(0))) match { // FIXME: hack if GRef(x) == 0
+        case GConst(1) => println(s"Simplifed $x"); IR.const(0)
+        case z@_ => println(s"Simplify ref: ${IR.termToString(z)} - $constraints"); x
+      }
     case _ => term
   }
 
@@ -510,6 +514,7 @@ object CFGtoEngine {
       body // eval loop body ...
 
       var constraints: List[OProb] = toOProb(not(less(n0,const(0)))) ++: Nil
+      println(s"more: ${IR.termToString(IR.select(store,IR.const(more)))}")
       val cv = simplify(IR.select(store,IR.const(more)))(constraints)
 
       constraints ++= toOProb(simplify(not(less(fixindex(n0.toString, cv),n0)))(constraints))

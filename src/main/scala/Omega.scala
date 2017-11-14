@@ -434,7 +434,7 @@ case class GT(coefficients: List[Int], vars: List[String]) {
     val (newCoefs, newVars) = reorder(-1::coefficients, PConst::vars)
     List(GEQ(newCoefs, newVars))
   }
-  
+
   def negation: List[List[GEQ]] = {
     List(LEQ(coefficients, vars).toGEQ)
   }
@@ -455,7 +455,7 @@ case class LT(coefficients: List[Int], vars: List[String]) {
     val (newCoefs, newVars) = reorder(-1::scale(coefficients, -1), PConst::vars)
     List(GEQ(newCoefs, newVars))
   }
-  
+
   def negation: List[List[GEQ]] = {
     List(List(GEQ(coefficients, vars)))
   }
@@ -467,7 +467,7 @@ case class LEQ(coefficients: List[Int], vars: List[String]) {
   def toGEQ: List[GEQ] = {
     List(GEQ(scale(coefficients, -1), vars))
   }
-  
+
   def negation: List[List[GEQ]] = {
     List(GT(coefficients, vars).toGEQ)
   }
@@ -554,7 +554,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
       "{ " + cs.mkString("\n  ")  + "\n" + substs.mkString("\n  ") + " }"
     }
   }
-  
+
   /* Returns a disjunction of problems */
   def negation(): List[Problem] = {
     val negs: List[List[GEQ]] = cs.map(_.negation).flatten
@@ -1017,12 +1017,14 @@ object Omega {
       case le: DLess => translateBoolExpr(le)
       case eq: DEqual => translateBoolExpr(eq)
       case n: DNot => translateBoolExpr(n)
+      case m: DTimes => translateBoolExpr(m)
       case _ => println(s"Missing $e"); ???
     }
   }
 
   def translateBoolExpr(e: GVal): OStruct = {
     e match {
+      case GError => OProb(PFALSE)
       case GConst(1) => OProb(PTRUE)
       case GConst(0) => OProb(PFALSE)
       case GRef(x) if x.endsWith("?") => OProb(Problem(List(EQ(List(0, 1), List(PConst, x))))) // x = 0
@@ -1044,6 +1046,13 @@ object Omega {
         val rhs = translateArithExpr(y)
         OProb(Problem(List(EQ.create(lhs, rhs))))
       case DNot(x) => negBoolExpr(x) //TODO need test this case
+      case DTimes(x, y) => OConj(List(translateBoolExpr(x), translateBoolExpr(y)))
+      case DIf(cnd, thn, els) =>
+        val cndProb = translateBoolExpr(cnd)
+        val thnProb = translateBoolExpr(thn)
+        val elsProb = translateBoolExpr(els)
+        OConj(List(OImplies(cndProb, thnProb),
+                   OImplies(cndProb.negation, elsProb)))
     }
   }
 
@@ -1051,7 +1060,7 @@ object Omega {
     e match {
       case GConst(1) => OProb(PFALSE)
       case GConst(0) => OProb(PTRUE)
-      case GRef(x) if x.endsWith("?") => 
+      case GRef(x) if x.endsWith("?") =>
         val geqs = NEQ(List(0, 1), List(PConst, x)).toGEQ
         assert(geqs.length == 2)
         ODisj(List(OProb(Problem(geqs(0))), OProb(Problem(geqs(1))))) //x =/= 0
@@ -1077,6 +1086,10 @@ object Omega {
         assert(neg.length == 2)
         ODisj(List(OProb(Problem(neg(0))), OProb(Problem(neg(1)))))
       case DNot(x) => translateBoolExpr(x)
+      case DTimes(x, y) =>
+        val lhs = translateBoolExpr(x)
+        val rhs = translateBoolExpr(y)
+        OConj(List(lhs, rhs)).negation
     }
   }
 
@@ -1104,14 +1117,14 @@ object Omega {
         lhs.map({ case t: (Int,String) => (t._1 * y, t._2) })
       case DTimes(GRef(x), GRef(y)) if (x.endsWith("?") && y.endsWith("?")) =>
         // TODO: two variables multiplication
-        // Idea: Instantiate one variable within its constraint, bounded check if we 
+        // Idea: Instantiate one variable within its constraint, bounded check if we
         //       can have integer solutions, if found one, then return yes, otherwise
         //       check other concrete number within its constraint until bound met.
         // Idea: If we know x > 1, then could infer that x^2 > 1
         //       If we know x > n && y > m (n>0&&m>0), then could infer that x*y > n*m
         println(s"Missing $e")
         List((1, s"$x*$y"))   //FIXME
-      case DCall(f, x) => 
+      case DCall(f, x) =>
         println(s"Missing $e")
         List((1, s"$f($x)")) //FIXME
       case _ => println(s"Missing $e"); ???

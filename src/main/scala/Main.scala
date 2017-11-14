@@ -28,7 +28,7 @@ object MyMain {
   }
 
   def main(arr: Array[String]) = {
-    OmegaTest.test
+    // OmegaTest.test
 
     val simple_code = """
     int main() {
@@ -181,7 +181,7 @@ object MyMain {
       return 0;
     }
     """
-    val parsed = parseCString(simple_code1)
+    val parsed = parseCString(code2)
     val cfgs = fileToCFG(parsed)
 
     evalCfgUnit(parsed)
@@ -191,20 +191,13 @@ object MyMain {
       case GConst(m: Map[GVal,GVal]) => m.get(GConst("valid"))
       case Def(DMap(m)) => m.get(GConst("valid"))
     }
-    println(s"Valid: ${valid.getOrElse(valid)}")
     println(s"Valid: ${termToString(valid.get)}")
 
     // Should be something like this for simple_code
     // { -100 + 1x0? >= 0 } ==> { 0 = 0 } &&
     // { 99 - 1x0? >= 0 } ==> { 100 - 1x0? >= 0 }
     val validOmega = translate(valid.get)
-    println(s"valid: $validOmega")
+    println(s"Valid (omega form): $validOmega")
     assert(verify(validOmega))
-    
-    // if (x <= 0) 0 else (1 <= x)
-    val example = IR.iff(IR.less(GRef("x?"), IR.const(1)), IR.const(1), IR.less(IR.const(0), GRef("x?")))
-    val t = translate(example)
-    println(s"translated: $t")
-    println(s"result: ${verify(t)}")
   }
 }
