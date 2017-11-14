@@ -22,21 +22,21 @@ class TestAnalysis6 extends RunAndCheckSuite {
       ))
     } {
       """
-      Map(
-        "&i" -> Map("val" -> 100),
-        "B"  -> Map("top" ->
+      {
+        "&i" -> {"val" -> 100},
+        "B"  -> {"top" ->
           collect(100) { x8_B_top_x9 =>
-            Map(
+            {
               "head" -> x8_B_top_x9,
-              "tail" -> if (0 < x8_B_top_x9) ("B",("top",x8_B_top_x9 + -1))
-                        else                 (A,top)
-            )
-          }),
-        "A"  -> Map("top" -> Map()),
-        "&x" -> Map("val" -> (B,(top,99))),
-        "&z" -> Map("val" -> (A,top)),
-        "&y" -> Map("val" -> (B,(top,99)))
-      )
+              "tail" -> if ((0 < x8_B_top_x9)) { ("B",("top",(x8_B_top_x9 + -1))) }
+                        else                 { (A,top) }
+            }
+          }},
+        "A"  -> {"top" -> Map()},
+        "&x" -> {"val" -> (B,(top,99))},
+        "&z" -> {"val" -> (A,top)},
+        "&y" -> {"val" -> (B,(top,99))}
+      }
       """
     }
 
@@ -59,16 +59,16 @@ class TestAnalysis6 extends RunAndCheckSuite {
       ))
     }{
       """
-      Map(
-        "&i" -> Map("val" -> 100),
-        "B"  -> Map("top" -> Map(
+      {
+        "&i" -> {"val" -> 100},
+        "B"  -> {"top" -> {
                               "head" -> 99,
-                              "tail" -> (B,top))),
-        "A"  -> Map("top" -> Map()),
-        "&x" -> Map("val" -> (B,top)),
-        "&z" -> Map("val" -> (A,top)),
-        "&y" -> Map("val" -> (B,top))
-      )
+                              "tail" -> (B,top)}},
+        "A"  -> {"top" -> Map()},
+        "&x" -> {"val" -> (B,top)},
+        "&z" -> {"val" -> (A,top)},
+        "&y" -> {"val" -> (B,top)}
+      }
       """
     }
 
@@ -84,12 +84,12 @@ class TestAnalysis6 extends RunAndCheckSuite {
       ))
     } {
       """
-      Map(
-        "&i" -> Map("val" -> 100),
-        "A"  -> Map("top" -> Map("head" -> 99)),
-        "&z" -> Map("val" -> (A,top)),
-        "&x" -> Map("val" -> (A,top))
-      )
+      {
+        "&i" -> {"val" -> 100},
+        "A"  -> {"top" -> {"head" -> 99}},
+        "&z" -> {"val" -> (A,top)},
+        "&x" -> {"val" -> (A,top)}
+      }
       """
     }
 
@@ -112,7 +112,7 @@ class TestAnalysis6 extends RunAndCheckSuite {
   val x7 = { x8 =>
   if (0 < x8)
     x7(x8 + -1)
-      + ("&y" -> Map("val" -> ("B",(1,x8))))
+      + ("&y" -> {"val" -> ("B",(1,x8))))
       + (("B",(1,x8)) ->
           x7(x8 + -1)(("B",(1,x8)))
           + ("head" -> x7(x8 + -1)("&i")("val")))
@@ -120,14 +120,14 @@ class TestAnalysis6 extends RunAndCheckSuite {
           x7(x8 + -1)(("B",(1,x8)))
           + ("head" -> x7(x8 + -1)("&i")("val"))
           + ("tail" -> x7(x8 + -1)("&x")("val")))
-      + ("&x" -> Map("val" -> ("B",(1,x8))))
-      + ("&i" -> Map("val" -> x7(x8 + -1)("&i")("val") + 1))
+      + ("&x" -> {"val" -> ("B",(1,x8))))
+      + ("&i" -> {"val" -> x7(x8 + -1)("&i")("val") + 1))
   else
-    Map("&i" -> Map("val" -> 0), "&z" -> Map("val" -> (A,1)), "&x" -> Map("val" -> (A,1)), "&y" -> Map("val" -> ("B",(1,x8))))
-      + (("B",(1,x8)) -> Map("head" -> 0))
-      + (("B",(1,x8)) -> Map("head" -> 0, "tail" -> (A,1)))
-      + ("&x" -> Map("val" -> ("B",(1,x8))))
-      + ("&i" -> Map("val" -> 1))
+    {"&i" -> {"val" -> 0), "&z" -> {"val" -> (A,1)), "&x" -> {"val" -> (A,1)), "&y" -> {"val" -> ("B",(1,x8))))
+      + (("B",(1,x8)) -> {"head" -> 0))
+      + (("B",(1,x8)) -> {"head" -> 0, "tail" -> (A,1)))
+      + ("&x" -> {"val" -> ("B",(1,x8))))
+      + ("&i" -> {"val" -> 1))
   }
   x7(fixindex(x8 => x7(x8 + -1)("&i")("val") < 100))
 
@@ -155,8 +155,8 @@ class TestAnalysis6 extends RunAndCheckSuite {
             + ("head" -> x8 + -1)
             + ("tail" -> x7_&x_val(x8 + -1)))   <--- why not inlined? (call doesn't see rhs -- still in iteration mode)
     else
-      Map(1 ->
-        Map()
+      {1 ->
+        {)
         + (x8 ->
             "undefined"((1,x8))       <--- accessing "undefined": base case?
             + ("head" -> x8 + -1))
@@ -166,12 +166,12 @@ class TestAnalysis6 extends RunAndCheckSuite {
             + ("tail" -> (A,1))))
   }
 
-  Map(
-    "&i" -> Map("val" -> 100),
+  {
+    "&i" -> {"val" -> 100),
     "B" -> x7_B(100),
-    "&x" -> Map("val" -> (B,(1,100))),
-    "&z" -> Map("val" -> (A,1)),
-    "&y" -> Map("val" -> (B,(1,100))))
+    "&x" -> {"val" -> (B,(1,100))),
+    "&z" -> {"val" -> (A,1)),
+    "&y" -> {"val" -> (B,(1,100))))
 
 
   Version 3: Tweak it! Speculative loop peeling for tuple addresses
@@ -185,20 +185,20 @@ class TestAnalysis6 extends RunAndCheckSuite {
             + ("head" -> x8 + -1)
             + ("tail" -> ("B",(1,x8 + -1))))
     else
-      Map(1 ->
-        Map()
+      {1 ->
+        {)
         + (x8 ->
             "undefined"((1,x8))
             + ("head" -> x8 + -1)
             + ("tail" -> (A,1))))
   }
 
-  Map(
-    "&i" -> Map("val" -> 100),
+  {
+    "&i" -> {"val" -> 100),
     "B" -> x7_B(100),
-    "&x" -> Map("val" -> (B,(1,100))),
-    "&z" -> Map("val" -> (A,1)),
-    "&y" -> Map("val" -> (B,(1,100)))
+    "&x" -> {"val" -> (B,(1,100))),
+    "&z" -> {"val" -> (A,1)),
+    "&y" -> {"val" -> (B,(1,100)))
   )
 
   Version 4: (XXX tentative; rolled back for the time being)
@@ -213,12 +213,12 @@ class TestAnalysis6 extends RunAndCheckSuite {
             + ("tail" -> ("B",(1,x8 + -1))))
     else "undefined" }
 
-    Map(
-      "&i" -> Map("val" -> 100),
+    {
+      "&i" -> {"val" -> 100),
       "B" -> x7_B(100),
-      "&x" -> Map("val" -> (B,(1,100))),
-      "&z" -> Map("val" -> (A,1)),
-      "&y" -> Map("val" -> (B,(1,100)))
+      "&x" -> {"val" -> (B,(1,100))),
+      "&z" -> {"val" -> (A,1)),
+      "&y" -> {"val" -> (B,(1,100)))
     )
 
     FIXME: base case at index 0 should have 'tail' pointing to (A,1)
@@ -253,21 +253,21 @@ class TestAnalysis6 extends RunAndCheckSuite {
       ))
     }{
       """
-        Map(
-          "&i" -> Map("val" -> 99),
-          "B"  -> Map("top" ->
+        {
+          "&i" -> {"val" -> 99},
+          "B"  -> {"top" ->
             collect(100) { x8_B_top_x9 =>
-              Map(
+              {
                 "head" -> x8_B_top_x9,
-                "tail" -> if (0 < x8_B_top_x9) ("B",("top",x8_B_top_x9 + -1)) else (A,top)
-              )
-            }),
-          "&s" -> Map("val" -> 99),
-          "A"  -> Map("top" -> Map()),
-          "&x" -> Map("val" -> (B,(top,98))),
-          "&z" -> Map("val" -> (A,top)),
-          "&y" -> Map("val" -> (B,(top,99)))
-        )
+                "tail" -> if ((0 < x8_B_top_x9)) { ("B",("top",(x8_B_top_x9 + -1))) } else { (A,top) }
+              }
+            }},
+          "&s" -> {"val" -> 99},
+          "A"  -> {"top" -> Map()},
+          "&x" -> {"val" -> (B,(top,98))},
+          "&z" -> {"val" -> (A,top)},
+          "&y" -> {"val" -> (B,(top,99))}
+        }
       """
     }
 
@@ -295,21 +295,21 @@ class TestAnalysis6 extends RunAndCheckSuite {
   //     ))
   //   } {
   //     """
-  //       Map(
-  //         "&i"  -> Map("val" -> 100),
-  //         "&i2" -> Map("val" -> 0),
-  //         "&x2" -> Map("val" -> (A,top)),
-  //         "B"   -> Map("top" -> collect(100) { x8_B_top_x9 =>
-  //                     Map(
+  //       {
+  //         "&i"  -> {"val" -> 100),
+  //         "&i2" -> {"val" -> 0),
+  //         "&x2" -> {"val" -> (A,top)),
+  //         "B"   -> {"top" -> collect(100) { x8_B_top_x9 =>
+  //                     {
   //                       "head" -> x8_B_top_x9,
   //                       "tail" -> if (0 < x8_B_top_x9) ("B",("top",x8_B_top_x9 + -1)) else (A,top)
   //                     )
   //                   }),
-  //         "&s" -> Map("val" -> 4950),
-  //         "A"  -> Map("top" -> Map()),
-  //         "&x" -> Map("val" -> (B,(top,99))),
-  //         "&z" -> Map("val" -> (A,top)),
-  //         "&y" -> Map("val" -> (B,(top,99)))
+  //         "&s" -> {"val" -> 4950),
+  //         "A"  -> {"top" -> {)),
+  //         "&x" -> {"val" -> (B,(top,99))),
+  //         "&z" -> {"val" -> (A,top)),
+  //         "&y" -> {"val" -> (B,(top,99)))
   //       )
   //     """
 
@@ -319,31 +319,31 @@ class TestAnalysis6 extends RunAndCheckSuite {
         val x8_B_top = { x9 =>
           if (0 < x9)
             x8_B_top(x9 + -1)
-            + (x9 -> Map("head" -> x9 + -1, "tail" -> ("B",("top",x9 + -1))))
+            + (x9 -> {"head" -> x9 + -1, "tail" -> ("B",("top",x9 + -1))))
           else
-            Map()
-            + (x9 -> Map("head" -> x9 + -1, "tail" -> (A,top)))
+            {)
+            + (x9 -> {"head" -> x9 + -1, "tail" -> (A,top)))
         }
-        Map(
-          "&i" -> Map("val" ->
+        {
+          "&i" -> {"val" ->
             if (0 < fixindex(x92 => if (1 < x92) 1 else x8_B_top(100)(100)("tail") != (A,top)))
               "undefined"
             else
               x8_B_top(100)(100)("head")),
-          "B"  -> Map("top" -> x8_B_top(100)),
-          "&s" -> Map("val" ->
+          "B"  -> {"top" -> x8_B_top(100)),
+          "&s" -> {"val" ->
             if (0 < fixindex(x92 => if (1 < x92) 1 else x8_B_top(100)(100)("tail") != (A,top)))
               "undefined"
             else
               x8_B_top(100)(100)("head")),
-          "A"  -> Map("top" -> Map()),
-          "&x" -> Map("val" ->
+          "A"  -> {"top" -> {)),
+          "&x" -> {"val" ->
             if (0 < fixindex(x92 => if (1 < x92) 1 else x8_B_top(100)(100)("tail") != (A,top)))
               "undefined"
             else
               x8_B_top(100)(100)("tail")),
-          "&z" -> Map("val" -> (A,top)),
-          "&y" -> Map("val" -> (B,(top,100)))
+          "&z" -> {"val" -> (A,top)),
+          "&y" -> {"val" -> (B,(top,100)))
         )
       """
 */

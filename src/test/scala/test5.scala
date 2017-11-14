@@ -16,12 +16,12 @@ class TestAnalysis5 extends RunAndCheckSuite {
         Assign("r", Ref("a"))
       ))
     }{
-      """Map(
-        "&x" -> Map("val" -> 0), 
-        "A"  -> Map(top -> Map("field" -> 0)),
-        "&a" -> Map("val" -> (A,top)), 
-        "&r" -> Map("val" -> (A,top)))"""   
-    }    
+      """{
+        "&x" -> {"val" -> 0},
+        "A"  -> {top -> {"field" -> 0}},
+        "&a" -> {"val" -> (A,top)},
+        "&r" -> {"val" -> (A,top)}}"""
+    }
 
   testProg("A2") {
       Block(List(
@@ -31,12 +31,12 @@ class TestAnalysis5 extends RunAndCheckSuite {
         Assign("r", Ref("a"))
       ))
     }{
-      """Map(
-        "&x" -> Map("val" -> 0), 
-        "A"  -> Map(top -> Map(0 -> 0)), 
-        "&a" -> Map("val" -> (A,top)), 
-        "&r" -> Map("val" -> (A,top)))"""
-    } 
+      """{
+        "&x" -> {"val" -> 0},
+        "A"  -> {top -> {0 -> 0}},
+        "&a" -> {"val" -> (A,top)},
+        "&r" -> {"val" -> (A,top)}}"""
+    }
 
   testProg("A3") {
       Block(List(
@@ -50,19 +50,19 @@ class TestAnalysis5 extends RunAndCheckSuite {
         Assign("r", Ref("a"))
       ))
     }{
-      """Map(
-        "&x" -> Map("val" -> 100), 
-        "A"  -> Map(top -> Map("field" -> 7)), 
-        "&a" -> Map("val" -> (A,top)), 
-        "&r" -> Map("val" -> (A,top)))"""
-    } 
+      """{
+        "&x" -> {"val" -> 100},
+        "A"  -> {top -> {"field" -> 7}},
+        "&a" -> {"val" -> (A,top)},
+        "&r" -> {"val" -> (A,top)}}"""
+    }
 
   //   update array at loop index
   testProg("A4") {
       Block(List(
         Assign("x", Const(0)),
         Assign("y", Const(10)),
-        Assign("a", New("A")), 
+        Assign("a", New("A")),
         While(Less(Ref("x"),Const(100)), Block(List(
           Put(Ref("a"), Ref("x"), Times(Ref("x"),Const(2))),
           Assign("x", Plus(Ref("x"), Const(1))),
@@ -72,13 +72,13 @@ class TestAnalysis5 extends RunAndCheckSuite {
       ))
     }{
       """
-      Map(
-        "&a" -> Map("val" -> (A,top)), 
-        "A"  -> Map("top" -> collect(100) { x9_A_top_x10 => x9_A_top_x10 * 2 }), 
-        "&x" -> Map("val" -> 100), 
-        "&y" -> Map("val" -> 110), 
-        "&r" -> Map("val" -> (A,top))
-      )
+      {
+        "&a" -> {"val" -> (A,top)},
+        "A"  -> {"top" -> collect(100) { x9_A_top_x10 => (x9_A_top_x10 * 2) }},
+        "&x" -> {"val" -> 100},
+        "&y" -> {"val" -> 110},
+        "&r" -> {"val" -> (A,top)}
+      }
       """
     }
 

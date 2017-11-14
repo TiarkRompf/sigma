@@ -153,10 +153,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       type To = String
 
       def ident(s: String) = "  " + (s split("\n") mkString("\n  "))
-      def map(m: Map[From,From])                   = if (m.keySet.map(_.toString) == Set("\"$value\"", "\"$type\"")) // HACK
-                                                       s"[ ${m.getOrElse(GConst("$value"), m("\"$value\""))} : ${m.getOrElse(GConst("$type"), m("\"$type\""))}]"
+      def map(m: Map[From,From])                   = if (m.keySet.map(_.toString) == Set("\"$value\"", "\"$type\"")) // FIXME: HACK
+                                                       s"[ ${m.getOrElse(GConst("$value"), m("\"$value\""))} : ${m.getOrElse(GConst("$type"), m("\"$type\""))} ]"
                                                      else {
-                                                       s"{\n${ident(m map { case (key, value) => s"$key -> $value" } mkString("\n"))}\n}"
+                                                       s"{\n${ident(m map { case (key, value) => s"$key -> $value" } mkString(",\n"))}\n}"
                                                      }
       def update(x: From, f: From, y: From)        = s"$x + ($f -> $y)"
       def select(x: From, f: From)                 = s"$x($f)"
@@ -682,6 +682,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case _ => super.less(x,y)
       }
       override def equal(x: From, y: From)           = (x,y) match {
+        case (GError, _) | (_, GError) => GError
         case (GConst(x),GConst(y)) => GConst(if (x == y) 1 else 0)
         case (GConst(x:Int),Def(DPair(_,_))) => const(0)
         case (GConst(x:String),Def(DPair(_,_))) => const(0)

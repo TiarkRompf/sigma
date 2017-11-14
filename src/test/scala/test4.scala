@@ -21,11 +21,11 @@ class TestAnalysis4 extends RunAndCheckSuite {
         )))
       ))
     } {
-      """Map(
-        "&i" -> Map("val" -> 100), 
-        "&y" -> Map("val" -> 100), 
-        "&x" -> Map("val" -> 8)
-      )"""
+      """{
+        "&i" -> {"val" -> 100},
+        "&y" -> {"val" -> 100},
+        "&x" -> {"val" -> 8}
+      }"""
     }
 
   testProg("A2") {
@@ -33,7 +33,7 @@ class TestAnalysis4 extends RunAndCheckSuite {
         Assign("x", Const(900)), // input
         Assign("y", Const(0)),
         While(Less(Const(0), Ref("x")), Block(List(
-//          If(Less(Ref("y"),Const(17)), 
+//          If(Less(Ref("y"),Const(17)),
 //            Block(List(
               Assign("y", Plus(Ref("y"), Const(1)))
 ,//            )),
@@ -44,16 +44,16 @@ class TestAnalysis4 extends RunAndCheckSuite {
         Assign("r", Ref("x"))
       ))
     }{
-      """Map(
-        "&x"  -> Map("val" -> 0), 
-        "&y"  -> Map("val" -> 900), 
-        "&r"  -> Map("val" -> 0)
-      )"""
+      """{
+        "&x"  -> {"val" -> 0},
+        "&y"  -> {"val" -> 900},
+        "&r"  -> {"val" -> 0}
+      }"""
     }
 /*
       """Map(
-        "&x"  -> Map("val" -> 0), 
-        "&y"  -> Map("val" -> 17), 
+        "&x"  -> Map("val" -> 0),
+        "&y"  -> Map("val" -> 17),
         "&r"  -> Map("val" -> 0)
       )"""
 */
@@ -69,11 +69,11 @@ class TestAnalysis4 extends RunAndCheckSuite {
         Assign("r", Ref("x"))
       ))
     }{
-      """Map(
-        "&x"  -> Map("val" -> 0), 
-        "&z"  -> Map("val" -> 405450), 
-        "&r"  -> Map("val" -> 0)
-      )"""
+      """{
+        "&x"  -> {"val" -> 0},
+        "&z"  -> {"val" -> 405450},
+        "&r"  -> {"val" -> 0}
+      }"""
     }
 
 /* XXX this one doesn't terminate??? --> investigate!
@@ -87,7 +87,7 @@ class TestAnalysis4 extends RunAndCheckSuite {
         While(Less(Const(0), Ref("x")), Block(List(
           Assign("z", Plus(Ref("z"), Ref("x"))),
           Assign("z2", Plus(Ref("z2"), Plus(Times(Ref("x"),Const(3)), Const(5)))),
-          If(Less(Ref("y"),Const(17)), 
+          If(Less(Ref("y"),Const(17)),
             Block(List(
               Assign("y", Plus(Ref("y"), Const(1)))
             )),
@@ -99,10 +99,10 @@ class TestAnalysis4 extends RunAndCheckSuite {
       ))
     }{
       """Map(
-        "&x"  -> Map("val" -> 0), 
-        "&z"  -> Map("val" -> 405450), 
-        "&y"  -> Map("val" -> 17), 
-        "&r"  -> Map("val" -> 0), 
+        "&x"  -> Map("val" -> 0),
+        "&z"  -> Map("val" -> 405450),
+        "&y"  -> Map("val" -> 17),
+        "&r"  -> Map("val" -> 0),
         "&z2" -> Map("val" -> 1220850)
       )"""
     }
