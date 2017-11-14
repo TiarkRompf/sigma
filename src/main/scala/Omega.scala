@@ -1074,10 +1074,15 @@ object Omega {
         lhs.map({ case t: (Int,String) => (t._1 * y, t._2) })
       case DTimes(GRef(x), GRef(y)) if (x.endsWith("?") && y.endsWith("?")) =>
         // TODO: two variables multiplication
-        // Instantiate one variable, bounded check if we can have integer solutions
+        // Idea: Instantiate one variable within its constraint, bounded check if we 
+        //       can have integer solutions, if found one, then return yes, otherwise
+        //       check other concrete number within its constraint until bound met.
+        // Idea: If we know x > 1, then could infer that x^2 > 1
+        //       If we know x > n && y > m (n>0&&m>0), then could infer that x*y > n*m
         println(s"Missing $e")
         List((1, s"$x*$y"))   //FIXME
-      case DCall(f, x) => List((1, s"$f($x)")) //FIXME
+      case DCall(f, x) => 
+        List((1, s"$f($x)")) //FIXME
       case _ => println(s"Missing $e"); ???
     }
   }
