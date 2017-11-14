@@ -128,7 +128,10 @@ trait Constraint[C <: Constraint[C]] extends Term {
 
   def normalize(): Option[Constraint[C]]
 
-  def negation(): List[GEQ]
+  /* negation returns a List of List of GEQs, which stands for
+   * disjunction of conjunction of GEQs.
+   */
+  def negation(): List[List[GEQ]]
 
   def subst(x: String, term: Term): C
 
@@ -262,7 +265,7 @@ case class EQ(coefficients: List[Int], vars: List[String]) extends Constraint[EQ
     EQ(c, v)
   }
 
-  def negation(): List[GEQ] = {
+  def negation(): List[List[GEQ]] = {
     NEQ(coefficients, vars).toGEQ
   }
 }
@@ -419,8 +422,8 @@ case class GEQ(coefficients: List[Int], vars: List[String]) extends Constraint[G
     containsVar(x) && c < 0
   }
 
-  def negation(): List[GEQ] = {
-    LT(coefficients, vars).toGEQ
+  def negation(): List[List[GEQ]] = {
+    List(LT(coefficients, vars).toGEQ)
   }
 }
 
@@ -431,9 +434,9 @@ case class GT(coefficients: List[Int], vars: List[String]) {
     val (newCoefs, newVars) = reorder(-1::coefficients, PConst::vars)
     List(GEQ(newCoefs, newVars))
   }
-
-  def negation: List[GEQ] = {
-    LEQ(coefficients, vars).toGEQ
+  
+  def negation: List[List[GEQ]] = {
+    List(LEQ(coefficients, vars).toGEQ)
   }
 }
 
@@ -452,9 +455,9 @@ case class LT(coefficients: List[Int], vars: List[String]) {
     val (newCoefs, newVars) = reorder(-1::scale(coefficients, -1), PConst::vars)
     List(GEQ(newCoefs, newVars))
   }
-
-  def negation: List[GEQ] = {
-    List(GEQ(coefficients, vars))
+  
+  def negation: List[List[GEQ]] = {
+    List(List(GEQ(coefficients, vars)))
   }
 }
 
@@ -464,19 +467,20 @@ case class LEQ(coefficients: List[Int], vars: List[String]) {
   def toGEQ: List[GEQ] = {
     List(GEQ(scale(coefficients, -1), vars))
   }
-
-  def negation: List[GEQ] = {
-    GT(coefficients, vars).toGEQ
+  
+  def negation: List[List[GEQ]] = {
+    List(GT(coefficients, vars).toGEQ)
   }
 }
 
 case class NEQ(coefficients: List[Int], vars: List[String]) {
-  /* Transforms \Sigma a_i x_i =/= 0 to \Sigma a_i x_i >= 1 and \Sigma a_i x_i <= -1
+  /* Transforms \Sigma a_i x_i =/= 0 to \Sigma a_i x_i >= 1 or \Sigma a_i x_i <= -1.
+   * The result is a disjunction of conjunction of GEQs.
    */
-  def toGEQ: List[GEQ] = {
+  def toGEQ: List[List[GEQ]] = {
     val (coefs1, vars1) = reorder(-1::coefficients, PConst::vars)
     val (coefs2, vars2) = reorder(-1::scale(coefficients, -1), PConst::vars)
-    List(GEQ(coefs1, vars1), GEQ(coefs2, vars2))
+    List(List(GEQ(coefs1, vars1)), List(GEQ(coefs2, vars2)))
   }
 
   def negation: EQ = {
@@ -549,6 +553,12 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
     else {
       "{ " + cs.mkString("\n  ")  + "\n" + substs.mkString("\n  ") + " }"
     }
+  }
+  
+  /* Returns a disjunction of problems */
+  def negation(): List[Problem] = {
+    val negs: List[List[GEQ]] = cs.map(_.negation).flatten
+    negs.map(Problem(_))
   }
 
   /* A constraint is normalized if all coefficients are integers, and the
@@ -862,7 +872,8 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
       case Some(p) if p.hasEq => p.elimEq.simplify
       case Some(p) =>
         p.reduce match {
-          case Some(p) =>
+          case Some(p) if p.hasEq => p.elimEq.simplify
+          case Some(p) if p.numVars > 1 =>
             val x0 = p.chooseVar()
             val realSet = p.realShadowSet(x0)
             val darkSet = p.darkShadowSet(x0)
@@ -892,6 +903,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
                 None
               }
             }
+          case Some(p) => p.simplify
           case None => None
         }
       case None => None
@@ -908,15 +920,23 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
   }
 }
 
-abstract class OStruct
+abstract class OStruct {
+  def negation: OStruct
+}
 
 case class OProb(p: Problem) extends OStruct {
   override def toString: String = { p.toString }
+  override def negation: OStruct = {
+    ODisj(p.negation.map(OProb(_)))
+  }
 }
 
 case class OConj(ps: List[OStruct]) extends OStruct {
   override def toString: String = {
     ps.map(_.toString).mkString(" && ")
+  }
+  override def negation: OStruct = {
+    ODisj(ps.map(_.negation))
   }
 }
 
@@ -924,11 +944,18 @@ case class ODisj(ps: List[OStruct]) extends OStruct {
   override def toString: String = {
     ps.map(_.toString).mkString(" || ")
   }
+  override def negation: OStruct = {
+    OConj(ps.map(_.negation))
+  }
 }
 
 case class OImplies(cnd: OStruct, thn: OStruct) extends OStruct {
   override def toString: String = {
     cnd.toString + " ==> " + thn.toString
+  }
+  override def negation: OStruct = {
+    val negCnd = cnd.negation
+    OConj(List(negCnd, thn))
   }
 }
 
@@ -970,8 +997,7 @@ object Omega {
     e match {
       case GConst(1) => OProb(PTRUE)
       case GConst(0) => OProb(PFALSE)
-      case GRef(x) if x.endsWith("?") =>
-        OProb(translateBoolExpr(e))
+      case GRef(x) if x.endsWith("?") => translateBoolExpr(e)
       case GRef(s) => findDefinition(s) match {
         case Some(d) => translate(d)
         case None => println(s"Missing variable: $s"); ???
@@ -990,20 +1016,20 @@ object Omega {
          * (since there is no bool operators), so that we can
          * safely use `cndProb.cs.head`.
          */
-        OConj(List(OImplies(OProb(cndProb), thnProb),
-                   OImplies(OProb(Problem(cndProb.cs.head.negation)), elsProb)))
-      case le: DLess => OProb(translateBoolExpr(le))
-      case eq: DEqual => OProb(translateBoolExpr(eq))
-      case n: DNot => OProb(translateBoolExpr(n))
+        OConj(List(OImplies(cndProb, thnProb),
+                   OImplies(cndProb.negation, elsProb)))
+      case le: DLess => translateBoolExpr(le)
+      case eq: DEqual => translateBoolExpr(eq)
+      case n: DNot => translateBoolExpr(n)
       case _ => println(s"Missing $e"); ???
     }
   }
 
-  def translateBoolExpr(e: GVal): Problem = {
+  def translateBoolExpr(e: GVal): OStruct = {
     e match {
-      case GConst(1) => PTRUE
-      case GConst(0) => PFALSE
-      case GRef(x) if x.endsWith("?") => Problem(List(EQ(List(0, 1), List(PConst, x)))) // x = 0
+      case GConst(1) => OProb(PTRUE)
+      case GConst(0) => OProb(PFALSE)
+      case GRef(x) if x.endsWith("?") => OProb(Problem(List(EQ(List(0, 1), List(PConst, x))))) // x = 0
       case GRef(x) => findDefinition(x) match {
         case Some(d) => translateBoolExpr(d)
         case None => println(s"Missing variable: $x"); ???
@@ -1011,25 +1037,28 @@ object Omega {
     }
   }
 
-  def translateBoolExpr(e: Def): Problem = {
+  def translateBoolExpr(e: Def): OStruct = {
     e match {
       case DLess(x, y) =>
         val lhs = translateArithExpr(x)
         val rhs = translateArithExpr(y)
-        Problem(LT.create(lhs, rhs).toGEQ)
+        OProb(Problem(LT.create(lhs, rhs).toGEQ))
       case DEqual(x, y) =>
         val lhs = translateArithExpr(x)
         val rhs = translateArithExpr(y)
-        Problem(List(EQ.create(lhs, rhs)))
+        OProb(Problem(List(EQ.create(lhs, rhs))))
       case DNot(x) => negBoolExpr(x) //TODO need test this case
     }
   }
 
-  def negBoolExpr(e: GVal): Problem = {
+  def negBoolExpr(e: GVal): OStruct = {
     e match {
-      case GConst(1) => PFALSE
-      case GConst(0) => PTRUE
-      case GRef(x) if x.endsWith("?") => Problem(NEQ(List(0, 1), List(PConst, x)).toGEQ) // x =/= 0
+      case GConst(1) => OProb(PFALSE)
+      case GConst(0) => OProb(PTRUE)
+      case GRef(x) if x.endsWith("?") => 
+        val geqs = NEQ(List(0, 1), List(PConst, x)).toGEQ
+        assert(geqs.length == 2)
+        ODisj(List(OProb(Problem(geqs(0))), OProb(Problem(geqs(1))))) //x =/= 0
       case GRef(x) => findDefinition(x) match {
         case Some(d) => negBoolExpr(d)
         case None => println(s"Missing variable: $x"); ???
@@ -1037,16 +1066,20 @@ object Omega {
     }
   }
 
-  def negBoolExpr(e: Def): Problem = {
+  def negBoolExpr(e: Def): OStruct = {
     e match {
       case DLess(x, y) =>
         val lhs = translateArithExpr(x)
         val rhs = translateArithExpr(y)
-        Problem(LT.create(lhs, rhs).negation)
+        val neg = LT.create(lhs, rhs).negation
+        assert(neg.length == 1)
+        OProb(Problem(neg(0)))
       case DEqual(x, y) =>
         val lhs = translateArithExpr(x)
         val rhs = translateArithExpr(y)
-        Problem(EQ.create(lhs, rhs).negation)
+        val neg = EQ.create(lhs, rhs).negation
+        assert(neg.length == 2)
+        ODisj(List(OProb(Problem(neg(0))), OProb(Problem(neg(1)))))
       case DNot(x) => translateBoolExpr(x)
     }
   }
@@ -1235,22 +1268,24 @@ object OmegaTest {
     println(p7.realShadowSet("x"))
     println(p7.darkShadowSet("x"))
 
-    /* a <> b can be transformed to a >= b + 1 /\ a <= b -1 */
-    /* 1 + 2m <> 2n */
-    val p8 = Problem(List(GEQ(List(0, 2, -2), List(PConst, "m", "n")),
-                          GEQ(List(-2, -2, 2), List(PConst, "m", "n"))))
-    val p8ans = p8.hasIntSolutions
-    assert(!p8ans)
-    assert(p8.simplify.isEmpty)
-    println(s"p8 has integer solutions: ${p8ans}")
-    println("---")
-
-    val p8_1 = Problem(NEQ(List(1, 2, 2), List(PConst, "m", "n")).toGEQ)
+    /* a =/= b can be transformed to a >= b + 1 /\ a <= b -1 */
+    /* 1 + 2m =/= 2n => 1 + 2m - 2n =/= 0
+       1 + 2m >= 2n + 1 => 2m - 2n >= 0
+       1 + 2m <= 2n - 1 => -2m + 2n - 2 >= 0
+     */
+    val p8_1 = Problem(NEQ(List(1, 2, -2), List(PConst, "m", "n")).toGEQ(0))
     println(s"p8_1: $p8_1")
     val p8_1ans = p8_1.hasIntSolutions
-    assert(!p8_1ans)
-    assert(p8_1.simplify.isEmpty)
-    println(s"p8_1 has integer solutions: ${p8ans}")
+    assert(p8_1ans)
+    println(p8_1.simplify.nonEmpty)
+    println(s"p8_1 has integer solutions: ${p8_1ans}")
+
+    val p8_2 = Problem(NEQ(List(1, 2, -2), List(PConst, "m", "n")).toGEQ(1))
+    println(s"p8_2: $p8_2")
+    val p8_2ans = p8_2.hasIntSolutions
+    assert(p8_2ans)
+    assert(p8_2.simplify.nonEmpty)
+    println(s"p8_2 has integer solutions: ${p8_2ans}")
     println("---")
 
     println("an omega test nightmare")
@@ -1295,5 +1330,8 @@ object OmegaTest {
     assert(Problem(List(EQ(List(0), List(PConst)))).hasIntSolutions)
     assert(!Problem(List(EQ(List(1), List(PConst)))).hasIntSolutions)
     assert(!Problem(List(GEQ(List(-10), List(PConst)))).hasIntSolutions)
+
+    val p11s = Problem(List(EQ(List(1, 2, -2), List(PConst, "m", "n")))).negation
+    println(s"p11s: $p11s")
   }
 }
