@@ -423,8 +423,10 @@ object CFGtoEngine {
     case _ => false
   }
 
-  def assumeTrue(cond: Val)(implicit constraints: List[OProb]): List[Val] = { println(s"${IR.termToString(cond)}"); cond } match {
-    case GConst(0) => println("Error"); ???
+  def assumeTrue(cond: Val)(implicit constraints: List[OProb]): List[Val] = cond match {
+    case GConst(0) => println("False can not be assumed true"); ???
+    // case _ if alwaysFalse(cond) => println("False can not be assumed true"); ???
+    case GConst(1) => Nil
     case IR.Def(DIf(c, a, b)) if alwaysFalse(b)(toOProb(IR.not(c)) ++: constraints) => c :: assumeTrue(a)
     case IR.Def(DIf(c, a, b)) if alwaysFalse(a)(toOProb(c) ++: constraints) => IR.not(c) :: assumeTrue(b)
     case IR.Def(DIf(c, a, b)) if alwaysFalse(c) => assumeTrue(b)
@@ -432,7 +434,15 @@ object CFGtoEngine {
     case a@_ => println(s"Nothing as been simplified: ${IR.termToString(a)}"); List(a)
   }
 
-  def simplify(term: Val)(implicit constraints: List[OProb]): Val = term match {
+  def simplifyBool(term: Val)(implicit constraints: List[OProb]): Val = {
+    if (alwaysFalse(term))
+      IR.const(0)
+    else if (alwaysFalse(IR.not(term))) {
+      IR.const(1)
+    } else term
+  }
+
+  def simplify(term: Val)(implicit constraints: List[OProb]): Val = { debug(s"> ${IR.termToString(term)} - contraints: $constraints"); term } match {
     case IR.Def(DIf(c, a, b)) =>
       val sc = simplify(c)
       if (alwaysFalse(sc))
@@ -449,8 +459,8 @@ object CFGtoEngine {
     case IR.Def(DSelect(x, f))     => IR.select(simplify(x), simplify(f))
     case IR.Def(DPlus(x, y))       => IR.plus(simplify(x), simplify(y))
     case IR.Def(DTimes(x, y))      => IR.times(simplify(x), simplify(y))
-    case IR.Def(DLess(x, y))       => IR.less(simplify(x), simplify(y))
-    case IR.Def(DEqual(x, y))      => IR.equal(simplify(x), simplify(y))
+    case IR.Def(DLess(x, y))       => simplifyBool(IR.less(simplify(x), simplify(y)))
+    case IR.Def(DEqual(x, y))      => simplifyBool(IR.equal(simplify(x), simplify(y)))
     case IR.Def(DNot(x))           => IR.not(simplify(x))
     case IR.Def(DPair(x, y))       => IR.pair(simplify(x), simplify(y))
     case IR.Def(DSum(n, x, c))     => IR.sum(simplify(n), x, simplify(c))
@@ -458,6 +468,11 @@ object CFGtoEngine {
     case IR.Def(DCall(f, x))       => IR.call(simplify(f), simplify(x))
     case IR.Def(DFun(f, x, y))     => IR.fun(f, x, simplify(y))
     case IR.Def(DHasField(x, f))   => IR.hasfield(simplify(x), simplify(f))
+    // case x@GRef(_) =>
+    //   simplifyBool(IR.equal(x, IR.const(0))) match { // FIXME: hack if GRef(x) == 0
+    //     case GConst(1) => println(s"Simplifed $x"); IR.const(0)
+    //     case z@_ => println(s"Simplify ref: ${IR.termToString(z)} - $constraints"); x
+    //   }
     case _ => term
   }
 
@@ -500,12 +515,12 @@ object CFGtoEngine {
       constraints ++= toOProb(simplify(not(less(fixindex(n0.toString, cv),n0)))(constraints))
 
       // FIXME: is it still necessary? Should be handle by simplification step.
-      store = subst(store,less(fixindex(n0.toString, cv),n0),const(0)) // i <= n-1
-      store = subst(store,less(n0,const(0)),const(0)) // 0 <= i
+      // store = subst(store,less(fixindex(n0.toString, cv),n0),const(0)) // i <= n-1
+      // store = subst(store,less(n0,const(0)),const(0)) // 0 <= i
 
       println(s"Store after iter: ${IR.termToString(store)}")
-      store = simplify(store)(constraints)
-      println(s"Store after simplifications: ${IR.termToString(store)}")
+      // store = simplify(store)(constraints)
+      // println(s"Store after simplifications: ${IR.termToString(store)}")
 
       println("trip count: "+termToString(fixindex(n0.toString, cv)))
 
@@ -513,24 +528,38 @@ object CFGtoEngine {
       val afterB = store
 
       // inside the loop we know the check succeeded.
-      // gtggtval next = subst(afterB,cv,const(1))
+      // val next = subst(afterB,cv,const(1))
 
-      val trueClauses = cv :: assumeTrue(cv)(constraints)
+      val trueClauses = assumeTrue(cv)(constraints)
       println(s"TrueClauses:\n")
       printList(trueClauses)
 
-      var next = (afterB /: trueClauses) {
-        case (agg, t) => subst(subst(agg, t, const(1)), not(t), const(0))
-      }
-      println(s"Store after subst: ${IR.termToString(next)}")
-      next = simplify(next)((trueClauses flatMap(toOProb)) ++ constraints)
+      // FIXME: may be useful for complex form
+      // var next = (afterB /: trueClauses) {
+      //   case (agg, t) => subst(subst(agg, t, const(1)), not(t), const(0))
+      // }
+
+      constraints = (trueClauses flatMap(toOProb)) ++ constraints
+      val next = simplify(afterB)(constraints)
       println(s"Store after simplifications: ${IR.termToString(next)}")
 
       // generalize init/next based on previous values
       // and current observation
       println(s"approx f(0)=$before, f($n0)=$init, f($n0+1)=$next) = {")
 
-      val (initNew,nextNew) = lub(before, simplify(init)(constraints), next)(loop,n0)
+      val sBefore = simplify(before)(constraints)
+      val sInit   = simplify(init)(constraints)
+      println("\n**********************************")
+      println(s"Before :\n${IR.termToString(sBefore)}")
+      println(s"Init :\n${IR.termToString(sInit)}")
+      println(s"Next :\n${IR.termToString(next)}")
+      println("**********************************\n")
+
+      val (initNew,nextNew) = lub(sBefore, sInit, next)(loop,n0)
+      println("\n**********************************")
+      println(s"Init new:\n${IR.termToString(initNew)}")
+      println(s"Next new:\n${IR.termToString(nextNew)}")
+      println("**********************************\n")
 
       println(s"} -> f($n0)=$initNew, f($n0+1)=$nextNew")
 
@@ -655,7 +684,7 @@ object CFGtoEngine {
     }
     time{consume(entryLabel, Set.empty, Set.empty)}
 
-    val store2 = store
+    val store2 = simplify(store)(Nil)
     println("## term:")
     val out = IR.termToString(store2)
     println(out)

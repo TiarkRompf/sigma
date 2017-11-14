@@ -151,7 +151,13 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     object DString extends DIntf {
       type From = Any
       type To = String
-      def map(m: Map[From,From])                   = s"$m"
+
+      def ident(s: String) = "  " + (s split("\n") mkString("\n  "))
+      def map(m: Map[From,From])                   = if (m.keySet.map(_.toString) == Set("\"$value\"", "\"$type\"")) // HACK
+                                                       s"[ ${m.getOrElse(GConst("$value"), m("\"$value\""))} : ${m.getOrElse(GConst("$type"), m("\"$type\""))}]"
+                                                     else {
+                                                       s"{\n${ident(m map { case (key, value) => s"$key -> $value" } mkString("\n"))}\n}"
+                                                     }
       def update(x: From, f: From, y: From)        = s"$x + ($f -> $y)"
       def select(x: From, f: From)                 = s"$x($f)"
       def plus(x: From, y: From)                   = s"($x + $y)"
@@ -160,9 +166,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def equal(x: From, y: From)                  = s"($x == $y)"
       def not(x: From)                             = s"!($x)"
       def pair(x: From, y: From)                   = s"($x,$y)"
-      def iff(c: From, x: From, y: From)           = s"if ($c) { $x } else { $y }"
+      def iff(c: From, x: From, y: From)           = s"if ($c) {\n${ident(x.toString)}\n} else {\n${ident(y.toString)}\n}"
       def sum(n: From, x: String, c: From)         = s"sum($n) { $x => $c }"
-      def collect(n: From, x: String, c: From)     = s"collect($n) { $x => $c }"
+      def collect(n: From, x: String, c: From)     = s"collect($n) { $x =>\n${ident(s"$c")}\n}"
       def fixindex(x: String, c: From)             = s"fixindex { $x => $c }"
       def call(f: From, x: From)                   = s"$f($x)"
       def fun(f: String, x: String, y: From)       = s"{ $x => $y }"
@@ -625,7 +631,13 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (a,Def(DPlus(Def(DTimes(a1,GConst(-1))),c))) if a == a1 => c // a + (a * -1) + c --> c
         case (Def(DTimes(a1,GConst(-1))),Def(DPlus(a,c))) if a == a1 => c // (a * -1) + a + c --> c
         case (Def(DTimes(a1,GConst(c1:Int))),Def(DTimes(a2,GConst(c2:Int)))) if a1 == a2 => times(a1,const(c1+c2)) // (a * c1) + (a * c2) --> a * (c1 + c2)
+        case (Def(DTimes(a1,GConst(c1:Double))),Def(DTimes(a2,GConst(c2:Double)))) if a1 == a2 => times(a1,const(c1+c2)) // (a * c1) + (a * c2) --> a * (c1 + c2)
+        case (Def(DTimes(a1,GConst(c1:Double))),Def(DTimes(a2,GConst(c2:Int)))) if a1 == a2 => times(a1,const(c1+c2)) // (a * c1) + (a * c2) --> a * (c1 + c2)
+        case (Def(DTimes(a1,GConst(c1:Int))),Def(DTimes(a2,GConst(c2:Double)))) if a1 == a2 => times(a1,const(c1+c2)) // (a * c1) + (a * c2) --> a * (c1 + c2)
         case (Def(DTimes(a1,GConst(c1:Int))),Def(DPlus(Def(DTimes(a2,GConst(c2:Int))),r))) if a1 == a2 => plus(times(a1,const(c1+c2)),r) // (a * c1) + (a * c2) + r --> a * (c1 + c2) + r
+        case (Def(DTimes(a1,GConst(c1:Double))),Def(DPlus(Def(DTimes(a2,GConst(c2:Double))),r))) if a1 == a2 => plus(times(a1,const(c1+c2)),r) // (a * c1) + (a * c2) + r --> a * (c1 + c2) + r
+        case (Def(DTimes(a1,GConst(c1:Double))),Def(DPlus(Def(DTimes(a2,GConst(c2:Int))),r))) if a1 == a2 => plus(times(a1,const(c1+c2)),r) // (a * c1) + (a * c2) + r --> a * (c1 + c2) + r
+        case (Def(DTimes(a1,GConst(c1:Int))),Def(DPlus(Def(DTimes(a2,GConst(c2:Double))),r))) if a1 == a2 => plus(times(a1,const(c1+c2)),r) // (a * c1) + (a * c2) + r --> a * (c1 + c2) + r
         //case (Def(DTimes(a,GConst(-1))),GConst(c:Int)) => plus(a,GConst(-c)) //(-a+c)=-(-c+a)
         // special case for address-tuples... HACK TODO: proper diff operator!!
         case (Def(DPair(u1,u2)), Def(DPair(v1,v2))) => pair(plus(u1,v1),plus(u2,v2))
