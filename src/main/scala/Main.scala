@@ -17,13 +17,13 @@ object MyMain {
     // if (100 < x0? + 1) 1 else x0? < 101
     val cond = GT(List(-100, 1), List(PConst, "x0"))
     val thenBr = Problem(cond.toGEQ ++ List(TRUE))
-    val elseBr = Problem(cond.negation ++ GT(List(100, -1), List(PConst, "x0")).toGEQ)
+    val elseBr = Problem(cond.negation(0) ++ GT(List(100, -1), List(PConst, "x0")).toGEQ)
     val alwaysValid = thenBr.hasIntSolutions && elseBr.hasIntSolutions
     assert(alwaysValid)
     println(s"alwaysValid: $alwaysValid")
 
     val alwaysValid1 = Problem(cond.toGEQ).implies(Problem(List(TRUE))) &&
-                       Problem(cond.negation).implies(Problem(GT(List(101, -1), List(PConst, "x0")).toGEQ))
+                       Problem(cond.negation(0)).implies(Problem(GT(List(101, -1), List(PConst, "x0")).toGEQ))
     assert(alwaysValid1)
   }
 
@@ -200,8 +200,9 @@ object MyMain {
     val validOmega = translate(valid.get)
     println(s"valid: $validOmega")
     assert(verify(validOmega))
-
-    val example = IR.iff(IR.less(GRef("x?"), IR.const(1)), IR.const(0), IR.less(IR.const(0), GRef("x?")))
+    
+    // if (x <= 0) 0 else (1 <= x)
+    val example = IR.iff(IR.less(GRef("x?"), IR.const(1)), IR.const(1), IR.less(IR.const(0), GRef("x?")))
     val t = translate(example)
     println(s"translated: $t")
     println(s"result: ${verify(t)}")
