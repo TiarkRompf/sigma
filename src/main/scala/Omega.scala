@@ -972,9 +972,9 @@ object Omega {
         OProb(translateBoolExpr(e))
       case GRef(s) => findDefinition(s) match {
         case Some(d) => translate(d)
-        case None => ???
+        case None => println(s"Missing variable: $x"); ???
       }
-      case _ => ???
+      case _ => println(s"Missing $e"); ???
     }
   }
 
@@ -992,7 +992,7 @@ object Omega {
                    OImplies(OProb(Problem(cndProb.cs.head.negation)), elsProb)))
       case le: DLess => OProb(translateBoolExpr(le))
       case eq: DEqual => OProb(translateBoolExpr(eq))
-      case _ => ???
+      case _ => println(s"Missing $e"); ???
     }
   }
 
@@ -1003,7 +1003,7 @@ object Omega {
       case GRef(x) if x.endsWith("?") => Problem(List(EQ(List(0, 1), List(PConst, x)))) // x = 0
       case GRef(x) => findDefinition(x) match {
         case Some(d) => translateBoolExpr(d)
-        case None => ???
+        case None => println(s"Missing variable: $x"); ???
       }
     }
   }
@@ -1029,7 +1029,7 @@ object Omega {
       case GRef(x) if x.endsWith("?") => Problem(NEQ(List(0, 1), List(PConst, x)).toGEQ) // x =/= 0
       case GRef(x) => findDefinition(x) match {
         case Some(d) => negBoolExpr(d)
-        case None => ???
+        case None => println(s"Missing variable: $x"); ???
       }
     }
   }
@@ -1054,9 +1054,9 @@ object Omega {
       case GRef(x) if x.endsWith("?") => List((1, x))
       case GRef(x) => findDefinition(x) match {
         case Some(gval) => translateArithExpr(gval)
-        case None => println(s"Missing var $x"); ??? //TODO free variable?
+        case None => println(s"Missing variable $x"); ???
       }
-      case _ => ???
+      case _ => println(s"Missing $e"); ???
     }
   }
 
