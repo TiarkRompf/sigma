@@ -108,7 +108,7 @@ object MyMain {
 
       struct list* z = x;
       int agg = 0;
-      while (z != NULL) {
+      while (z != (struct list *)NULL) {
         agg = agg + z->value;
         z = z->next;
       }
@@ -150,6 +150,7 @@ object MyMain {
       return 0;
     }
     """
+
     val code3 = """
     #define NULL 0
     struct list {

@@ -472,11 +472,14 @@ object CFGtoEngine {
     case IR.Def(DCall(f, x))       => IR.call(simplify(f), simplify(x))
     case IR.Def(DFun(f, x, y))     => IR.fun(f, x, simplify(y))
     case IR.Def(DHasField(x, f))   => IR.hasfield(simplify(x), simplify(f))
-    case x@GRef(_) =>
+    case x@GRef(_) => x
+      /*
       simplifyBool(IR.equal(x, IR.const(0))) match { // FIXME: hack if GRef(x) == 0
+      //simplifyVar(x) match { // assert GRef(x) == 1
         case GConst(1) => println(s"Simplifed $x"); IR.const(0)
         case z@_ => println(s"Simplify ref: ${IR.termToString(z)} - $constraints"); x
       }
+      */
     case _ => term
   }
 
