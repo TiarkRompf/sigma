@@ -927,25 +927,29 @@ abstract class OStruct {
 case class OProb(p: Problem) extends OStruct {
   override def toString: String = { p.toString }
   override def negation: OStruct = {
-    ODisj(p.negation.map(OProb(_)))
+    val negs = p.negation.map(OProb(_))
+    if (negs.length <= 1) negs(0)
+    else negs.reduceLeft(((acc: OStruct, x) => ODisj(acc, x)))
   }
 }
 
-case class OConj(ps: List[OStruct]) extends OStruct {
+case class OConj(lhs: OStruct, rhs: OStruct) extends OStruct {
   override def toString: String = {
-    ps.map(_.toString).mkString(" && ")
+    s"($lhs && $rhs)"
   }
+
   override def negation: OStruct = {
-    ODisj(ps.map(_.negation))
+    ODisj(lhs.negation, rhs.negation)
   }
 }
 
-case class ODisj(ps: List[OStruct]) extends OStruct {
+case class ODisj(lhs: OStruct, rhs: OStruct) extends OStruct {
   override def toString: String = {
-    ps.map(_.toString).mkString(" || ")
+    s"($lhs || $rhs)"
   }
+
   override def negation: OStruct = {
-    OConj(ps.map(_.negation))
+    OConj(lhs.negation, rhs.negation)
   }
 }
 
@@ -953,43 +957,46 @@ case class OImplies(cnd: OStruct, thn: OStruct) extends OStruct {
   override def toString: String = {
     cnd.toString + " ==> " + thn.toString
   }
+
   override def negation: OStruct = {
     val negCnd = cnd.negation
-    OConj(List(negCnd, thn))
+    OConj(negCnd, thn)
   }
 }
 
 object Omega {
   def verify(os: OStruct, const: List[OProb] = List()): Boolean = {
-    def verifyConj(oss: List[OStruct]): Boolean = {
-      oss match {
-        case Nil => true
-        case os::rest => verify(os) && verifyConj(rest)
-      }
-    }
-    def verifyDisj(oss: List[OStruct]): Boolean = {
-      oss match {
-        case Nil => false
-        case os::rest => verify(os) || verifyConj(rest)
-      }
-    }
     def inject(os: OStruct, extCs: List[Constraint[_]]): OStruct = {
       os match {
         case OProb(p) => OProb(p.copy(p.cs++extCs))
-        case OConj(oss) => OConj(oss.map(inject(_, extCs)))
-        case ODisj(oss) => ODisj(oss.map(inject(_, extCs)))
+        case OConj(lhs, rhs) => OConj(inject(lhs, extCs), inject(rhs, extCs))
+        case ODisj(lhs, rhs) => ODisj(inject(lhs, extCs), inject(rhs, extCs))
         case OImplies(cnd, thn) => OImplies(inject(cnd, extCs), inject(thn, extCs))
       }
     }
-
     val extCs: List[Constraint[_]] = const.flatMap(_.p.cs)
-    inject(os, extCs) match {
-      case OProb(p) => p.hasIntSolutions
-      case OConj(oss) => verifyConj(oss)
-      case ODisj(oss) => verifyDisj(oss)
+    val (b, cs) = verify_aux(inject(os, extCs), List())
+    b
+  }
+
+  def verify_aux(os: OStruct, accCs: List[Constraint[_]] = List()): (Boolean, List[Constraint[_]]) = {
+    os match {
+      case OProb(p) => 
+        val newP = p.copy(p.cs++accCs)
+        if (newP.hasIntSolutions) (true, newP.cs)
+        else (false, accCs)
+      case OConj(lhs, rhs) => 
+        val (lhsB, lhsCS) = verify_aux(lhs, accCs)
+        if (lhsB) verify_aux(rhs, lhsCS)
+        else verify_aux(rhs, accCs)
+      case ODisj(lhs, rhs) => 
+        val (lhsB, lhsCS) = verify_aux(lhs, accCs)
+        if (lhsB) (lhsB, lhsCS)
+        else verify_aux(rhs, accCs)
       case OImplies(cnd, thn) =>
-        if (verify(cnd)) return verify(thn)
-        return true
+        val (cndB, cndCs) = verify_aux(cnd, accCs)
+        if (cndB) verify_aux(thn, cndCs)
+        else (true, accCs)
     }
   }
 
@@ -1012,8 +1019,8 @@ object Omega {
         val cndProb = translateBoolExpr(cnd)
         val thnProb = translate(thn)
         val elsProb = translate(els)
-        OConj(List(OImplies(cndProb, thnProb),
-                   OImplies(cndProb.negation, elsProb)))
+        OConj(OImplies(cndProb, thnProb),
+              OImplies(cndProb.negation, elsProb))
       case le: DLess => translateBoolExpr(le)
       case eq: DEqual => translateBoolExpr(eq)
       case n: DNot => translateBoolExpr(n)
@@ -1027,7 +1034,7 @@ object Omega {
       case GError => OProb(PFALSE)
       case GConst(1) => OProb(PTRUE)
       case GConst(0) => OProb(PFALSE)
-      case GRef(x) if x.endsWith("?") => OProb(Problem(List(EQ(List(0, 1), List(PConst, x))))) // x = 0
+      case GRef(x) if x.endsWith("?") => OProb(Problem(List(EQ(List(1, 1), List(PConst, x))))) // x = 0
       case GRef(x) => findDefinition(x) match {
         case Some(d) => translateBoolExpr(d)
         case None => println(s"Missing variable: $x"); ???
@@ -1046,13 +1053,13 @@ object Omega {
         val rhs = translateArithExpr(y)
         OProb(Problem(List(EQ.create(lhs, rhs))))
       case DNot(x) => negBoolExpr(x) //TODO need test this case
-      case DTimes(x, y) => OConj(List(translateBoolExpr(x), translateBoolExpr(y)))
+      case DTimes(x, y) => OConj(translateBoolExpr(x), translateBoolExpr(y))
       case DIf(cnd, thn, els) =>
         val cndProb = translateBoolExpr(cnd)
         val thnProb = translateBoolExpr(thn)
         val elsProb = translateBoolExpr(els)
-        OConj(List(OImplies(cndProb, thnProb),
-                   OImplies(cndProb.negation, elsProb)))
+        OConj(OImplies(cndProb, thnProb),
+              OImplies(cndProb.negation, elsProb))
     }
   }
 
@@ -1061,9 +1068,9 @@ object Omega {
       case GConst(1) => OProb(PFALSE)
       case GConst(0) => OProb(PTRUE)
       case GRef(x) if x.endsWith("?") =>
-        val geqs = NEQ(List(0, 1), List(PConst, x)).toGEQ
+        val geqs = NEQ(List(1, 1), List(PConst, x)).toGEQ
         assert(geqs.length == 2)
-        ODisj(List(OProb(Problem(geqs(0))), OProb(Problem(geqs(1))))) //x =/= 0
+        ODisj(OProb(Problem(geqs(0))), OProb(Problem(geqs(1)))) //x =/= 1
       case GRef(x) => findDefinition(x) match {
         case Some(d) => negBoolExpr(d)
         case None => println(s"Missing variable: $x"); ???
@@ -1084,12 +1091,12 @@ object Omega {
         val rhs = translateArithExpr(y)
         val neg = EQ.create(lhs, rhs).negation
         assert(neg.length == 2)
-        ODisj(List(OProb(Problem(neg(0))), OProb(Problem(neg(1)))))
+        ODisj(OProb(Problem(neg(0))), OProb(Problem(neg(1))))
       case DNot(x) => translateBoolExpr(x)
       case DTimes(x, y) =>
         val lhs = translateBoolExpr(x)
         val rhs = translateBoolExpr(y)
-        OConj(List(lhs, rhs)).negation
+        OConj(lhs, rhs).negation
     }
   }
 
@@ -1342,5 +1349,26 @@ object OmegaTest {
 
     val p11s = Problem(List(EQ(List(1, 2, -2), List(PConst, "m", "n")))).negation
     println(s"p11s: $p11s")
+
+    val o1 = OConj(OProb(Problem(List(GEQ(List(-5, 1), List(PConst, "x"))))),
+                   OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x"))))))
+    assert(!Omega.verify(o1))
+    
+    val o2 = OImplies(OProb(Problem(List(GEQ(List(-5, 1), List(PConst, "x"))))),
+                      OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x"))))))
+    assert(!Omega.verify(o2))
+    
+    // x >= 5 && (x >= 10 || x <= 4)
+    val o3 = OConj(OProb(Problem(List(GEQ(List(-5, 1), List(PConst, "x"))))),
+                   ODisj(OProb(Problem(List(GEQ(List(-10, 1), List(PConst, "x"))))),
+                         OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x")))))))
+    println(s"o3: $o3")
+    assert(Omega.verify(o3))
+
+    // x >= 5 && (x <= 0 || x <= 4)
+    val o4 = OConj(OProb(Problem(List(GEQ(List(-5, 1), List(PConst, "x"))))),
+                   ODisj(OProb(Problem(List(GEQ(List(0, -1), List(PConst, "x"))))),
+                         OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x")))))))
+    assert(!Omega.verify(o4))
   }
 }
