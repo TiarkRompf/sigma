@@ -437,13 +437,22 @@ object CFGtoEngine {
     case a@_ => println(s"Nothing as been simplified: ${IR.termToString(a)}"); List(a)
   }
 
-  def simplifyBool(term: Val)(implicit constraints: List[OProb]): Val = {
-    if (alwaysFalse(term))
-      IR.const(0)
-    else if (alwaysFalse(IR.not(term)))
-      IR.const(1)
-    else
-      term
+  def simplifyBool(term: Val)(implicit constraints: List[OProb]): Val = term match {
+    case GConst(0) => IR.const(0)
+    case GConst(_: Int) => IR.const(1)
+    // case GRef(x) => simplifyBool(IR.equal(term, IR.const(1)))
+    case IR.Def(DTimes(x, y)) => IR.times(simplifyBool(x), simplifyBool(y))
+    case _ if alwaysFalse(term) => IR.const(0)
+    case _ if alwaysFalse(IR.not(term)) => IR.const(1)
+    case IR.Def(DIf(c, a, b)) =>
+      val sc = simplify(c)
+      if (alwaysFalse(sc))
+        simplify(b)(toOProb(IR.not(sc)) ++: constraints)
+      else if (alwaysFalse(IR.not(sc)))
+        simplify(a)(toOProb(sc) ++: constraints)
+      else
+        IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
+    case _ => term
   }
 
   def simplify(term: Val)(implicit constraints: List[OProb]): Val = { debug(s"> ${IR.termToString(term)} - contraints: $constraints"); term } match {
