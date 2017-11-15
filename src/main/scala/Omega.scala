@@ -1000,6 +1000,7 @@ object Omega {
     }
   }
 
+  /*
   def translate(e: GVal): OStruct = {
     e match {
       case GConst(1) => OProb(PTRUE)
@@ -1012,7 +1013,7 @@ object Omega {
       case _ => println(s"Missing $e"); ???
     }
   }
-
+  
   def translate(e: Def): OStruct = {
     e match {
       case DIf(cnd, thn, els) =>
@@ -1028,13 +1029,14 @@ object Omega {
       case _ => println(s"Missing $e"); ???
     }
   }
+  */
 
   def translateBoolExpr(e: GVal): OStruct = {
     e match {
       case GError => OProb(PFALSE)
       case GConst(1) => OProb(PTRUE)
       case GConst(0) => OProb(PFALSE)
-      case GRef(x) if x.endsWith("?") => OProb(Problem(List(EQ(List(1, 1), List(PConst, x))))) // x = 0
+      case GRef(x) if x.endsWith("?") => OProb(Problem(List(EQ(List(-1, 1), List(PConst, x))))) // x == 1
       case GRef(x) => findDefinition(x) match {
         case Some(d) => translateBoolExpr(d)
         case None => println(s"Missing variable: $x"); ???
@@ -1068,7 +1070,7 @@ object Omega {
       case GConst(1) => OProb(PFALSE)
       case GConst(0) => OProb(PTRUE)
       case GRef(x) if x.endsWith("?") =>
-        val geqs = NEQ(List(1, 1), List(PConst, x)).toGEQ
+        val geqs = NEQ(List(-1, 1), List(PConst, x)).toGEQ
         assert(geqs.length == 2)
         ODisj(OProb(Problem(geqs(0))), OProb(Problem(geqs(1)))) //x =/= 1
       case GRef(x) => findDefinition(x) match {
@@ -1370,5 +1372,35 @@ object OmegaTest {
                    ODisj(OProb(Problem(List(GEQ(List(0, -1), List(PConst, "x"))))),
                          OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x")))))))
     assert(!Omega.verify(o4))
+    
+    // x == 0, x <= 4
+    val p12 = Problem(List(EQ(List(0, 1), List(PConst, "x")),
+                           GEQ(List(4, -1), List(PConst, "x"))))
+    assert(p12.hasIntSolutions)
+    
+    // x == 1 under x >= 0 && x <= 4
+    val o5 = OProb(Problem(List(GEQ(List(0, 1), List(PConst, "x")))))
+    val o6 = OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x")))))
+    var result = Omega.verify(OProb(Problem(List(EQ(List(-1, 1), List(PConst, "x"))))), 
+                             List(o5, o6))
+    assert(result)
+    
+    // (x >= 2 || x <= 0)  under (x >= 0 && x <= 4)
+    val o7 = OProb(Problem(List(EQ(List(-1, 1), List(PConst, "x"))))).negation
+    println(o7)
+    result = Omega.verify(o7, List(o5, o6))
+    assert(result)
+    
+    // (x >= 5 || x <= 3)  under (x >= 0 && x <= 4)
+    val o8 = OProb(Problem(List(EQ(List(-4, 1), List(PConst, "x"))))).negation
+    println(o8)
+    result = Omega.verify(o8, List(o5, o6))
+    assert(result)
+    
+    // x == 5 under x >= 0 && x <= 4
+    val o9 = OProb(Problem(List(EQ(List(-5, 1), List(PConst, "x")))))
+    println(o9)
+    result = Omega.verify(o9, List(o5, o6))
+    assert(!result)
   }
 }
