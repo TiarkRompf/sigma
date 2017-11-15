@@ -28,7 +28,6 @@ object MyMain {
   }
 
   def main(arr: Array[String]) = {
-    // OmegaTest.test
 
     val simple_code = """
     int main() {
@@ -181,7 +180,7 @@ object MyMain {
       return 0;
     }
     """
-    val parsed = parseCString(code2)
+    val parsed = parseCString(simple_code1)
     val cfgs = fileToCFG(parsed)
 
     evalCfgUnit(parsed)
@@ -199,5 +198,6 @@ object MyMain {
     val validOmega = translate(valid.get)
     println(s"Valid (omega form): $validOmega")
     assert(verify(validOmega))
+    OmegaTest.test
   }
 }
