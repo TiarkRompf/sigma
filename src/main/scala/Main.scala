@@ -197,9 +197,9 @@ object MyMain {
     // Should be something like this for simple_code
     // { -100 + 1x0? >= 0 } ==> { 0 = 0 } &&
     // { 99 - 1x0? >= 0 } ==> { 100 - 1x0? >= 0 }
-    val validOmega = translate(valid.get)
+    val validOmega = translateBoolExpr(valid.get)
     println(s"Valid (omega form): $validOmega")
     assert(verify(validOmega))
-    OmegaTest.test
+    //OmegaTest.test
   }
 }
