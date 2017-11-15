@@ -159,7 +159,11 @@ object CFGtoEngine {
               }
             case "op_equals" =>
               typedGVal(IR.equal(arg1,arg2), GType.int) // does Map == Map works?
-            case "op_notequals" => typedGVal(IR.not(IR.equal(arg1,arg2)), GType.int)
+            case "op_notequals" =>
+              println(s">>> Not equal ${IR.termToString(arg1)} - ${IR.termToString(arg2)}")
+              val eq = IR.equal(arg1,arg2)
+              println(s"Eq: ${IR.termToString(eq)}")
+              typedGVal(IR.not(eq), GType.int)
 
             case "op_lessThan" =>
               gValTypeCheck(arg1, GType.int) { arg1 =>
@@ -189,6 +193,7 @@ object CFGtoEngine {
             case "op_logicalAnd" =>
               gValTypeCheck(arg1, GType.int) { arg1 =>
                 gValTypeCheck(arg2, GType.int) { arg2 =>
+                  println(s">>> And ${IR.termToString(arg1)}")
                   typedGVal(IR.iff(arg1,arg2,IR.const(0)), GType.int) // OK
                 }
               }
@@ -408,7 +413,7 @@ object CFGtoEngine {
     //IR.iff(c1,e1,e2)
   }
 
-  def printList(seq: List[Val]) = println(seq map("\t" + IR.termToString(_)) mkString("\n"))
+  def printList(seq: List[Val]) = println("  " + (seq map(IR.termToString(_)) mkString("\n  ")))
 
   def toOStruct(term: Val): Option[OStruct] = try {
     Some(translateBoolExpr(term))
@@ -456,7 +461,11 @@ object CFGtoEngine {
       else
         IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
     case IR.Def(DIf(c, a, b)) if alwaysFalse(IR.not(c)) => simplify(a)
-    case IR.Def(DFixIndex(x, c)) => IR.fixindex(x, simplify(c))
+    case IR.Def(DFixIndex(x, c)) =>
+      println(s"Simplify FixIndex: ${IR.termToString(c)}")
+      val sc = simplify(c)
+      println(s" - ${IR.termToString(sc)}")
+      IR.fixindex(x, sc)
     case IR.Def(DMap(m)) =>
       IR.map(m map { case (key, value) => simplify(key) -> simplify(value) }) // FIXME ???
     case IR.Def(DUpdate(x, f, y))  => IR.update(simplify(x), simplify(f), simplify(y))
@@ -514,7 +523,7 @@ object CFGtoEngine {
       body // eval loop body ...
 
       var constraints: List[OProb] = toOProb(not(less(n0,const(0)))) ++: Nil
-      println(s"more: ${IR.termToString(IR.select(store,IR.const(more)))}")
+      println(s"$more: ${IR.termToString(IR.select(store,IR.const(more)))}")
       val cv = simplify(IR.select(store,IR.const(more)))(constraints)
 
       constraints ++= toOProb(simplify(not(less(fixindex(n0.toString, cv),n0)))(constraints))
@@ -596,7 +605,8 @@ object CFGtoEngine {
         store = call(loop,nX)
 
         // wrap up
-        println(s"} end loop $loop, trip count $nX, state $store")
+        println(s"} end loop $loop, trip count $nX = ${IR.termToString(nX)}, state")
+        println(IR.termToString(store))
         itvec = saveit
         println("==========================\n")
         IR.const(())

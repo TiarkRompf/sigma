@@ -108,9 +108,11 @@ object MyMain {
 
       struct list* z = x;
       int agg = 0;
-      while (z != NULL) {
+      i = 0;
+      while (z != (struct list *)NULL && i < n) {
         agg = agg + z->value;
         z = z->next;
+        i = i + 1;
       }
 
       assert(2 * agg == n * (n - 1));
@@ -180,7 +182,7 @@ object MyMain {
       return 0;
     }
     """
-    val parsed = parseCString(simple_code1)
+    val parsed = parseCString(code1)
     val cfgs = fileToCFG(parsed)
 
     evalCfgUnit(parsed)

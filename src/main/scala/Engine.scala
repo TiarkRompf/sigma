@@ -500,7 +500,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case GError => update(dreflect(DMap(Map())),f,y) // caveat: f may be non-const ?
         case _ => update(x,f,y)
       }
-      override def update(x: From, f: From, y: From): From = x match {
+      override def update(x: From, f: From, y: From): From = { println(s">>> Call update ${termToString(f)} - ${termToString(y)}"); x } match {
         case GError => x // undefined
         //case GConst("undefined") => update(dreflect(DMap(Map())),f,y) // f may be non-const
         //case GConst("undefined") => x
@@ -683,28 +683,32 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       }
       override def equal(x: From, y: From)           = (x,y) match {
         case (GError, _) | (_, GError) => GError
-        case (GConst(x),GConst(y)) => GConst(if (x == y) 1 else 0)
-        case (GConst(x:Int),Def(DPair(_,_))) => const(0)
-        case (GConst(x:String),Def(DPair(_,_))) => const(0)
-        case (Def(DPair(_,_)),GConst(x:Int)) => const(0)
-        case (Def(DPair(_,_)),GConst(x:String)) => const(0)
+        case (GConst(x: Int),GConst(y: Int)) => GConst(if (x == y) 1 else 0)
+        // case (GConst(x:Int),Def(DPair(_,_))) => const(0)
+        // case (GConst(x:String),Def(DPair(_,_))) => const(0)
+        // case (Def(DPair(_,_)),GConst(x:Int)) => const(0)
+        // case (Def(DPair(_,_)),GConst(x:String)) => const(0)
         case (Def(DIf(c,x,z)),_) => iff(c,equal(x,y),equal(z,y))
         case (_,Def(DIf(c,y,z))) => iff(c,equal(x,y),equal(x,z))
-        case (Def(DMap(m)), Def(DMap(n))) if m.keySet != n.keySet => const(0)
+        // case (Def(DMap(m)), Def(DMap(n))) if m.keySet != n.keySet => const(0)
         case (Def(DMap(m)), Def(DMap(n))) =>
           (m :\ (const(1): To)) {
             case ((k1,v1), inner) =>
+              println(s"${termToString(v1)} =? ${termToString(n(k1))}")
               times(equal(v1, n(k1)), inner)
           }
         case _ if x == y => const(1)
-        case _ => super.equal(x,y)
+        case _ => {
+          println("HEEHEHEHEHEHEHE")
+          super.equal(x,y)
+        }
       }
-      override def not(e: From)                      = e match {
+      override def not(e: From)                      = { println(s"Create Not: ${termToString(e)}"); e} match {
         case GConst(0) => GConst(1)
         case GConst(1) => GConst(0)
         case Def(DNot(x)) => x
         case Def(DLess(x, y)) => less(y, plus(x, const(1)))
-        case Def(DEqual(GConst(x),GConst(y))) => GConst(if (x == y) 0 else 1)
+        case Def(DEqual(GConst(x: Int),GConst(y: Int))) => GConst(if (x == y) 0 else 1)
         case Def(DEqual(GConst(x:Int),Def(DPair(_,_)))) => const(1)
         case Def(DEqual(GConst(x:String),Def(DPair(_,_)))) => const(1)
         case Def(DEqual(Def(DPair(_,_)),GConst(x:Int))) => const(1)
@@ -719,7 +723,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (GConst(x),GConst(y)) => const((x,y))
         case _ => super.pair(x,y)
       }
-      override def iff(c: From, x: From, y: From):GVal = c match {
+      override def iff(c: From, x: From, y: From):GVal = { println(s">>> Create iff: ${termToString(c)}"); c } match {
         case GConst(0) => y
         case GConst(_) => x
         case Def(DNot(c)) => iff(c,y,x)
@@ -739,27 +743,29 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         // Here we extend to if (0<x6) u-x6 else u-1 in the hope that the condition
         // becomes redundant later
         case Def(DLess(GConst(1),xx)) if subst(x,xx,const(1)) == y => iff(less(const(0),xx),x,y)
+        case Def(DEqual(xx, yy)) if xx == yy => x
         case _ =>
           (x,y) match {
             case (Def(DMap(m1)), Def(DMap(m2))) =>
               // push inside maps
               map((m1.keys++m2.keys) map { k => k -> iff(c,m1.getOrElse(k,const("nil")),m2.getOrElse(k,const("nil")))} toMap)
             case _ =>
-              // generate node, but remove nested tests on same condition
-              val thenp = subst(x,c,GConst(1))
-              val elsep = subst(y,c,GConst(0))
+              // // generate node, but remove nested tests on same condition
+              // val thenp = subst(x,c,GConst(1))
+              // val elsep = subst(y,c,GConst(0))
 
-              // maybe we don't need conditional:
-              /*val thenpTry = subst(x,c,GConst(0))
-              val elsepTry = subst(y,c,GConst(1))
+              // // maybe we don't need conditional:
+              // /*val thenpTry = subst(x,c,GConst(0))
+              // val elsepTry = subst(y,c,GConst(1))
 
-              if (thenp == elsepTry && elsep == thenpTry) {
-                println(s"### strange if $c $x $y")
-                return x
-              }*/
-              if (thenp == elsep) thenp
-              else if (thenp == const(1) && elsep == const(0)) c
-              else super.iff(c,thenp,elsep)
+              // if (thenp == elsepTry && elsep == thenpTry) {
+              //   println(s"### strange if $c $x $y")
+              //   return x
+              // }*/
+              // if (thenp == elsep) thenp
+              // else if (thenp == const(1) && elsep == const(0)) c
+              // else
+              super.iff(c,x,y)
           }
       }
 
@@ -782,12 +788,13 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           super.collect(n,x,c) //subst(c,less(const(0),GRef(x)),const(1)))
       }
 
-      override def fixindex(x: String, c: From)       = c match {
+      var xxxxx = 0;
+      override def fixindex(x: String, c: From)       = { println(s"$xxxxx >>> Create fixindex: ${termToString(c)}"); if (xxxxx == 11) ???; xxxxx += 1; c } match {
         case GConst(0) => const(0)
         //case GConst(1) => const("infty")
         case Def(DLess(GRef(`x`),u)) => u
-        case Def(DNot(Def(DEqual(GRef(`x`),u)))) => u
-        case Def(DNot(Def(DEqual(u,GRef(`x`))))) => u
+        case Def(DNot(Def(DEqual(GRef(`x`),u)))) => println(s"Here A"); u
+        case Def(DNot(Def(DEqual(u,GRef(`x`))))) => println(s"Here B"); u
         // case Def(DMap(d)) if d.contains(GConst("value")) => fixindex(x, select(c, GConst("value")))
         case _ =>
           super.fixindex(x,c)
