@@ -927,13 +927,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def lub(a: GVal, b0: GVal, b1: GVal)(fsym: GVal, n0: GVal): (GVal, GVal) = { println(s"lub_$fsym($a,$b0,$b1)"); (a,b0,b1) } match {
         case (a,b0,b1) if a == b1 => (a,a)
         case (_, _, Def(DMap(m2))) =>
+          println(s"[lub] m2: $m2")
           val m = (m2.keys) map { k => (k, lub(select(a,k),select(b0,k),select(b1,k))(mkey(fsym,k),n0)) }
-          println(m)
+          println(s"[lub] m: $m")
           (map(m.map(kv=>(kv._1,kv._2._1)).toMap), map(m.map(kv=>(kv._1,kv._2._2)).toMap))
         case (a,b0, Def(DUpdate(bX, `n0`, y))) if bX == b0 || (bX == map(Map()) && b0 == GError) => // array creation
-          IRD.printTerm(a)
-          IRD.printTerm(b0)
-          IRD.printTerm(b1)
+          print("a: "); IRD.printTerm(a)
+          print("b0: "); IRD.printTerm(b0)
+          print("b1: "); IRD.printTerm(b1)
           //use real index var !!
           val nX = mkey(fsym,n0)
           println(s"hit update at loop index -- assume collect")
@@ -942,9 +943,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]))
           if !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] => // XXX diff op should take precedence
           // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
-          IRD.printTerm(a)
-          IRD.printTerm(b0)
-          IRD.printTerm(b1)
+          print("a: "); IRD.printTerm(a)
+          print("b0: "); IRD.printTerm(b0)
+          print("b1: "); IRD.printTerm(b1)
           println(s"hit pair -- assume only 0 case differs (loop peeling)")
           val b0X = subst(b1,n0,plus(n0,const(-1)))
           (iff(less(const(0),n0),b0X,a), iff(less(const(0),n0),b1,a))
@@ -952,9 +953,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(`n0`,u1)),b10,b20)))
           // dual example: (B,(1,i)),(A,1)
           if !dependsOn(u1,n0) => // test 6C2
-          IRD.printTerm(a)
-          IRD.printTerm(b0)
-          IRD.printTerm(b1)
+          print("a: "); IRD.printTerm(a)
+          print("b0: "); IRD.printTerm(b0)
+          print("b1: "); IRD.printTerm(b1)
           println(s"hit if dual -- assume only last case differs")
           val b10X = subst(b10,n0,plus(n0,const(-1)))
           val b20X = subst(b20,n0,plus(n0,const(-1)))

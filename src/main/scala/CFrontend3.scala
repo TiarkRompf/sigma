@@ -80,34 +80,35 @@ object CFGtoEngine {
   val location = new mutable.HashMap[Any,String]()
   var nextV = 0
   def next = { nextV += 1; s"&new:$nextV" }
+
   def evalExp(node: IASTNode): Val = { /* println(s"NODE: $node"); */ node } match {
-      case node: CASTLiteralExpression =>
-          val lk = node.getKind
-          lk match {
-            case 0 => /* int const */
-              // need to handle postfix like L, UL, ...
-              val str = node.toString
-              try {
-              if (str.endsWith("UL"))
-                typedGVal(GConst(str.substring(0,str.length-2).toInt), GType.int)// what do we do with long and unsigned long?
-              else
-                typedGVal(GConst(str.toInt), GType.int)
-              } catch { case e: Exception =>
-                println(str)
-                println(str.endsWith("UL"))
-                println(str.substring(0,str.length-2))
-                throw e
-              }
-            case _ => ???
-          }
-      case node: CASTIdExpression =>
-        val name = node.getName.toString
-        // val idx = IR.pair(itvec, IR.const("&"+name))
-        // val idx = IR.pair(IR.const("&"+name), itvec)
-        val idx = IR.const("&" + name)
-        debug(s"Variable: $name")
-        safeSelect(store, idx)
-      case node: CASTUnaryExpression =>
+    case node: CASTLiteralExpression =>
+      val lk = node.getKind
+      lk match {
+        case 0 => /* int const */
+       // need to handle postfix like L, UL, ...
+       val str = node.toString
+       try {
+         if (str.endsWith("UL"))
+           typedGVal(GConst(str.substring(0,str.length-2).toInt), GType.int)// what do we do with long and unsigned long?
+         else
+           typedGVal(GConst(str.toInt), GType.int)
+         } catch { case e: Exception =>
+           println(str)
+           println(str.endsWith("UL"))
+           println(str.substring(0,str.length-2))
+           throw e
+         }
+        case _ => ???
+      }
+        case node: CASTIdExpression =>
+          val name = node.getName.toString
+          // val idx = IR.pair(itvec, IR.const("&"+name))
+          // val idx = IR.pair(IR.const("&"+name), itvec)
+          val idx = IR.const("&" + name)
+          debug(s"Variable: $name")
+          safeSelect(store, idx)
+        case node: CASTUnaryExpression =>
           val op = CPrinter.operators1(node.getOperator)
           val arg = node.getOperand
           op match {
@@ -134,7 +135,7 @@ object CFGtoEngine {
               store = IR.update(store, IR.const("&"+name), upd) // update always safe?
               cur
           }
-      case node: CASTBinaryExpression =>
+        case node: CASTBinaryExpression =>
           val op = CPrinter.operators2(node.getOperator)
           val arg1 = evalExp(node.getOperand1)
           val arg2 = evalExp(node.getOperand2)
@@ -210,26 +211,26 @@ object CFGtoEngine {
                   val idx = IR.const("&" + name)
                   store = IR.update(store, idx, arg2)
                   arg2
-                // case array: CASTArraySubscriptExpression =>
-                //   val name = array.getArrayExpression.asInstanceOf[CASTIdExpression].getName.toString // FIXME may not be static
-                //   val x = array.getSubscriptExpression
-                //   val ex = evalExp(x)
-                //   val ref = IR.const("&"+name)
-                //   gValPointerTypeCheck(safeSelect(store, ref)) { (arr, tp) =>
-                //     gValTypeCheck(ex, GType.int) { ex =>
-                //       gValTypeCheck(arg2, tp) { arg2 =>
-                //         arr match {
-                //           case IR.Def(DCollect(n, x, c)) =>
-                //             store = updateValid(IR.times(IR.less(IR.const(-1), ex), IR.less(ex, n)))
-                //             store = IR.update(store, ref, typedGVal(IR.collect(n, x, IR.iff(IR.equal(GRef(x), ex), arg2, c)), GType.pointer(tp.asInstanceOf[GConst]))) // FIXME
-                //             GError
-                //           case _ => GError // FIXME
-                //         }
-                //       }
-                //     }
-                //   }
-                //   arg2
-                //
+                  // case array: CASTArraySubscriptExpression =>
+                  //   val name = array.getArrayExpression.asInstanceOf[CASTIdExpression].getName.toString // FIXME may not be static
+                  //   val x = array.getSubscriptExpression
+                  //   val ex = evalExp(x)
+                  //   val ref = IR.const("&"+name)
+                  //   gValPointerTypeCheck(safeSelect(store, ref)) { (arr, tp) =>
+                  //     gValTypeCheck(ex, GType.int) { ex =>
+                  //       gValTypeCheck(arg2, tp) { arg2 =>
+                  //         arr match {
+                  //           case IR.Def(DCollect(n, x, c)) =>
+                  //             store = updateValid(IR.times(IR.less(IR.const(-1), ex), IR.less(ex, n)))
+                  //             store = IR.update(store, ref, typedGVal(IR.collect(n, x, IR.iff(IR.equal(GRef(x), ex), arg2, c)), GType.pointer(tp.asInstanceOf[GConst]))) // FIXME
+                  //             GError
+                  //           case _ => GError // FIXME
+                  //         }
+                  //       }
+                  //     }
+                  //   }
+                  //   arg2
+                  //
                 case node: CASTFieldReference if node.isPointerDereference() =>
                   val name = node.getFieldOwner.asInstanceOf[CASTIdExpression].getName.toString
                   val idx = IR.const("&"+name)
@@ -251,85 +252,84 @@ object CFGtoEngine {
                     store = IR.update(store, idx, typedGVal(IR.update(struct, GConst(node.getFieldName.toString), arg2), GConst("list")))
                     arg2
                   }
-
               }
           }
-      case node: CASTFunctionCallExpression =>
-          val fun = node.getFunctionNameExpression
-          val arg = node.getParameterExpression
-          fun.asInstanceOf[CASTIdExpression].getName.toString match {
-            case "__VERIFIER_nondet_int" => typedGVal(GRef(freshVar + "?"), GType.int)
-            case "assert" | "__VERIFIER_assert" =>
-              gValTypeCheck(evalExp(arg), GType.int) { arg =>
-                  debug(s"Assert: ${IR.termToString(arg)}")
-                  store = updateValid(arg)
-                  typedGVal(IR.const(()), GType.void)
-              }
-            case "malloc" =>
-              val newV = gValTypeCheck(evalExp(arg), GType.int) { arg =>
-                typedGVal(IR.map(Map(GConst("value") -> typedGVal(GConst(0), GType.int), GConst("next") -> typedGVal(GConst(0), GType.pointer(GConst("list"))))), GConst("list"))
-              }
+                case node: CASTFunctionCallExpression =>
+                  val fun = node.getFunctionNameExpression
+                  val arg = node.getParameterExpression
+                  fun.asInstanceOf[CASTIdExpression].getName.toString match {
+                    case "__VERIFIER_nondet_int" => typedGVal(GRef(freshVar + "?"), GType.int)
+                    case "assert" | "__VERIFIER_assert" =>
+                      gValTypeCheck(evalExp(arg), GType.int) { arg =>
+                        debug(s"Assert: ${IR.termToString(arg)}")
+                        store = updateValid(arg)
+                        typedGVal(IR.const(()), GType.void)
+                      }
+                    case "malloc" =>
+                      val newV = gValTypeCheck(evalExp(arg), GType.int) { arg =>
+                        typedGVal(IR.map(Map(GConst("value") -> typedGVal(GConst(0), GType.int), GConst("next") -> typedGVal(GConst(0), GType.pointer(GConst("list"))))), GConst("list"))
+                      }
 
-              val idx = IR.pair(GConst(location.getOrElseUpdate(node.hashCode, next)),itvec)
-              store = IR.update(store, idx, newV)
-              typedGVal(idx, GType.pointer(GConst("list")))
-            case name =>
-              println("ERROR: unknown function call: "+name)
-              GConst("<call "+name+">")
-            //case _ => evalExp(fun)+"("+evalExp(arg)+")"
-          }
-      case node: CASTArraySubscriptExpression =>
-          val a = node.getArrayExpression
-          val x = node.getSubscriptExpression
-          val ea = evalExp(a)
-          val ex = evalExp(x)
-          // typedGVal(GConst(-1), GType.int)
-          gValPointerTypeCheck(ea) { (ea, tpe) =>
-            gValTypeCheck(ex, GType.int) { ex =>
-              typedGVal(safeSelect(ea, ex), tpe)
-            }
-          }
-      /* case node: CASTExpressionList =>
-          val as = node.getExpressions
-          as.map(evalExp).mkString("(",",",")")
-      case node: CASTInitializerList =>
-          val as = node.getInitializers
-          as.map(evalExp).mkString("{",",","}")
-      case node: CASTEqualsInitializer => // copy initializer
-          evalExp(node.getInitializerClause)
-          */
-      case node: CASTCastExpression =>
-        val op = node.getOperand
-        val tp = node.getExpressionType
-        val res = typedGVal(gValValue(evalExp(op)), GType(tp.toString))
-        res
+                      val idx = IR.pair(GConst(location.getOrElseUpdate(node.hashCode, next)),itvec)
+                      store = IR.update(store, idx, newV)
+                      typedGVal(idx, GType.pointer(GConst("list")))
+                    case name =>
+                      println("ERROR: unknown function call: "+name)
+                      GConst("<call "+name+">")
+                      //case _ => evalExp(fun)+"("+evalExp(arg)+")"
+                  }
+                    case node: CASTArraySubscriptExpression =>
+                      val a = node.getArrayExpression
+                      val x = node.getSubscriptExpression
+                      val ea = evalExp(a)
+                      val ex = evalExp(x)
+                      // typedGVal(GConst(-1), GType.int)
+                      gValPointerTypeCheck(ea) { (ea, tpe) =>
+                        gValTypeCheck(ex, GType.int) { ex =>
+                          typedGVal(safeSelect(ea, ex), tpe)
+                        }
+                      }
+                      /* case node: CASTExpressionList =>
+                        val as = node.getExpressions
+                        as.map(evalExp).mkString("(",",",")")
+                    case node: CASTInitializerList =>
+                      val as = node.getInitializers
+                      as.map(evalExp).mkString("{",",","}")
+                    case node: CASTEqualsInitializer => // copy initializer
+                      evalExp(node.getInitializerClause)
+                      */
+                    case node: CASTCastExpression =>
+                      val op = node.getOperand
+                      val tp = node.getExpressionType
+                      val res = typedGVal(gValValue(evalExp(op)), GType(tp.toString))
+                      res
 
-      case node: CASTTypeIdExpression => // sizeof
-        val op = CPrinter.type_ops(node.getOperator)
-        val tp = node.getTypeId
-        val declarator = tp.getAbstractDeclarator.asInstanceOf[CASTDeclarator]
-        val declSpecifier = tp.getDeclSpecifier
+                    case node: CASTTypeIdExpression => // sizeof
+                      val op = CPrinter.type_ops(node.getOperator)
+                      val tp = node.getTypeId
+                      val declarator = tp.getAbstractDeclarator.asInstanceOf[CASTDeclarator]
+                      val declSpecifier = tp.getDeclSpecifier
 
-        typedGVal(GConst(2), GType.int)
-      case node: CASTFieldReference if node.isPointerDereference() =>
-        val pStruct = evalExp(node.getFieldOwner)
-        debug(s"A) pStruct ${IR.termToString(pStruct)}")
-        gValTypeCheck(pStruct, GType.pointer(GConst("list"))) { pStruct =>
-          val struct = safeSelect(store, pStruct)
-          debug(s"A) struct ${IR.termToString(struct)}")
-          gValTypeCheck(struct, GConst("list")) { struct =>
-            safeSelect(struct, GConst(node.getFieldName.toString))
-          }
-        }
-      case node: CASTFieldReference =>
-        val struct = evalExp(node.getFieldOwner)
-        debug(s"D) struct (${node.isPointerDereference()}): ${IR.termToString(struct)}")
-        gValTypeCheck(struct, GConst("list")) { struct =>
-          safeSelect(struct, GConst(node.getFieldName.toString))
-        }
+                      typedGVal(GConst(2), GType.int)
+                    case node: CASTFieldReference if node.isPointerDereference() =>
+                      val pStruct = evalExp(node.getFieldOwner)
+                      debug(s"A) pStruct ${IR.termToString(pStruct)}")
+                      gValTypeCheck(pStruct, GType.pointer(GConst("list"))) { pStruct =>
+                        val struct = safeSelect(store, pStruct)
+                        debug(s"A) struct ${IR.termToString(struct)}")
+                        gValTypeCheck(struct, GConst("list")) { struct =>
+                          safeSelect(struct, GConst(node.getFieldName.toString))
+                        }
+                      }
+                    case node: CASTFieldReference =>
+                      val struct = evalExp(node.getFieldOwner)
+                      debug(s"D) struct (${node.isPointerDereference()}): ${IR.termToString(struct)}")
+                      gValTypeCheck(struct, GConst("list")) { struct =>
+                        safeSelect(struct, GConst(node.getFieldName.toString))
+                      }
 
-      // case null => typedGVal(GConst(0), GType.int)
-      //case _ => "(exp "+node+")"
+                      // case null => typedGVal(GConst(0), GType.int)
+                      //case _ => "(exp "+node+")"
   }
 
   def makePtrType(n: Int, tp: GVal) = {
@@ -357,29 +357,31 @@ object CFGtoEngine {
        store = IR.update(store, IR.const("&"+name), v)
      }
   }
+
   def evalLocalDecl(node: IASTDeclaration): Unit = node match {
-      case node: CASTSimpleDeclaration =>
-          val declSpecifier = node.getDeclSpecifier
-          val decls = node.getDeclarators
-          val tpe = (evalType(declSpecifier))
-          //print(tpe+" ")
-          for (d <- decls) {
-            evalDeclarator(d)
-          }
-      case _ => ???
+    case node: CASTSimpleDeclaration =>
+      val declSpecifier = node.getDeclSpecifier
+      val decls = node.getDeclarators
+      val tpe = (evalType(declSpecifier))
+      //print(tpe+" ")
+      for (d <- decls) {
+        evalDeclarator(d)
+      }
+    case _ => ???
   }
+
   def evalStm(node: IASTStatement): Unit = node match {
-      case node: CASTCompoundStatement =>
-          for (s <- node.getStatements) evalStm(s)
-      case node: CASTDeclarationStatement =>
-          val decl = node.getDeclaration
-          evalLocalDecl(decl)
-      case node: CASTExpressionStatement =>
-          val exp = node.getExpression
-          evalExp(exp)
-      case node: CASTNullStatement =>
-      case node: CASTProblemStatement => // FIXME
-      case null =>
+    case node: CASTCompoundStatement =>
+      for (s <- node.getStatements) evalStm(s)
+    case node: CASTDeclarationStatement =>
+      val decl = node.getDeclaration
+      evalLocalDecl(decl)
+    case node: CASTExpressionStatement =>
+      val exp = node.getExpression
+      evalExp(exp)
+    case node: CASTNullStatement =>
+    case node: CASTProblemStatement => // FIXME
+    case null =>
   }
 
   def handleReturn(v: Val): Unit = {
@@ -422,7 +424,10 @@ object CFGtoEngine {
   }
 
   def alwaysFalse(cond: Val)(implicit constraints: List[OProb]) = toOStruct(cond) match {
-    case Some(cond) => !verify(cond, constraints)
+    case Some(cond) => 
+      val b = !verify(cond, constraints)
+      if (b) println(s"Always false: $cond under $constraints")
+      b
     case _ => false
   }
 
@@ -460,40 +465,60 @@ object CFGtoEngine {
     case _ => term
   }
 
-  def simplify(term: Val)(implicit constraints: List[OProb]): Val = { debug(s"> ${IR.termToString(term)} - contraints: $constraints"); term } match {
-    case IR.Def(DIf(c, a, b)) =>
-      val sc = simplify(c)
-      if (alwaysFalse(sc))
-        simplify(b)(toOProb(IR.not(sc)) ++: constraints)
-      else if (alwaysFalse(IR.not(sc)))
-        simplify(a)(toOProb(sc) ++: constraints)
-      else
-        IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
-    case IR.Def(DIf(c, a, b)) if alwaysFalse(IR.not(c)) => simplify(a)
-    case IR.Def(DFixIndex(x, c)) => IR.fixindex(x, simplify(c))
-    case IR.Def(DMap(m)) =>
-      IR.map(m map { case (key, value) =>
-        // if (!key.toString.startsWith("\"$")) println(s"Simplify key $key -> ${IR.termToString(value)}:")
-      simplify(key) -> (if (key == valid) simplifyBool(value) else simplify(value)) }) // FIXME ???
-    case IR.Def(DUpdate(x, f, y))  => IR.update(simplify(x), simplify(f), simplify(y))
-    case IR.Def(DSelect(x, f))     => IR.select(simplify(x), simplify(f))
-    case IR.Def(DPlus(x, y))       => IR.plus(simplify(x), simplify(y))
-    case IR.Def(DTimes(x, y))      => IR.times(simplify(x), simplify(y))
-    case IR.Def(DLess(x, y))       => simplifyBool(IR.less(simplify(x), simplify(y)))
-    case IR.Def(DEqual(x, y))      => simplifyBool(IR.equal(simplify(x), simplify(y)))
-    case IR.Def(DNot(x))           => IR.not(simplify(x))
-    case IR.Def(DSum(n, x, c))     => IR.sum(simplify(n), x, simplify(c))
-    case IR.Def(DCollect(n, x, c)) => IR.collect(simplify(n), x, simplify(c)) // (toOProb(IR.not(IR.less(GRef(x), 0))) ++: constraints))
-    case IR.Def(DCall(f, x))       => IR.call(simplify(f), simplify(x))
-    case IR.Def(DFun(f, x, y))     => IR.fun(f, x, simplify(y))
-    case IR.Def(DHasField(x, f))   => IR.hasfield(simplify(x), simplify(f))
-    // case x@GRef(_) if x.toString == "x8?" => IR.const(0)
-    case x@GRef(_) => println(s"Ref $x")
-      simplifyBool(IR.equal(x, IR.const(0))) match { // FIXME: hack if GRef(x) == 0
-        case GConst(1) => println(s"Simplifed $x"); IR.const(0)
-        case z@_ => println(s"Simplify ref: ${IR.termToString(z)} - $constraints"); x
-      }
-    case _ => term
+  def simplify(term: Val)(implicit constraints: List[OProb]): Val = {
+      val st = term match {
+      case IR.Def(DIf(c, a, b)) =>
+        val sc = simplifyBool(c)
+        println(s"simplify cond ${IR.termToString(c)} under $constraints to $sc")
+        sc match {
+          case GConst(1) => 
+            simplify(a)(toOProb(sc) ++: constraints)
+          case GConst(0) => 
+            simplify(b)(toOProb(IR.not(sc)) ++: constraints)
+          case _ => 
+            IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
+        }
+        
+        /*
+        if (alwaysFalse(sc)) {
+          println(s"[1]$sc is always false")
+          simplify(b)(toOProb(IR.not(sc)) ++: constraints)
+        } else if (alwaysFalse(IR.not(sc))) {
+          println(s"[2]${IR.termToString(IR.not(sc))} is always false")
+          simplify(a)(toOProb(sc) ++: constraints)
+        } else {
+          println(s"[3]Can not determine $sc")
+          IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
+        }
+        */
+      //case IR.Def(DIf(c, a, b)) if alwaysFalse(IR.not(c)) => simplify(a)
+      case IR.Def(DFixIndex(x, c)) => IR.fixindex(x, simplify(c))
+      case IR.Def(DMap(m)) =>
+        IR.map(m map { case (key, value) =>
+          // if (!key.toString.startsWith("\"$")) println(s"Simplify key $key -> ${IR.termToString(value)}:")
+        simplify(key) -> (if (key == valid) simplifyBool(value) else simplify(value)) }) // FIXME ???
+      case IR.Def(DUpdate(x, f, y))  => IR.update(simplify(x), simplify(f), simplify(y))
+      case IR.Def(DSelect(x, f))     => IR.select(simplify(x), simplify(f))
+      case IR.Def(DPlus(x, y))       => IR.plus(simplify(x), simplify(y))
+      case IR.Def(DTimes(x, y))      => IR.times(simplify(x), simplify(y))
+      case IR.Def(DLess(x, y))       => simplifyBool(IR.less(simplify(x), simplify(y)))
+      case IR.Def(DEqual(x, y))      => simplifyBool(IR.equal(simplify(x), simplify(y)))
+      case IR.Def(DNot(x))           => IR.not(simplify(x))
+      case IR.Def(DSum(n, x, c))     => IR.sum(simplify(n), x, simplify(c))
+      case IR.Def(DCollect(n, x, c)) => IR.collect(simplify(n), x, simplify(c)) // (toOProb(IR.not(IR.less(GRef(x), 0))) ++: constraints))
+      case IR.Def(DCall(f, x))       => IR.call(simplify(f), simplify(x))
+      case IR.Def(DFun(f, x, y))     => IR.fun(f, x, simplify(y))
+      case IR.Def(DHasField(x, f))   => IR.hasfield(simplify(x), simplify(f))
+      // case x@GRef(_) if x.toString == "x8?" => IR.const(0)
+      case x@GRef(_) => println(s"Ref $x")
+        simplifyBool(IR.equal(x, IR.const(0))) match { // FIXME: hack if GRef(x) == 0
+          case GConst(1) => println(s"Simplifed $x"); IR.const(0)
+          case z@_ => println(s"Simplify ref: ${IR.termToString(z)} - $constraints"); x
+        }
+      case _ => term
+    }
+    println(s"[simplify] ${IR.termToString(term)} under $constraints to ${IR.termToString(st)}")
+    st
   }
 
   def handleLoop(l:String)(body: => Unit): Unit = {
@@ -516,8 +541,9 @@ object CFGtoEngine {
 
     var iterCount = 0
     def iter: GVal = {
-      if (iterCount > 3) { println("XXX ABORT XXX"); return GConst(0) }
+      //if (iterCount > 3) { println("XXX ABORT XXX"); return GConst(0) }
       println(s"## iteration $iterCount, f(0)=$before, f($n0)=$init")
+      println(s"path: $path")
       assert(!path.contains(init), "hitting recursion: "+(init::path))
       path = init::path
 
@@ -530,10 +556,15 @@ object CFGtoEngine {
       body // eval loop body ...
 
       var constraints: List[OProb] = toOProb(not(less(n0,const(0)))) ++: Nil
+      println(s"Initial constraints: $constraints")
       println(s"more: ${IR.termToString(IR.select(store,IR.const(more)))}")
       val cv = simplify(IR.select(store,IR.const(more)))(constraints)
 
-      constraints ++= toOProb(simplify(not(less(fixindex(n0.toString, cv),n0)))(constraints))
+      val newCons = toOProb(simplify(not(less(fixindex(n0.toString, cv),n0)))(constraints))
+      println(s"new constraints: $newCons")
+      constraints ++= newCons
+      println(s"cv: ${IR.termToString(cv)}")
+      println(s"constraint: $constraints")
 
       // FIXME: is it still necessary? Should be handle by simplification step.
       // store = subst(store,less(fixindex(n0.toString, cv),n0),const(0)) // i <= n-1
@@ -545,15 +576,14 @@ object CFGtoEngine {
 
       println("trip count: "+termToString(fixindex(n0.toString, cv)))
 
-
       val afterB = store
 
       // inside the loop we know the check succeeded.
       // val next = subst(afterB,cv,const(1))
 
       val trueClauses = assumeTrue(cv)(constraints)
-      println(s"TrueClauses:\n")
-      printList(trueClauses)
+      println(s"TrueClauses: ")
+      for (c <- trueClauses) { println(s" > ${IR.termToString(c)}") }
 
       // FIXME: may be useful for complex form
       // var next = (afterB /: trueClauses) {
@@ -561,6 +591,7 @@ object CFGtoEngine {
       // }
 
       constraints = (trueClauses flatMap(toOProb)) ++ constraints
+      println(s"constraints with trueclauses: $constraints")
       val next = simplify(afterB)(constraints)
       println(s"Store after simplifications: ${IR.termToString(next)}")
 
@@ -638,7 +669,9 @@ object CFGtoEngine {
 
     var fuel = 1*1000
     def consume(l: String, stop: Set[String], cont: Set[String]): Unit = {
-      fuel -= 1; if (fuel == 0) {
+      fuel -= 1
+      
+      if (fuel == 0) {
         println(l,stop,cont,postDom(l))
         throw new Exception("XXX consume out of fuel")
       }
