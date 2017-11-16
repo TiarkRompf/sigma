@@ -471,7 +471,7 @@ object CFGtoEngine {
         // FIXME: working on that
         val sa = simplify(a)(toOProb(IR.not(sc)) ++: constraints)
         if (sa == b) {
-          simplify(a)(toOProb(sc) ++: constraints)
+          simplify(a)(constraints) // Not sure adding sc == 1 is correct (toOProb(sc) ++: constraints)
         } else {
           IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
         }
@@ -485,6 +485,7 @@ object CFGtoEngine {
     case IR.Def(DSelect(x, f))     => IR.select(simplify(x), f)
     case IR.Def(DPlus(x, y))       => IR.plus(simplify(x), simplify(y))
     case IR.Def(DTimes(x, y))      => IR.times(simplify(x), simplify(y))
+    case IR.Def(DPair(x, y))       => IR.pair(simplify(x), simplify(y))
     case IR.Def(DLess(x, y))       => simplifyBool(IR.less(simplify(x), simplify(y)))
     case IR.Def(DEqual(x, y))      => simplifyBool(IR.equal(simplify(x), simplify(y)))
     case IR.Def(DNot(x))           => IR.not(simplify(x))
