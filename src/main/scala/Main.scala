@@ -59,7 +59,8 @@ object MyMain {
     val simple_nest = """
     // PASS
     int main() {
-      int n = 5; int m = 4;
+      int n = 5;
+      int m = 4;
       int i = 0; int j = 0;
       int agg = 0;
       while (i < n) {
@@ -76,6 +77,28 @@ object MyMain {
     """
 
     val simple_nest1 = """
+    // NOT WORK
+    int main() {
+      int n = __VERIFIER_nondet_int();
+      int m = __VERIFIER_nondet_int();
+      if (n < 0) n = 0;
+      if (m < 0) m = 0;
+      int i = 0; int j = 0;
+      int agg = 0;
+      while (i < n) {
+        while (j < m) {
+          agg = agg + 1;
+          j = j + 1;
+        }
+        j = 0;
+        i = i + 1;
+      }
+      assert(agg == n * m);
+      return 0;
+    }
+    """
+
+    val simple_nest2 = """
     // NOT WORK
     int main() {
       int n = 5; int m = 4; int p = 3;
@@ -223,7 +246,7 @@ object MyMain {
       return 0;
     }
     """
-    val parsed = parseCString(simple_nest1)
+    val parsed = parseCString(simple_nest)
     val cfgs = fileToCFG(parsed)
 
     evalCfgUnit(parsed)
