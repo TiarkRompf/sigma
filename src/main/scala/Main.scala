@@ -27,7 +27,6 @@ object MyMain {
     assert(alwaysValid1)
   }
 
-  def main(arr: Array[String]) = {
 
     val simple_code = """
     int main() {
@@ -246,10 +245,10 @@ object MyMain {
       return 0;
     }
     """
-    val parsed = parseCString(simple_nest)
+   def analyze(code: String) = {
+    val parsed = parseCString(code)
     val cfgs = fileToCFG(parsed)
 
-    evalCfgUnit(parsed)
     val store = evalCFG(cfgs("main"))
 
     val valid = store match {
@@ -265,5 +264,10 @@ object MyMain {
     println(s"Valid (omega form): $validOmega")
     assert(verify(validOmega))
     //OmegaTest.test
+  }
+
+
+  def main(arr: Array[String]) = {
+    analyze(ProgEquiv.assign_loop._2)
   }
 }

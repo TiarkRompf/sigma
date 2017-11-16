@@ -10,7 +10,7 @@ object Example {
     int agg = 0;
 
     while (i < n) {
-      agg = agg + i;
+      agg = agg + 1;
       i = i + 1;
     }
 

@@ -438,6 +438,7 @@ object CFGtoEngine {
     case IR.Def(DIf(c, a, b)) if alwaysFalse(b)(toOProb(IR.not(c)) ++: constraints) => c :: assumeTrue(a)
     case IR.Def(DIf(c, a, b)) if alwaysFalse(a)(toOProb(c) ++: constraints) => IR.not(c) :: assumeTrue(b)
     case IR.Def(DIf(c, a, b)) if alwaysFalse(c) => assumeTrue(b)
+    case IR.Def(DIf(c, a, b)) if simplifyBool(b)(toOProb(c) ++: constraints) == a => assumeTrue(b) // Generalize
     case IR.Def(DIf(c, a, b)) if alwaysFalse(IR.not(c)) => assumeTrue(a)
     case a@_ => println(s"Nothing as been simplified: ${IR.termToString(a)}"); List(a)
   }
@@ -478,7 +479,12 @@ object CFGtoEngine {
         if (sa == b) {
           simplify(a)(constraints) // Not sure adding sc == 1 is correct (toOProb(sc) ++: constraints)
         } else {
-          IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
+          val sb = simplify(b)(toOProb(sc) ++: constraints)
+          if (sb == a) {
+            simplify(b)(constraints)
+          } else {
+            IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
+          }
         }
       }
     case IR.Def(DFixIndex(x, c)) => IR.fixindex(x, simplify(c))
