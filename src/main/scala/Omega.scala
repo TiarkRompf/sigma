@@ -11,6 +11,12 @@ import CFrontend2._
 import Test1._
 import IRD._
 
+object DebugOmg {
+  val debug = false
+}
+
+import DebugOmg._
+
 object Utils {
 
   private def gcd_aux(a: Int, b: Int): Int = {
@@ -548,10 +554,10 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
 
   override def toString(): String = {
     if (substs.isEmpty) {
-      "{ " + cs.mkString("\n  ") + " }"
+      "{ " + cs.mkString(", ") + " }"
     }
     else {
-      "{ " + cs.mkString("\n  ")  + "\n" + substs.mkString("\n  ") + " }"
+      "{ " + cs.mkString(", ")  + "\n" + substs.mkString(", ") + " }"
     }
   }
 
@@ -586,8 +592,8 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
     def eliminate(eqs: List[EQ], geqs: List[GEQ], substs: List[Subst]): Option[Problem] = {
       if (eqs.nonEmpty) {
         val eq = eqs.head
-        println("current constraints:")
-        for (eq <- (eqs++geqs)) { println(s"  $eq") }
+        if (debug) println("current constraints:")
+        if (debug) { for (eq <- (eqs++geqs)) { println(s"  $eq") } }
         
         if (eq.vars.length == 1) {
           if (eq.trivial) return eliminate(eqs.tail, geqs, substs)
@@ -595,7 +601,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
         }
 
         val unpVars = eq.getUnprotectedVars(pvars)
-        println(s"unprotected vars: $unpVars")
+        if (debug) println(s"unprotected vars: $unpVars")
 
         val g = if (unpVars.isEmpty) 0 else gcd(unpVars.map(_._1))
         if (g <= 1) {
@@ -612,8 +618,10 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
                 Subst(x,term)::substs
               } else { substs }
               /* Debug */
-              println(s"[g=$g]choose xk: $x")
-              println(s"[g=$g]subst: $x = ${term}")
+              if (debug) { 
+                println(s"[g=$g]choose xk: $x")
+                println(s"[g=$g]subst: $x = ${term}")
+              }
               /* Debug */
               eliminate(eqs.tail.map(_.subst(x, term)), geqs.map(_.subst(x, term)), newSubsts)
             case None =>
@@ -631,8 +639,10 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
               } else { substs }
 
               /* Debug */
-              println(s"[g=$g]choose ak: $ak, xk: $xk")
-              println(s"[g=$g]subst: $xk = ${substTerm}")
+              if (debug) {
+                println(s"[g=$g]choose ak: $ak, xk: $xk")
+                println(s"[g=$g]subst: $xk = ${substTerm}")
+              }
               /* Debug */
 
               eliminate(eq.subst(xk, substTerm).normalize.get::eqs.tail.map(_.subst(xk, substTerm)),
@@ -645,7 +655,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
           val newVar = generateNewVar
           val (newCoefs, newVars) = reorder(-1*g::modCoefs, newVar::eq.vars)
           val newEQ = EQ(newCoefs, newVars)
-          println(s"[g=$g]add new eq: $newEQ")
+          if (debug) println(s"[g=$g]add new eq: $newEQ")
           Problem(newEQ::(eqs.tail)++geqs, newVar::pvars, substs).elimEq
         }
       }
@@ -668,17 +678,17 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
 
     for (Seq(c1, c2) <- getGeqs.combinations(2)) {
       if (c1.contraWith(c2)) {
-        println(s"contra: $c1, $c2")
+        if (debug) println(s"contra: $c1, $c2")
         return None
       }
       c1.subsume(c2) match {
         case Some(c) =>
-          println(s"subsume: $c1, $c2 => $c")
+          if (debug) println(s"subsume: $c1, $c2 => $c")
           cons += c
           junks += (if (c == c1) c2 else c1)
         case None => c1.tighten(c2) match {
           case Some(c) =>
-            println(s"tighten: $c1, $c2 => $c")
+            if (debug) println(s"tighten: $c1, $c2 => $c")
             cons += c
             junks += c1 += c2
           case None => cons += c1 += c2
@@ -731,7 +741,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
               for (lb <- p.lowerBounds(x)) {
                 val coefx = lb.getCoefficientByVar(x)
                 val j = (floor(abs(m * coefx) - abs(m) - coefx) / abs(m)).toInt
-                println(s"### x: $x m: $m, j: $j, coefx: $coefx ###")
+                if (debug) println(s"### x: $x m: $m, j: $j, coefx: $coefx ###")
                 for (j <- 0 to j) {
                   val (newCoefs, newVars) = reorder((-1*j)::lb.coefficients, PConst::lb.vars)
                   if (p.copy(EQ(newCoefs, newVars)::p.cs).hasIntSolutions) return true
@@ -785,7 +795,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
 
   def realShadowSet(): mutable.Set[Constraint[_]] = {
     val x = chooseVar()
-    println(s"real shadow chooses var: $x")
+    if (debug) println(s"real shadow chooses var: $x")
     realShadowSet(x)
   }
 
@@ -801,7 +811,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
       ineq1.join(ineq2, x) match {
         case Some(ineq) if ineq.trivial => /* trivially holds, no need to add to new constraints */
         case Some(ineq) =>
-          println(s"real shadow eliminating [$x] $ineq1, $ineq2 => $ineq")
+          if (debug) println(s"real shadow eliminating [$x] $ineq1, $ineq2 => $ineq")
           cons += ineq
         case None =>
           /* In this case, ineq1 and ineq2 are not an upper/lower bound pair,
@@ -842,7 +852,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
 
   def darkShadowSet(): mutable.Set[Constraint[_]] = {
     var x = chooseVarMinCoef()
-    println(s"dark shadow chooses var: $x")
+    if (debug) println(s"dark shadow chooses var: $x")
     darkShadowSet(x)
   }
 
@@ -860,7 +870,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
       ineq1.tightJoin(ineq2, x) match {
         case Some(ineq) if ineq.trivial =>
         case Some(ineq) =>
-          println(s"dark shadow eliminating [$x] $ineq1, $ineq2 => $ineq")
+          if (debug) println(s"dark shadow eliminating [$x] $ineq1, $ineq2 => $ineq")
           cons += ineq
         case None =>
       }
@@ -874,8 +884,10 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
    * returns None if the problem has no integer solutions.
    */
   def simplify(): Option[Problem] = {
-    println(s"protected variables: $pvars")
-    println(s"problem variables: ${getVars}")
+    if (debug) {
+      println(s"protected variables: $pvars")
+      println(s"problem variables: ${getVars}")
+    }
 
     normalize match {
       case Some(p) if p.getVars.subsetOf(p.pvars.toSet) =>
@@ -912,7 +924,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
                 for (lb <- p.lowerBounds(x)) {
                   val coefx = lb.getCoefficientByVar(x)
                   val j = (floor(abs(m * coefx) - abs(m) - coefx) / abs(m)).toInt
-                  println(s"### x: $x m: $m, j: $j, coefx: $coefx ###")
+                  if (debug) println(s"### x: $x m: $m, j: $j, coefx: $coefx ###")
                   for (j <- 0 to j) {
                     val (newCoefs, newVars) = reorder((-1*j)::lb.coefficients, PConst::lb.vars)
                     val newP = p.copy(EQ(newCoefs, newVars)::p.cs).simplify
@@ -994,8 +1006,39 @@ object Omega {
       }
     }
     val extCs: List[Constraint[_]] = const.flatMap(_.p.cs)
-    val (b, cs) = verify_aux(inject(os, extCs), List())
-    b
+    println(s"Omega query $os under $const")
+    for (p <- flatten(inject(os, extCs))) {
+      val result = p.hasIntSolutions
+      println(s"  verifying $p[$result]")
+      if (result) return true
+    }
+    return false
+  }
+
+  def flatten(os: OStruct): List[Problem] = {
+    os match {
+      case OProb(p) => List(p)
+      case OConj(lhs, rhs) =>
+        val lhsP = flatten(lhs)
+        val rhsP = flatten(rhs)
+        (for (l <- lhsP; r <- rhsP) yield {
+          Problem(l.cs ++ r.cs)
+        }).toList
+      case ODisj(lhs, rhs) =>
+        flatten(lhs) ++ flatten(rhs)
+      case OImplies(cnd, thn) =>
+        /*
+        flatten(cnd).flatMap(_.negation) ++
+        (for (cp <- flatten(cnd); tp <- flatten(thn)) yield {
+          Problem(cp.cs ++ tp.cs)
+        }).toList
+        */
+        val cndP = flatten(cnd)
+        (for (cp <- cndP; thnP <- flatten(thn)) yield {
+          if (cp.hasIntSolutions) List(Problem(cp.cs ++ thnP.cs))
+          else cp.negation
+        }).flatten
+    }
   }
 
   def verify_aux(os: OStruct, accCs: List[Constraint[_]] = List()): (Boolean, List[Constraint[_]]) = {
@@ -1079,8 +1122,9 @@ object Omega {
         val cndProb = translateBoolExpr(cnd)
         val thnProb = translateBoolExpr(thn)
         val elsProb = translateBoolExpr(els)
-        OConj(OImplies(cndProb, thnProb),
-              OImplies(cndProb.negation, elsProb))
+        //OConj(OImplies(cndProb, thnProb),
+        ODisj(OConj(cndProb, thnProb),
+              OConj(cndProb.negation, elsProb))
       case _ => ???
     }
   }
@@ -1377,8 +1421,10 @@ object OmegaTest {
                    OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x"))))))
     assert(!Omega.verify(o1))
     
+    // x >= 5 => 4 >= x
     val o2 = OImplies(OProb(Problem(List(GEQ(List(-5, 1), List(PConst, "x"))))),
                       OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x"))))))
+    println(Omega.flatten(o2))
     assert(!Omega.verify(o2))
     
     // x >= 5 && (x >= 10 || x <= 4)
@@ -1422,6 +1468,20 @@ object OmegaTest {
     val o9 = OProb(Problem(List(EQ(List(-5, 1), List(PConst, "x")))))
     println(o9)
     result = Omega.verify(o9, List(o5, o6))
+    assert(!result)
+
+    // (x >= 5 || x <= 3)  && (x <= 4)
+    val o10 = OConj(OProb(Problem(List(EQ(List(-4, 1), List(PConst, "x"))))).negation,
+                    OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x"))))))
+    println(o10)
+    result = Omega.verify(o10)
+    assert(result)
+
+    // (x >= 5 || x <= 3)  && (x == 4)
+    val o11 = OConj(OProb(Problem(List(EQ(List(-4, 1), List(PConst, "x"))))).negation,
+                    OProb(Problem(List(EQ(List(4, -1), List(PConst, "x"))))))
+    println(o11)
+    result = Omega.verify(o11)
     assert(!result)
   }
 }
