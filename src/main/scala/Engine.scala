@@ -689,6 +689,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (GConst(x:String),Def(DPair(_,_))) => const(0)
         case (Def(DPair(_,_)),GConst(x:Int)) => const(0)
         case (Def(DPair(_,_)),GConst(x:String)) => const(0)
+        case (Def(DPair(GConst(u1),_)),GConst((v1,v2))) if u1 != v1 => const(0) // generalize?
         case (Def(DIf(c,x,z)),_) => iff(c,equal(x,y),equal(z,y))
         case (_,Def(DIf(c,y,z))) => iff(c,equal(x,y),equal(x,z))
         case (Def(DMap(m)), Def(DMap(n))) if m.keySet != n.keySet => const(0)

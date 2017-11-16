@@ -19,80 +19,192 @@
     })
   }
 # eval:
-  val x0 = Map()
-  val x1 = Map("val" -> 0)
-  val x2 = Map("&i" -> x1)
-  val x3 = Map("top" -> Map())
-  val x4 = Map("&i" -> x1, "A" -> x3)
-  val x5 = Map("val" -> (A,top))
-  val x6 = Map("&i" -> x1, "A" -> x3, "&z" -> x5)
-  val x7 = Map("&i" -> x1, "A" -> x3, "&z" -> x5, "&x" -> x5)
+  val x0 = {
+  }
+  val x1 = {
+    "val" -> 0
+  }
+  val x2 = {
+    "&i" -> x1
+  }
+  val x3 = {
+    "top" -> Map()
+  }
+  val x4 = {
+    "&i" -> x1,
+    "A" -> x3
+  }
+  val x5 = {
+    "val" -> (A,top)
+  }
+  val x6 = {
+    "&i" -> x1,
+    "A" -> x3,
+    "&z" -> x5
+  }
+  val x7 = {
+    "&i" -> x1,
+    "A" -> x3,
+    "&z" -> x5,
+    "&x" -> x5
+  }
   val x10 = ("top",x9)
   begin loop f(n)=x8(x9), iteration vector x10 {
     initial assumption: f(0)=x7, f(x9)=x7, f(x9+1)=x7
     ## iteration 0, f(0)=x7, f(x9)=x7
       val x11 = ("B",x10)
       val x12 = x0 + (x9 -> Map())
-      val x13 = Map("top" -> x12)
-      val x14 = Map("&x" -> x5, "B" -> x13, "&z" -> x5, "&i" -> x1, "A" -> x3)
-      val x15 = Map("val" -> x11)
-      val x16 = Map("&x" -> x5, "&y" -> x15, "B" -> x13, "&z" -> x5, "&i" -> x1, "A" -> x3)
-      val x17 = Map("head" -> 0)
+      val x13 = {
+        "top" -> x12
+      }
+      val x14 = {
+        "&x" -> x5,
+        "B" -> x13,
+        "&z" -> x5,
+        "&i" -> x1,
+        "A" -> x3
+      }
+      val x15 = {
+        "val" -> x11
+      }
+      val x16 = {
+        "&x" -> x5,
+        "&y" -> x15,
+        "B" -> x13,
+        "&z" -> x5,
+        "&i" -> x1,
+        "A" -> x3
+      }
+      val x17 = {
+        "head" -> 0
+      }
       val x18 = x0 + (x9 -> x17)
-      val x19 = Map("top" -> x18)
-      val x20 = Map("&x" -> x5, "&y" -> x15, "B" -> x19, "&z" -> x5, "&i" -> x1, "A" -> x3)
-      val x21 = Map("head" -> 0, "tail" -> (A,top))
+      val x19 = {
+        "top" -> x18
+      }
+      val x20 = {
+        "&x" -> x5,
+        "&y" -> x15,
+        "B" -> x19,
+        "&z" -> x5,
+        "&i" -> x1,
+        "A" -> x3
+      }
+      val x21 = {
+        "head" -> 0,
+        "tail" -> (A,top)
+      }
       val x22 = x0 + (x9 -> x21)
-      val x23 = Map("top" -> x22)
-      val x24 = Map("&x" -> x5, "&y" -> x15, "B" -> x23, "&z" -> x5, "&i" -> x1, "A" -> x3)
-      val x25 = Map("&x" -> x15, "&y" -> x15, "B" -> x23, "&z" -> x5, "&i" -> x1, "A" -> x3)
-      val x26 = Map("val" -> 1)
-      val x27 = Map("&x" -> x15, "&y" -> x15, "B" -> x23, "&z" -> x5, "&i" -> x26, "A" -> x3)
-      val x28 = x9 < 0
+      val x23 = {
+        "top" -> x22
+      }
+      val x24 = {
+        "&x" -> x5,
+        "&y" -> x15,
+        "B" -> x23,
+        "&z" -> x5,
+        "&i" -> x1,
+        "A" -> x3
+      }
+      val x25 = {
+        "&x" -> x15,
+        "&y" -> x15,
+        "B" -> x23,
+        "&z" -> x5,
+        "&i" -> x1,
+        "A" -> x3
+      }
+      val x26 = {
+        "val" -> 1
+      }
+      val x27 = {
+        "&x" -> x15,
+        "&y" -> x15,
+        "B" -> x23,
+        "&z" -> x5,
+        "&i" -> x26,
+        "A" -> x3
+      }
+      val x28 = (x9 < 0)
       val x29 = fixindex { x9 => 1 }
-      val x30 = x29 < x9
+      val x30 = (x29 < x9)
       trip count: fixindex { x9 => 1 }
       approx f(0)=x7, f(x9)=x7, f(x9+1)=x27) = {
         lub_x8(x7,x7,x27)
         lub_x8_&x(x5,x5,x15)
         lub_x8_&x_val((A,top),(A,top),x11)
-        val x31 = "A" * -1
-        val x32 = "top" * -1
+        val x31 = ("A" * -1)
+        val x32 = ("top" * -1)
         val x33 = (x31,x32)
-        val x34 = x31 + "B"
-        val x35 = x10 + x32
+        val x34 = (x31 + "B")
+        val x35 = (x10 + x32)
         val x36 = (x34,x35)
         (A,top)
         (A,top)
         ("B",("top",x9))
         hit pair -- assume only 0 case differs (loop peeling)
-        val x37 = x9 + -1
+        val x37 = (x9 + -1)
         val x38 = ("top",x37)
         val x39 = ("B",x38)
-        val x40 = 0 < x9
-        val x41 = if (x40) x39 else (A,top)
-        val x42 = if (x40) x11 else (A,top)
+        val x40 = (0 < x9)
+        val x41 = if (x40) {
+          x39
+        } else {
+          (A,top)
+        }
+        val x42 = if (x40) {
+          x11
+        } else {
+          (A,top)
+        }
         Set(("val",(x41,x42)))
-        val x43 = Map("val" -> x41)
-        val x44 = Map("val" -> x42)
-        lub_x8_&y("undefined","undefined",x15)
-        lub_x8_&y_val("undefined","undefined",x11)
-        numerical diff d=f(x9+1)-f(x9) = ("B",("top",x9)) - "undefined" = {
-        } = "undefined"
-        recursive fun x8_&y_val (init "undefined")
-        val x45 = x8_&y_val(x9)
-        Set(("val",(x45,x11)))
-        val x46 = Map("val" -> x45)
-        lub_x8_B("undefined","undefined",x23)
-        lub_x8_B_top("undefined","undefined",x22)
-        "undefined"
-        "undefined"
-        Map() + (x9 -> Map("head" -> 0, "tail" -> (A,top)))
+        val x43 = {
+          "val" -> x41
+        }
+        val x44 = {
+          "val" -> x42
+        }
+        lub_x8_&y(<error>,<error>,x15)
+        lub_x8_&y_val(<error>,<error>,x11)
+        <error>
+        <error>
+        ("B",("top",x9))
+        hit pair -- assume only 0 case differs (loop peeling)
+        val x45 = if (x40) {
+          x39
+        } else {
+          <error>
+        }
+        val x46 = if (x40) {
+          x11
+        } else {
+          <error>
+        }
+        Set(("val",(x45,x46)))
+        val x47 = {
+          "val" -> x45
+        }
+        val x48 = {
+          "val" -> x46
+        }
+        lub_x8_B(<error>,<error>,x23)
+        lub_x8_B_top(<error>,<error>,x22)
+        <error>
+        <error>
+        {
+        } + (x9 -> {
+          "head" -> 0,
+          "tail" -> (A,top)
+        })
         hit update at loop index -- assume collect
-        val x47 = x9 + 1
-        val x48 = collect(x47) { x8_B_top_x9 => x21 }
-        Set(("top",(x48,x48)))
-        val x49 = Map("top" -> x48)
+        val x49 = (x9 + 1)
+        val x50 = collect(x49) { x8_B_top_x9 =>
+          x21
+        }
+        Set(("top",(x50,x50)))
+        val x51 = {
+          "top" -> x50
+        }
         lub_x8_&z(x5,x5,x5)
         lub_x8_&i(x1,x1,x26)
         lub_x8_&i_val(0,0,1)
@@ -100,463 +212,1095 @@
         } = 1
         poly: List(1)
         confirmed iterative loop, d = 1
-        Set(("val",(x9,x47)))
-        val x50 = Map("val" -> x9)
-        val x51 = Map("val" -> x47)
+        Set(("val",(x9,x49)))
+        val x52 = {
+          "val" -> x9
+        }
+        val x53 = {
+          "val" -> x49
+        }
         lub_x8_A(x3,x3,x3)
-        Set(("&z",(x5,x5)), ("&x",(x43,x44)), ("A",(x3,x3)), ("B",(x49,x49)), ("&y",(x46,x15)), ("&i",(x50,x51)))
-        val x52 = Map("&x" -> x43, "&y" -> x46, "B" -> x49, "&z" -> x5, "&i" -> x50, "A" -> x3)
-        val x53 = Map("&x" -> x44, "&y" -> x15, "B" -> x49, "&z" -> x5, "&i" -> x51, "A" -> x3)
-      } -> f(x9)=x52, f(x9+1)=x53
-    ## iteration 1, f(0)=x7, f(x9)=x52
-      val x54 = x9 < 100
-      val x55 = x48 + (x9 -> Map())
-      val x56 = Map("top" -> x55)
-      val x57 = Map("&x" -> x43, "&y" -> x46, "B" -> x56, "&z" -> x5, "&i" -> x50, "A" -> x3)
-      val x58 = Map("&x" -> x43, "&y" -> x15, "B" -> x56, "&z" -> x5, "&i" -> x50, "A" -> x3)
-      val x59 = Map("head" -> x9)
-      val x60 = x48 + (x9 -> x59)
-      val x61 = Map("top" -> x60)
-      val x62 = Map("&x" -> x43, "&y" -> x15, "B" -> x61, "&z" -> x5, "&i" -> x50, "A" -> x3)
-      val x63 = Map("head" -> x9, "tail" -> x41)
-      val x64 = x48 + (x9 -> x63)
-      val x65 = Map("top" -> x64)
-      val x66 = Map("&x" -> x43, "&y" -> x15, "B" -> x65, "&z" -> x5, "&i" -> x50, "A" -> x3)
-      val x67 = Map("&x" -> x15, "&y" -> x15, "B" -> x65, "&z" -> x5, "&i" -> x50, "A" -> x3)
-      val x68 = Map("&x" -> x15, "&y" -> x15, "B" -> x65, "&z" -> x5, "&i" -> x51, "A" -> x3)
-      val x69 = 100 < x9
+        Set(("&z",(x5,x5)), ("&i",(x52,x53)), ("&y",(x47,x48)), ("&x",(x43,x44)), ("B",(x51,x51)), ("A",(x3,x3)))
+        val x54 = {
+          "&x" -> x43,
+          "&y" -> x47,
+          "B" -> x51,
+          "&z" -> x5,
+          "&i" -> x52,
+          "A" -> x3
+        }
+        val x55 = {
+          "&x" -> x44,
+          "&y" -> x48,
+          "B" -> x51,
+          "&z" -> x5,
+          "&i" -> x53,
+          "A" -> x3
+        }
+      } -> f(x9)=x54, f(x9+1)=x55
+    ## iteration 1, f(0)=x7, f(x9)=x54
+      val x56 = (x9 < 100)
+      val x57 = x50 + (x9 -> Map())
+      val x58 = {
+        "top" -> x57
+      }
+      val x59 = {
+        "&x" -> x43,
+        "&y" -> x47,
+        "B" -> x58,
+        "&z" -> x5,
+        "&i" -> x52,
+        "A" -> x3
+      }
+      val x60 = {
+        "&x" -> x43,
+        "&y" -> x15,
+        "B" -> x58,
+        "&z" -> x5,
+        "&i" -> x52,
+        "A" -> x3
+      }
+      val x61 = {
+        "head" -> x9
+      }
+      val x62 = x50 + (x9 -> x61)
+      val x63 = {
+        "top" -> x62
+      }
+      val x64 = {
+        "&x" -> x43,
+        "&y" -> x15,
+        "B" -> x63,
+        "&z" -> x5,
+        "&i" -> x52,
+        "A" -> x3
+      }
+      val x65 = {
+        "head" -> x9,
+        "tail" -> x41
+      }
+      val x66 = x50 + (x9 -> x65)
+      val x67 = {
+        "top" -> x66
+      }
+      val x68 = {
+        "&x" -> x43,
+        "&y" -> x15,
+        "B" -> x67,
+        "&z" -> x5,
+        "&i" -> x52,
+        "A" -> x3
+      }
+      val x69 = {
+        "&x" -> x15,
+        "&y" -> x15,
+        "B" -> x67,
+        "&z" -> x5,
+        "&i" -> x52,
+        "A" -> x3
+      }
+      val x70 = {
+        "&x" -> x15,
+        "&y" -> x15,
+        "B" -> x67,
+        "&z" -> x5,
+        "&i" -> x53,
+        "A" -> x3
+      }
+      val x71 = (100 < x9)
       trip count: 100
-      approx f(0)=x7, f(x9)=x52, f(x9+1)=x68) = {
-        lub_x8(x7,x52,x68)
+      approx f(0)=x7, f(x9)=x54, f(x9+1)=x70) = {
+        lub_x8(x7,x54,x70)
         lub_x8_&x(x5,x43,x15)
         lub_x8_&x_val((A,top),x41,x11)
-        val x70 = "B" * -1
-        val x71 = x9 * -1
-        val x72 = x71 + 1
-        val x73 = (x32,x72)
-        val x74 = (x70,x73)
-        val x75 = if (x40) x74 else x33
-        val x76 = x11 + x75
+        val x72 = ("B" * -1)
+        val x73 = (x9 * -1)
+        val x74 = (x73 + 1)
+        val x75 = (x32,x74)
+        val x76 = (x72,x75)
+        val x77 = if (x40) {
+          x76
+        } else {
+          x33
+        }
+        val x78 = (x11 + x77)
         (A,top)
-        if (0 < x9) ("B",("top",x9 + -1)) else (A,top)
+        if ((0 < x9)) {
+          ("B",("top",(x9 + -1)))
+        } else {
+          (A,top)
+        }
         ("B",("top",x9))
         hit pair -- assume only 0 case differs (loop peeling)
         Set(("val",(x41,x42)))
-        lub_x8_&y("undefined",x46,x15)
-        lub_x8_&y_val("undefined",x45,x11)
-        val x77 = x45 * -1
-        val x78 = x11 + x77
-        "undefined"
-        x8_&y_val(x9)
+        lub_x8_&y(<error>,x47,x15)
+        lub_x8_&y_val(<error>,x45,x11)
+        val x79 = if (x40) {
+          x76
+        } else {
+          <error>
+        }
+        val x80 = (x11 + x79)
+        <error>
+        if ((0 < x9)) {
+          ("B",("top",(x9 + -1)))
+        } else {
+          <error>
+        }
         ("B",("top",x9))
         hit pair -- assume only 0 case differs (loop peeling)
-        val x79 = if (x40) x39 else "undefined"
-        val x80 = if (x40) x11 else "undefined"
-        Set(("val",(x79,x80)))
-        val x81 = Map("val" -> x79)
-        val x82 = Map("val" -> x80)
-        lub_x8_B("undefined",x49,x65)
-        lub_x8_B_top("undefined",x48,x64)
-        "undefined"
-        collect(x9 + 1) { x8_B_top_x9 => Map("head" -> 0, "tail" -> (A,top)) }
-        collect(x9 + 1) { x8_B_top_x9 => Map("head" -> 0, "tail" -> (A,top)) } + (x9 -> Map("head" -> x9, "tail" -> if (0 < x9) ("B",("top",x9 + -1)) else (A,top)))
+        Set(("val",(x45,x46)))
+        lub_x8_B(<error>,x51,x67)
+        lub_x8_B_top(<error>,x50,x66)
+        <error>
+        collect((x9 + 1)) { x8_B_top_x9 =>
+          {
+            "head" -> 0,
+            "tail" -> (A,top)
+          }
+        }
+        collect((x9 + 1)) { x8_B_top_x9 =>
+          {
+            "head" -> 0,
+            "tail" -> (A,top)
+          }
+        } + (x9 -> {
+          "head" -> x9,
+          "tail" -> if ((0 < x9)) {
+            ("B",("top",(x9 + -1)))
+          } else {
+            (A,top)
+          }
+        })
         hit update at loop index -- assume collect
-        val x83 = 0 < x8_B_top_x9
-        val x84 = x8_B_top_x9 + -1
-        val x85 = ("top",x84)
-        val x86 = ("B",x85)
-        val x87 = if (x83) x86 else (A,top)
-        val x88 = Map("head" -> x8_B_top_x9, "tail" -> x87)
-        val x89 = collect(x47) { x8_B_top_x9 => x88 }
-        Set(("top",(x89,x89)))
-        val x90 = Map("top" -> x89)
+        val x81 = (0 < x8_B_top_x9)
+        val x82 = (x8_B_top_x9 + -1)
+        val x83 = ("top",x82)
+        val x84 = ("B",x83)
+        val x85 = if (x81) {
+          x84
+        } else {
+          (A,top)
+        }
+        val x86 = {
+          "head" -> x8_B_top_x9,
+          "tail" -> x85
+        }
+        val x87 = collect(x49) { x8_B_top_x9 =>
+          x86
+        }
+        Set(("top",(x87,x87)))
+        val x88 = {
+          "top" -> x87
+        }
         lub_x8_&z(x5,x5,x5)
-        lub_x8_&i(x1,x50,x51)
-        lub_x8_&i_val(0,x9,x47)
-        numerical diff d=f(x9+1)-f(x9) = x9 + 1 - x9 = {
+        lub_x8_&i(x1,x52,x53)
+        lub_x8_&i_val(0,x9,x49)
+        numerical diff d=f(x9+1)-f(x9) = (x9 + 1) - x9 = {
         } = 1
         poly: List(1)
         confirmed iterative loop, d = 1
-        Set(("val",(x9,x47)))
+        Set(("val",(x9,x49)))
         lub_x8_A(x3,x3,x3)
-        Set(("&z",(x5,x5)), ("&x",(x43,x44)), ("A",(x3,x3)), ("&y",(x81,x82)), ("&i",(x50,x51)), ("B",(x90,x90)))
-        val x91 = Map("&x" -> x43, "&y" -> x81, "B" -> x90, "&z" -> x5, "&i" -> x50, "A" -> x3)
-        val x92 = Map("&x" -> x44, "&y" -> x82, "B" -> x90, "&z" -> x5, "&i" -> x51, "A" -> x3)
-      } -> f(x9)=x91, f(x9+1)=x92
-    ## iteration 2, f(0)=x7, f(x9)=x91
-      val x93 = x89 + (x9 -> Map())
-      val x94 = Map("top" -> x93)
-      val x95 = Map("&x" -> x43, "&y" -> x81, "B" -> x94, "&z" -> x5, "&i" -> x50, "A" -> x3)
-      val x96 = Map("&x" -> x43, "&y" -> x15, "B" -> x94, "&z" -> x5, "&i" -> x50, "A" -> x3)
-      val x97 = x89 + (x9 -> x59)
-      val x98 = Map("top" -> x97)
-      val x99 = Map("&x" -> x43, "&y" -> x15, "B" -> x98, "&z" -> x5, "&i" -> x50, "A" -> x3)
-      val x100 = x89 + (x9 -> x63)
-      val x101 = Map("top" -> x100)
-      val x102 = Map("&x" -> x43, "&y" -> x15, "B" -> x101, "&z" -> x5, "&i" -> x50, "A" -> x3)
-      val x103 = Map("&x" -> x15, "&y" -> x15, "B" -> x101, "&z" -> x5, "&i" -> x50, "A" -> x3)
-      val x104 = Map("&x" -> x15, "&y" -> x15, "B" -> x101, "&z" -> x5, "&i" -> x51, "A" -> x3)
+        Set(("&z",(x5,x5)), ("&i",(x52,x53)), ("&y",(x47,x48)), ("&x",(x43,x44)), ("A",(x3,x3)), ("B",(x88,x88)))
+        val x89 = {
+          "&x" -> x43,
+          "&y" -> x47,
+          "B" -> x88,
+          "&z" -> x5,
+          "&i" -> x52,
+          "A" -> x3
+        }
+        val x90 = {
+          "&x" -> x44,
+          "&y" -> x48,
+          "B" -> x88,
+          "&z" -> x5,
+          "&i" -> x53,
+          "A" -> x3
+        }
+      } -> f(x9)=x89, f(x9+1)=x90
+    ## iteration 2, f(0)=x7, f(x9)=x89
+      val x91 = x87 + (x9 -> Map())
+      val x92 = {
+        "top" -> x91
+      }
+      val x93 = {
+        "&x" -> x43,
+        "&y" -> x47,
+        "B" -> x92,
+        "&z" -> x5,
+        "&i" -> x52,
+        "A" -> x3
+      }
+      val x94 = {
+        "&x" -> x43,
+        "&y" -> x15,
+        "B" -> x92,
+        "&z" -> x5,
+        "&i" -> x52,
+        "A" -> x3
+      }
+      val x95 = x87 + (x9 -> x61)
+      val x96 = {
+        "top" -> x95
+      }
+      val x97 = {
+        "&x" -> x43,
+        "&y" -> x15,
+        "B" -> x96,
+        "&z" -> x5,
+        "&i" -> x52,
+        "A" -> x3
+      }
+      val x98 = x87 + (x9 -> x65)
+      val x99 = {
+        "top" -> x98
+      }
+      val x100 = {
+        "&x" -> x43,
+        "&y" -> x15,
+        "B" -> x99,
+        "&z" -> x5,
+        "&i" -> x52,
+        "A" -> x3
+      }
+      val x101 = {
+        "&x" -> x15,
+        "&y" -> x15,
+        "B" -> x99,
+        "&z" -> x5,
+        "&i" -> x52,
+        "A" -> x3
+      }
+      val x102 = {
+        "&x" -> x15,
+        "&y" -> x15,
+        "B" -> x99,
+        "&z" -> x5,
+        "&i" -> x53,
+        "A" -> x3
+      }
       trip count: 100
-      approx f(0)=x7, f(x9)=x91, f(x9+1)=x104) = {
-        lub_x8(x7,x91,x104)
+      approx f(0)=x7, f(x9)=x89, f(x9+1)=x102) = {
+        lub_x8(x7,x89,x102)
         lub_x8_&x(x5,x43,x15)
         lub_x8_&x_val((A,top),x41,x11)
         (A,top)
-        if (0 < x9) ("B",("top",x9 + -1)) else (A,top)
+        if ((0 < x9)) {
+          ("B",("top",(x9 + -1)))
+        } else {
+          (A,top)
+        }
         ("B",("top",x9))
         hit pair -- assume only 0 case differs (loop peeling)
         Set(("val",(x41,x42)))
-        lub_x8_&y("undefined",x81,x15)
-        lub_x8_&y_val("undefined",x79,x11)
-        val x105 = if (x40) x74 else "undefined"
-        val x106 = x11 + x105
-        "undefined"
-        if (0 < x9) ("B",("top",x9 + -1)) else "undefined"
+        lub_x8_&y(<error>,x47,x15)
+        lub_x8_&y_val(<error>,x45,x11)
+        <error>
+        if ((0 < x9)) {
+          ("B",("top",(x9 + -1)))
+        } else {
+          <error>
+        }
         ("B",("top",x9))
         hit pair -- assume only 0 case differs (loop peeling)
-        Set(("val",(x79,x80)))
-        lub_x8_B("undefined",x90,x101)
-        lub_x8_B_top("undefined",x89,x100)
-        "undefined"
-        collect(x9 + 1) { x8_B_top_x9 => Map("head" -> x8_B_top_x9, "tail" -> if (0 < x8_B_top_x9) ("B",("top",x8_B_top_x9 + -1)) else (A,top)) }
-        collect(x9 + 1) { x8_B_top_x9 => Map("head" -> x8_B_top_x9, "tail" -> if (0 < x8_B_top_x9) ("B",("top",x8_B_top_x9 + -1)) else (A,top)) } + (x9 -> Map("head" -> x9, "tail" -> if (0 < x9) ("B",("top",x9 + -1)) else (A,top)))
+        Set(("val",(x45,x46)))
+        lub_x8_B(<error>,x88,x99)
+        lub_x8_B_top(<error>,x87,x98)
+        <error>
+        collect((x9 + 1)) { x8_B_top_x9 =>
+          {
+            "head" -> x8_B_top_x9,
+            "tail" -> if ((0 < x8_B_top_x9)) {
+              ("B",("top",(x8_B_top_x9 + -1)))
+            } else {
+              (A,top)
+            }
+          }
+        }
+        collect((x9 + 1)) { x8_B_top_x9 =>
+          {
+            "head" -> x8_B_top_x9,
+            "tail" -> if ((0 < x8_B_top_x9)) {
+              ("B",("top",(x8_B_top_x9 + -1)))
+            } else {
+              (A,top)
+            }
+          }
+        } + (x9 -> {
+          "head" -> x9,
+          "tail" -> if ((0 < x9)) {
+            ("B",("top",(x9 + -1)))
+          } else {
+            (A,top)
+          }
+        })
         hit update at loop index -- assume collect
-        Set(("top",(x89,x89)))
+        Set(("top",(x87,x87)))
         lub_x8_&z(x5,x5,x5)
-        lub_x8_&i(x1,x50,x51)
-        lub_x8_&i_val(0,x9,x47)
-        numerical diff d=f(x9+1)-f(x9) = x9 + 1 - x9 = {
+        lub_x8_&i(x1,x52,x53)
+        lub_x8_&i_val(0,x9,x49)
+        numerical diff d=f(x9+1)-f(x9) = (x9 + 1) - x9 = {
         } = 1
         poly: List(1)
         confirmed iterative loop, d = 1
-        Set(("val",(x9,x47)))
+        Set(("val",(x9,x49)))
         lub_x8_A(x3,x3,x3)
-        Set(("&z",(x5,x5)), ("&x",(x43,x44)), ("A",(x3,x3)), ("&y",(x81,x82)), ("&i",(x50,x51)), ("B",(x90,x90)))
-      } -> f(x9)=x91, f(x9+1)=x92
+        Set(("&z",(x5,x5)), ("&i",(x52,x53)), ("&y",(x47,x48)), ("&x",(x43,x44)), ("A",(x3,x3)), ("B",(x88,x88)))
+      } -> f(x9)=x89, f(x9+1)=x90
       create function def f(n) = x8(x9) {
-        val x107 = 1 < x9
-        val x108 = if (x107) x39 else (A,top)
-        val x109 = Map("val" -> x108)
-        val x110 = if (x107) x39 else "undefined"
-        val x111 = Map("val" -> x110)
-        val x112 = collect(x9) { x8_B_top_x9 => x88 }
-        val x113 = Map("top" -> x112)
-        val x114 = Map("&x" -> x109, "&y" -> x111, "B" -> x113, "&z" -> x5, "&i" -> x50, "A" -> x3)
-        val x115 = if (x40) x108 else (A,top)
-        val x116 = Map("val" -> x115)
-        val x117 = if (x40) x111 else "nil"
-        val x118 = if (x40) x113 else "nil"
-        val x119 = if (x40) x9 else 0
-        val x120 = Map("val" -> x119)
-        val x121 = Map("&x" -> x116, "&y" -> x117, "B" -> x118, "&z" -> x5, "&i" -> x120, "A" -> x3)
-        val x122 = x8_&x_val(x37)
-        val x8_&x_val = { x9 => x115 }
-        val x8_&x = { x9 => x116 }
-        val x123 = x8_&y(x37)
-        val x8_&y = { x9 => x117 }
-        val x124 = x8_B(x37)
-        val x8_B = { x9 => x118 }
+        val x103 = (1 < x9)
+        val x104 = if (x103) {
+          x39
+        } else {
+          (A,top)
+        }
+        val x105 = {
+          "val" -> x104
+        }
+        val x106 = if (x103) {
+          x39
+        } else {
+          <error>
+        }
+        val x107 = {
+          "val" -> x106
+        }
+        val x108 = collect(x9) { x8_B_top_x9 =>
+          x86
+        }
+        val x109 = {
+          "top" -> x108
+        }
+        val x110 = {
+          "&x" -> x105,
+          "&y" -> x107,
+          "B" -> x109,
+          "&z" -> x5,
+          "&i" -> x52,
+          "A" -> x3
+        }
+        val x111 = if (x40) {
+          x104
+        } else {
+          (A,top)
+        }
+        val x112 = {
+          "val" -> x111
+        }
+        val x113 = if (x40) {
+          x107
+        } else {
+          <error>
+        }
+        val x114 = if (x40) {
+          x109
+        } else {
+          <error>
+        }
+        val x115 = if (x40) {
+          x9
+        } else {
+          0
+        }
+        val x116 = {
+          "val" -> x115
+        }
+        val x117 = {
+          "&x" -> x112,
+          "&y" -> x113,
+          "B" -> x114,
+          "&z" -> x5,
+          "&i" -> x116,
+          "A" -> x3
+        }
+        val x118 = x8_&x_val(x37)
+        val x8_&x_val = { x9 => x111 }
+        val x8_&x = { x9 => x112 }
+        val x119 = x8_&y(x37)
+        val x8_&y = { x9 => x113 }
+        val x120 = x8_B(x37)
+        val x8_B = { x9 => x114 }
         val x8_&z_val = { x9 => (A,top) }
         val x8_&z = { x9 => x5 }
-        val x125 = x8_&i_val(x37)
-        val x8_&i_val = { x9 => x119 }
-        val x8_&i = { x9 => x120 }
+        val x121 = x8_&i_val(x37)
+        val x8_&i_val = { x9 => x115 }
+        val x8_&i = { x9 => x116 }
         val x8_A_top = { x9 => Map() }
         val x8_A = { x9 => x3 }
-        val x8 = { x9 => x121 }
+        val x8 = { x9 => x117 }
       }
-      val x126 = Map("val" -> (B,(top,99)))
-      val x127 = collect(100) { x8_B_top_x9 => x88 }
-      val x128 = Map("top" -> x127)
-      val x129 = Map("val" -> 100)
-      val x130 = Map("&x" -> x126, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i" -> x129, "A" -> x3)
-    } end loop x8, trip count 100, state x130
-    val x131 = Map("&x" -> x126, "&s" -> x1, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i" -> x129, "A" -> x3)
-    val x132 = Map("&x" -> x126, "&s" -> x1, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x129, "&i" -> x129, "A" -> x3)
-    val x133 = Map("&x" -> x126, "&s" -> x1, "&x2" -> x126, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x129, "&i" -> x129, "A" -> x3)
-    val x136 = ("top",x135)
-    begin loop f(n)=x134(x135), iteration vector x136 {
-      initial assumption: f(0)=x133, f(x135)=x133, f(x135+1)=x133
-    ## iteration 0, f(0)=x133, f(x135)=x133
-      val x137 = Map("head" -> 99, "tail" -> (B,(top,98)))
-      val x138 = Map("val" -> 99)
-      val x139 = Map("&x" -> x126, "&s" -> x1, "&x2" -> x126, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x138, "&i" -> x129, "A" -> x3)
-      val x140 = Map("val" -> (B,(top,98)))
-      val x141 = Map("&x" -> x126, "&s" -> x1, "&x2" -> x140, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x138, "&i" -> x129, "A" -> x3)
-      val x142 = Map("&x" -> x126, "&s" -> x138, "&x2" -> x140, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x138, "&i" -> x129, "A" -> x3)
-      val x143 = x135 < 0
-      val x144 = fixindex { x135 => 1 }
-      val x145 = x144 < x135
-      trip count: fixindex { x135 => 1 }
-      approx f(0)=x133, f(x135)=x133, f(x135+1)=x142) = {
-        lub_x134(x133,x133,x142)
-        lub_x134_&x(x126,x126,x126)
-        lub_x134_&s(x1,x1,x138)
-        lub_x134_&s_val(0,0,99)
-        numerical diff d=f(x135+1)-f(x135) = 99 - 0 = {
+      val x122 = {
+        "val" -> (B,(top,99))
+      }
+      val x123 = collect(100) { x8_B_top_x9 =>
+        x86
+      }
+      val x124 = {
+        "top" -> x123
+      }
+      val x125 = {
+        "val" -> 100
+      }
+      val x126 = {
+        "&x" -> x122,
+        "&y" -> x122,
+        "B" -> x124,
+        "&z" -> x5,
+        "&i" -> x125,
+        "A" -> x3
+      }
+    } end loop x8, trip count 100, state x126
+    val x127 = {
+      "&x" -> x122,
+      "&s" -> x1,
+      "&y" -> x122,
+      "B" -> x124,
+      "&z" -> x5,
+      "&i" -> x125,
+      "A" -> x3
+    }
+    val x128 = {
+      "&x" -> x122,
+      "&s" -> x1,
+      "&y" -> x122,
+      "B" -> x124,
+      "&z" -> x5,
+      "&i2" -> x125,
+      "&i" -> x125,
+      "A" -> x3
+    }
+    val x129 = {
+      "&x" -> x122,
+      "&s" -> x1,
+      "&x2" -> x122,
+      "&y" -> x122,
+      "B" -> x124,
+      "&z" -> x5,
+      "&i2" -> x125,
+      "&i" -> x125,
+      "A" -> x3
+    }
+    val x132 = ("top",x131)
+    begin loop f(n)=x130(x131), iteration vector x132 {
+      initial assumption: f(0)=x129, f(x131)=x129, f(x131+1)=x129
+    ## iteration 0, f(0)=x129, f(x131)=x129
+      val x133 = {
+        "head" -> 99,
+        "tail" -> (B,(top,98))
+      }
+      val x134 = {
+        "val" -> 99
+      }
+      val x135 = {
+        "&x" -> x122,
+        "&s" -> x1,
+        "&x2" -> x122,
+        "&y" -> x122,
+        "B" -> x124,
+        "&z" -> x5,
+        "&i2" -> x134,
+        "&i" -> x125,
+        "A" -> x3
+      }
+      val x136 = {
+        "val" -> (B,(top,98))
+      }
+      val x137 = {
+        "&x" -> x122,
+        "&s" -> x1,
+        "&x2" -> x136,
+        "&y" -> x122,
+        "B" -> x124,
+        "&z" -> x5,
+        "&i2" -> x134,
+        "&i" -> x125,
+        "A" -> x3
+      }
+      val x138 = {
+        "&x" -> x122,
+        "&s" -> x134,
+        "&x2" -> x136,
+        "&y" -> x122,
+        "B" -> x124,
+        "&z" -> x5,
+        "&i2" -> x134,
+        "&i" -> x125,
+        "A" -> x3
+      }
+      val x139 = (x131 < 0)
+      val x140 = fixindex { x131 => 1 }
+      val x141 = (x140 < x131)
+      trip count: fixindex { x131 => 1 }
+      approx f(0)=x129, f(x131)=x129, f(x131+1)=x138) = {
+        lub_x130(x129,x129,x138)
+        lub_x130_&x(x122,x122,x122)
+        lub_x130_&s(x1,x1,x134)
+        lub_x130_&s_val(0,0,99)
+        numerical diff d=f(x131+1)-f(x131) = 99 - 0 = {
         } = 99
         poly: List(99)
         confirmed iterative loop, d = 99
-        val x146 = x135 * 99
-        val x147 = x135 + 1
-        val x148 = x146 + 99
-        Set(("val",(x146,x148)))
-        val x149 = Map("val" -> x146)
-        val x150 = Map("val" -> x148)
-        lub_x134_&x2(x126,x126,x140)
-        lub_x134_&x2_val((B,(top,99)),(B,(top,99)),(B,(top,98)))
-        val x151 = (x32,-99)
-        val x152 = (x70,x151)
-        numerical diff d=f(x135+1)-f(x135) = (B,(top,98)) - (B,(top,99)) = {
+        val x142 = (x131 * 99)
+        val x143 = (x131 + 1)
+        val x144 = (x142 + 99)
+        Set(("val",(x142,x144)))
+        val x145 = {
+          "val" -> x142
+        }
+        val x146 = {
+          "val" -> x144
+        }
+        lub_x130_&x2(x122,x122,x136)
+        lub_x130_&x2_val((B,(top,99)),(B,(top,99)),(B,(top,98)))
+        val x147 = (x32,-99)
+        val x148 = (x72,x147)
+        numerical diff d=f(x131+1)-f(x131) = (B,(top,98)) - (B,(top,99)) = {
         } = (0,(0,-1))
         poly: List((0,(0,-1)))
         confirmed iterative loop, d = (0,(0,-1))
-        val x153 = x135 * -1
-        val x154 = (0,x153)
-        val x155 = (0,x154)
-        val x156 = x153 + 99
-        val x157 = ("top",x156)
-        val x158 = ("B",x157)
-        val x159 = x153 + -1
-        val x160 = (0,x159)
-        val x161 = (0,x160)
-        val x162 = x153 + 98
-        val x163 = ("top",x162)
-        val x164 = ("B",x163)
-        Set(("val",(x158,x164)))
-        val x165 = Map("val" -> x158)
-        val x166 = Map("val" -> x164)
-        lub_x134_&y(x126,x126,x126)
-        lub_x134_B(x128,x128,x128)
-        lub_x134_&z(x5,x5,x5)
-        lub_x134_&i2(x129,x129,x138)
-        lub_x134_&i2_val(100,100,99)
-        numerical diff d=f(x135+1)-f(x135) = 99 - 100 = {
+        val x149 = (x131 * -1)
+        val x150 = (0,x149)
+        val x151 = (0,x150)
+        val x152 = (x149 + 99)
+        val x153 = ("top",x152)
+        val x154 = ("B",x153)
+        val x155 = (x149 + -1)
+        val x156 = (0,x155)
+        val x157 = (0,x156)
+        val x158 = (x149 + 98)
+        val x159 = ("top",x158)
+        val x160 = ("B",x159)
+        Set(("val",(x154,x160)))
+        val x161 = {
+          "val" -> x154
+        }
+        val x162 = {
+          "val" -> x160
+        }
+        lub_x130_&y(x122,x122,x122)
+        lub_x130_B(x124,x124,x124)
+        lub_x130_&z(x5,x5,x5)
+        lub_x130_&i2(x125,x125,x134)
+        lub_x130_&i2_val(100,100,99)
+        numerical diff d=f(x131+1)-f(x131) = 99 - 100 = {
         } = -1
         poly: List(-1)
         confirmed iterative loop, d = -1
-        val x167 = x153 + 100
-        Set(("val",(x167,x156)))
-        val x168 = Map("val" -> x167)
-        val x169 = Map("val" -> x156)
-        lub_x134_&i(x129,x129,x129)
-        lub_x134_A(x3,x3,x3)
-        Set(("&x2",(x165,x166)), ("&z",(x5,x5)), ("&i",(x129,x129)), ("B",(x128,x128)), ("&i2",(x168,x169)), ("&y",(x126,x126)), ("&x",(x126,x126)), ("A",(x3,x3)), ("&s",(x149,x150)))
-        val x170 = Map("&x" -> x126, "&s" -> x149, "&x2" -> x165, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x168, "&i" -> x129, "A" -> x3)
-        val x171 = Map("&x" -> x126, "&s" -> x150, "&x2" -> x166, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x169, "&i" -> x129, "A" -> x3)
-      } -> f(x135)=x170, f(x135+1)=x171
-    ## iteration 1, f(0)=x133, f(x135)=x170
-      val x172 = x135 < 99
-      val x173 = if (x172) x164 else (A,top)
-      val x174 = Map("head" -> x156, "tail" -> x173)
-      val x175 = Map("&x" -> x126, "&s" -> x149, "&x2" -> x165, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x169, "&i" -> x129, "A" -> x3)
-      val x176 = Map("val" -> x173)
-      val x177 = Map("&x" -> x126, "&s" -> x149, "&x2" -> x176, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x169, "&i" -> x129, "A" -> x3)
-      val x178 = x135 * 98
-      val x179 = x178 + 99
-      val x180 = Map("val" -> x179)
-      val x181 = Map("&x" -> x126, "&s" -> x180, "&x2" -> x176, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x169, "&i" -> x129, "A" -> x3)
-      trip count: fixindex { x135 => 1 }
-      approx f(0)=x133, f(x135)=x170, f(x135+1)=x181) = {
-        lub_x134(x133,x170,x181)
-        lub_x134_&x(x126,x126,x126)
-        lub_x134_&s(x1,x149,x180)
-        lub_x134_&s_val(0,x146,x179)
-        numerical diff d=f(x135+1)-f(x135) = x135 * 98 + 99 - x135 * 99 = {
-          val x182 = x135 * -99
-          val x183 = x182 + 99
-        } = x135 * -1 + 99
-        poly: List(99, -1)
-        found 2nd order polynomial: f'(x135)=-1*x135+99 -> f(x135)=-1*x135/2(x135+1)+99*x135
-        val x184 = x135 + -1
-        val x185 = x135 * x135
-        val x186 = x185 + x153
-        val x187 = x135 * 0.5
-        val x188 = x135 * x187
-        val x189 = x135 * -0.5
-        val x190 = x188 + x189
-        val x191 = x135 * x189
-        val x192 = x191 + x187
-        val x193 = x187 + x146
-        val x194 = x191 + x193
-        val x195 = x185 + x135
-        val x196 = x188 + x187
-        val x197 = x191 + x189
-        val x198 = x189 + x148
-        val x199 = x191 + x198
-        x135 * x135 * -0.5 + x135 * 0.5 + x135 * 99
-        x135 * x135 * -0.5 + x135 * -0.5 + x135 * 99 + 99
-        val x200 = x189 + x182
-        val x201 = x188 + x200
-        val x202 = x189 + x183
-        val x203 = x188 + x202
-        val x204 = x146 + x203
-        val x205 = x189 + x204
-        val x206 = x191 + x205
-        x135 * x135 * -0.5 + x135 * -0.5 + x135 * 99 + x135 * x135 * 0.5 + x135 * -0.5 + x135 * -99 + 99
-        poly2: List(99, -1)
-        Set(("val",(x194,x199)))
-        val x207 = Map("val" -> x194)
-        val x208 = Map("val" -> x199)
-        lub_x134_&x2(x126,x165,x176)
-        lub_x134_&x2_val((B,(top,99)),x158,x173)
-        (B,(top,99))
-        ("B",("top",x135 * -1 + 99))
-        if (x135 < 99) ("B",("top",x135 * -1 + 98)) else (A,top)
-        hit if dual -- assume only last case differs
-        val x209 = x153 + 1
-        val x210 = x135 < 100
-        val x211 = if (x210) x158 else (A,top)
-        Set(("val",(x211,x173)))
-        val x212 = Map("val" -> x211)
-        lub_x134_&y(x126,x126,x126)
-        lub_x134_B(x128,x128,x128)
-        lub_x134_&z(x5,x5,x5)
-        lub_x134_&i2(x129,x168,x169)
-        lub_x134_&i2_val(100,x167,x156)
-        numerical diff d=f(x135+1)-f(x135) = x135 * -1 + 99 - x135 * -1 + 100 = {
-          val x213 = x135 + -100
-        } = -1
-        poly: List(-1)
-        confirmed iterative loop, d = -1
-        Set(("val",(x167,x156)))
-        lub_x134_&i(x129,x129,x129)
-        lub_x134_A(x3,x3,x3)
-        Set(("&z",(x5,x5)), ("&i",(x129,x129)), ("&x2",(x212,x176)), ("B",(x128,x128)), ("&s",(x207,x208)), ("&i2",(x168,x169)), ("&y",(x126,x126)), ("&x",(x126,x126)), ("A",(x3,x3)))
-        val x214 = Map("&x" -> x126, "&s" -> x207, "&x2" -> x212, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x168, "&i" -> x129, "A" -> x3)
-        val x215 = Map("&x" -> x126, "&s" -> x208, "&x2" -> x176, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x169, "&i" -> x129, "A" -> x3)
-      } -> f(x135)=x214, f(x135+1)=x215
-    ## iteration 2, f(0)=x133, f(x135)=x214
-      hit2: x135<100 and ¬x135<100-1 implies x135=100-1 in if (x172) x164 else (A,top)
-      val x216 = if (x210) x174 else Map()
-      val x217 = if (x210) x156 else "undefined"
-      val x218 = Map("val" -> x217)
-      val x219 = Map("&x" -> x126, "&s" -> x207, "&x2" -> x212, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x218, "&i" -> x129, "A" -> x3)
-      hit2: x135<100 and ¬x135<100-1 implies x135=100-1 in if (x172) x164 else (A,top)
-      hit2: x135<100 and ¬x135<100-1 implies x135=100-1 in if (x172) x164 else (A,top)
-      val x220 = if (x210) x173 else "undefined"
-      val x221 = Map("val" -> x220)
-      val x222 = Map("&x" -> x126, "&s" -> x207, "&x2" -> x221, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x218, "&i" -> x129, "A" -> x3)
-      val x223 = x146 + x217
-      val x224 = x187 + x223
-      val x225 = x191 + x224
-      val x226 = Map("val" -> x225)
-      val x227 = Map("&x" -> x126, "&s" -> x226, "&x2" -> x221, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x218, "&i" -> x129, "A" -> x3)
-      hit2: x135<100 and ¬x135<100-1 implies x135=100-1 in if (x172) x164 else (A,top)
-      val x228 = 100 < x135
-      hit2: x135<100 and ¬x135<100-1 implies x135=100-1 in if (x172) x164 else (A,top)
-      trip count: 100
-      val x229 = x187 + x179
-      val x230 = x191 + x229
-      val x231 = Map("val" -> x230)
-      hit2: x135<100 and ¬x135<100-1 implies x135=100-1 in if (x172) x164 else (A,top)
-      val x232 = Map("&x" -> x126, "&s" -> x231, "&x2" -> x176, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x169, "&i" -> x129, "A" -> x3)
-      approx f(0)=x133, f(x135)=x214, f(x135+1)=x232) = {
-        lub_x134(x133,x214,x232)
-        lub_x134_&x(x126,x126,x126)
-        lub_x134_&s(x1,x207,x231)
-        lub_x134_&s_val(0,x194,x230)
-        numerical diff d=f(x135+1)-f(x135) = x135 * x135 * -0.5 + x135 * 0.5 + x135 * 98 + 99 - x135 * x135 * -0.5 + x135 * 0.5 + x135 * 99 = {
-          val x233 = x178 + x203
-          val x234 = x187 + x233
-          val x235 = x191 + x234
-        } = x135 * x135 * -0.5 + x135 * 0.5 + x135 * 98 + x135 * x135 * 0.5 + x135 * -0.5 + x135 * -99 + 99
-        poly: List(99, -1)
-        found 2nd order polynomial: f'(x135)=-1*x135+99 -> f(x135)=-1*x135/2(x135+1)+99*x135
-        x135 * x135 * -0.5 + x135 * 0.5 + x135 * 99
-        x135 * x135 * -0.5 + x135 * -0.5 + x135 * 99 + 99
-        x135 * x135 * -0.5 + x135 * -0.5 + x135 * 99 + x135 * x135 * 0.5 + x135 * -0.5 + x135 * -99 + 99
-        poly2: List(99, -1)
-        Set(("val",(x194,x199)))
-        lub_x134_&x2(x126,x212,x176)
-        lub_x134_&x2_val((B,(top,99)),x211,x173)
-        (B,(top,99))
-        if (x135 < 100) ("B",("top",x135 * -1 + 99)) else (A,top)
-        if (x135 < 99) ("B",("top",x135 * -1 + 98)) else (A,top)
-        hit if dual -- assume only last case differs
-        Set(("val",(x211,x173)))
-        lub_x134_&y(x126,x126,x126)
-        lub_x134_B(x128,x128,x128)
-        lub_x134_&z(x5,x5,x5)
-        lub_x134_&i2(x129,x168,x169)
-        lub_x134_&i2_val(100,x167,x156)
-        numerical diff d=f(x135+1)-f(x135) = x135 * -1 + 99 - x135 * -1 + 100 = {
-        } = -1
-        poly: List(-1)
-        confirmed iterative loop, d = -1
-        Set(("val",(x167,x156)))
-        lub_x134_&i(x129,x129,x129)
-        lub_x134_A(x3,x3,x3)
-        Set(("&z",(x5,x5)), ("&i",(x129,x129)), ("&x2",(x212,x176)), ("B",(x128,x128)), ("&s",(x207,x208)), ("&i2",(x168,x169)), ("&y",(x126,x126)), ("&x",(x126,x126)), ("A",(x3,x3)))
-      } -> f(x135)=x214, f(x135+1)=x215
-      create function def f(n) = x134(x135) {
-        val x236 = 0 < x135
-        val x237 = x189 + 0.5
-        val x238 = x187 + -0.5
-        val x239 = x187 + x238
-        val x240 = x191 + x239
-        val x241 = x146 + -99
-        val x242 = x146 + 0.5
-        val x243 = x189 + x242
-        val x244 = x189 + x146
-        val x245 = x187 + x244
-        val x246 = x187 + x245
-        val x247 = x191 + x246
-        val x248 = Map("val" -> x247)
-        val x249 = Map("&x" -> x126, "&s" -> x248, "&x2" -> x212, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x168, "&i" -> x129, "A" -> x3)
-        val x250 = if (x236) x247 else 0
-        val x251 = Map("val" -> x250)
-        val x252 = if (x236) x211 else (B,(top,99))
-        val x253 = Map("val" -> x252)
-        val x254 = if (x236) x167 else 100
-        val x255 = Map("val" -> x254)
-        val x256 = Map("&x" -> x126, "&s" -> x251, "&x2" -> x253, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x255, "&i" -> x129, "A" -> x3)
-        val x134_&x_val = { x135 => (B,(top,99)) }
-        val x134_&x = { x135 => x126 }
-        val x257 = x134_&s_val(x184)
-        val x134_&s_val = { x135 => x250 }
-        val x134_&s = { x135 => x251 }
-        val x258 = x134_&x2_val(x184)
-        val x134_&x2_val = { x135 => x252 }
-        val x134_&x2 = { x135 => x253 }
-        val x134_&y_val = { x135 => (B,(top,99)) }
-        val x134_&y = { x135 => x126 }
-        val x134_B_top = { x135 => x127 }
-        val x134_B = { x135 => x128 }
-        val x134_&z_val = { x135 => (A,top) }
-        val x134_&z = { x135 => x5 }
-        val x259 = x134_&i2_val(x184)
-        val x134_&i2_val = { x135 => x254 }
-        val x134_&i2 = { x135 => x255 }
-        val x134_&i_val = { x135 => 100 }
-        val x134_&i = { x135 => x129 }
-        val x134_A_top = { x135 => Map() }
-        val x134_A = { x135 => x3 }
-        val x134 = { x135 => x256 }
+        val x163 = (x149 + 100)
+        Set(("val",(x163,x152)))
+        val x164 = {
+          "val" -> x163
+        }
+        val x165 = {
+          "val" -> x152
+        }
+        lub_x130_&i(x125,x125,x125)
+        lub_x130_A(x3,x3,x3)
+        Set(("&z",(x5,x5)), ("&s",(x145,x146)), ("&i",(x125,x125)), ("&y",(x122,x122)), ("&x2",(x161,x162)), ("B",(x124,x124)), ("&i2",(x164,x165)), ("A",(x3,x3)), ("&x",(x122,x122)))
+        val x166 = {
+          "&x" -> x122,
+          "&s" -> x145,
+          "&x2" -> x161,
+          "&y" -> x122,
+          "B" -> x124,
+          "&z" -> x5,
+          "&i2" -> x164,
+          "&i" -> x125,
+          "A" -> x3
+        }
+        val x167 = {
+          "&x" -> x122,
+          "&s" -> x146,
+          "&x2" -> x162,
+          "&y" -> x122,
+          "B" -> x124,
+          "&z" -> x5,
+          "&i2" -> x165,
+          "&i" -> x125,
+          "A" -> x3
+        }
+      } -> f(x131)=x166, f(x131+1)=x167
+    ## iteration 1, f(0)=x129, f(x131)=x166
+      val x168 = (x131 < 99)
+      val x169 = if (x168) {
+        x160
+      } else {
+        (A,top)
       }
-      val x260 = Map("val" -> 4950)
-      val x261 = Map("&x" -> x126, "&s" -> x260, "&x2" -> x5, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x1, "&i" -> x129, "A" -> x3)
-    } end loop x134, trip count 100, state x261
+      val x170 = {
+        "head" -> x152,
+        "tail" -> x169
+      }
+      val x171 = {
+        "&x" -> x122,
+        "&s" -> x145,
+        "&x2" -> x161,
+        "&y" -> x122,
+        "B" -> x124,
+        "&z" -> x5,
+        "&i2" -> x165,
+        "&i" -> x125,
+        "A" -> x3
+      }
+      val x172 = {
+        "val" -> x169
+      }
+      val x173 = {
+        "&x" -> x122,
+        "&s" -> x145,
+        "&x2" -> x172,
+        "&y" -> x122,
+        "B" -> x124,
+        "&z" -> x5,
+        "&i2" -> x165,
+        "&i" -> x125,
+        "A" -> x3
+      }
+      val x174 = (x131 * 98)
+      val x175 = (x174 + 99)
+      val x176 = {
+        "val" -> x175
+      }
+      val x177 = {
+        "&x" -> x122,
+        "&s" -> x176,
+        "&x2" -> x172,
+        "&y" -> x122,
+        "B" -> x124,
+        "&z" -> x5,
+        "&i2" -> x165,
+        "&i" -> x125,
+        "A" -> x3
+      }
+      trip count: fixindex { x131 => 1 }
+      approx f(0)=x129, f(x131)=x166, f(x131+1)=x177) = {
+        lub_x130(x129,x166,x177)
+        lub_x130_&x(x122,x122,x122)
+        lub_x130_&s(x1,x145,x176)
+        lub_x130_&s_val(0,x142,x175)
+        numerical diff d=f(x131+1)-f(x131) = ((x131 * 98) + 99) - (x131 * 99) = {
+          val x178 = (x131 * -99)
+          val x179 = (x178 + 99)
+        } = ((x131 * -1) + 99)
+        poly: List(99, -1)
+        found 2nd order polynomial: f'(x131)=-1*x131+99 -> f(x131)=-1*x131/2(x131+1)+99*x131
+        val x180 = (x131 + -1)
+        val x181 = (x131 * x131)
+        val x182 = (x181 + x149)
+        val x183 = (x131 * 0.5)
+        val x184 = (x131 * x183)
+        val x185 = (x131 * -0.5)
+        val x186 = (x184 + x185)
+        val x187 = (x131 * x185)
+        val x188 = (x187 + x183)
+        val x189 = (x131 * 99.5)
+        val x190 = (x187 + x189)
+        val x191 = (x181 + x131)
+        val x192 = (x184 + x183)
+        val x193 = (x187 + x185)
+        val x194 = (x131 * 98.5)
+        val x195 = (x194 + 99)
+        val x196 = (x187 + x195)
+        ((x131 * (x131 * -0.5)) + (x131 * 99.5))
+        ((x131 * (x131 * -0.5)) + ((x131 * 98.5) + 99))
+        val x197 = (x131 * -99.5)
+        val x198 = (x184 + x197)
+        val x199 = (x197 + 99)
+        val x200 = (x184 + x199)
+        val x201 = (x194 + x200)
+        val x202 = (x187 + x201)
+        ((x131 * (x131 * -0.5)) + ((x131 * 98.5) + ((x131 * (x131 * 0.5)) + ((x131 * -99.5) + 99))))
+        poly2: List(99, -1)
+        Set(("val",(x190,x196)))
+        val x203 = {
+          "val" -> x190
+        }
+        val x204 = {
+          "val" -> x196
+        }
+        lub_x130_&x2(x122,x161,x172)
+        lub_x130_&x2_val((B,(top,99)),x154,x169)
+        (B,(top,99))
+        ("B",("top",((x131 * -1) + 99)))
+        if ((x131 < 99)) {
+          ("B",("top",((x131 * -1) + 98)))
+        } else {
+          (A,top)
+        }
+        hit if dual -- assume only last case differs
+        val x205 = (x149 + 1)
+        val x206 = (x131 < 100)
+        val x207 = if (x206) {
+          x154
+        } else {
+          (A,top)
+        }
+        Set(("val",(x207,x169)))
+        val x208 = {
+          "val" -> x207
+        }
+        lub_x130_&y(x122,x122,x122)
+        lub_x130_B(x124,x124,x124)
+        lub_x130_&z(x5,x5,x5)
+        lub_x130_&i2(x125,x164,x165)
+        lub_x130_&i2_val(100,x163,x152)
+        numerical diff d=f(x131+1)-f(x131) = ((x131 * -1) + 99) - ((x131 * -1) + 100) = {
+          val x209 = (x131 + -100)
+        } = -1
+        poly: List(-1)
+        confirmed iterative loop, d = -1
+        Set(("val",(x163,x152)))
+        lub_x130_&i(x125,x125,x125)
+        lub_x130_A(x3,x3,x3)
+        Set(("&z",(x5,x5)), ("&x2",(x208,x172)), ("&i",(x125,x125)), ("&y",(x122,x122)), ("B",(x124,x124)), ("&i2",(x164,x165)), ("A",(x3,x3)), ("&s",(x203,x204)), ("&x",(x122,x122)))
+        val x210 = {
+          "&x" -> x122,
+          "&s" -> x203,
+          "&x2" -> x208,
+          "&y" -> x122,
+          "B" -> x124,
+          "&z" -> x5,
+          "&i2" -> x164,
+          "&i" -> x125,
+          "A" -> x3
+        }
+        val x211 = {
+          "&x" -> x122,
+          "&s" -> x204,
+          "&x2" -> x172,
+          "&y" -> x122,
+          "B" -> x124,
+          "&z" -> x5,
+          "&i2" -> x165,
+          "&i" -> x125,
+          "A" -> x3
+        }
+      } -> f(x131)=x210, f(x131+1)=x211
+    ## iteration 2, f(0)=x129, f(x131)=x210
+      val x212 = (100 < x143)
+      hit2: x131<100 and ¬x131<100-1 implies x131=100-1 in if (x168) {
+        x160
+      } else {
+        (A,top)
+      }
+      val x213 = if (x206) {
+        x170
+      } else {
+        Map()
+      }
+      val x214 = if (x206) {
+        x152
+      } else {
+        <error>
+      }
+      val x215 = {
+        "val" -> x214
+      }
+      val x216 = {
+        "&x" -> x122,
+        "&s" -> x203,
+        "&x2" -> x208,
+        "&y" -> x122,
+        "B" -> x124,
+        "&z" -> x5,
+        "&i2" -> x215,
+        "&i" -> x125,
+        "A" -> x3
+      }
+      hit2: x131<100 and ¬x131<100-1 implies x131=100-1 in if (x168) {
+        x160
+      } else {
+        (A,top)
+      }
+      hit2: x131<100 and ¬x131<100-1 implies x131=100-1 in if (x168) {
+        x160
+      } else {
+        (A,top)
+      }
+      val x217 = if (x206) {
+        x169
+      } else {
+        <error>
+      }
+      val x218 = {
+        "val" -> x217
+      }
+      val x219 = {
+        "&x" -> x122,
+        "&s" -> x203,
+        "&x2" -> x218,
+        "&y" -> x122,
+        "B" -> x124,
+        "&z" -> x5,
+        "&i2" -> x215,
+        "&i" -> x125,
+        "A" -> x3
+      }
+      val x220 = (x189 + x214)
+      val x221 = (x187 + x220)
+      val x222 = {
+        "val" -> x221
+      }
+      val x223 = {
+        "&x" -> x122,
+        "&s" -> x222,
+        "&x2" -> x218,
+        "&y" -> x122,
+        "B" -> x124,
+        "&z" -> x5,
+        "&i2" -> x215,
+        "&i" -> x125,
+        "A" -> x3
+      }
+      hit2: x131<100 and ¬x131<100-1 implies x131=100-1 in if (x168) {
+        x160
+      } else {
+        (A,top)
+      }
+      val x224 = (100 < x131)
+      hit2: x131<100 and ¬x131<100-1 implies x131=100-1 in if (x168) {
+        x160
+      } else {
+        (A,top)
+      }
+      trip count: 100
+      hit2: x131<100 and ¬x131<100-1 implies x131=100-1 in if (x168) {
+        x160
+      } else {
+        (A,top)
+      }
+      approx f(0)=x129, f(x131)=x210, f(x131+1)=x211) = {
+        lub_x130(x129,x210,x211)
+        lub_x130_&x(x122,x122,x122)
+        lub_x130_&s(x1,x203,x204)
+        lub_x130_&s_val(0,x190,x196)
+        numerical diff d=f(x131+1)-f(x131) = ((x131 * (x131 * -0.5)) + ((x131 * 98.5) + 99)) - ((x131 * (x131 * -0.5)) + (x131 * 99.5)) = {
+        } = ((x131 * (x131 * -0.5)) + ((x131 * 98.5) + ((x131 * (x131 * 0.5)) + ((x131 * -99.5) + 99))))
+        poly: List(99, -1)
+        found 2nd order polynomial: f'(x131)=-1*x131+99 -> f(x131)=-1*x131/2(x131+1)+99*x131
+        ((x131 * (x131 * -0.5)) + (x131 * 99.5))
+        ((x131 * (x131 * -0.5)) + ((x131 * 98.5) + 99))
+        ((x131 * (x131 * -0.5)) + ((x131 * 98.5) + ((x131 * (x131 * 0.5)) + ((x131 * -99.5) + 99))))
+        poly2: List(99, -1)
+        Set(("val",(x190,x196)))
+        lub_x130_&x2(x122,x208,x172)
+        lub_x130_&x2_val((B,(top,99)),x207,x169)
+        (B,(top,99))
+        if ((x131 < 100)) {
+          ("B",("top",((x131 * -1) + 99)))
+        } else {
+          (A,top)
+        }
+        if ((x131 < 99)) {
+          ("B",("top",((x131 * -1) + 98)))
+        } else {
+          (A,top)
+        }
+        hit if dual -- assume only last case differs
+        Set(("val",(x207,x169)))
+        lub_x130_&y(x122,x122,x122)
+        lub_x130_B(x124,x124,x124)
+        lub_x130_&z(x5,x5,x5)
+        lub_x130_&i2(x125,x164,x165)
+        lub_x130_&i2_val(100,x163,x152)
+        numerical diff d=f(x131+1)-f(x131) = ((x131 * -1) + 99) - ((x131 * -1) + 100) = {
+        } = -1
+        poly: List(-1)
+        confirmed iterative loop, d = -1
+        Set(("val",(x163,x152)))
+        lub_x130_&i(x125,x125,x125)
+        lub_x130_A(x3,x3,x3)
+        Set(("&z",(x5,x5)), ("&x2",(x208,x172)), ("&i",(x125,x125)), ("&y",(x122,x122)), ("B",(x124,x124)), ("&i2",(x164,x165)), ("A",(x3,x3)), ("&s",(x203,x204)), ("&x",(x122,x122)))
+      } -> f(x131)=x210, f(x131+1)=x211
+      create function def f(n) = x130(x131) {
+        val x225 = (0 < x131)
+        val x226 = (x185 + 0.5)
+        val x227 = (x183 + -0.5)
+        val x228 = (x131 + -0.5)
+        val x229 = (x187 + x228)
+        val x230 = (x194 + -98.5)
+        val x231 = (x194 + 0.5)
+        val x232 = (x131 + x194)
+        val x233 = (x187 + x232)
+        val x234 = {
+          "val" -> x233
+        }
+        val x235 = {
+          "&x" -> x122,
+          "&s" -> x234,
+          "&x2" -> x208,
+          "&y" -> x122,
+          "B" -> x124,
+          "&z" -> x5,
+          "&i2" -> x164,
+          "&i" -> x125,
+          "A" -> x3
+        }
+        val x236 = if (x225) {
+          x233
+        } else {
+          0
+        }
+        val x237 = {
+          "val" -> x236
+        }
+        val x238 = if (x225) {
+          x207
+        } else {
+          (B,(top,99))
+        }
+        val x239 = {
+          "val" -> x238
+        }
+        val x240 = if (x225) {
+          x163
+        } else {
+          100
+        }
+        val x241 = {
+          "val" -> x240
+        }
+        val x242 = {
+          "&x" -> x122,
+          "&s" -> x237,
+          "&x2" -> x239,
+          "&y" -> x122,
+          "B" -> x124,
+          "&z" -> x5,
+          "&i2" -> x241,
+          "&i" -> x125,
+          "A" -> x3
+        }
+        val x130_&x_val = { x131 => (B,(top,99)) }
+        val x130_&x = { x131 => x122 }
+        val x243 = x130_&s_val(x180)
+        val x130_&s_val = { x131 => x236 }
+        val x130_&s = { x131 => x237 }
+        val x244 = x130_&x2_val(x180)
+        val x130_&x2_val = { x131 => x238 }
+        val x130_&x2 = { x131 => x239 }
+        val x130_&y_val = { x131 => (B,(top,99)) }
+        val x130_&y = { x131 => x122 }
+        val x130_B_top = { x131 => x123 }
+        val x130_B = { x131 => x124 }
+        val x130_&z_val = { x131 => (A,top) }
+        val x130_&z = { x131 => x5 }
+        val x245 = x130_&i2_val(x180)
+        val x130_&i2_val = { x131 => x240 }
+        val x130_&i2 = { x131 => x241 }
+        val x130_&i_val = { x131 => 100 }
+        val x130_&i = { x131 => x125 }
+        val x130_A_top = { x131 => Map() }
+        val x130_A = { x131 => x3 }
+        val x130 = { x131 => x242 }
+      }
+      val x246 = {
+        "val" -> 4950
+      }
+      val x247 = {
+        "&x" -> x122,
+        "&s" -> x246,
+        "&x2" -> x5,
+        "&y" -> x122,
+        "B" -> x124,
+        "&z" -> x5,
+        "&i2" -> x1,
+        "&i" -> x125,
+        "A" -> x3
+      }
+    } end loop x130, trip count 100, state x247
 # result:
   res: ()
-  store: x261
-  transformed: x261
+  store: x247
+  transformed: x247
   ## sched:
-    val x260 = Map("val" -> 4950)
-    val x129 = Map("val" -> 100)
-    val x84 = x8_B_top_x9 + -1
-    val x85 = ("top",x84)
-    val x86 = ("B",x85)
-    val x83 = 0 < x8_B_top_x9
-    val x87 = if (x83) x86 else (A,top)
-    val x88 = Map("head" -> x8_B_top_x9, "tail" -> x87)
-    val x127 = collect(100) { x8_B_top_x9 => x88 }
-    val x128 = Map("top" -> x127)
-    val x126 = Map("val" -> (B,(top,99)))
-    val x5 = Map("val" -> (A,top))
-    val x3 = Map("top" -> Map())
-    val x1 = Map("val" -> 0)
-    val x261 = Map("&x" -> x126, "&s" -> x260, "&x2" -> x5, "&y" -> x126, "B" -> x128, "&z" -> x5, "&i2" -> x1, "&i" -> x129, "A" -> x3)
+    val x246 = {
+      "val" -> 4950
+    }
+    val x125 = {
+      "val" -> 100
+    }
+    val x82 = (x8_B_top_x9 + -1)
+    val x83 = ("top",x82)
+    val x84 = ("B",x83)
+    val x81 = (0 < x8_B_top_x9)
+    val x85 = if (x81) {
+      x84
+    } else {
+      (A,top)
+    }
+    val x86 = {
+      "head" -> x8_B_top_x9,
+      "tail" -> x85
+    }
+    val x123 = collect(100) { x8_B_top_x9 =>
+      x86
+    }
+    val x124 = {
+      "top" -> x123
+    }
+    val x122 = {
+      "val" -> (B,(top,99))
+    }
+    val x5 = {
+      "val" -> (A,top)
+    }
+    val x3 = {
+      "top" -> Map()
+    }
+    val x1 = {
+      "val" -> 0
+    }
+    val x247 = {
+      "&x" -> x122,
+      "&s" -> x246,
+      "&x2" -> x5,
+      "&y" -> x122,
+      "B" -> x124,
+      "&z" -> x5,
+      "&i2" -> x1,
+      "&i" -> x125,
+      "A" -> x3
+    }
   ## term:
-    Map("&i" -> Map("val" -> 100), "&i2" -> Map("val" -> 0), "&x2" -> Map("val" -> (A,top)), "B" -> Map("top" -> collect(100) { x8_B_top_x9 => Map("head" -> x8_B_top_x9, "tail" -> if (0 < x8_B_top_x9) ("B",("top",x8_B_top_x9 + -1)) else (A,top)) }), "&s" -> Map("val" -> 4950), "A" -> Map("top" -> Map()), "&x" -> Map("val" -> (B,(top,99))), "&z" -> Map("val" -> (A,top)), "&y" -> Map("val" -> (B,(top,99))))
+    {
+      "&i" -> {
+        "val" -> 100
+      },
+      "&i2" -> {
+        "val" -> 0
+      },
+      "&x2" -> {
+        "val" -> (A,top)
+      },
+      "B" -> {
+        "top" -> collect(100) { x8_B_top_x9 =>
+          {
+            "head" -> x8_B_top_x9,
+            "tail" -> if ((0 < x8_B_top_x9)) {
+              ("B",("top",(x8_B_top_x9 + -1)))
+            } else {
+              (A,top)
+            }
+          }
+        }
+      },
+      "&s" -> {
+        "val" -> 4950
+      },
+      "A" -> {
+        "top" -> Map()
+      },
+      "&x" -> {
+        "val" -> (B,(top,99))
+      },
+      "&z" -> {
+        "val" -> (A,top)
+      },
+      "&y" -> {
+        "val" -> (B,(top,99))
+      }
+    }
 # done

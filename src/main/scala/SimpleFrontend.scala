@@ -186,6 +186,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           assert(!path.contains(init), "hitting recursion: "+(init::path))
           path = init::path
 
+          if (iterCount == 3) {
+            throw new Exception("bail out!")
+          }
+
           store = init
 
           //store = subst(store,less(n0,const(0)),const(0)) // 0 <= i

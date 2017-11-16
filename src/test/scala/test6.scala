@@ -272,47 +272,46 @@ class TestAnalysis6 extends RunAndCheckSuite {
     }
 
 
-  // testProg("C2") { //test3b
-  //     Block(List(
-  //       Assign("i", Const(0)),
-  //       Assign("z", New("A")),
-  //       Assign("x", Ref("z")),
-  //       While(Less(Ref("i"),Const(100)), Block(List(
-  //         Assign("y", New("B")),
-  //         Put(Ref("y"), Const("head"), Ref("i")),
-  //         Put(Ref("y"), Const("tail"), Ref("x")),
-  //         Assign("x", Ref("y")),
-  //         Assign("i", Plus(Ref("i"), Const(1)))
-  //       ))),
-  //       Assign("s", Const(0)),
-  //       Assign("i2", Ref("i")),
-  //       Assign("x2", Ref("x")),
-  //       While(NotEqual(Ref("x2"),Ref("z")), Block(List(
-  //         Assign("i2", Get(Ref("x2"), Const("head"))),
-  //         Assign("x2", Get(Ref("x2"), Const("tail"))),
-  //         Assign("s", Plus(Ref("s"), Ref("i2")))
-  //       )))
-  //     ))
-  //   } {
-  //     """
-  //       {
-  //         "&i"  -> {"val" -> 100),
-  //         "&i2" -> {"val" -> 0),
-  //         "&x2" -> {"val" -> (A,top)),
-  //         "B"   -> {"top" -> collect(100) { x8_B_top_x9 =>
-  //                     {
-  //                       "head" -> x8_B_top_x9,
-  //                       "tail" -> if (0 < x8_B_top_x9) ("B",("top",x8_B_top_x9 + -1)) else (A,top)
-  //                     )
-  //                   }),
-  //         "&s" -> {"val" -> 4950),
-  //         "A"  -> {"top" -> {)),
-  //         "&x" -> {"val" -> (B,(top,99))),
-  //         "&z" -> {"val" -> (A,top)),
-  //         "&y" -> {"val" -> (B,(top,99)))
-  //       )
-  //     """
-
+  testProg("C2") { //test3b
+      Block(List(
+        Assign("i", Const(0)),
+        Assign("z", New("A")),
+        Assign("x", Ref("z")),
+        While(Less(Ref("i"),Const(100)), Block(List(
+          Assign("y", New("B")),
+          Put(Ref("y"), Const("head"), Ref("i")),
+          Put(Ref("y"), Const("tail"), Ref("x")),
+          Assign("x", Ref("y")),
+          Assign("i", Plus(Ref("i"), Const(1)))
+        ))),
+        Assign("s", Const(0)),
+        Assign("i2", Ref("i")),
+        Assign("x2", Ref("x")),
+        While(NotEqual(Ref("x2"),Ref("z")), Block(List(
+          Assign("i2", Get(Ref("x2"), Const("head"))),
+          Assign("x2", Get(Ref("x2"), Const("tail"))),
+          Assign("s", Plus(Ref("s"), Ref("i2")))
+        )))
+      ))
+    } {
+      """
+        {
+          "&i"  -> {"val" -> 100},
+          "&i2" -> {"val" -> 0},
+          "&x2" -> {"val" -> (A,top)},
+          "B"   -> {"top" -> collect(100) { x8_B_top_x9 =>
+                      {
+                        "head" -> x8_B_top_x9,
+                        "tail" -> if ((0 < x8_B_top_x9)) {("B",("top",(x8_B_top_x9 + -1)))} else {(A,top)}
+                      }
+                    }},
+          "&s" -> {"val" -> 4950},
+          "A"  -> {"top" -> Map()},
+          "&x" -> {"val" -> (B,(top,99))},
+          "&z" -> {"val" -> (A,top)},
+          "&y" -> {"val" -> (B,(top,99))}
+        }
+      """
 
 /* old
       """
@@ -347,6 +346,6 @@ class TestAnalysis6 extends RunAndCheckSuite {
         )
       """
 */
-  //  }
+  }
 
 }
