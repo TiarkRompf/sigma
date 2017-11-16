@@ -223,7 +223,7 @@ object MyMain {
       return 0;
     }
     """
-    val parsed = parseCString(simple_nest1)
+    val parsed = parseCString(Example.two_loops)
     val cfgs = fileToCFG(parsed)
 
     evalCfgUnit(parsed)
