@@ -581,15 +581,18 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
   /* Elminates the equalities in the problem, returns a new problem that
    * not contains equalities.
    */
-  def elimEq(): Problem = {
+  def elimEq(): Option[Problem] = {
 
-    def eliminate(eqs: List[EQ], geqs: List[GEQ], substs: List[Subst]): Problem = {
+    def eliminate(eqs: List[EQ], geqs: List[GEQ], substs: List[Subst]): Option[Problem] = {
       if (eqs.nonEmpty) {
         val eq = eqs.head
         println("current constraints:")
         for (eq <- (eqs++geqs)) { println(s"  $eq") }
-
-        if (eq.trivial) return eliminate(eqs.tail, geqs, substs)
+        
+        if (eq.vars.length == 1) {
+          if (eq.trivial) return eliminate(eqs.tail, geqs, substs)
+          else return None
+        }
 
         val unpVars = eq.getUnprotectedVars(pvars)
         println(s"unprotected vars: $unpVars")
@@ -646,7 +649,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
           Problem(newEQ::(eqs.tail)++geqs, newVar::pvars, substs).elimEq
         }
       }
-      else { Problem(geqs, pvars, substs) }
+      else { Some(Problem(geqs, pvars, substs)) }
     }
 
     eliminate(getEqs, getGeqs, List())
@@ -697,11 +700,19 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
   def hasIntSolutions(): Boolean = {
     normalize match {
       case Some(p) if p.cs.isEmpty => true
-      case Some(p) if p.hasEq => p.elimEq.hasIntSolutions
+      case Some(p) if p.hasEq => 
+        p.elimEq match {
+          case Some(p) => p.hasIntSolutions
+          case None => false
+        }
       case Some(p) if p.hasMostOneVar => return p.reduce.nonEmpty
       case Some(p) =>
         p.reduce match {
-          case Some(p) if p.hasEq => p.elimEq.hasIntSolutions
+          case Some(p) if p.hasEq =>
+            p.elimEq match {
+              case Some(p) => p.hasIntSolutions
+              case None => false
+            }
           case Some(p) if p.numVars > 1 =>
             val x0 = p.chooseVar()
             val realSet = p.realShadowSet(x0)
@@ -869,10 +880,18 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
     normalize match {
       case Some(p) if p.getVars.subsetOf(p.pvars.toSet) =>
         if (p.hasIntSolutions) Some(p) else None
-      case Some(p) if p.hasEq => p.elimEq.simplify
+      case Some(p) if p.hasEq => 
+        p.elimEq match {
+          case Some(p) => p.simplify
+          case None => None
+        }
       case Some(p) =>
         p.reduce match {
-          case Some(p) if p.hasEq => p.elimEq.simplify
+          case Some(p) if p.hasEq => 
+            p.elimEq match {
+              case Some(p) => p.simplify
+              case None => None
+            }
           case Some(p) if p.numVars > 1 =>
             val x0 = p.chooseVar()
             val realSet = p.realShadowSet(x0)
@@ -1187,7 +1206,7 @@ object OmegaTest {
     val p3 = Problem(List(eq3, eq4, ineq1, ineq2, ineq3, ineq4))
     println(p3)
 
-    val p3elim = p3.elimEq.normalize.get
+    val p3elim = p3.elimEq.get.normalize.get
     val p3reduced = p3elim.reduce.get
     val p3ans = p3.hasIntSolutions
     assert(p3ans)
