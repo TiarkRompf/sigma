@@ -481,8 +481,8 @@ object CFGtoEngine {
       IR.map(m map { case (key, value) =>
         // if (!key.toString.startsWith("\"$")) println(s"Simplify key $key -> ${IR.termToString(value)}:")
       key -> (if (key == valid) simplifyBool(value) else simplify(value)) }) // FIXME ???
-    case IR.Def(DUpdate(x, f, y))  => IR.update(simplify(x), f, simplify(y))
-    case IR.Def(DSelect(x, f))     => IR.select(simplify(x), f)
+    case IR.Def(DUpdate(x, f, y))  => IR.update(simplify(x), simplify(f), simplify(y))
+    case IR.Def(DSelect(x, f))     => IR.select(simplify(x), simplify(f))
     case IR.Def(DPlus(x, y))       => IR.plus(simplify(x), simplify(y))
     case IR.Def(DTimes(x, y))      => IR.times(simplify(x), simplify(y))
     case IR.Def(DPair(x, y))       => IR.pair(simplify(x), simplify(y))
