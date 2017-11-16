@@ -181,7 +181,7 @@ object MyMain {
       return 0;
     }
     """
-    val parsed = parseCString(code)
+    val parsed = parseCString(code2)
     val cfgs = fileToCFG(parsed)
 
     evalCfgUnit(parsed)

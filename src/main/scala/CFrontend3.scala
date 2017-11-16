@@ -421,7 +421,7 @@ object CFGtoEngine {
     case _ => None
   }
 
-  def alwaysFalse(cond: Val)(implicit constraints: List[OProb]) = toOStruct(cond) match {
+  def alwaysFalse(cond: Val)(implicit constraints: List[OProb]) = { toOStruct(cond) } match {
     case Some(cond) => !verify(cond, constraints)
     case _ => false
   }
@@ -467,16 +467,22 @@ object CFGtoEngine {
         simplify(b)(toOProb(IR.not(sc)) ++: constraints)
       else if (alwaysFalse(IR.not(sc)))
         simplify(a)(toOProb(sc) ++: constraints)
-      else
-        IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
-    case IR.Def(DIf(c, a, b)) if alwaysFalse(IR.not(c)) => simplify(a)
+      else {
+        // FIXME: working on that
+        val sa = simplify(a)(toOProb(IR.not(sc)) ++: constraints)
+        if (sa == b) {
+          simplify(a)(toOProb(sc) ++: constraints)
+        } else {
+          IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
+        }
+      }
     case IR.Def(DFixIndex(x, c)) => IR.fixindex(x, simplify(c))
     case IR.Def(DMap(m)) =>
       IR.map(m map { case (key, value) =>
         // if (!key.toString.startsWith("\"$")) println(s"Simplify key $key -> ${IR.termToString(value)}:")
-      simplify(key) -> (if (key == valid) simplifyBool(value) else simplify(value)) }) // FIXME ???
-    case IR.Def(DUpdate(x, f, y))  => IR.update(simplify(x), simplify(f), simplify(y))
-    case IR.Def(DSelect(x, f))     => IR.select(simplify(x), simplify(f))
+      key -> (if (key == valid) simplifyBool(value) else simplify(value)) }) // FIXME ???
+    case IR.Def(DUpdate(x, f, y))  => IR.update(simplify(x), f, simplify(y))
+    case IR.Def(DSelect(x, f))     => IR.select(simplify(x), f)
     case IR.Def(DPlus(x, y))       => IR.plus(simplify(x), simplify(y))
     case IR.Def(DTimes(x, y))      => IR.times(simplify(x), simplify(y))
     case IR.Def(DLess(x, y))       => simplifyBool(IR.less(simplify(x), simplify(y)))
@@ -487,7 +493,6 @@ object CFGtoEngine {
     case IR.Def(DCall(f, x))       => IR.call(simplify(f), simplify(x))
     case IR.Def(DFun(f, x, y))     => IR.fun(f, x, simplify(y))
     case IR.Def(DHasField(x, f))   => IR.hasfield(simplify(x), simplify(f))
-    // case x@GRef(_) if x.toString == "x8?" => IR.const(0)
     case x@GRef(_) => println(s"Ref $x")
       simplifyBool(IR.equal(x, IR.const(0))) match { // FIXME: hack if GRef(x) == 0
         case GConst(1) => println(s"Simplifed $x"); IR.const(0)
@@ -522,6 +527,7 @@ object CFGtoEngine {
       path = init::path
 
       store = init
+      println(s"Init before loop: ${IR.termToString(init)}")
 
       // s"bool ${l}_more = false"
       val more = l+"_more"

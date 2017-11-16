@@ -477,7 +477,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DCall(f,y))     => call(subst(f,a,b),subst(y,a,b))
         case Def(DFun(f,x1,y))   => x//subst(y,a,b); x // binding??
         case Def(DSum(n,x,y))    => sum(subst(n,a,b),x,subst(y,a,b))
-        case Def(DCollect(n,x,y))=> collect(subst(n,a,b),x,subst(y,a,b))
+        case Def(DCollect(n,x,y))=>
+          val sn = subst(n,a,b)
+          collect(sn,x,subst(y,a,b))
         case Def(DFixIndex(x,y)) => fixindex(x,subst(y,a,b))
         case Def(DHasField(x,y)) => hasfield(subst(x,a,b), subst(y,a,b))
         case Def(d)              => println("no subst: "+x+"="+d); x
@@ -730,10 +732,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case _ if (x,y) == (GConst(1),GConst(0)) => c
         case _ if (x,y) == (GConst(0),GConst(1)) => not(c)
         case _ if x == y => x
-        // case Def(c@DLess(GConst(a:Int),xx)) if { x match {
-        //   case Def(DIf(Def(DLess(GConst(b:Int), `xx`)), aa, bb)) => a < b && y == bb
-        //   case _ => false }
-        // } => x
+        case Def(c@DLess(GConst(a:Int),xx)) if { x match {
+          case Def(DIf(Def(DLess(GConst(b:Int), `xx`)), aa, bb)) => a < b && y == bb
+          case _ => false }
+        } => x
         // case Def(DMap(d)) if d.contains(GConst("value")) =>
         //   iff(select(c, GConst("value")), x, y)
         // TODO: if (1 < x6) x6 < 100 else true = x6 < 100
@@ -914,6 +916,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     import Test1._
     import IRD._
 
+      // def diff(a: GVal, b: GVal): GVal = (a, b) match {
+      //   case (Def(DPair(a1, a2)), Def(DPair(b1, b2))) => pair(diff(a1, b1), diff(a2, b2))
+      //   case (GConst(_: String), GConst(_: String)) => ???
+      //   case (GConst(a: Int), GConst(b: Int)) => GConst(a - b)
+      //   case _ => plus(a, times(b, const(-1)))
+      // }
       // 1) if the type is non-primitive (i.e. Map), break into components
       // 2) when updating a structure at the loop index: assume we're building an array
       // 3) for primitives: compute diff d = f(n+1) - f(n)
@@ -941,14 +949,24 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           val r = collect(plus(n0,const(1)), nX.toString, subst(y,n0,nX))
           (r, r)
         case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]))
-          if !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] => // XXX diff op should take precedence
+          if { !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] } => // XXX diff op should take precedence
           // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
           IRD.printTerm(a)
           IRD.printTerm(b0)
           IRD.printTerm(b1)
           println(s"hit pair -- assume only 0 case differs (loop peeling)")
           val b0X = subst(b1,n0,plus(n0,const(-1)))
-          (iff(less(const(0),n0),b0X,a), iff(less(const(0),n0),b1,a))
+          (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
+          //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
+        case (a/*@Def(DPair(a1,a2))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]), b1/*@Def(DPair(b01,b02))*/)
+          if { !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] } => // XXX diff op should take precedence
+          // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
+          IRD.printTerm(a)
+          IRD.printTerm(b0)
+          IRD.printTerm(b1)
+          println(s"hit pair -- assume only 0 case differs (loop peeling)")
+          val b0X = subst(b1,n0,plus(n0,const(-1)))
+          (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
           //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
         case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(`n0`,u1)),b10,b20)))
           // dual example: (B,(1,i)),(A,1)
