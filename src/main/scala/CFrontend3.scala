@@ -78,8 +78,8 @@ object CFGtoEngine {
   }
 
   val location = new mutable.HashMap[Any,String]()
-  var nextV = 0
-  def next = { nextV += 1; s"&new:$nextV" }
+  val locNum =   new mutable.HashMap[String,Int]()
+  def next(st: String) = { val idx = locNum.getOrElse(st, 0); locNum(st) = idx + 1; s"&$st:$idx" }
   def evalExp(node: IASTNode): Val = { /* println(s"NODE: $node"); */ node } match {
       case node: CASTLiteralExpression =>
           val lk = node.getKind
@@ -258,7 +258,12 @@ object CFGtoEngine {
           val fun = node.getFunctionNameExpression
           val arg = node.getParameterExpression
           fun.asInstanceOf[CASTIdExpression].getName.toString match {
-            case "__VERIFIER_nondet_int" => typedGVal(GRef(freshVar + "?"), GType.int)
+            case "__VERIFIER_nondet_int" =>
+              val newV = typedGVal(GRef(freshVar + "?"), GType.int)
+              // val idx = IR.pair(GConst(location.getOrElseUpdate(node.hashCode, next("rand"))),itvec)
+              // store = IR.update(store, idx, newV)
+              // typedGVal(idx, GType.pointer(GType.int))
+              newV
             case "assert" | "__VERIFIER_assert" =>
               gValTypeCheck(evalExp(arg), GType.int) { arg =>
                   debug(s"Assert: ${IR.termToString(arg)}")
@@ -270,7 +275,7 @@ object CFGtoEngine {
                 typedGVal(IR.map(Map(GConst("value") -> typedGVal(GConst(0), GType.int), GConst("next") -> typedGVal(GConst(0), GType.pointer(GConst("list"))))), GConst("list"))
               }
 
-              val idx = IR.pair(GConst(location.getOrElseUpdate(node.hashCode, next)),itvec)
+              val idx = IR.pair(GConst(location.getOrElseUpdate(node.hashCode, next("new"))),itvec)
               store = IR.update(store, idx, newV)
               typedGVal(idx, GType.pointer(GConst("list")))
             case name =>
