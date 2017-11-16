@@ -56,6 +56,24 @@ object MyMain {
     }
     """
 
+    val simple_nest = """
+    int main() {
+      int n = 5; int m = 4;
+      int i = 0; int j = 0;
+      int agg = 0;
+      while (i < n) {
+        while (j < m) {
+          agg = agg + 1;
+          j = j + 1;
+        }
+        j = 0;
+        i = i + 1;
+      }
+      assert(agg == n * m);
+      return 0;
+    }
+    """
+
     val code = """
     #define NULL 0
     struct list {
@@ -63,7 +81,7 @@ object MyMain {
       struct list* next;
     };
     int main() {
-      int n = 1;
+      int n = 2;
       struct list* x = (struct list *) NULL; // malloc(sizeof(struct list));
       int i = 0;
       while (i < n) {
@@ -181,7 +199,7 @@ object MyMain {
       return 0;
     }
     """
-    val parsed = parseCString(code)
+    val parsed = parseCString(simple_nest)
     val cfgs = fileToCFG(parsed)
 
     evalCfgUnit(parsed)
