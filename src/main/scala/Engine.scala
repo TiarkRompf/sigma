@@ -592,6 +592,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               }
               res
           }
+        case GConst(_) => const(0)
         case Def(DMap(m)) =>
           f match {
             case GConst((u,v)) => times(hasfield(x, const(u)), hasfield(select(x,const(u)),const(v)))
@@ -716,6 +717,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case _ => super.not(e)
       }
       override def pair(x: From, y: From)            = (x,y) match {
+        // case (GConst(_: Int), _) => ???
         case (GConst(x),GConst(y)) => const((x,y))
         case _ => super.pair(x,y)
       }
@@ -727,6 +729,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case _ if (x,y) == (GConst(1),GConst(0)) => c
         case _ if (x,y) == (GConst(0),GConst(1)) => not(c)
         case _ if x == y => x
+        // case Def(c@DLess(GConst(a:Int),xx)) if { x match {
+        //   case Def(DIf(Def(DLess(GConst(b:Int), `xx`)), aa, bb)) => a < b && y == bb
+        //   case _ => false }
+        // } => x
         // case Def(DMap(d)) if d.contains(GConst("value")) =>
         //   iff(select(c, GConst("value")), x, y)
         // TODO: if (1 < x6) x6 < 100 else true = x6 < 100
@@ -743,7 +749,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           (x,y) match {
             case (Def(DMap(m1)), Def(DMap(m2))) =>
               // push inside maps
-              map((m1.keys++m2.keys) map { k => k -> iff(c,m1.getOrElse(k,const("nil")),m2.getOrElse(k,const("nil")))} toMap)
+              map((m1.keySet++m2.keySet) map { k => k -> iff(c,m1.getOrElse(k,GError),m2.getOrElse(k,GError)) } toMap)
+            case (Def(DMap(m)), GError) if m.keySet == Set(GConst("$value"), GConst("$type")) =>
+              map(Map(GConst("$value") -> iff(c, m(GConst("$value")), GError), GConst("$type") -> m(GConst("$type"))))
             case _ =>
               // generate node, but remove nested tests on same condition
               val thenp = subst(x,c,GConst(1))

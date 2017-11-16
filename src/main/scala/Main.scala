@@ -63,7 +63,7 @@ object MyMain {
       struct list* next;
     };
     int main() {
-      int n = 5;
+      int n = 1;
       struct list* x = (struct list *) NULL; // malloc(sizeof(struct list));
       int i = 0;
       while (i < n) {
@@ -181,7 +181,7 @@ object MyMain {
       return 0;
     }
     """
-    val parsed = parseCString(code1)
+    val parsed = parseCString(code)
     val cfgs = fileToCFG(parsed)
 
     evalCfgUnit(parsed)

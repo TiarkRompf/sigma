@@ -1062,6 +1062,7 @@ object Omega {
         val elsProb = translateBoolExpr(els)
         OConj(OImplies(cndProb, thnProb),
               OImplies(cndProb.negation, elsProb))
+      case _ => ???
     }
   }
 
@@ -1099,6 +1100,7 @@ object Omega {
         val lhs = translateBoolExpr(x)
         val rhs = translateBoolExpr(y)
         OConj(lhs, rhs).negation
+      case _ => ???
     }
   }
 
