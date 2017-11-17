@@ -268,6 +268,6 @@ object MyMain {
 
 
   def main(arr: Array[String]) = {
-    analyze(ProgEquiv.assign_loop._2)
+    analyze(SvComp.list_simple_build_from_end_trueunreachcall)
   }
 }

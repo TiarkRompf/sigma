@@ -239,7 +239,12 @@ object CFGtoEngine {
                     val struct = safeSelect(store, pStruct)
                     debug(s"B) struct: ${IR.termToString(struct)}")
                     gValTypeCheck(struct, GConst("list")) { struct =>
-                      store = IR.update(store, pStruct, typedGVal(IR.update(struct, GConst(node.getFieldName.toString), arg2), GConst("list")))
+                      struct match {
+                        case IR.Def(_: DPair) =>
+                          store = IR.update(store, struct, arg2)
+                        case _ => println(s"${IR.termToString(struct)}")
+                          store = IR.update(store, pStruct, typedGVal(IR.update(struct, GConst(node.getFieldName.toString), arg2), GConst("list")))
+                      }
                       arg2
                     }
                   }
@@ -333,7 +338,7 @@ object CFGtoEngine {
           safeSelect(struct, GConst(node.getFieldName.toString))
         }
 
-      // case null => typedGVal(GConst(0), GType.int)
+      case null => typedGVal(GConst(0), GType.int)
       //case _ => "(exp "+node+")"
   }
 
