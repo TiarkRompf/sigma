@@ -10,14 +10,14 @@ object Example {
     int agg = 0;
 
     while (i < n) {
-      agg = agg + 1;
+      agg = agg + i;
       i = i + 1;
     }
 
     i = 0;
     int agg1 = 0;
     while (i < n) {
-      agg1 = agg1 + 1;
+      agg1 = agg1 + i;
       i = i + 1;
     }
 

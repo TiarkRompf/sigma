@@ -679,6 +679,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (_,Def(DIf(c,y,z))) => iff(c,less(x,y),less(x,z))
         // random simplifications ...
         case (GConst(x: Int),Def(DPlus(a,GConst(b:Int)))) =>  less(const(x-b),a)
+        case (GConst(x: Int),Def(DTimes(a,GConst(-1)))) =>  less(a, const(-x))
         // 0 < -a + b  -->  a < b
         case (GConst(0),Def(DPlus(Def(DTimes(a,GConst(-1))),GConst(b:Int)))) =>  less(a,const(b))
         case (Def(DPlus(a,GConst(b:Int))),c) =>  less(a,plus(c,const(-b)))

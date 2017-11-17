@@ -268,6 +268,6 @@ object MyMain {
 
 
   def main(arr: Array[String]) = {
-    analyze(SvComp.list_simple_build_from_end_trueunreachcall)
+    analyze(code1)
   }
 }
