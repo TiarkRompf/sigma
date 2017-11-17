@@ -1006,10 +1006,10 @@ object Omega {
       }
     }
     val extCs: List[Constraint[_]] = const.flatMap(_.p.cs)
-    println(s"Omega query $os under $const")
+    if (debug) println(s"Omega query $os under $const")
     for (p <- flatten(inject(os, extCs))) {
       val result = p.hasIntSolutions
-      println(s"  verifying $p[$result]")
+      if (debug) println(s"  verifying $p[$result]")
       if (result) return true
     }
     return false
