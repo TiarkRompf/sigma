@@ -79,13 +79,13 @@ object MyMain {
     // NOT WORK
     int main() {
       int n = __VERIFIER_nondet_int();
-      int m = __VERIFIER_nondet_int();
       if (n < 0) n = 0;
+      int m = __VERIFIER_nondet_int();
       if (m < 0) m = 0;
       int i = 0; int j = 0;
       int agg = 0;
-      while (i < n) {
-        while (j < m) {
+      while (i < m) {
+        while (j < n) {
           agg = agg + 1;
           j = j + 1;
         }
@@ -268,6 +268,6 @@ object MyMain {
 
 
   def main(arr: Array[String]) = {
-    analyze(code1)
+    analyze(simple_nest1)
   }
 }

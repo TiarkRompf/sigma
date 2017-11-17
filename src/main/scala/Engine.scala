@@ -634,6 +634,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (a,Def(DPlus(Def(DTimes(a1,GConst(-1))),c))) if a == a1 => c // a + (a * -1) + c --> c
         case (Def(DTimes(a1,GConst(-1))),Def(DPlus(a,c))) if a == a1 => c // (a * -1) + a + c --> c
         case (a1, Def(DPlus(b, Def(DPlus(Def(DTimes(b1, GConst(-1))), c))))) if a1 == b1 => plus(b, c) // a + (b + ((a * -1) + c)) --> b + c
+        case (Def(DTimes(j1, Def(DTimes(i1, m1)))), Def(DPlus(Def(DTimes(j2, Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))))), x)))
+        if j1 == j2 && i1 == i2 && m1 == m2 => x
+        case (Def(DTimes(i1, m1)), Def(DPlus(Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))), x)))
+        if i1 == i2 && m1 == m2 => x
+        case (Def(DTimes(i1, m1)), Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))))
+        if i1 == i2 && m1 == m2 => const(0)
+        case (Def(DTimes(i1, m1)), Def(DPlus(x, Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))))))
+        if i1 == i2 && m1 == m2 => x
         case (a1, Def(DPlus(b, Def(DTimes(b1, GConst(-1)))))) if a1 == b1 => b // a + (b + (a * -1)) --> b
         case (Def(DTimes(a1,GConst(c1:Int))),Def(DTimes(a2,GConst(c2:Int)))) if a1 == a2 => times(a1,const(c1+c2)) // (a * c1) + (a * c2) --> a * (c1 + c2)
         case (Def(DTimes(a1,GConst(c1:Double))),Def(DTimes(a2,GConst(c2:Double)))) if a1 == a2 => times(a1,const(c1+c2)) // (a * c1) + (a * c2) --> a * (c1 + c2)
@@ -662,6 +670,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (GError,_) => GError
         case (_,GError) => GError
         case (Def(DIf(c,x,z)),_) => iff(c,times(x,y),times(z,y))
+        case (_, Def(DIf(c,y,z))) => iff(c,times(x,y),times(x,z))
         // random simplifications ...
         case (GConst(c),b:GRef) => times(b,const(c)) // CAVE: non-int consts!
         case (Def(DTimes(a,b)),_) => times(a,times(b,y))
@@ -692,6 +701,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (GConst(x),GConst(y)) => GConst(if (x == y) 1 else 0)
         case (GConst(x:Int),Def(DPair(_,_))) => const(0)
         case (GConst(x:String),Def(DPair(_,_))) => const(0)
+        case (Def(DTimes(x1, y1)), Def(DTimes(y2,x2))) if x1 == x2 && y1 == y2 => const(1)
         case (Def(DPair(_,_)),GConst(x:Int)) => const(0)
         case (Def(DPair(_,_)),GConst(x:String)) => const(0)
         case (Def(DPair(GConst(u1),_)),GConst((v1,v2))) if u1 != v1 => const(0) // generalize?
