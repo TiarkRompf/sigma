@@ -274,10 +274,11 @@ class TestAnalysis6 extends RunAndCheckSuite {
 
   testProg("C2") { //test3b
       Block(List(
+        Assign("NNN", Input("NNN")),
         Assign("i", Const(0)),
         Assign("z", New("A")),
         Assign("x", Ref("z")),
-        While(Less(Ref("i"),Const(100)), Block(List(
+        While(Less(Ref("i"),Ref("NNN")), Block(List(
           Assign("y", New("B")),
           Put(Ref("y"), Const("head"), Ref("i")),
           Put(Ref("y"), Const("tail"), Ref("x")),
@@ -285,31 +286,32 @@ class TestAnalysis6 extends RunAndCheckSuite {
           Assign("i", Plus(Ref("i"), Const(1)))
         ))),
         Assign("s", Const(0)),
-        Assign("i2", Ref("i")),
+        // //Assign("i2", Ref("i")),
         Assign("x2", Ref("x")),
         While(NotEqual(Ref("x2"),Ref("z")), Block(List(
-          Assign("i2", Get(Ref("x2"), Const("head"))),
-          Assign("x2", Get(Ref("x2"), Const("tail"))),
-          Assign("s", Plus(Ref("s"), Ref("i2")))
+        // //   Assign("i2", Get(Ref("x2"), Const("head"))),
+           Assign("x2", Get(Ref("x2"), Const("tail"))),
+        // //   Assign("s", Plus(Ref("s"), Ref("i2")))
+            Assign("s", Plus(Ref("s"), Const(1)))
         )))
       ))
     } {
       """
         {
-          "&i"  -> {"val" -> 100},
-          "&i2" -> {"val" -> 0},
-          "&x2" -> {"val" -> (A,top)},
-          "B"   -> {"top" -> collect(100) { x8_B_top_x9 =>
+          "&i"  -> { "val" -> if ((0 < NNN)) { NNN} else {0} },
+          "&x2" -> { "val" -> (A,top) },
+          "B"   -> if ((0 < NNN)) { {"top" -> collect(NNN) { x10_B_top_x11 =>
                       {
-                        "head" -> x8_B_top_x9,
-                        "tail" -> if ((0 < x8_B_top_x9)) {("B",("top",(x8_B_top_x9 + -1)))} else {(A,top)}
+                        "head" -> x10_B_top_x11,
+                        "tail" -> if ((0 < x10_B_top_x11)) {("B",("top",(x10_B_top_x11 + -1)))} else {(A,top)}
                       }
-                    }},
-          "&s" -> {"val" -> 4950},
+                    }}} else {<error>},
+          "&s" -> { "val" -> if ((0 < NNN)) { NNN} else {0} },
           "A"  -> {"top" -> Map()},
-          "&x" -> {"val" -> (B,(top,99))},
+          "&x" -> { "val" -> if ((0 < NNN)) { ("B",("top",(NNN + -1)))} else {(A,top)} },
           "&z" -> {"val" -> (A,top)},
-          "&y" -> {"val" -> (B,(top,99))}
+          "&y" -> if ((0 < NNN)) { { "val" -> ("B",("top",(NNN + -1))) }} else {<error>},
+          "&NNN"  -> {"val" -> NNN}
         }
       """
 

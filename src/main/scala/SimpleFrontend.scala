@@ -45,6 +45,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
     abstract class Exp
     case class Const(x: Any) extends Exp
     case class Direct(x: Val) extends Exp
+    case class Input(x: String) extends Exp
     case class Ref(x: Var) extends Exp
     case class Assign(x: Var, y: Exp) extends Exp
     case class Plus(x: Exp, y: Exp) extends Exp
@@ -76,6 +77,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
     def eval(e: Exp): Val = e match {
       case Const(x)    => IR.const(x)
       case Direct(x)   => IR.const(x)
+      case Input(x)    => GRef(x)
       case Ref(x)      => IR.select(IR.select(store,IR.const("&"+x)), IR.const("val"))
       case Assign(x,y) =>
         val v = eval(y)
@@ -166,72 +168,81 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
         import IR._
         val saveit = itvec
 
-        val loop = GRef(freshVar)
-        val n0 = GRef(freshVar)
+        val loop = GRef(freshVar) // id of loop function
+        val n0 = GRef(freshVar)   // id of loop variable
 
-        val before = store
-
-        itvec = pair(itvec,n0)
 
         println(s"begin loop f(n)=$loop($n0), iteration vector $itvec {")
 
-        println(s"initial assumption: f(0)=$before, f($n0)=$before, f($n0+1)=$before")
+        itvec = pair(itvec,n0)
 
-        var init = before
-        var path = Nil: List[GVal]
+        val before = store
+
+        // the loop condition is evaluated once, even if the loop is never executed
+        val cv_before = eval(c)
+        store = subst(store, cv_before, GConst(1))
+        val first = store
+        
+        println(s"initial assumption: f(0)=$first, f($n0)=$first, f($n0+1)=$first")
+
+        var init = first
+        var seen = Nil: List[GVal]
 
         var iterCount = 0
         def iter: GVal = {
-          println(s"## iteration $iterCount, f(0)=$before, f($n0)=$init")
-          assert(!path.contains(init), "hitting recursion: "+(init::path))
-          path = init::path
+          println(s"## iteration $iterCount, f(0)=$first, f($n0)=$init")
+          assert(!seen.contains(init), "hitting recursion: "+(init::seen))
+          seen = init::seen
 
           if (iterCount == 3) {
             throw new Exception("bail out!")
           }
 
-          store = init
-
-          //store = subst(store,less(n0,const(0)),const(0)) // 0 <= i
-
-          val cv = eval(c)
-
-          //store = subst(store,cv,const(1)) // assertTrue
-
-          val afterC = store
+          // evaluate loop body
+          assert(store == init)
 
           eval(b)
 
-          store = subst(store,less(n0,const(0)),const(0)) // 0 <= i
-          store = subst(store,less(fixindex(n0.toString, cv),n0),const(0)) // i <= n-1
+          val next = store
 
-          println("trip count: "+termToString(fixindex(n0.toString, cv)))
-
-          val afterB = store
-
-          //val next = IR.iff(cv,afterB,afterC)
-          // inside the loop we know the check succeeded.
-          val next = subst(afterB,cv,const(1))
+          println(s"*** init ***")
+          printMap(init)
+          println("*** next ***")
+          printMap(next)
 
           // generalize init/next based on previous values
           // and current observation
-          println(s"approx f(0)=$before, f($n0)=$init, f($n0+1)=$next) = {")
+          println(s"approx f(0)=$first, f($n0)=$init, f($n0+1)=$next) = {")
 
-          val (initNew,nextNew) = lub(before, init, next)(loop,n0)
+          // NOTE: first and init are simplified assuming that the loop condition is true
+          // but the result initNew has no such assumption baked in
+          val (initNew,nextNew) = if (init == next) (init,next) else lub(first, init, next)(loop,n0)
 
           println(s"} -> f($n0)=$initNew, f($n0+1)=$nextNew")
+          println("*** initNew ***")
+          printMap(initNew)
+          println("*** nextNew ***")
+          printMap(nextNew)
+ 
+          // evaluate loop condition based on new approximation
+          store = initNew
+          
+          val cv = eval(c)
 
+          store = subst(store, cv, GConst(1))
+            
           // are we done or do we need another iteration?
-          if (init != initNew) { init = initNew; iterCount += 1; iter } else {
+          if (init != store) { init = store; iterCount += 1; iter } else {
             // no further information was gained: go ahead
             // and generate the final (set of) recursive
             // functions, or closed forms.
             println(s"create function def f(n) = $loop($n0) {")
 
             // given f(n+1) = nextNew, derive formula for f(n)
-            val body = iff(less(const(0),n0),
-                          subst(nextNew,n0,plus(n0,const(-1))),
-                          before)
+            val body = initNew //iff(less(const(0),n0),
+                         //subst(nextNew,n0,plus(n0,const(-1))),
+                         //before)
+            printMap(body)
 
             // Note that body should be the same as initNew,
             // except when we're giving up and generating
@@ -245,10 +256,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
             // a contract that such functions can only be
             // called with argument >= 0.
 
-            /*if (initNew != body) {
-              println(s"init: $loop = {$n0 => ${termToString(initNew)}}")
-              println(s"body: $loop = {$n0 => ${termToString(body)}}")
-            }*/
 
             // create function definition, which we call below
             lubfun(loop,n0,body)
@@ -258,8 +265,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
             // compute trip count
             val nX = fixindex(n0.toString, cv)
 
-            // invoke computed function at trip count
-            store = call(loop,nX)
+            // invoke computed function at trip count.
+            // the way we do things now, we have to guard
+            // against the loop not being executed at all
+            store = iff(cv_before,call(loop,nX),before)
 
             // A note about the intended semantics:
             // Elem i is the value _after i iterations_,
@@ -284,6 +293,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
             itvec = saveit
 
             println(s"} end loop $loop, trip count $nX, state $store")
+
+            println("-- state after loop: Map {")
+            printMap(store)
+            println("}")
+
+
 
             IR.const(())
           }

@@ -152,11 +152,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       type From = Any
       type To = String
 
-      def ident(s: String) = "  " + (s split("\n") mkString("\n  "))
-      def map(m: Map[From,From])                   = if (m.keySet.map(_.toString) == Set("\"$value\"", "\"$type\"")) // FIXME: HACK
+      def ident(s: String) = s //"  " + (s split("\n") mkString("\n  "))
+      def map(m: Map[From,From])                   = /*if (m.keySet.map(_.toString) == Set("\"val\"")) // FIXME: HACK
+                                                       s"[${m.getOrElse(GConst("val"), m("\"val\""))}]"
+                                                     else*/ if (m.keySet.map(_.toString) == Set("\"$value\"", "\"$type\"")) // FIXME: HACK
                                                        s"[ ${m.getOrElse(GConst("$value"), m("\"$value\""))} : ${m.getOrElse(GConst("$type"), m("\"$type\""))} ]"
                                                      else {
-                                                       s"{\n${ident(m map { case (key, value) => s"$key -> $value" } mkString(",\n"))}\n}"
+                                                      s"{ ${m map { case (key, value) => s"$key -> $value" } mkString(",")} }"
+                                                       //m.toString //s"{\n${ident(m map { case (key, value) => s"$key -> $value" } mkString(",\n"))}\n}"
                                                      }
       def update(x: From, f: From, y: From)        = s"$x + ($f -> $y)"
       def select(x: From, f: From)                 = s"$x($f)"
@@ -166,7 +169,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def equal(x: From, y: From)                  = s"($x == $y)"
       def not(x: From)                             = s"!($x)"
       def pair(x: From, y: From)                   = s"($x,$y)"
-      def iff(c: From, x: From, y: From)           = s"if ($c) {\n${ident(x.toString)}\n} else {\n${ident(y.toString)}\n}"
+      def iff(c: From, x: From, y: From)           = s"if ($c) { ${ident(x.toString)}} else {${ident(y.toString)}}"
       def sum(n: From, x: String, c: From)         = s"sum($n) { $x => $c }"
       def collect(n: From, x: String, c: From)     = s"collect($n) { $x =>\n${ident(s"$c")}\n}"
       def fixindex(x: String, c: From)             = s"fixindex { $x => $c }"
@@ -340,6 +343,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def termToString(p: GVal) = captureOutput(print(IRS_Term.scope(IRS_Term.pre(p))))
       def printTerm(p: GVal) = println(termToString(p))
 
+      def printMap(e: GVal) = e match {
+        case Def(DMap(m)) => for ((k,v) <- m) {
+          val k1 = k.toString.padTo(6,' ')
+          println(s"$k1  -->  ${termToString(v)}")
+        }
+        case _ => printTerm(e)
+      }
+
       // does a depend on b? potentially expensive
       def dependsOn(a: GVal, b: GVal) = schedule(a).exists(p => GRef(p._1) == b || syms(p._2).contains(b.toString))
 
@@ -382,6 +393,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def subst1(x: GVal, a: GVal, b: GVal): GVal = x match {
         case `a`                 => b
         case GConst(_)           => x
+        case GError              => x
         case Def(DUpdate(x,f,y)) => update(subst(x,a,b),subst(f,a,b),subst(y,a,b))
         case Def(DSelect(x,f))   => select(subst(x,a,b),subst(f,a,b))
         case Def(DMap(m))        =>
@@ -482,8 +494,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           collect(sn,x,subst(y,a,b))
         case Def(DFixIndex(x,y)) => fixindex(x,subst(y,a,b))
         case Def(DHasField(x,y)) => hasfield(subst(x,a,b), subst(y,a,b))
-        case Def(d)              => println("no subst: "+x+"="+d); x
-        case _                   => x // TOOD
+        case Def(d)              => throw new Exception("no subst: "+x+"="+d)
+        case GRef(_)             => x // ref without definition
+        // no default case - we want to know if something is wrong
       }
 
 
@@ -528,6 +541,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               debug(s"default 1 - ${termToString(f)}")
               super.update(x,f,y)
           }
+        // NOTE: it would be desirable to assimilate DUpdate into DCollect here, 
+        // but that makes it harder to pattern match in `lub` later. 
+        //case Def(DCollect(x2,f2,y2)) if f == x2 => 
+        //collect(plus(x2,const(1)),f2,iff(equal(GRef(f2),f),subst(y,f,GRef(f2)),y2))
         // TODO: DUpdate
         // case Def(DUpdate(x2,f2,y2)) => if (f2 == f) y2 else select(x2,f)
         case Def(DUpdate(x2,f2,y2)) if f2 == f => update(x2,f,y) // this one is conservative: m + (f -> y1) + (f -> y2)   --->  m + (f -> y2)  TODO: more aggressive, e.g. remove f in m, too?
@@ -626,6 +643,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (GError,_) => GError
         case (_,GError) => GError
         case (Def(DIf(c,x,z)),_) => iff(c,plus(x,y),plus(z,y))
+        case (_,Def(DIf(c,y,z))) => iff(c,plus(x,y),plus(x,z))
         // random simplifications ...
         case (GConst(c),b:GRef) => plus(b,const(c)) // CAVE: non-int consts!
         case (Def(DPlus(a,b)),_) => plus(a,plus(b,y))
@@ -643,6 +661,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (Def(DTimes(i1, m1)), Def(DPlus(x, Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))))))
         if i1 == i2 && m1 == m2 => x
         case (a1, Def(DPlus(b, Def(DTimes(b1, GConst(-1)))))) if a1 == b1 => b // a + (b + (a * -1)) --> b
+        case (a,Def(DPlus(c,Def(DPlus(Def(DTimes(a1,GConst(-1))),d))))) if a == a1 => plus(c,d) // a + c + (a * -1) + d --> c + d
         case (Def(DTimes(a1,GConst(c1:Int))),Def(DTimes(a2,GConst(c2:Int)))) if a1 == a2 => times(a1,const(c1+c2)) // (a * c1) + (a * c2) --> a * (c1 + c2)
         case (Def(DTimes(a1,GConst(c1:Double))),Def(DTimes(a2,GConst(c2:Double)))) if a1 == a2 => times(a1,const(c1+c2)) // (a * c1) + (a * c2) --> a * (c1 + c2)
         case (Def(DTimes(a1,GConst(c1:Double))),Def(DTimes(a2,GConst(c2:Int)))) if a1 == a2 => times(a1,const(c1+c2)) // (a * c1) + (a * c2) --> a * (c1 + c2)
@@ -689,6 +708,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         // random simplifications ...
         case (GConst(x: Int),Def(DPlus(a,GConst(b:Int)))) =>  less(const(x-b),a)
         case (GConst(x: Int),Def(DTimes(a,GConst(-1)))) =>  less(a, const(-x))
+        case (GConst(0),Def(DPlus(a,GConst(b:Int)))) if b < 0 =>  less(const(-b),a)
+        case (GConst(0),Def(DPlus(a,Def(DPlus(b,GConst(c:Int)))))) if c < 0 =>  less(const(-c),plus(a,b))
+        case (GConst(c1:Int),Def(DPlus(a,GConst(c2:Int)))) =>  less(const(c1-c2),a)
+        case (GConst(c1:Int),Def(DPlus(a,Def(DPlus(b,GConst(c2:Int)))))) =>  less(const(c1-c2),plus(a,b))
+        // x < a - b  -->  b + x < a
+        case (x,Def(DPlus(a,Def(DTimes(b,GConst(-1)))))) => less(plus(b,x), a)
         // 0 < -a + b  -->  a < b
         case (GConst(0),Def(DPlus(Def(DTimes(a,GConst(-1))),GConst(b:Int)))) =>  less(a,const(b))
         case (Def(DPlus(a,GConst(b:Int))),c) =>  less(a,plus(c,const(-b)))
@@ -783,7 +808,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               }*/
               if (thenp == elsep) thenp
               else if (thenp == const(1) && elsep == const(0)) c
-              else super.iff(c,thenp,elsep)
+              else {
+                if (thenp == x && elsep == y)
+                  super.iff(c,thenp,elsep)
+                else 
+                  iff(c,thenp,elsep) // need to match again after subst ...
+              }
           }
       }
 
@@ -959,10 +989,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           //use real index var !!
           val nX = mkey(fsym,n0)
           println(s"hit update at loop index -- assume collect")
-          val r = collect(plus(n0,const(1)), nX.toString, subst(y,n0,nX))
-          (r, r)
+          val r0 = collect(n0, nX.toString, subst(y,n0,nX))
+          val r1 = collect(plus(n0,const(1)), nX.toString, subst(y,n0,nX))
+          (r0, r1)
+
         case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]))
-          if { !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] } => // XXX diff op should take precedence
+          if !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] => // diff op should take precedence
           // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
           IRD.printTerm(a)
           IRD.printTerm(b0)
@@ -971,6 +1003,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           val b0X = subst(b1,n0,plus(n0,const(-1)))
           (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
           //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
+        /* in test 6C2, this case conflicts with the next 
         case (a/*@Def(DPair(a1,a2))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]), b1/*@Def(DPair(b01,b02))*/)
           if { !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] } => // XXX diff op should take precedence
           // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
@@ -980,18 +1013,47 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           println(s"hit pair -- assume only 0 case differs (loop peeling)")
           val b0X = subst(b1,n0,plus(n0,const(-1)))
           (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
-          //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
+          //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?*/
+        case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(d@GConst(_)/*`n0`*/,u1)),b10,b20)))
+          // dual example: (B,(1,i)),(A,1)
+          if !dependsOn(u1,n0) => // test 6C2
+          IRD.printTerm(a)
+          IRD.printTerm(b0)
+          IRD.printTerm(b1)
+          println(s"hit if dual cst -- assume only last case differs") // XXX FIXME interact below
+          val d1 = plus(b10,times(b0,const(-1)))
+          if (d1.isInstanceOf[GConst]) {
+            println(s"const diff, so we can approx down ${termToString(d1)}")
+            val (ithen, nthen) = lub(a,b0,b10)(mkey(fsym,GConst("then")),n0)
+            val b20X = subst(b20,n0,plus(n0,const(-1)))
+            (iff(less(n0,u1),ithen,b20X), iff(less(plus(n0,d),u1),nthen,b20))
+          } else {
+            println(s"non-const diff -- not sure what to do")
+            val b10X = subst(b10,n0,plus(n0,const(-1)))
+            val b20X = subst(b20,n0,plus(n0,const(-1)))
+            (iff(less(n0,u1),b10X,b20X), iff(less(plus(n0,d),u1),b10,b20))
+          }
+
         case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(`n0`,u1)),b10,b20)))
           // dual example: (B,(1,i)),(A,1)
           if !dependsOn(u1,n0) => // test 6C2
           IRD.printTerm(a)
           IRD.printTerm(b0)
           IRD.printTerm(b1)
-          println(s"hit if dual -- assume only last case differs")
-          val b10X = subst(b10,n0,plus(n0,const(-1)))
-          val b20X = subst(b20,n0,plus(n0,const(-1)))
-          (iff(less(plus(n0,const(-1)),u1),b10X,b20X), b1)
-          //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
+          println(s"hit if dual -- assume only last case differs") // XXX FIXME interact below
+          val d1 = plus(b10,times(b0,const(-1)))
+          if (d1.isInstanceOf[GConst]) {
+            println(s"const diff, so we can approx down ${termToString(d1)}")
+            val (ithen, nthen) = lub(a,b0,b10)(mkey(fsym,GConst("then")),n0)
+            val b20X = subst(b20,n0,plus(n0,const(-1)))
+            (iff(less(plus(n0,const(-1)),u1),ithen,b20X), iff(less(n0,u1),nthen,b20))
+          } else {
+            println(s"non-const diff -- not sure what to do")
+            val b10X = subst(b10,n0,plus(n0,const(-1)))
+            val b20X = subst(b20,n0,plus(n0,const(-1)))
+            (iff(less(plus(n0,const(-1)),u1),b10X,b20X), b1)
+            //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
+          }
 
           // XXXXX FIXME / TODO
           // PROBLEM: boundary may change with each iteration!!!
