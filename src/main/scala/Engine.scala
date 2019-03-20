@@ -541,9 +541,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               debug(s"default 1 - ${termToString(f)}")
               super.update(x,f,y)
           }
-        // NOTE: it would be desirable to assimilate DUpdate into DCollect here, 
-        // but that makes it harder to pattern match in `lub` later. 
-        //case Def(DCollect(x2,f2,y2)) if f == x2 => 
+        // NOTE: it would be desirable to assimilate DUpdate into DCollect here,
+        // but that makes it harder to pattern match in `lub` later.
+        //case Def(DCollect(x2,f2,y2)) if f == x2 =>
         //collect(plus(x2,const(1)),f2,iff(equal(GRef(f2),f),subst(y,f,GRef(f2)),y2))
         // TODO: DUpdate
         // case Def(DUpdate(x2,f2,y2)) => if (f2 == f) y2 else select(x2,f)
@@ -604,7 +604,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case GConst(m:Map[From,From]) =>
           f match {
             case GConst(_) => const(if (m.contains(f)) 1 else 0)
-            case _ =>
+            case _ => ??? // BUGFIX: res is always 0!
               var res: From = const(0)
               for ((k,v) <- m) {
                 res = times(equal(f,k), res)
@@ -811,7 +811,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               else {
                 if (thenp == x && elsep == y)
                   super.iff(c,thenp,elsep)
-                else 
+                else
                   iff(c,thenp,elsep) // need to match again after subst ...
               }
           }
@@ -1003,7 +1003,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           val b0X = subst(b1,n0,plus(n0,const(-1)))
           (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
           //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
-        /* in test 6C2, this case conflicts with the next 
+        /* in test 6C2, this case conflicts with the next
         case (a/*@Def(DPair(a1,a2))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]), b1/*@Def(DPair(b01,b02))*/)
           if { !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] } => // XXX diff op should take precedence
           // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
