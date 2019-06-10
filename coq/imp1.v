@@ -11,7 +11,6 @@ Import ListNotations.
 
 (* ---------- maps ---------- *)
 
-
 Inductive id : Type :=
   | Id : nat -> id.
 
@@ -38,16 +37,15 @@ Definition update {A:Type} (m : partial_map A)
                   (x : id) (v : A) :=
   t_update m x (Some v).
 
-
-(* ---------- syntax ---------- *)
-
+(* ---------- Source language IMP ---------- *)
+(* TODO: field read, allocation, field assignment, abort *)
 Inductive exp : Type :=
   | AId : id -> exp
   | ANum : nat -> exp
   | APlus : exp -> exp -> exp
   | AMinus : exp -> exp -> exp
   | AMult : exp -> exp -> exp
-                            
+
   | BTrue : exp
   | BFalse : exp
   | BEq : exp -> exp -> exp
@@ -74,14 +72,12 @@ Notation "'WHILE' b 'DO' c 'END'" :=
 Notation "'IFB' c1 'THEN' c2 'ELSE' c3 'FI'" :=
   (CIf c1 c2 c3) (at level 80, right associativity).
 
-
 (* ---------- semantics ---------- *)
 
 Inductive val: Type :=
   | VNum : nat -> val
   | VBool : bool -> val
   | VLoc : id -> val.
-
 
 Definition store := total_map (option val).
 
@@ -92,7 +88,6 @@ Definition W : id := Id 10.
 Definition X : id := Id 11.
 Definition Y : id := Id 12.
 Definition Z : id := Id 13.
-
 
 Definition toNat v :=
   match v with
@@ -109,8 +104,6 @@ Definition toLoc v :=
   | VLoc n => Some n
   | _ => None
   end.
-
-
 
 Notation "'LET' x <-- e1 'IN' e2"
    := (match e1 with
@@ -140,7 +133,7 @@ Notation "e1 '>>>=' e2"
        end)
    (right associativity, at level 80).
 
-
+(* ----------- IMP evaluation ----------- *)
 
 Fixpoint eval_exp (e: exp) (sto: store): option val :=
   match e with
@@ -170,8 +163,6 @@ Fixpoint eval_exp (e: exp) (sto: store): option val :=
                   Some (VBool (negb a))
   end.
 
-
-
 Fixpoint idx1 (i:nat) (m:nat) (p: nat -> option bool): option nat :=
   match m with 
   | O => None
@@ -179,10 +170,12 @@ Fixpoint idx1 (i:nat) (m:nat) (p: nat -> option bool): option nat :=
     LET b <-- p i IN
     if b then Some i else idx1 (i+1) m' p
   end.
+
 Definition idx (m:nat) (p: nat -> option bool): option nat := idx1 0 m p.
 
-Fixpoint eval_loop (b1 : exp) (c : stm) (st : store)(n : nat)(m : nat) (evstm: store -> option (option store))
-                    : option (option store) :=
+Fixpoint eval_loop (b1 : exp) (c : stm) (st : store)(n : nat)(m : nat)
+                   (evstm: store -> option (option store))
+                   : option (option store) :=
   match n with
   | O => Some (Some st)
   | S n' =>
@@ -192,7 +185,7 @@ Fixpoint eval_loop (b1 : exp) (c : stm) (st : store)(n : nat)(m : nat) (evstm: s
   end.
 
 Fixpoint eval_stm (c : stm) (st : store)(m : nat) {struct c}
-                    : option (option store) :=
+                  : option (option store) :=
     match c with
       | SKIP =>
           Some (Some st)
@@ -215,8 +208,6 @@ Fixpoint eval_stm (c : stm) (st : store)(m : nat) {struct c}
                           ) IN
           eval_loop b1 c1 st n m (fun st2 => eval_stm c1 st2 m) 
     end.
-
-
 
 (* ---------- test cases ---------- *)
 
@@ -257,23 +248,22 @@ Compute
 (*   ====>
       None (* timeout *)   *)
 
-
 Compute (test_ceval (t_update empty_store X (Some (VNum 4))) fact_in_coq).
 (*   ====>
       Some (4, 24, 0)   *)
 
-
-(* ---------- target language ---------- *)
+(* ---------- Target language FUN ---------- *)
+(* TODO: extend the target language to FUN *)
 Inductive gxp : Type :=
   | GNum : nat -> gxp
   | GMap : (total_map (option gxp)) -> gxp
   | GGet : gxp -> id -> gxp
   | GPut : gxp -> id -> gxp -> gxp
-  
+
   | GPlus : gxp -> gxp -> gxp
   | GMinus : gxp -> gxp -> gxp
   | GMult : gxp -> gxp -> gxp
-                            
+
   | GBool : bool -> gxp
   | GEq : gxp -> gxp -> gxp
   | GLe : gxp -> gxp -> gxp
@@ -306,8 +296,6 @@ Definition GVNum (a: gxp): gxp :=
 Definition GVBool (a: gxp): gxp :=
   GPut (GPut GEmpty ftpe tbool) fval a.
 
-
-
 Definition sym_store := total_map (option gxp).
 
 Definition toNatG (v:gxp): gxp :=
@@ -318,9 +306,6 @@ Definition toBoolG (v:gxp): gxp :=
 
 Definition toLocG (v:gxp): gxp :=
   GIf (GEq (GGet v ftpe) tloc) (GSome (GGet v fval)) GNone.
-
-
-
 
 Notation "'LETG' x <-- e1 'IN' e2"
    := (GMatch e1 GNone (fun x => e2))
@@ -343,8 +328,6 @@ Notation "e1 '>>g=' e2"
          | None => None
        end)
    (right associativity, at level 80). *)
-
-
 
 (* ---------- translation (exp only for now) --------- *)
 Fixpoint trans_exp (e: exp) (sto: gxp): gxp :=
@@ -375,9 +358,7 @@ Fixpoint trans_exp (e: exp) (sto: gxp): gxp :=
                   GSome (GVBool (GNot a))
   end.
 
-
 (* ---------- normal-order simplification semantics for FUN --------- *)
-
 
 (* simplification / normalization *)
 Fixpoint sms_eval_exp (e: gxp): gxp :=
@@ -415,12 +396,12 @@ Fixpoint sms_eval_exp (e: gxp): gxp :=
   | _ => e (* TODO *)                                   
   end.
 
-
 (* examples, sanity checks *)
+
 Definition testprog := (trans_exp (APlus (ANum 2) (ANum 3)) (GMap (t_empty None))).
 
 Definition testprog2 := fun e1 e2 => (trans_exp (APlus e1 e2) (GMap (t_empty None))).
-                              
+
 Definition testprog1 := (trans_exp (ANum 2)) (GMap (t_empty None)).
 
 (* WARNING: computing of GMao unfolds string comparison (<-- huge term!!!) *)
@@ -432,8 +413,8 @@ Compute (sms_eval_exp (GPut GEmpty fvalid (GBool true))).
 
 (* Compute (fun e1 e2 => sms_eval_exp (testprog2 e1 e2)).  *)
 
-
 (* ----- equivalence with respect to simplification ----- *)
+
 Definition geq a b := sms_eval_exp a = sms_eval_exp b.
 
 Definition fgeq f1 f2 := forall b1 b2, geq b1 b2 -> geq (f1 b1) (f2 b2).
@@ -488,21 +469,19 @@ Proof. intros. eapply GEQ_trans. eapply GEQ_GetC; eauto. unfold geq in *. simpl.
 
 Lemma GEQ_BindSomeR: forall a b c f, geq a (GSome b) -> geq (f b) c -> fgeq f f -> geq (a >>g= f) c.
 Proof. intros. eapply GEQ_trans. eapply GEQ_BindC; eauto.
-       unfold GMatch. unfold fgeq in *. unfold geq in *. simpl. rewrite <-H0. eapply H1. eapply GEQ_SomeR. reflexivity. Qed.
-       
+       unfold GMatch. unfold fgeq in *. unfold geq in *. simpl. rewrite <-H0. 
+       eapply H1. eapply GEQ_SomeR. reflexivity. Qed.
 
 Lemma GEQ_BindNoneR: forall a f, geq a GNone -> geq (a >>g= f) GNone.
 Proof.
   intros. unfold GMatch. unfold geq in *. simpl. rewrite H. simpl. reflexivity. 
 Qed.
 
-
 Lemma GEQ_toNatR: forall a b, geq a (GVNum b) -> geq (toNatG a) (GSome b).
 Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed.
 
 Lemma GEQ_toNatBoolR: forall a b, geq a (GVBool b) -> geq (toNatG a) GNone.
 Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed. 
-
 
 (*
 Lemma GEQ_PlusR: forall n1 n2, geq (GPlus (GNum n1) (GNum n2)) (GNum (n1 + n2)).
@@ -531,10 +510,8 @@ Proof.
 Qed.
 *)
 
-
-
-
 (* ----- equivalence between IMP and FUN ----- *)
+
 Inductive veq : val -> gxp -> Prop :=
 | VEQ_Num : forall n r,
     geq r (GVNum (GNum n)) ->
@@ -556,7 +533,6 @@ Definition req := oeq veq.
 
 Definition neq (n1: nat) (n2: gxp) := n2 = (GNum n1).
 
-
 Lemma REQ_BindC: forall X Y (peq: X -> gxp -> Prop)  (qeq: Y -> gxp -> Prop) a1 a2 f1 f2,
     oeq peq a1 a2 ->
     (forall b1 b2, peq b1 b2 -> oeq qeq (f1 b1) (f2 b2)) ->
@@ -577,9 +553,8 @@ Proof.
   - eapply REQ_None. eapply GEQ_toNatBoolR. eauto. 
 Qed.
 
-  
-
 (* ----- soundness of IMP -> FUN translation ----- *)
+
 Theorem soundness: forall e,
     req (eval_exp e (empty_store)) (trans_exp e (GMap (t_empty None))).
 Proof.
@@ -622,7 +597,6 @@ Proof.
   - admit.
 Admitted. 
 
-
 (* ---------- small-step rules for FUN: experimental / not currently used ---------- *)
 
 (*NOTE: small-step not currently used *)
@@ -630,9 +604,6 @@ Inductive value : gxp -> Prop :=
 | v_num : forall n, value (GNum n)
 | v_bool : forall b, value (GBool b)
 | v_obj: forall m, (forall x y, m x = Some y -> value y) -> value (GMap m).
-
-
-
 
 Reserved Notation " t '==>' t' " (at level 40).
 
@@ -699,4 +670,3 @@ Proof.
  *)
 
 Admitted.
-    
