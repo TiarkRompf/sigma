@@ -204,7 +204,11 @@ Fixpoint eval_stm (c : stm) (st : store)(m : nat) {struct c}
           LET n <-- idx m (fun i =>
                              match (LET st1 <--- eval_loop b1 c1 st i m (fun st2 => eval_stm c1 st2 m) IN
                              LET b <-- eval_exp b1 st1 >>= toBool IN
-                             Some (Some (negb b))) with | Some (Some b) => Some b | Some None => Some true | None => None  end (* TODO: cleanup slightly. inline eval_loop? *)
+                             Some (Some (negb b))) with
+                             | Some (Some b) => Some b
+                             | Some None => Some true
+                             | None => None  end
+                          (* TODO: cleanup slightly. inline eval_loop? *)
                           ) IN
           eval_loop b1 c1 st n m (fun st2 => eval_stm c1 st2 m) 
     end.
@@ -441,6 +445,12 @@ Lemma GEQ_PlusC: forall a1 a2 b1 b2,
     geq a1 a2 -> geq b1 b2 -> geq (GPlus a1 b1) (GPlus a2 b2).
 Proof. intros. unfold geq in *. simpl. rewrite H. rewrite H0. simpl. auto. Qed.
 
+Lemma GEQ_MinusC : forall a1 a2 b1 b2,
+    geq a1 a2 -> geq b1 b2 -> geq (GMinus a1 b1) (GMinus a2 b2).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
+Qed.
+
 Lemma GEQ_SomeC: forall a b, geq a b -> geq (GSome a) (GSome b).
 Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
 
@@ -461,26 +471,50 @@ Qed.
 (* ----- and reduction rules ----- *)
 
 Lemma GEQ_PlusR: forall a1 a2 n1 n2,
-    geq a1 (GNum n1) -> geq a2 (GNum n2) -> geq (GPlus a1 a2) (GNum (n1 + n2)).
-Proof. intros. eapply GEQ_trans. eapply GEQ_PlusC; eauto.  unfold geq in *. simpl. reflexivity. Qed.
+    geq a1 (GNum n1) ->
+    geq a2 (GNum n2) ->
+    geq (GPlus a1 a2) (GNum (n1 + n2)).
+Proof.
+  intros. eapply GEQ_trans. eapply GEQ_PlusC; eauto.  unfold geq in *. simpl. reflexivity.
+Qed.
 
-Lemma GEQ_SomeR: forall a b, geq a (GSome b) -> geq (GGet a fdata) b.
-Proof. intros. eapply GEQ_trans. eapply GEQ_GetC; eauto. unfold geq in *. simpl. reflexivity. Qed. 
+Lemma GEQ_MinusR : forall a1 a2 n1 n2,
+    geq a1 (GNum n1) ->
+    geq a2 (GNum n2) ->
+    geq (GMinus a1 a2) (GNum (n1 - n2)).
+Proof.
+  intros. eapply GEQ_trans.
+  - eapply GEQ_MinusC; eauto.
+  - unfold geq in *. simpl. reflexivity.
+Qed.
 
-Lemma GEQ_BindSomeR: forall a b c f, geq a (GSome b) -> geq (f b) c -> fgeq f f -> geq (a >>g= f) c.
+Lemma GEQ_SomeR: forall a b,
+    geq a (GSome b) -> geq (GGet a fdata) b.
+Proof.
+  intros. eapply GEQ_trans. eapply GEQ_GetC; eauto. unfold geq in *. simpl. reflexivity.
+Qed. 
+
+Lemma GEQ_BindSomeR: forall a b c f,
+    geq a (GSome b) ->
+    geq (f b) c ->
+    fgeq f f ->
+    geq (a >>g= f) c.
 Proof. intros. eapply GEQ_trans. eapply GEQ_BindC; eauto.
        unfold GMatch. unfold fgeq in *. unfold geq in *. simpl. rewrite <-H0. 
        eapply H1. eapply GEQ_SomeR. reflexivity. Qed.
 
-Lemma GEQ_BindNoneR: forall a f, geq a GNone -> geq (a >>g= f) GNone.
+Lemma GEQ_BindNoneR: forall a f,
+    geq a GNone -> geq (a >>g= f) GNone.
 Proof.
   intros. unfold GMatch. unfold geq in *. simpl. rewrite H. simpl. reflexivity. 
 Qed.
 
-Lemma GEQ_toNatR: forall a b, geq a (GVNum b) -> geq (toNatG a) (GSome b).
+Lemma GEQ_toNatR: forall a b,
+    geq a (GVNum b) -> geq (toNatG a) (GSome b).
 Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed.
 
-Lemma GEQ_toNatBoolR: forall a b, geq a (GVBool b) -> geq (toNatG a) GNone.
+Lemma GEQ_toNatBoolR: forall a b,
+    geq a (GVBool b) -> geq (toNatG a) GNone.
 Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed. 
 
 (*
@@ -543,7 +577,7 @@ Proof.
   - specialize (H0 _ _ H2). inversion H0; subst r.
     + eapply REQ_Some. eauto. eapply GEQ_BindSomeR; eauto.
     + eapply REQ_None. eapply GEQ_BindSomeR; eauto. 
-  - eapply REQ_None. eapply GEQ_BindNoneR; eauto. 
+  - eapply REQ_None. eapply GEQ_BindNoneR; eauto.
 Qed.
 
 Lemma REQ_toNatC: forall (b0 : val) (b3 : gxp), veq b0 b3 -> oeq neq (toNat b0) (toNatG b3).
@@ -553,42 +587,89 @@ Proof.
   - eapply REQ_None. eapply GEQ_toNatBoolR. eauto. 
 Qed.
 
+Lemma OEQ_toNatC: forall (a1 : option val) (b1: gxp),
+    oeq neq (a1 >>= toNat) (b1 >>g= toNatG).
+Proof.
+Admitted.
+
 (* ----- soundness of IMP -> FUN translation ----- *)
 
 Theorem soundness: forall e,
     req (eval_exp e (empty_store)) (trans_exp e (GMap (t_empty None))).
 Proof.
   intros e. induction e.
-  - (* var *) simpl.  admit. (* fixme *)
+  - (* var *) simpl. unfold req. eapply REQ_None. unfold geq.
+    admit. (* fixme *)
   - (* num *) simpl. eapply REQ_Some. eapply VEQ_Num. reflexivity. reflexivity. 
   - (* plus *)
-    simpl.
-
     (* eapply REQ_BindC. eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC.
     intros. eapply REQ_BindC. eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC.
     intros. eapply REQ_Some. eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_PlusR. reflexivity. reflexivity. rewrite H. rewrite H0. reflexivity.
     intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. reflexivity. eauto.
     intros. eapply GEQ_BindC. eapply GEQ_BindC. reflexivity. intros ? ? ?. eapply GEQ_toNatC. eauto. intros ? ? ?.
-    eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. eauto. eauto. *)
-    
-    simpl eval_exp. simpl trans_exp.
-
+    eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. eauto. eauto. 
+    simpl eval_exp. simpl trans_exp. *)
+    simpl.
     remember (eval_exp e1 empty_store) as a1.
     remember (eval_exp e2 empty_store) as a2.
     remember (trans_exp e1 (GMap (t_empty None))) as b1.
     remember (trans_exp e2 (GMap (t_empty None))) as b2.
+    (* pose proof OEQ_toNatC a1 b1. *)
+    (* pose proof OEQ_toNatC a2 b2. *)
 
-    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)). eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC.
-    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)). eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC.
-    
-    eapply REQ_BindC. eauto. intros. eapply REQ_BindC. eauto.
-    intros. eapply REQ_Some. eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_PlusR. reflexivity. reflexivity. rewrite H1. rewrite H2. reflexivity.
-    intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. reflexivity. eauto. 
-
-    intros. eapply GEQ_BindC. reflexivity. intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. eauto. eauto. 
-
-  - (* minus *) admit.
-  - admit.
+    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    eapply REQ_BindC.
+    + eauto.
+    + intros. eapply REQ_BindC.
+      * eauto.
+      * intros. eapply REQ_Some.
+        ** eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_PlusR. reflexivity. reflexivity.
+        ** rewrite H1. rewrite H2. reflexivity.
+      * intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. reflexivity. apply H2. 
+    + intros. eapply GEQ_BindC.
+      * reflexivity.
+      * intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC.
+        eapply GEQ_PlusC. eauto. eauto.
+  - (* minus *) simpl.
+    remember (eval_exp e1 empty_store) as a1.
+    remember (eval_exp e2 empty_store) as a2.
+    remember (trans_exp e1 (GMap (t_empty None))) as b1.
+    remember (trans_exp e2 (GMap (t_empty None))) as b2.
+    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    eapply REQ_BindC.
+    + eauto.
+    + intros. eapply REQ_BindC.
+      * eauto.
+      * intros. eapply REQ_Some.
+        ** eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_MinusR. reflexivity. reflexivity.
+        ** rewrite H1. rewrite H2. reflexivity.
+      * intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_MinusC. reflexivity. apply H2.
+    + intros. eapply GEQ_BindC.
+      ** reflexivity.
+      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC.
+         eapply GEQ_MinusC. apply H1. apply H2.
+  - (* mult *) simpl.
+    remember (eval_exp e1 empty_store) as a1.
+    remember (eval_exp e2 empty_store) as a2.
+    remember (trans_exp e1 (GMap (t_empty None))) as b1.
+    remember (trans_exp e2 (GMap (t_empty None))) as b2.
+    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    eapply REQ_BindC.
+    + eauto.
+    + intros. eapply REQ_BindC.
+      * eauto.
+      * intros. eapply REQ_Some.
+        ** eapply VEQ_Num. eapply GEQ_VNumC.
+    admit.
   - admit.
   - admit.
   - admit.
