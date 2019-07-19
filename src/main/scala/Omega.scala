@@ -594,7 +594,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
         val eq = eqs.head
         if (debug) println("current constraints:")
         if (debug) { for (eq <- (eqs++geqs)) { println(s"  $eq") } }
-        
+
         if (eq.vars.length == 1) {
           if (eq.trivial) return eliminate(eqs.tail, geqs, substs)
           else return None
@@ -618,7 +618,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
                 Subst(x,term)::substs
               } else { substs }
               /* Debug */
-              if (debug) { 
+              if (debug) {
                 println(s"[g=$g]choose xk: $x")
                 println(s"[g=$g]subst: $x = ${term}")
               }
@@ -710,7 +710,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
   def hasIntSolutions(): Boolean = {
     normalize match {
       case Some(p) if p.cs.isEmpty => true
-      case Some(p) if p.hasEq => 
+      case Some(p) if p.hasEq =>
         p.elimEq match {
           case Some(p) => p.hasIntSolutions
           case None => false
@@ -892,14 +892,14 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
     normalize match {
       case Some(p) if p.getVars.subsetOf(p.pvars.toSet) =>
         if (p.hasIntSolutions) Some(p) else None
-      case Some(p) if p.hasEq => 
+      case Some(p) if p.hasEq =>
         p.elimEq match {
           case Some(p) => p.simplify
           case None => None
         }
       case Some(p) =>
         p.reduce match {
-          case Some(p) if p.hasEq => 
+          case Some(p) if p.hasEq =>
             p.elimEq match {
               case Some(p) => p.simplify
               case None => None
@@ -1043,15 +1043,15 @@ object Omega {
 
   def verify_aux(os: OStruct, accCs: List[Constraint[_]] = List()): (Boolean, List[Constraint[_]]) = {
     os match {
-      case OProb(p) => 
+      case OProb(p) =>
         val newP = p.copy(p.cs++accCs)
         if (newP.hasIntSolutions) (true, newP.cs)
         else (false, accCs)
-      case OConj(lhs, rhs) => 
+      case OConj(lhs, rhs) =>
         val (lhsB, lhsCS) = verify_aux(lhs, accCs)
         if (lhsB) verify_aux(rhs, lhsCS)
         else verify_aux(rhs, accCs)
-      case ODisj(lhs, rhs) => 
+      case ODisj(lhs, rhs) =>
         val (lhsB, lhsCS) = verify_aux(lhs, accCs)
         if (lhsB) (lhsB, lhsCS)
         else verify_aux(rhs, accCs)
@@ -1075,7 +1075,7 @@ object Omega {
       case _ => println(s"Missing $e"); ???
     }
   }
-  
+
   def translate(e: Def): OStruct = {
     e match {
       case DIf(cnd, thn, els) =>
@@ -1196,10 +1196,10 @@ object Omega {
         //       check other concrete number within its constraint until bound met.
         // Idea: If we know x > 1, then could infer that x^2 > 1
         //       If we know x > n && y > m (n>0&&m>0), then could infer that x*y > n*m
-        println(s"Missing $e")
+        println(s"A Missing $e")
         List((1, s"$x*$y"))   //FIXME
       case DCall(f, x) =>
-        println(s"Missing $e")
+        println(s"B Missing $e")
         List((1, s"$f($x)")) //FIXME
       case _ => println(s"Missing $e"); ???
     }
@@ -1420,13 +1420,13 @@ object OmegaTest {
     val o1 = OConj(OProb(Problem(List(GEQ(List(-5, 1), List(PConst, "x"))))),
                    OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x"))))))
     assert(!Omega.verify(o1))
-    
+
     // x >= 5 => 4 >= x
     val o2 = OImplies(OProb(Problem(List(GEQ(List(-5, 1), List(PConst, "x"))))),
                       OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x"))))))
     println(Omega.flatten(o2))
     assert(!Omega.verify(o2))
-    
+
     // x >= 5 && (x >= 10 || x <= 4)
     val o3 = OConj(OProb(Problem(List(GEQ(List(-5, 1), List(PConst, "x"))))),
                    ODisj(OProb(Problem(List(GEQ(List(-10, 1), List(PConst, "x"))))),
@@ -1439,31 +1439,31 @@ object OmegaTest {
                    ODisj(OProb(Problem(List(GEQ(List(0, -1), List(PConst, "x"))))),
                          OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x")))))))
     assert(!Omega.verify(o4))
-    
+
     // x == 0, x <= 4
     val p12 = Problem(List(EQ(List(0, 1), List(PConst, "x")),
                            GEQ(List(4, -1), List(PConst, "x"))))
     assert(p12.hasIntSolutions)
-    
+
     // x == 1 under x >= 0 && x <= 4
     val o5 = OProb(Problem(List(GEQ(List(0, 1), List(PConst, "x")))))
     val o6 = OProb(Problem(List(GEQ(List(4, -1), List(PConst, "x")))))
-    var result = Omega.verify(OProb(Problem(List(EQ(List(-1, 1), List(PConst, "x"))))), 
+    var result = Omega.verify(OProb(Problem(List(EQ(List(-1, 1), List(PConst, "x"))))),
                              List(o5, o6))
     assert(result)
-    
+
     // (x >= 2 || x <= 0)  under (x >= 0 && x <= 4)
     val o7 = OProb(Problem(List(EQ(List(-1, 1), List(PConst, "x"))))).negation
     println(o7)
     result = Omega.verify(o7, List(o5, o6))
     assert(result)
-    
+
     // (x >= 5 || x <= 3)  under (x >= 0 && x <= 4)
     val o8 = OProb(Problem(List(EQ(List(-4, 1), List(PConst, "x"))))).negation
     println(o8)
     result = Omega.verify(o8, List(o5, o6))
     assert(result)
-    
+
     // x == 5 under x >= 0 && x <= 4
     val o9 = OProb(Problem(List(EQ(List(-5, 1), List(PConst, "x")))))
     println(o9)

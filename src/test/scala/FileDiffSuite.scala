@@ -48,7 +48,7 @@ trait FileDiffSuite extends FunSuite {
     //assert (indent==0, "indentation sanity check")
     if (indent != 0) out.println("warning: indentation sanity check")
   }
-  
+
   def withOutFile(name: String)(func: => Unit): Unit = {
     val file = new File(name)
     file.getParentFile.mkdirs()
@@ -81,7 +81,7 @@ trait FileDiffSuite extends FunSuite {
       System.setErr(oldStdErr)
     }
   }
-  
+
   def readFile(name: String): String = try {
     val buf = new Array[Byte](new File(name).length().toInt)
     val fis = new FileInputStream(name)
@@ -106,7 +106,7 @@ trait FileDiffSuite extends FunSuite {
   }
 
   def assertFileEqualsCheck(name: String): Unit = {
-    def sanitize(s: String) = 
+    def sanitize(s: String) =
       s.replaceAll("@[0-9a-f]+","@").   // disregard object ids
         replaceAll("[0-9]*\\.[0-9]+s","0.0s")  // disregard running times
     if (overwriteCheckFiles) {

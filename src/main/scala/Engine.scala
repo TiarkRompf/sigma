@@ -50,8 +50,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       }
     }
 
-    val debugF = false
-    def debug(s: => String) = if (debugF) println("DEBUG: " + s)
+    val debugF = true
+    val debugSet = Set("Simplify", "Assert")
+    def debug(pref: String, s: => String) = if (debugF && debugSet(pref)) println(s"$pref: " + s)
   }
 
 
@@ -526,10 +527,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
             case GConst(_) => map(m + (f -> y)) // TODO: y = DIf ??
             case Def(DIf(c,u,v)) => iff(c,update(x,u,y),update(x,v,y))
             case Def(DPair(u,v)) =>
-              debug(s"m - $m")
-              debug(s"u - ${termToString(u)}")
-              debug(s"v - ${termToString(v)}")
-              debug(s"y - ${termToString(y)}")
+              debug("update", s"m - $m")
+              debug("update", s"u - ${termToString(u)}")
+              debug("update", s"v - ${termToString(v)}")
+              debug("update", s"y - ${termToString(y)}")
               update(x,u,merge(select(x,u),v,y)) // store path!!
             case _ =>
               // It would be nice to use f as a key even if it
@@ -538,7 +539,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               // At present it is not quite clear under what conditions
               // this would work. Clearly, all keys in the map must
               // be statically known to be definitely different.
-              debug(s"default 1 - ${termToString(f)}")
+              debug("update", s"default 1 - ${termToString(f)}")
               super.update(x,f,y)
           }
         // NOTE: it would be desirable to assimilate DUpdate into DCollect here,
@@ -550,12 +551,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DUpdate(x2,f2,y2)) if f2 == f => update(x2,f,y) // this one is conservative: m + (f -> y1) + (f -> y2)   --->  m + (f -> y2)  TODO: more aggressive, e.g. remove f in m, too?
         case Def(DIf(c,u,v)) => iff(c,update(u,f,y),update(v,f,y))
         case Def(DPair(u,v)) =>
-          debug(s"u - ${termToString(u)}")
-          debug(s"v - ${termToString(v)}")
-          debug(s"f - ${termToString(f)}")
+          debug("update", s"u - ${termToString(u)}")
+          debug("update", s"v - ${termToString(v)}")
+          debug("update", s"f - ${termToString(f)}")
           ??? // update(x,u,merge(select(x,u),v,y))
         case _ =>
-          debug(s"default 2\n- ${termToString(x)}\n- ${termToString(f)})")
+          debug("update", s"default 2\n- ${termToString(x)}\n- ${termToString(f)})")
           super.update(x,f,y)
       }
       override def select(x: From, f: From): From          = x match {
@@ -591,9 +592,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DUpdate(x2,f2,y2)) => iff(equal(f2,f), y2, select(x2,f))
         case Def(DIf(c,x,y)) => iff(c,select(x,f),select(y,f))
         case Def(DPair(u,v)) =>
-          debug(s"u - ${termToString(u)}")
-          debug(s"v - ${termToString(v)}")
-          debug(s"f - ${termToString(v)}")
+          debug("select", s"u - ${termToString(u)}")
+          debug("select", s"v - ${termToString(v)}")
+          debug("select", s"f - ${termToString(v)}")
           // ???
           select(u, select(v,f))  // FIXMEGreg: I don't understand that case
         case Def(DCollect(n,x,c)) => subst(c,GRef(x),f)// FIXME: check bounds!!
@@ -647,10 +648,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         // random simplifications ...
         case (GConst(c),b:GRef) => plus(b,const(c)) // CAVE: non-int consts!
         case (Def(DPlus(a,b)),_) => plus(a,plus(b,y))
-        case (a,Def(DTimes(a1,GConst(-1)))) if a == a1 => const(0) // a + (a * -1) --> 0
-        case (Def(DTimes(a1,GConst(-1))),a) if a == a1 => const(0) // (a * -1) + a --> 0
-        case (a,Def(DPlus(Def(DTimes(a1,GConst(-1))),c))) if a == a1 => c // a + (a * -1) + c --> c
-        case (Def(DTimes(a1,GConst(-1))),Def(DPlus(a,c))) if a == a1 => c // (a * -1) + a + c --> c
+        case (a,Def(DTimes(a1,GConst(k: Int)))) if a == a1 => times(a, const(k + 1)) // a + (a * k) --> a * (k + 1)
+        case (Def(DTimes(a1,GConst(k: Int))),a) if a == a1 => times(a, const(k + 1)) // (a * k) + a --> a * (k + 1)
+        case (a,Def(DPlus(Def(DTimes(a1,GConst(k: Int))), c))) if a == a1 => plus(times(a, const(k + 1)), c) // a + ((a * k) + c) --> a * (k + 1) + c
+        case (Def(DTimes(a1,GConst(k: Int))),Def(DPlus(a,c))) if a == a1 => plus(times(a, const(k + 1)), c) // (a * k) + a + c --> a * (k + 1) + c
         case (a1, Def(DPlus(b, Def(DPlus(Def(DTimes(b1, GConst(-1))), c))))) if a1 == b1 => plus(b, c) // a + (b + ((a * -1) + c)) --> b + c
         case (Def(DTimes(j1, Def(DTimes(i1, m1)))), Def(DPlus(Def(DTimes(j2, Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))))), x)))
         if j1 == j2 && i1 == i2 && m1 == m2 => x
@@ -716,7 +717,15 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (x,Def(DPlus(a,Def(DTimes(b,GConst(-1)))))) => less(plus(b,x), a)
         // 0 < -a + b  -->  a < b
         case (GConst(0),Def(DPlus(Def(DTimes(a,GConst(-1))),GConst(b:Int)))) =>  less(a,const(b))
+        // a + b < c --> a < c + (-b)
         case (Def(DPlus(a,GConst(b:Int))),c) =>  less(a,plus(c,const(-b)))
+        // a1 * b1 < a2 * b2 -[b1 > 0 && b2 = k * b1 ]-> a1 < a2 * k
+        case (Def(DTimes(a1,GConst(b1:Int))), Def(DTimes(a2,GConst(b2:Int)))) if b1 > 0 && b2 % b1 == 0 => less(a1, times(const(b2 / b1), a2))
+        // a1 * b1 < b2 -[b1 > 0]-> a1 < ceil(b2 / b1)
+        case (Def(DTimes(a1,GConst(b1:Int))), GConst(b2:Int)) if b1 > 0 => less(a1, const((b2 + b1 - 1) / b1))
+        // x + c < x --> c < 0
+        case (Def(DPlus(x, c)), x1) if x == x1 => less(c, const(0))
+        case (x, Def(DPlus(x1, GConst(k: Int)))) if x == x1 => const(if (k > 0) 1 else 0)
         case _ if x == y => const(0)
         // case (GConst(0),Def(DPlus())) => y
         case _ => super.less(x,y)
@@ -836,10 +845,19 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           super.collect(n,x,c) //subst(c,less(const(0),GRef(x)),const(1)))
       }
 
+      def in(x: String, c: From): Boolean = c match {
+        case GRef(y) => x == y
+        case GConst(_) => false
+        case Def(DPlus(a, b)) => in(x, a) || in(x, b)
+        case Def(DTimes(a, b)) => in(x, a) || in(x, b)
+      }
+
       override def fixindex(x: String, c: From)       = c match {
         case GConst(0) => const(0)
         //case GConst(1) => const("infty")
         case Def(DLess(GRef(`x`),u)) => u
+        // case Def(DLess(Def(DPlus(a, b)),u)) if !in(x, a) => fixindex(x, less(b, plus(u, times(a, const(-1)))))
+        case Def(DLess(Def(DPlus(a, GRef(`x`))),u)) if !in(x, a) => plus(u, times(a, const(-1)))
         case Def(DNot(Def(DEqual(GRef(`x`),u)))) => u
         case Def(DNot(Def(DEqual(u,GRef(`x`))))) => u
         // case Def(DMap(d)) if d.contains(GConst("value")) => fixindex(x, select(c, GConst("value")))

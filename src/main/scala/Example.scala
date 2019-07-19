@@ -48,7 +48,7 @@ object Example {
       i = i + 1;
     }
 
-    assert(2 * agg == n - m);
+    assert(agg == n - m);
 
     return 0;
   }

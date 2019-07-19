@@ -43,14 +43,14 @@ object CFGtoEngine {
     val oldValid = IR.select(store, valid)
     val newValid = IR.times(oldValid, check)
     if (debugF && newValid == GConst(0)) {
-      debug(s"Not valid anymore...")
+      println(s"Not valid anymore... $oldValid -- $check")
       ???
     }
     IR.update(store, valid, newValid)
   }
 
   def safeSelect(arg: Val, field: Val) = {
-    debug(s"select ${IR.termToString(field)} from ${IR.termToString(arg)}")
+    debug("select", s"${IR.termToString(field)} from ${IR.termToString(arg)}")
     val check = IR.hasfield(arg, field)
     store = updateValid(check)
 
@@ -59,7 +59,7 @@ object CFGtoEngine {
 
   def gValTypeCheck(arg: Val, tp: Val)(eval: Val => Val) = {
     val check = IR.times(IR.hasfield(arg, tpe), IR.equal(gValType(arg), tp))
-    debug(s"Type found: ${gValType(arg)}, expected: $tp")
+    debug("TypeCheck", s"Type found: ${gValType(arg)}, expected: $tp")
     store = updateValid(check)
 
     IR.iff(check, eval(gValValue(arg)), GError)
@@ -105,7 +105,7 @@ object CFGtoEngine {
         // val idx = IR.pair(itvec, IR.const("&"+name))
         // val idx = IR.pair(IR.const("&"+name), itvec)
         val idx = IR.const("&" + name)
-        debug(s"Variable: $name")
+        debug("Variable", name)
         safeSelect(store, idx)
       case node: CASTUnaryExpression =>
           val op = CPrinter.operators1(node.getOperator)
@@ -125,6 +125,14 @@ object CFGtoEngine {
               }
               store = IR.update(store, IR.const("&"+name), upd) // update always safe?
               upd
+            case "op_prefixDecr" =>
+              val name = arg.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
+              val cur = safeSelect(store,IR.const("&"+name))
+              val upd = gValTypeCheck(cur, GType.int) {
+                cur => typedGVal(IR.plus(cur,IR.const(-1)), GType.int)
+              }
+              store = IR.update(store, IR.const("&"+name), upd) // update always safe?
+              upd
             case "op_postFixIncr" =>
               val name = arg.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
               val cur = safeSelect(store,IR.const("&"+name))
@@ -136,8 +144,8 @@ object CFGtoEngine {
           }
       case node: CASTBinaryExpression =>
           val op = CPrinter.operators2(node.getOperator)
-          val arg1 = evalExp(node.getOperand1)
-          val arg2 = evalExp(node.getOperand2)
+          lazy val arg1 = evalExp(node.getOperand1)
+          lazy val arg2 = evalExp(node.getOperand2)
           op match {
             case "op_plus" =>
               gValTypeCheck(arg1, GType.int) { arg1 => // FIXME: what about pointer operation?
@@ -167,7 +175,7 @@ object CFGtoEngine {
                   typedGVal(IR.less(arg1,arg2), GType.int)
                 }
               }
-            case "op_greaterEqual" =>
+            case "op_greaterThan" =>
               gValTypeCheck(arg1, GType.int) { arg1 =>
                 gValTypeCheck(arg2, GType.int) { arg2 =>
                   typedGVal(IR.less(arg2,arg1), GType.int)
@@ -179,7 +187,7 @@ object CFGtoEngine {
                   typedGVal(IR.less(arg1,IR.plus(arg2,IR.const(1))), GType.int) // OK
                 }
               }
-            case "op_greaterThan" =>
+            case "op_greaterEqual" =>
               gValTypeCheck(arg1, GType.int) { arg1 =>
                 gValTypeCheck(arg2, GType.int) { arg2 =>
                   typedGVal(IR.less(arg2,IR.plus(arg1,IR.const(1))), GType.int) // OK
@@ -199,12 +207,46 @@ object CFGtoEngine {
                 }
               }
 
+            case "op_minusAssign" =>
+              node.getOperand1 match {
+                case id: CASTIdExpression =>
+                  val name = id.getName.toString // TODO: proper lval?
+                  debug("Assign", s"$name = ${IR.termToString(arg2)}")
+                  // val idx = IR.pair(itvec, IR.const("&"+name))
+                  // val idx = IR.pair(IR.const("&"+name), itvec)
+                  val idx = IR.const("&" + name)
+                  val cur = safeSelect(store,idx)
+                  val upd = gValTypeCheck(cur, GType.int) { cur =>
+                    gValTypeCheck(arg2, GType.int) { arg2 =>
+                      typedGVal(IR.plus(cur,IR.times(arg2, IR.const(-1))), GType.int)
+                    }
+                  }
+                  store = IR.update(store, idx, upd)
+                  upd
+              }
 
+            case "op_plusAssign" =>
+              node.getOperand1 match {
+                case id: CASTIdExpression =>
+                  val name = id.getName.toString // TODO: proper lval?
+                  debug("Assign", s"$name = ${IR.termToString(arg2)}")
+                  // val idx = IR.pair(itvec, IR.const("&"+name))
+                  // val idx = IR.pair(IR.const("&"+name), itvec)
+                  val idx = IR.const("&" + name)
+                  val cur = safeSelect(store,idx)
+                  val upd = gValTypeCheck(cur, GType.int) { cur =>
+                    gValTypeCheck(arg2, GType.int) { arg2 =>
+                      typedGVal(IR.plus(cur,arg2), GType.int)
+                    }
+                  }
+                  store = IR.update(store, idx, upd)
+                  upd
+              }
             case "op_assign" =>
               node.getOperand1 match {
                 case id: CASTIdExpression =>
                   val name = id.getName.toString // TODO: proper lval?
-                  debug(s"Assign: $name = ${IR.termToString(arg2)}")
+                  debug("Assign", s"$name = ${IR.termToString(arg2)}")
                   // val idx = IR.pair(itvec, IR.const("&"+name))
                   // val idx = IR.pair(IR.const("&"+name), itvec)
                   val idx = IR.const("&" + name)
@@ -234,10 +276,10 @@ object CFGtoEngine {
                   val name = node.getFieldOwner.asInstanceOf[CASTIdExpression].getName.toString
                   val idx = IR.const("&"+name)
                   val pStruct = safeSelect(store, idx)
-                  debug(s"B) pStruct: ${IR.termToString(pStruct)}")
+                  debug("Assign", s"B) pStruct: ${IR.termToString(pStruct)}")
                   gValTypeCheck(pStruct, GType.pointer(GConst("list"))) { pStruct =>
                     val struct = safeSelect(store, pStruct)
-                    debug(s"B) struct: ${IR.termToString(struct)}")
+                    debug("Assign", s"B) struct: ${IR.termToString(struct)}")
                     gValTypeCheck(struct, GConst("list")) { struct =>
                       struct match {
                         case IR.Def(_: DPair) =>
@@ -270,8 +312,9 @@ object CFGtoEngine {
               // typedGVal(idx, GType.pointer(GType.int))
               newV
             case "assert" | "__VERIFIER_assert" =>
+
               gValTypeCheck(evalExp(arg), GType.int) { arg =>
-                  debug(s"Assert: ${IR.termToString(arg)}")
+                  debug("Assert", IR.termToString(arg))
                   store = updateValid(arg)
                   typedGVal(IR.const(()), GType.void)
               }
@@ -323,17 +366,17 @@ object CFGtoEngine {
         typedGVal(GConst(2), GType.int)
       case node: CASTFieldReference if node.isPointerDereference() =>
         val pStruct = evalExp(node.getFieldOwner)
-        debug(s"A) pStruct ${IR.termToString(pStruct)}")
+        debug("FieldRef", s"A) pStruct ${IR.termToString(pStruct)}")
         gValTypeCheck(pStruct, GType.pointer(GConst("list"))) { pStruct =>
           val struct = safeSelect(store, pStruct)
-          debug(s"A) struct ${IR.termToString(struct)}")
+          debug("FieldRef", s"A) struct ${IR.termToString(struct)}")
           gValTypeCheck(struct, GConst("list")) { struct =>
             safeSelect(struct, GConst(node.getFieldName.toString))
           }
         }
       case node: CASTFieldReference =>
         val struct = evalExp(node.getFieldOwner)
-        debug(s"D) struct (${node.isPointerDereference()}): ${IR.termToString(struct)}")
+        debug("FieldRef", s"D) struct (${node.isPointerDereference()}): ${IR.termToString(struct)}")
         gValTypeCheck(struct, GConst("list")) { struct =>
           safeSelect(struct, GConst(node.getFieldName.toString))
         }
@@ -355,9 +398,9 @@ object CFGtoEngine {
      val ptr = d1.getPointerOperators()
      // TODO: pointer types, ...
      val name = d1.getName
-     debug(s"""decl: ${ptr.length} - ${ptr map(_.getSyntax) mkString ","} - $name""")
      val nested = d1.getNestedDeclarator // used at all?
      val init = d1.getInitializer
+     debug("Declarator", s"""decl: ${ptr.length} - ${ptr map(_.getSyntax) mkString ","} - $name: init value $init""")
      if (init != null) {
        val init1 = init.asInstanceOf[CASTEqualsInitializer].getInitializerClause
 
@@ -471,7 +514,7 @@ object CFGtoEngine {
     case _ => term
   }
 
-  def simplify(term: Val)(implicit constraints: List[OProb]): Val = { debug(s"> ${IR.termToString(term)} - contraints: $constraints"); term } match {
+  def simplify(term: Val)(implicit constraints: List[OProb]): Val = { debug("Simplify", s"${IR.termToString(term)} - contraints: $constraints"); term } match {
     case IR.Def(DIf(c, a, b)) =>
       val sc = simplify(c)
       if (alwaysFalse(sc))
@@ -633,12 +676,12 @@ object CFGtoEngine {
 
         // invoke computed function at trip count
         val tmp = call(loop,nX)
-        println(s"Store non simplify loop $loop: ${IR.termToString(tmp)}")
+        println(s"Store non simplified loop $loop: ${IR.termToString(tmp)}")
         store = simplify(tmp)(Nil)
 
         // wrap up
         println(s"} end loop $loop, trip count ${IR.termToString(nX)}, state")
-        println(s"${IR.termToString(store)}")
+        println(s"Simplified sotore: ${IR.termToString(store)}")
         itvec = saveit
         println("======= Iteration Done =======\n")
         IR.const(())
@@ -666,6 +709,8 @@ object CFGtoEngine {
         throw new Exception("XXX consume out of fuel")
       }
 
+      debug("consume", s"label $l -- stop: $stop -- cont: $cont")
+
       if (stop contains l) {
         //println("// break "+l)
         return
@@ -686,6 +731,7 @@ object CFGtoEngine {
       val sdomIn = postDom(l)-l
       // immediate post-dominator (may be inside loop)
       var idomIn = sdomIn.filter(n => sdomIn.forall(postDom(n)))
+      debug("consume", s"sdom: $sdom -- idom: $idom -- sdomIn: $sdomIn -- idomIn: $idomIn")
 
       // Currently there's an issue in
       // loop-invgen/string_concat-noarr_true-unreach-call_true-termination.i
@@ -696,7 +742,11 @@ object CFGtoEngine {
 
 
       def evalBody(stop1: Set[String], cont1: Set[String]): Unit = {
-        b.stms.foreach(evalStm)
+        debug("consume", s"eval body (${b.stms.length})")
+        b.stms.foreach { stm =>
+          evalStm(stm)
+        }
+        debug("consume", s"continue to ${b.cnt}")
         b.cnt match {
           case Return(e) =>
             handleReturn(evalExp(e))
@@ -717,18 +767,21 @@ object CFGtoEngine {
       // Need to consume rest of loop body, too.
       val isLoop = loopHeaders contains l
       if (isLoop) {
+        debug("consume", "It is a loop!")
         handleLoop(l) {
           evalBody(idomIn, cont + l)
           if (idomIn.nonEmpty) // continue consuming loop body
             consume(idomIn.head, idom, cont + l)
         }
       } else {
+        debug("consume", "Not a loop!")
         evalBody(idom, cont)
       }
 
       if (idom.nonEmpty)
         consume(idom.head, stop, cont)
     }
+
     time{consume(entryLabel, Set.empty, Set.empty)}
 
     val store2 = simplify(store)(Nil)
