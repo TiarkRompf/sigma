@@ -119,33 +119,33 @@ Notation "'ABORT'" := SAbort.
 
 (* Context path *)
 
-Inductive ctx : Type :=
-| CRoot : ctx
-| CThen : ctx -> ctx
-| CElse : ctx -> ctx
-| CFst  : ctx -> ctx          
-| CSnd  : ctx -> ctx
-| CWhile : ctx -> nat -> ctx
+Inductive path : Type :=
+| PRoot : path
+| PThen : path -> path
+| PElse : path -> path
+| PFst  : path -> path
+| PSnd  : path -> path
+| PWhile : path -> nat -> path
 .
 
 (* Store locations *)
 
 Inductive loc : Type :=
 | LId : id -> loc
-| LNew : ctx -> loc
+| LNew : path -> loc
 .
 
 (* Context path equivalence *)
 
-Fixpoint beq_ctx c1 c2 : bool :=
+Fixpoint beq_path c1 c2 : bool :=
   match c1, c2 with
-  | CRoot, CRoot => true
-  | CThen c1, CThen c2 => beq_ctx c1 c2
-  | CElse c1, CElse c2 => beq_ctx c1 c2
-  | CFst c1, CFst c2 => beq_ctx c1 c2
-  | CSnd c1, CSnd c2 => beq_ctx c1 c2
-  | CWhile c1 n1, CWhile c2 n2 =>
-    beq_ctx c1 c2 && beq_nat n1 n2
+  | PRoot, PRoot => true
+  | PThen c1, PThen c2 => beq_path c1 c2
+  | PElse c1, PElse c2 => beq_path c1 c2
+  | PFst c1, PFst c2 => beq_path c1 c2
+  | PSnd c1, PSnd c2 => beq_path c1 c2
+  | PWhile c1 n1, PWhile c2 n2 =>
+    beq_path c1 c2 && beq_nat n1 n2
   | _, _ => false
   end.
 
@@ -154,7 +154,7 @@ Fixpoint beq_ctx c1 c2 : bool :=
 Fixpoint beq_loc l1 l2 : bool :=
   match l1, l2 with
   | LId id1, LId id2 => beq_id id1 id2
-  | LNew c1, LNew c2 => beq_ctx c1 c2
+  | LNew c1, LNew c2 => beq_path c1 c2
   | _, _ => false
   end.
 
@@ -279,19 +279,20 @@ Module IMPRel.
   Reserved Notation "( st1 , c ) '⊢' ( e , s ) n '⇓∞' st2" (at level 90, left associativity).
   Reserved Notation "( st1 , c ) '⊢' s '⇓' st2" (at level 90, left associativity).
 
-  Inductive evalLoopR : store → ctx → exp → stmt → nat → store → Prop :=
+  Inductive evalLoopR : store → path → exp → stmt → nat → store → Prop :=
   | RWhileZero : ∀ σ c e s, (σ, c) ⊢ (e, s) 0 ⇓∞ σ
   | RWhileMore : ∀ (σ σ' σ'' : store) c n e s,
       (σ, c) ⊢ (e, s) n ⇓∞ σ' →
       σ' ⊢ e ⇓ₑ (VBool true) →
-      (σ', CWhile c n) ⊢ s ⇓ σ'' →
+      (σ', PWhile c n) ⊢ s ⇓ σ'' →
       (σ, c) ⊢ (e, s) n+1 ⇓∞ σ''
   where "( st1 , c ) ⊢ ( e , s ) n '⇓∞' st2" := (evalLoopR st1 c e s n st2) : type_scope
-  with evalStmtR : store → ctx → stmt → store → Prop :=
+  with evalStmtR : store → path → stmt → store → Prop :=
   | RAlloc x : ∀ σ c,
       (σ, c) ⊢ x ::= ALLOC ⇓ (store_update (store_update σ (LNew c) mt_obj)
                                            (LId x)
                                            (obj_update mt_obj 0 (VLoc (LNew c))))
+  (* TODO: ... *)
   where "( st1 , c ) '⊢' s '⇓' st2" := (evalStmtR st1 c s st2) : type_scope.
 
 End IMPRel.
@@ -312,11 +313,17 @@ Module IMPEval.
 
   Definition mt_obj : obj := t_empty None.
 
+  Definition obj_update (st : obj) (x : nat) (v : val) :=
+    t_update beq_nat st x (Some v).
+
   (* Stores *)
 
   Definition store := loc ⇀ obj.
 
   Definition mt_store : store := t_empty None.
+
+  Definition store_update (st : store) (x : loc) (v : obj) :=
+    t_update beq_loc st x (Some v).
 
   (* Monad operations *)
 
@@ -423,34 +430,33 @@ Module IMPEval.
   Fixpoint idx (m : nat) (p : nat -> option bool) : option nat :=
     idx1 0 m p.
   
-  Fixpoint eval_loop (b1: exp) (s: stmt) (σ: store) (c: ctx) (n: nat) (m: nat)
-           (evstmt: store -> ctx -> option store)
-    : option store :=
+  Fixpoint eval_loop (b1: exp) (s: stmt) (σ: store) (c: path) (n: nat) (m: nat)
+           (evstmt: store -> path -> option store) : option store :=
     match n with
     | O => Some σ
     | S n' =>
       σ' ← eval_loop b1 s σ c n' m evstmt IN
       b ← eval_exp b1 σ' >>= toBool IN
-      if b then evstmt σ' (CWhile c n') else None (* error or timeout ??? *)
+      if b then evstmt σ' (PWhile c n') else None (* error or timeout ??? *)
     end.
 
-  Fixpoint eval_stm (s: stmt) (σ: store) (c: ctx) (m: nat) : option store :=
+  Fixpoint eval_stm (s: stmt) (σ: store) (c: path) (m: nat) : option store :=
     match s with
     | x ::= ALLOC =>
-      Some (t_update beq_loc
-                     (t_update beq_loc σ (LNew c) (Some mt_obj))
-                     (LId x) (Some (t_update beq_nat mt_obj 0 (Some (VLoc (LNew c))))))
+      Some (store_update (store_update σ (LNew c) mt_obj)
+                         (LId x)
+                         (obj_update mt_obj 0 (VLoc (LNew c))))
     | SAssign e1 e2 e3 =>
       l ← eval_exp e1 σ >>= toLoc IN
       n ← eval_exp e2 σ >>= toNat IN
       v ← eval_exp e3 σ IN
       o ← σ l IN
-      Some (t_update beq_loc σ l (Some (t_update beq_nat o n (Some v))))
+      Some (store_update σ l (obj_update o n v))
     | IF b THEN s1 ELSE s2 FI =>
       b ← eval_exp b σ >>= toBool IN
       if b
-      then eval_stm s1 σ (CThen c) m
-      else eval_stm s2 σ (CElse c) m
+      then eval_stm s1 σ (PThen c) m
+      else eval_stm s2 σ (PElse c) m
     | WHILE b1 DO s1 END =>
       n ← idx m (fun i =>
                    match (σ' ← eval_loop b1 s1 σ c i m (fun σ'' c1 => eval_stm s1 σ'' c1 m) IN
@@ -462,10 +468,11 @@ Module IMPEval.
                 ) IN
       eval_loop b1 s1 σ c n m (fun σ' c1 => eval_stm s1 σ' c1 m)
     | s1 ;; s2 =>
-      σ' ← eval_stm s1 σ (CFst c) m IN
-      eval_stm s2 σ' (CSnd c) m
+      σ' ← eval_stm s1 σ (PFst c) m IN
+      eval_stm s2 σ' (PSnd c) m
     | SKIP =>
       Some σ
     | SAbort => None
     end.
+
 End IMPEval.
