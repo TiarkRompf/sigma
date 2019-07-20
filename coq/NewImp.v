@@ -7,9 +7,10 @@ Require Import Coq.Arith.EqNat.
 Require Import Coq.omega.Omega.
 Require Import Coq.Lists.List.
 Require Import Coq.omega.Omega.
+Require Import Utf8.
 Import ListNotations.
 
-(* ---------- maps ---------- *)
+(* Maps *)
 
 Inductive id : Type :=
   | Id : nat -> id. 
@@ -41,7 +42,7 @@ Definition update {A B : Type} (beq : A -> A -> bool)
 
 (* Source language IMP *)
 
-(* Syntax *)
+(* IMP Syntax *)
 
 Inductive exp : Type :=
 (* Constants *)
@@ -76,6 +77,14 @@ Inductive stmt : Type :=
 
 (* TODO: x == &x[0] ? *)
 
+Definition fieldId (x : id) : nat :=
+  match x with
+  | Id n => n
+  end.
+
+Notation "e '·' x" :=
+  (EFieldRead e (ENum (fieldId x))) (at level 80, right associativity).
+
 Notation "x '::=' 'ALLOC'" :=
   (SAlloc x) (at level 80, right associativity).
 
@@ -90,6 +99,19 @@ Notation "'WHILE' b 'DO' s 'END'" :=
 
 Notation "'IF' e 'THEN' s1 'ELSE' s2 'FI'" :=
   (SIf e s1 s2) (at level 80, right associativity).
+
+Notation "e1 '[' e2 ']' ':=' e3" :=
+  (SAssign e1 e2 e3) (at level 80, right associativity).
+
+Notation "e1 '[' e2 ']'" :=
+  (EFieldRead e1 e2) (at level 80, right associativity).
+
+Notation "'ASSERT' e" :=
+  (SIf e SSkip SAbort) (at level 80, right associativity).
+
+Notation "'TRUE'" := (EBool true).
+
+Notation "'FALSE'" := (EBool false).
 
 Notation "'SKIP'" := SSkip.
 
@@ -111,14 +133,6 @@ Inductive ctx : Type :=
 Inductive loc : Type :=
 | LId : id -> loc
 | LNew : ctx -> loc
-.
-
-(* Values *)
-
-Inductive val : Type :=
-| VNum : nat -> val
-| VBool : bool -> val
-| VLoc : loc -> val
 .
 
 (* Context path equivalence *)
@@ -144,119 +158,233 @@ Fixpoint beq_loc l1 l2 : bool :=
   | _, _ => false
   end.
 
-(* Objects *)
+(* IMP Relational big-step semantics *)
 
-Definition obj := nat ⇀ val.
+Module IMPRel.
 
-Definition mt_obj : obj := t_empty None.
+  (* Values *)
 
-(* Stores *)
+  Inductive val : Type :=
+  | VNum : nat -> val
+  | VBool : bool -> val
+  | VLoc : loc -> val
+  | VErr : val (* TODO: explicitly model error/undef? *)
+  .
 
-Definition store := loc ⇀ obj.
+  (* Objects *)
 
-Definition mt_store : store := t_empty None.
+  Definition obj := nat → val. (* TODO: model partialness? *)
 
-(* Monad operations *)
+  (* Stores *)
 
-Definition toNat v :=
-  match v with
-  | VNum n => Some n
-  | _      => None
-  end.
+  Definition store := loc → obj.
 
-Definition toBool v :=
-  match v with
-  | VBool b => Some b
-  | _       => None
-  end.
+  (* Evaluation relation for expressions *)
 
-Definition toLoc v :=
-  match v with
-  | VLoc l => Some l
-  | _      => None
-  end.
+  Inductive result : Type :=
+  | ResStore : store -> result
+  | ResUndef : result
+  | ResDiverge : result
+  .
 
-Notation "x '←' e1 'IN' e2" :=
-  (match e1 with
-   | Some x => e2
-   | None   => None
-   end)
-  (at level 60, right associativity).
+  Definition VNumArith (op : nat → nat → nat) n1 n2 : val :=
+    match n1, n2 with
+    | (VNum x), (VNum y) => VNum (op x y)
+    | _, _ => VErr
+    end.
 
-Notation "x '↩' e1 'IN' e2" :=
-  (match e1 with
-   | Some (Some x) => e2
-   | Some None     => Some None
-   | None          => None
-   end)
-  (at level 60, right associativity).
+  Definition VNumPlus : val → val → val := VNumArith plus.
+  Definition VNumMinus : val → val → val := VNumArith minus.
+  Definition VNumMult : val → val → val := VNumArith mult.
 
-Notation "e1 '>>=' e2" :=
-  (match e1 with
-   | Some x => e2 x
-   | None   => None
-   end)
-  (at level 80, right associativity).
+  Definition VNumComp (op : nat → nat → bool) n1 n2 : val :=
+    match n1, n2 with
+    | (VNum x), (VNum y) => VBool (op x y)
+    | _, _ => VErr
+    end.
 
-Notation "e1 '>>>=' e2" :=
-  (match e1 with
-   | Some (Some x) => e2 x
-   | Some None     => Some None
-   | None          => None
-   end)
-  (at level 80, right associativity).
+  Definition VNumLt : val → val → val := VNumComp Nat.ltb.
+  Definition VNumEq : val → val → val := VNumComp Nat.eqb.
 
-(* IMP Evaluation *)
+  Definition VBoolAnd b1 b2 : val :=
+    match b1, b2 with
+    | (VBool b1), (VBool b2) => VBool (andb b1 b2)
+    | _, _ => VErr
+    end.
 
-Fixpoint eval_exp (e: exp) (σ: store) : option val :=
-  match e with
-  | EId x  => o ← (σ (LId x)) IN o 0
-  | ENum n => Some (VNum n)
-  | EBool b => Some (VBool b)
-  | ELoc x => Some (VLoc (LId x))
-  | EPlus x y =>
-    a ← eval_exp x σ >>= toNat IN
-    b ← eval_exp y σ >>= toNat IN
-    Some (VNum (a + b))
-  | EMinus x y =>
-    a ← eval_exp x σ >>= toNat IN
-    b ← eval_exp y σ >>= toNat IN
-    Some (VNum (a - b))
-  | EMult x y =>
-    a ← eval_exp x σ >>= toNat IN
-    b ← eval_exp y σ >>= toNat IN
-    Some (VNum (a * b))
-  | ELt x y =>
-    a ← eval_exp x σ >>= toNat IN
-    b ← eval_exp y σ >>= toNat IN
-    Some (VBool (a <? b))
-  | EEq x y =>
-    a ← eval_exp x σ >>= toNat IN
-    b ← eval_exp y σ >>= toNat IN
-    Some (VBool (a =? b))
-  | EAnd x y =>
-    a ← eval_exp x σ >>= toBool IN
-    b ← eval_exp y σ >>= toBool IN
-    Some (VBool (andb a b))
-  | ENeg x =>
-    a ← eval_exp x σ >>= toBool IN
-    Some (VBool (negb a))
-  | EFieldRead e1 e2 =>
-    l ← eval_exp e1 σ >>= toLoc IN
-    n ← eval_exp e2 σ >>= toNat IN
-    o ← σ l IN
-    o n
-  end.
+  Definition VBoolNed b : val :=
+    match b with
+    | VBool b => VBool (negb b)
+    | _ => VErr
+    end.
 
-(* TODO: out-of-fuel or error? *)
+  Reserved Notation "s '⊢' e '⇓' v" (at level 90, left associativity).
 
-Fixpoint idx1 (i : nat) (m : nat) (p : nat -> option bool) : option nat :=
-  match m with
-  | O => None
-  | S m' =>
-    b ← p i IN
-    if b then Some i else idx1 (i + 1) m' p
-  end.
+  Inductive evalExpR : exp → store → val → Prop :=
+  | RId x :  ∀ σ, σ ⊢ (EId x)  ⇓ (σ (LId x)) 0
+  | RNum n : ∀ σ, σ ⊢ (ENum n) ⇓ (VNum n)
+  | RBool b : ∀ σ, σ ⊢ (EBool b) ⇓ (VBool b)
+  | RLoc x : ∀ σ, σ ⊢ (ELoc x) ⇓ (VLoc (LId x))
+  | RPlus x y : ∀ σ n1 n2,
+      σ ⊢ x ⇓ n1 →
+      σ ⊢ y ⇓ n2 →
+      σ ⊢ (EPlus x y) ⇓ (VNumPlus n1 n2)
+  | RMinus x y : ∀ σ n1 n2,
+      σ ⊢ x ⇓ n1 →
+      σ ⊢ y ⇓ n2 →
+      σ ⊢ (EMinus x y) ⇓ (VNumMinus n1 n2)
+  | RMult x y : ∀ σ n1 n2,
+      σ ⊢ x ⇓ n1 →
+      σ ⊢ y ⇓ n2 →
+      σ ⊢ (EMult x y) ⇓ (VNumMult n1 n2)
+  | RLt x y : ∀ σ n1 n2,
+      σ ⊢ x ⇓ n1 →
+      σ ⊢ y ⇓ n2 →
+      σ ⊢ (ELt x y) ⇓ (VNumLt n1 n2)
+  | REq x y : ∀ σ n1 n2,
+      σ ⊢ x ⇓ n1 →
+      σ ⊢ y ⇓ n2 →
+      σ ⊢ (EEq x y) ⇓ (VNumEq n1 n2)
+  | RAnd x y : ∀ σ b1 b2,
+      σ ⊢ x ⇓ b1 →
+      σ ⊢ y ⇓ b2 →
+      σ ⊢ (EAnd x y) ⇓ (VBoolAnd b1 b2)
+  | RNeg x : ∀ σ b,
+      σ ⊢ x ⇓ b →
+      σ ⊢ (ENeg x) ⇓ (VBoolNed b)
+  (* | RFieldRead e1 e2 : ∀ σ l n,
+      σ ⊢ e1 ⇓ l →
+      σ ⊢ e2 ⇓ n → *)
+  where "s '⊢' e '⇓' v" := (evalExpR e s v) : type_scope.
 
-Fixpoint idx (m : nat) (p : nat -> option bool) : option nat :=
-  idx1 0 m p.
+End IMPRel.
+
+(* IMP Monadic functional semantics *)
+
+Module IMPEval.
+
+  Inductive val : Type :=
+  | VNum : nat -> val
+  | VBool : bool -> val
+  | VLoc : loc -> val
+  .
+
+  (* Objects *)
+
+  Definition obj := nat ⇀ val.
+
+  Definition mt_obj : obj := t_empty None.
+
+  (* Stores *)
+
+  Definition store := loc ⇀ obj.
+
+  Definition mt_store : store := t_empty None.
+
+  (* Monad operations *)
+
+  Definition toNat v :=
+    match v with
+    | VNum n => Some n
+    | _      => None
+    end.
+  
+  Definition toBool v :=
+    match v with
+    | VBool b => Some b
+    | _       => None
+    end.
+
+  Definition toLoc v :=
+    match v with
+    | VLoc l => Some l
+    | _      => None
+    end.
+
+  Notation "x '←' e1 'IN' e2" :=
+    (match e1 with
+     | Some x => e2
+     | None   => None
+     end)
+      (at level 60, right associativity).
+
+  Notation "x '↩' e1 'IN' e2" :=
+    (match e1 with
+     | Some (Some x) => e2
+     | Some None     => Some None
+     | None          => None
+     end)
+      (at level 60, right associativity).
+
+  Notation "e1 '>>=' e2" :=
+    (match e1 with
+     | Some x => e2 x
+     | None   => None
+     end)
+      (at level 80, right associativity).
+
+  Notation "e1 '>>>=' e2" :=
+    (match e1 with
+     | Some (Some x) => e2 x
+     | Some None     => Some None
+     | None          => None
+     end)
+      (at level 80, right associativity).
+
+  (* IMP Evaluation function *)
+
+  Fixpoint eval_exp (e: exp) (σ: store) : option val :=
+    match e with
+    | EId x  => o ← (σ (LId x)) IN o 0
+    | ENum n => Some (VNum n)
+    | EBool b => Some (VBool b)
+    | ELoc x => Some (VLoc (LId x))
+    | EPlus x y =>
+      a ← eval_exp x σ >>= toNat IN
+      b ← eval_exp y σ >>= toNat IN
+      Some (VNum (a + b))
+    | EMinus x y =>
+      a ← eval_exp x σ >>= toNat IN
+      b ← eval_exp y σ >>= toNat IN
+      Some (VNum (a - b))
+    | EMult x y =>
+      a ← eval_exp x σ >>= toNat IN
+      b ← eval_exp y σ >>= toNat IN
+      Some (VNum (a * b))
+    | ELt x y =>
+      a ← eval_exp x σ >>= toNat IN
+      b ← eval_exp y σ >>= toNat IN
+      Some (VBool (a <? b))
+    | EEq x y =>
+      a ← eval_exp x σ >>= toNat IN
+      b ← eval_exp y σ >>= toNat IN
+      Some (VBool (a =? b))
+    | EAnd x y =>
+      a ← eval_exp x σ >>= toBool IN
+      b ← eval_exp y σ >>= toBool IN
+      Some (VBool (andb a b))
+    | ENeg x =>
+      a ← eval_exp x σ >>= toBool IN
+      Some (VBool (negb a))
+    | EFieldRead e1 e2 =>
+      l ← eval_exp e1 σ >>= toLoc IN
+      n ← eval_exp e2 σ >>= toNat IN
+      o ← σ l IN
+      o n
+    end.
+
+  (* TODO: out-of-fuel or error? *)
+
+  Fixpoint idx1 (i : nat) (m : nat) (p : nat -> option bool) : option nat :=
+    match m with
+    | O => None
+    | S m' =>
+      b ← p i IN
+        if b then Some i else idx1 (i + 1) m' p
+    end.
+
+  Fixpoint idx (m : nat) (p : nat -> option bool) : option nat :=
+    idx1 0 m p.
+
+End IMPEval.
+
