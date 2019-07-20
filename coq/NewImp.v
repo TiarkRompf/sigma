@@ -418,10 +418,9 @@ Module IMPEval.
       n ← idx m (fun i =>
                    match (σ' ← eval_loop b1 s1 σ c i m (fun σ'' c1 => eval_stm s1 σ'' c1 m) IN
                           b ← eval_exp b1 σ' >>= toBool IN
-                          Some (Some (negb b))) with
-                   | Some (Some b) => Some b
-                   | Some None => Some true
-                   | None => None end
+                          Some (negb b)) with
+                   | Some b => Some b
+                   | None => Some true end
                 (* TODO: cleanup slightly. inline eval_loop? *)
                 ) IN
       eval_loop b1 s1 σ c n m (fun σ' c1 => eval_stm s1 σ' c1 m)
