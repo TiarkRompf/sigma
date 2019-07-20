@@ -385,6 +385,51 @@ Module IMPEval.
 
   Fixpoint idx (m : nat) (p : nat -> option bool) : option nat :=
     idx1 0 m p.
+  
+  Fixpoint eval_loop (b1: exp) (s: stmt) (σ: store) (c: ctx) (n: nat) (m: nat)
+           (evstmt: store -> ctx -> option store)
+    : option store :=
+    match n with
+    | O => Some σ
+    | S n' =>
+      σ' ← eval_loop b1 s σ c n' m evstmt IN
+      b ← eval_exp b1 σ' >>= toBool IN
+      if b then evstmt σ' (CWhile c n') else None (* error or timeout ??? *)
+    end.
 
+  Fixpoint eval_stm (s: stmt) (σ: store) (c: ctx) (m: nat) : option store :=
+    match s with
+    | x ::= ALLOC =>
+      Some (t_update beq_loc
+                     (t_update beq_loc σ (LNew c) (Some mt_obj))
+                     (LId x) (Some (t_update beq_nat mt_obj 0 (Some (VLoc (LNew c))))))
+    | SAssign e1 e2 e3 =>
+      l ← eval_exp e1 σ >>= toLoc IN
+      n ← eval_exp e2 σ >>= toNat IN
+      v ← eval_exp e3 σ IN
+      o ← σ l IN
+      Some (t_update beq_loc σ l (Some (t_update beq_nat o n (Some v))))
+    | IF b THEN s1 ELSE s2 FI =>
+      b ← eval_exp b σ >>= toBool IN
+      if b
+      then eval_stm s1 σ (CThen c) m
+      else eval_stm s2 σ (CElse c) m
+    | WHILE b1 DO s1 END =>
+      n ← idx m (fun i =>
+                   match (σ' ← eval_loop b1 s1 σ c i m (fun σ'' c1 => eval_stm s1 σ'' c1 m) IN
+                          b ← eval_exp b1 σ' >>= toBool IN
+                          Some (Some (negb b))) with
+                   | Some (Some b) => Some b
+                   | Some None => Some true
+                   | None => None end
+                (* TODO: cleanup slightly. inline eval_loop? *)
+                ) IN
+      eval_loop b1 s1 σ c n m (fun σ' c1 => eval_stm s1 σ' c1 m)
+    | s1 ;; s2 =>
+      σ' ← eval_stm s1 σ (CFst c) m IN
+      eval_stm s2 σ' (CSnd c) m
+    | SKIP =>
+      Some σ
+    | SAbort => None
+    end.
 End IMPEval.
-
