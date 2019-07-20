@@ -451,6 +451,12 @@ Proof.
   intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
 Qed.
 
+Lemma GEQ_MultC : forall a1 a2 b1 b2,
+    geq a1 a2 -> geq b1 b2 -> geq (GMult a1 b1) (GMult a2 b2).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
+Qed.
+
 Lemma GEQ_SomeC: forall a b, geq a b -> geq (GSome a) (GSome b).
 Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
 
@@ -485,6 +491,17 @@ Lemma GEQ_MinusR : forall a1 a2 n1 n2,
 Proof.
   intros. eapply GEQ_trans.
   - eapply GEQ_MinusC; eauto.
+  - unfold geq in *. simpl. reflexivity.
+Qed.
+
+
+Lemma GEQ_MultR : forall a1 a2 n1 n2,
+    geq a1 (GNum n1) ->
+    geq a2 (GNum n2) ->
+    geq (GMult a1 a2) (GNum (n1 * n2)).
+Proof.
+  intros. eapply GEQ_trans.
+  - eapply GEQ_MultC; eauto.
   - unfold geq in *. simpl. reflexivity.
 Qed.
 
@@ -668,8 +685,13 @@ Proof.
     + intros. eapply REQ_BindC.
       * eauto.
       * intros. eapply REQ_Some.
-        ** eapply VEQ_Num. eapply GEQ_VNumC.
-    admit.
+        ** eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_MultR. reflexivity. reflexivity.
+        ** rewrite H1. rewrite H2. reflexivity.
+      * intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_MultC. reflexivity. apply H2.
+    + intros. eapply GEQ_BindC.
+      ** reflexivity.
+      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC.
+         eapply  GEQ_MultC. apply H1. apply H2.
   - admit.
   - admit.
   - admit.
