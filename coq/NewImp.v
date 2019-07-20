@@ -181,6 +181,9 @@ Module IMPRel.
   Definition obj_update (st : obj) (x : nat) (v : val) :=
     t_update beq_nat st x v.
 
+  Notation "x 'obj↦' v ; m" := (obj_update m x v) (at level 60, v at next level, right associativity).
+  Notation "x 'obj↦' v" := (obj_update mt_obj x v) (at level 60).
+
   (* Stores *)
 
   Definition store := loc → obj.
@@ -190,6 +193,10 @@ Module IMPRel.
 
   Definition store_update (st : store) (x : loc) (v : obj) :=
     t_update beq_loc st x v.
+
+  Notation "x 'st↦' v ';' m" := (store_update m x v)
+    (at level 60, v at next level, right associativity).
+  Notation "x 'st↦' v" := (store_update mt_store x v) (at level 60).
 
   (* Evaluation relation for expressions *)
 
@@ -289,9 +296,9 @@ Module IMPRel.
   where "( st1 , c ) ⊢ ( e , s ) n '⇓∞' st2" := (evalLoopR st1 c e s n st2) : type_scope
   with evalStmtR : store → path → stmt → store → Prop :=
   | RAlloc x : ∀ σ c,
-      (σ, c) ⊢ x ::= ALLOC ⇓ (store_update (store_update σ (LNew c) mt_obj)
-                                           (LId x)
-                                           (obj_update mt_obj 0 (VLoc (LNew c))))
+      (σ, c) ⊢ x ::= ALLOC ⇓ (LNew c st↦ mt_obj ;
+                              LId x  st↦ (0 obj↦ VLoc (LNew c)) ;
+                              σ)
   (* TODO: ... *)
   where "( st1 , c ) '⊢' s '⇓' st2" := (evalStmtR st1 c s st2) : type_scope.
 
