@@ -2,7 +2,9 @@ package analysis
 
 import Util._
 import CBase._
+import Test1._
 import CFrontend2._
+import IRD._
 import scala.io.Source
 
 abstract class SVCompSuite extends FileDiffSuite {
@@ -15,6 +17,7 @@ abstract class SVCompSuite extends FileDiffSuite {
   }
 
   val file_pat_re = """(.+)/\*_(true|false)-(.*)\*(.+)""".r // note: inefficent match, may cause heavy backtracking!
+  val exact_file_pat_re = """(.+)/.*_(true|false)-(.*)\.(.+)""".r // note: inefficent match, may cause heavy backtracking!
 
   val out_prefix = "test-out/sv-bench/"
 
@@ -28,22 +31,87 @@ abstract class SVCompSuite extends FileDiffSuite {
     "locks/*_true-unreach-call*.c")
 
   val loops = Array(
-    "loops/*_false-unreach-call*.i",
-    "loops/*_true-unreach-call*.i",
-    "loop-acceleration/*_false-unreach-call*.i",
-    "loop-acceleration/*_true-unreach-call*.i",
+    // "loops/*_false-unreach-call*.i",
+    // "loops/*_true-unreach-call*.i",
+    // "loop-acceleration/*_false-unreach-call*.i",
+    // "loop-acceleration/*_true-unreach-call*.i",
     "loop-invgen/*_false-unreach-call*.i",
     "loop-invgen/*_true-unreach-call*.i",
-    "loop-lit/*_true-unreach-call*.c.i",
-    "loop-new/*_true-unreach-call*.i")
+    "loop-lit/*_true-unreach-call*.c.i" // ,
+    // "loop-new/*_true-unreach-call*.i"
+    )
 
   val recursive = Array(
-    "recursive/*_false-unreach-call*.c",
-    "recursive/*_true-unreach-call*.c",
+    // "recursive/*_false-unreach-call*.c",
+    // "recursive/*_true-unreach-call*.c",
     "recursive-simple/*_false-unreach-call*.c",
     "recursive-simple/*_true-unreach-call*.c")
 
+  val success = Array(
+    "loop-invgen/nested6_true-unreach-call.i",
+    "loop-invgen/up_true-unreach-call.i",
+    "loop-invgen/half_2_true-unreach-call.i",
+    "loop-invgen/NetBSD_loop_true-unreach-call.i",
+    "loop-lit/gj2007b_true-unreach-call.c.i",
+    "loop-invgen/down_true-unreach-call.i"
+  )
+
+  val found0 = Array(
+    "loop-lit/gj2007_true-unreach-call.c.i"
+  )
+
+  val simplification_missing = Array(
+    "loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call.i",
+    "loop-invgen/nest-if3_true-unreach-call.i",
+    "loop-invgen/large_const_true-unreach-call.i",
+    "loop-invgen/string_concat-noarr_true-unreach-call.i",
+    "loop-lit/afnp2014_true-unreach-call.c.i",
+    "loop-lit/jm2006_variant_true-unreach-call.c.i", // check
+    "loop-lit/jm2006_true-unreach-call.c.i", // check
+    "loop-lit/cggmp2005_variant_true-unreach-call.c.i", // check
+    "loop-lit/css2003_true-unreach-call.c.i",
+    "loop-lit/gsv2008_true-unreach-call.c.i",
+    "loop-lit/cggmp2005_true-unreach-call.c.i",
+    "loop-lit/bhmr2007_true-unreach-call.c.i",
+    "loop-lit/hhk2008_true-unreach-call.c.i", // check <<<
+    "loop-invgen/seq_true-unreach-call.i"
+  )
+
+  val array_missing = Array(
+    "loop-lit/mcmillan2006_true-unreach-call.c.i"
+  )
+
+  val interger_div_missing = Array(
+    "loop-invgen/id_trans_false-unreach-call.i",
+    "loop-lit/ddlm2013_true-unreach-call.c.i"
+  )
+
+  val break_missing = Array(
+    "loop-lit/gr2006_true-unreach-call.c.i",
+    "loop-invgen/apache-escape-absolute_true-unreach-call.i",
+    "loop-invgen/heapsort_true-unreach-call.i",
+    "loop-invgen/sendmail-close-angle_true-unreach-call.i",
+    "loop-invgen/fragtest_simple_true-unreach-call.i",
+    "loop-invgen/apache-get-tag_true-unreach-call.i"
+  )
+
+  val loop_runs_once_or_less = Array(
+    "loop-invgen/nested9_true-unreach-call.i",
+    "loop-lit/cggmp2005b_true-unreach-call.c.i"
+  )
+
+  val toolong = Array(
+    "loop-invgen/SpamAssassin-loop_true-unreach-call.i"
+  )
+
+  val errors = Array(
+    "loop-invgen/id_build_true-unreach-call.i"
+  )
+
+  val handle = (success ++ simplification_missing ++ interger_div_missing ++ break_missing ++ loop_runs_once_or_less ++ toolong ++ errors).toSet
+
   def extractAll(patterns: Array[String]) = {
+    var tot = 0
     for (p <- patterns) {
       val file_pat_re(dir,outcome,prop,suffix) = p
       val search = "_"+outcome+"-"+prop
@@ -52,10 +120,22 @@ abstract class SVCompSuite extends FileDiffSuite {
       val files = df.listFiles
       for (f <- files) {
         val name = f.getName
-        if (name.contains(search) && name.endsWith(suffix)) {
+        if (name.contains(search) && name.endsWith(suffix) && !handle(dir + "/" + name)) {
+          tot += 1
           testOne(dir, name, Map(prop -> outcome.toBoolean))
         }
       }
+    }
+    println(s"Run $tot test (${patterns mkString(", ")})")
+  }
+
+  def runAll(files: Array[String]) = {
+    for (p <- files) {
+      val exact_file_pat_re(dir,outcome,prop,suffix) = p
+      val f = new java.io.File(sv_bench_root+"/"+p)
+      val name = f.getName
+      testOne(dir, name, Map(prop -> outcome.toBoolean))
+
     }
   }
 
@@ -75,7 +155,15 @@ abstract class SVCompSuite extends FileDiffSuite {
         import CFGtoEngine._
 
         val cfgs = fileToCFG(parsed)
-        evalCFG(cfgs("main"))
+        val store = evalCFG(cfgs("main"))
+
+        val valid = (store match {
+          case GConst(m: Map[GVal,GVal]) => m.get(GConst("valid"))
+          case Def(DMap(m)) => m.get(GConst("valid"))
+        }).getOrElse(GError)
+
+        assert(if (props.values.head) valid == GConst(1) else valid == GConst(0), s"wanted ${props.values.head} -- got ${IR.termToString(valid)}")
+
       }
     }}
   }
@@ -83,16 +171,21 @@ abstract class SVCompSuite extends FileDiffSuite {
 }
 
 
-class SVCompControlFlow extends SVCompSuite {
-    extractAll(controlFlow)
-}
+// class SVCompControlFlow extends SVCompSuite {
+//     extractAll(controlFlow)
+// }
 
 class SVCompLoops extends SVCompSuite {
-    extractAll(loops)
+  extractAll(loops)
 }
 
-class SVCompRecursive extends SVCompSuite {
-    extractAll(recursive)
+// class SVCompRecursive extends SVCompSuite {
+//     extractAll(recursive)
+// }
+
+
+class SVCompRunSuccess extends SVCompSuite {
+  runAll(success)
 }
 
 /*

@@ -117,27 +117,19 @@ object CFGtoEngine {
               gValTypeCheck(evalExp(arg), GType.int) { x => typedGVal(IR.not(x), GType.int) }
             case "op_minus" =>
               gValTypeCheck(evalExp(arg), GType.int) { x => typedGVal(IR.times(IR.const(-1), x), GType.int) }
-            case "op_prefixIncr" =>
+            case "op_prefixIncr" | "op_prefixDecr" =>
               val name = arg.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
               val cur = safeSelect(store,IR.const("&"+name))
               val upd = gValTypeCheck(cur, GType.int) {
-                cur => typedGVal(IR.plus(cur,IR.const(1)), GType.int)
+                cur => typedGVal(IR.plus(cur,IR.const(if (op.endsWith("Incr")) 1 else -1)), GType.int)
               }
               store = IR.update(store, IR.const("&"+name), upd) // update always safe?
               upd
-            case "op_prefixDecr" =>
+            case "op_postFixIncr" | "op_postFixDecr" =>
               val name = arg.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
               val cur = safeSelect(store,IR.const("&"+name))
               val upd = gValTypeCheck(cur, GType.int) {
-                cur => typedGVal(IR.plus(cur,IR.const(-1)), GType.int)
-              }
-              store = IR.update(store, IR.const("&"+name), upd) // update always safe?
-              upd
-            case "op_postFixIncr" =>
-              val name = arg.asInstanceOf[CASTIdExpression].getName.toString // TODO: proper lval?
-              val cur = safeSelect(store,IR.const("&"+name))
-              val upd = gValTypeCheck(cur, GType.int) {
-                cur => typedGVal(IR.plus(cur,IR.const(1)), GType.int)
+                cur => typedGVal(IR.plus(cur,IR.const(if (op.endsWith("Incr")) 1 else -1)), GType.int)
               }
               store = IR.update(store, IR.const("&"+name), upd) // update always safe?
               cur
@@ -165,6 +157,17 @@ object CFGtoEngine {
                   typedGVal(IR.times(arg1,arg2), GType.int)
                 }
               }
+            case "op_divide" =>
+              gValTypeCheck(arg1, GType.int) { arg1 =>
+                gValTypeCheck(arg2, GType.int) { arg2 =>
+                  arg2 match {
+                    case GConst(k: Int) =>
+                      typedGVal(IR.times(arg1,IR.const(1.0/k)), GType.int)
+                    case _ => ???
+                  }
+                }
+              }
+
             case "op_equals" =>
               typedGVal(IR.equal(arg1,arg2), GType.int) // does Map == Map works?
             case "op_notequals" => typedGVal(IR.not(IR.equal(arg1,arg2)), GType.int)
@@ -494,6 +497,7 @@ object CFGtoEngine {
   def simplifyBool(term: Val)(implicit constraints: List[OProb]): Val = term match {
     case GConst(0) => IR.const(0)
     case GConst(_: Int) => IR.const(1)
+    case GConst(_) => term
     case IR.Def(DTimes(x, y)) =>
       val sx = simplifyBool(x)
       val sy = simplifyBool(y)
@@ -504,19 +508,31 @@ object CFGtoEngine {
     case _ if alwaysFalse(term) => IR.const(0)
     case _ if alwaysFalse(IR.not(term)) => IR.const(1)
     case IR.Def(DIf(c, a, b)) =>
-      val sc = simplify(c)
+      val sc = simplifyBool(c)
       if (alwaysFalse(sc))
-        simplify(b)(toOProb(IR.not(sc)) ++: constraints)
+        simplifyBool(b)(toOProb(IR.not(sc)) ++: constraints)
       else if (alwaysFalse(IR.not(sc)))
-        simplify(a)(toOProb(sc) ++: constraints)
-      else
+        simplifyBool(a)(toOProb(sc) ++: constraints)
+      else {
         IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
+      }
+    case IR.Def(DLess(x, y))  =>
+      val t = IR.less(simplify(x), simplify(y))
+      val res = if (alwaysFalse(t))
+        IR.const(0)
+      else if (alwaysFalse(IR.not(t)))
+        IR.const(1)
+      else
+        t
+      res
+    case IR.Def(DEqual(x, y)) => IR.equal(simplify(x), simplify(y))
+    case IR.Def(DNot(x))      => IR.not(simplifyBool(x))
     case _ => term
   }
 
   def simplify(term: Val)(implicit constraints: List[OProb]): Val = { debug("Simplify", s"${IR.termToString(term)} - contraints: $constraints"); term } match {
     case IR.Def(DIf(c, a, b)) =>
-      val sc = simplify(c)
+      val sc = simplifyBool(c)
       if (alwaysFalse(sc))
         simplify(b)(toOProb(IR.not(sc)) ++: constraints)
       else if (alwaysFalse(IR.not(sc)))
@@ -535,28 +551,30 @@ object CFGtoEngine {
           }
         }
       }
-    case IR.Def(DFixIndex(x, c)) => IR.fixindex(x, simplify(c))
+    case IR.Def(DFixIndex(x, c)) => IR.fixindex(x, simplifyBool(c))
     case IR.Def(DMap(m)) =>
       IR.map(m map { case (key, value) =>
         // if (!key.toString.startsWith("\"$")) println(s"Simplify key $key -> ${IR.termToString(value)}:")
-      key -> (if (key == valid) simplifyBool(value) else simplify(value)) }) // FIXME ???
+        key -> (if (key == valid) simplifyBool(value) else simplify(value))
+      }) // FIXME ???
     case IR.Def(DUpdate(x, f, y))  => IR.update(simplify(x), simplify(f), simplify(y))
     case IR.Def(DSelect(x, f))     => IR.select(simplify(x), simplify(f))
     case IR.Def(DPlus(x, y))       => IR.plus(simplify(x), simplify(y))
     case IR.Def(DTimes(x, y))      => IR.times(simplify(x), simplify(y))
     case IR.Def(DPair(x, y))       => IR.pair(simplify(x), simplify(y))
-    case IR.Def(DLess(x, y))       => simplifyBool(IR.less(simplify(x), simplify(y)))
-    case IR.Def(DEqual(x, y))      => simplifyBool(IR.equal(simplify(x), simplify(y)))
-    case IR.Def(DNot(x))           => IR.not(simplify(x))
+    case IR.Def(DLess(x, y))       => simplifyBool(term)
+    case IR.Def(DEqual(x, y))      => simplifyBool(term)
+    case IR.Def(DNot(x))           => simplifyBool(term)
     case IR.Def(DSum(n, x, c))     => IR.sum(simplify(n), x, simplify(c))
     case IR.Def(DCollect(n, x, c)) => IR.collect(simplify(n), x, simplify(c)) // (toOProb(IR.not(IR.less(GRef(x), 0))) ++: constraints))
     case IR.Def(DCall(f, x))       => IR.call(simplify(f), simplify(x))
     case IR.Def(DFun(f, x, y))     => IR.fun(f, x, simplify(y))
     case IR.Def(DHasField(x, f))   => IR.hasfield(simplify(x), simplify(f))
-    case x@GRef(_) => println(s"Ref $x")
-      simplifyBool(IR.equal(x, IR.const(0))) match { // FIXME: hack if GRef(x) == 0
-        case GConst(1) => println(s"Simplifed $x"); IR.const(0)
-        case z@_ => println(s"Simplify ref: ${IR.termToString(z)} - $constraints"); x
+    case x@GRef(_) =>
+      if (alwaysFalse(IR.not(IR.equal(x, IR.const(0))))) { // FIXME: hack if GRef(x) == 0
+        println(s"Simplifed $x to 0"); IR.const(0)
+      } else {
+        x
       }
     case _ => term
   }
@@ -681,7 +699,7 @@ object CFGtoEngine {
 
         // wrap up
         println(s"} end loop $loop, trip count ${IR.termToString(nX)}, state")
-        println(s"Simplified sotore: ${IR.termToString(store)}")
+        println(s"Simplified store: ${IR.termToString(store)}")
         itvec = saveit
         println("======= Iteration Done =======\n")
         IR.const(())
@@ -784,7 +802,13 @@ object CFGtoEngine {
 
     time{consume(entryLabel, Set.empty, Set.empty)}
 
-    val store2 = simplify(store)(Nil)
+    var store2 = simplify(store)(Nil)
+    var go = true
+    while (go) {
+      val ns = simplify(store2)(Nil)
+      go = ns != store2
+      store2 = ns
+    }
     println("## term:")
     val out = IR.termToString(store2)
     println(out)

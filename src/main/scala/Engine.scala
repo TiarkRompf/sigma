@@ -50,7 +50,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       }
     }
 
-    val debugF = true
+    val debugF = false
     val debugSet = Set("Simplify", "Assert")
     def debug(pref: String, s: => String) = if (debugF && debugSet(pref)) println(s"$pref: " + s)
   }
@@ -648,10 +648,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         // random simplifications ...
         case (GConst(c),b:GRef) => plus(b,const(c)) // CAVE: non-int consts!
         case (Def(DPlus(a,b)),_) => plus(a,plus(b,y))
-        case (a,Def(DTimes(a1,GConst(k: Int)))) if a == a1 => times(a, const(k + 1)) // a + (a * k) --> a * (k + 1)
-        case (Def(DTimes(a1,GConst(k: Int))),a) if a == a1 => times(a, const(k + 1)) // (a * k) + a --> a * (k + 1)
-        case (a,Def(DPlus(Def(DTimes(a1,GConst(k: Int))), c))) if a == a1 => plus(times(a, const(k + 1)), c) // a + ((a * k) + c) --> a * (k + 1) + c
-        case (Def(DTimes(a1,GConst(k: Int))),Def(DPlus(a,c))) if a == a1 => plus(times(a, const(k + 1)), c) // (a * k) + a + c --> a * (k + 1) + c
+        case (a,Def(DTimes(a1,GConst(k)))) if a == a1 => times(a, plus(const(k), const(1))) // a + (a * k) --> a * (k + 1)
+        case (Def(DTimes(a1,GConst(k))),a) if a == a1 => times(a, plus(const(k), const(1))) // (a * k) + a --> a * (k + 1)
+        case (a,Def(DPlus(Def(DTimes(a1,GConst(k))), c))) if a == a1 => plus(times(a, plus(const(k), const(1))), c) // a + ((a * k) + c) --> a * (k + 1) + c
+        case (Def(DTimes(a1,GConst(k))),Def(DPlus(a,c))) if a == a1 => plus(times(a, plus(const(k), const(1))), c) // (a * k) + a + c --> a * (k + 1) + c
         case (a1, Def(DPlus(b, Def(DPlus(Def(DTimes(b1, GConst(-1))), c))))) if a1 == b1 => plus(b, c) // a + (b + ((a * -1) + c)) --> b + c
         case (Def(DTimes(j1, Def(DTimes(i1, m1)))), Def(DPlus(Def(DTimes(j2, Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))))), x)))
         if j1 == j2 && i1 == i2 && m1 == m2 => x
@@ -725,6 +725,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (Def(DTimes(a1,GConst(b1:Int))), GConst(b2:Int)) if b1 > 0 => less(a1, const((b2 + b1 - 1) / b1))
         // x + c < x --> c < 0
         case (Def(DPlus(x, c)), x1) if x == x1 => less(c, const(0))
+        // 0 < a * k
+        case (GConst(0),Def(DTimes(a,GConst(k: Int)))) => if (k > 0) less(const(0), a) else less(a, const(0))
+        case (GConst(0),Def(DTimes(a,GConst(k: Double)))) => if (k > 0.0) less(const(0), a) else less(a, const(0))
         case (x, Def(DPlus(x1, GConst(k: Int)))) if x == x1 => const(if (k > 0) 1 else 0)
         case _ if x == y => const(0)
         // case (GConst(0),Def(DPlus())) => y
@@ -860,6 +863,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DLess(Def(DPlus(a, GRef(`x`))),u)) if !in(x, a) => plus(u, times(a, const(-1)))
         case Def(DNot(Def(DEqual(GRef(`x`),u)))) => u
         case Def(DNot(Def(DEqual(u,GRef(`x`))))) => u
+        case Def(DLess(Def(DTimes(GRef(`x`), GConst(k: Int))),u)) => times(u, const(1.0/k))
         // case Def(DMap(d)) if d.contains(GConst("value")) => fixindex(x, select(c, GConst("value")))
         case _ =>
           super.fixindex(x,c)

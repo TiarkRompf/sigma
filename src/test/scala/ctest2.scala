@@ -24,7 +24,7 @@ class CTest2 extends FileDiffSuite {
       case _ => ???
     }
 
-    assert(valid.getOrElse(GConst(0)) == GConst(1), s": valid -> ${valid.getOrElse(valid)}")
+    assert(valid.getOrElse(GError) == GConst(1), s": valid -> ${IR.termToString(valid.getOrElse(GError))}")
   }
 
 
