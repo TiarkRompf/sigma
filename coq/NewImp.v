@@ -175,9 +175,21 @@ Module IMPRel.
 
   Definition obj := nat → val. (* TODO: model partialness? *)
 
+  Definition mt_obj : obj := t_empty VErr.
+  Definition o0 : obj := mt_obj.
+
+  Definition obj_update (st : obj) (x : nat) (v : val) :=
+    t_update beq_nat st x v.
+
   (* Stores *)
 
   Definition store := loc → obj.
+
+  Definition mt_store : store := t_empty mt_obj.
+  Definition σ0 : store := mt_store.
+
+  Definition store_update (st : store) (x : loc) (v : obj) :=
+    t_update beq_loc st x v.
 
   (* Evaluation relation for expressions *)
 
@@ -218,44 +230,69 @@ Module IMPRel.
     | _ => VErr
     end.
 
-  Reserved Notation "s '⊢' e '⇓' v" (at level 90, left associativity).
+  Definition fieldRead (σ : store) (l : val) (i : val) : val :=
+    match l, i with
+    | (VLoc l), (VNum n) => σ l n
+    | _, _ => VErr
+    end.
 
-  Inductive evalExpR : exp → store → val → Prop :=
-  | RId x :  ∀ σ, σ ⊢ (EId x)  ⇓ (σ (LId x)) 0
-  | RNum n : ∀ σ, σ ⊢ (ENum n) ⇓ (VNum n)
-  | RBool b : ∀ σ, σ ⊢ (EBool b) ⇓ (VBool b)
-  | RLoc x : ∀ σ, σ ⊢ (ELoc x) ⇓ (VLoc (LId x))
+  Reserved Notation "st '⊢' e '⇓ₑ' v" (at level 90, left associativity).
+
+  Inductive evalExpR : store → exp → val → Prop :=
+  | RId x :  ∀ σ, σ ⊢ (EId x) ⇓ₑ (σ (LId x)) 0
+  | RNum n : ∀ σ, σ ⊢ (ENum n) ⇓ₑ (VNum n)
+  | RBool b : ∀ σ, σ ⊢ (EBool b) ⇓ₑ (VBool b)
+  | RLoc x : ∀ σ, σ ⊢ (ELoc x) ⇓ₑ (VLoc (LId x))
   | RPlus x y : ∀ σ n1 n2,
-      σ ⊢ x ⇓ n1 →
-      σ ⊢ y ⇓ n2 →
-      σ ⊢ (EPlus x y) ⇓ (VNumPlus n1 n2)
+      σ ⊢ x ⇓ₑ n1 →
+      σ ⊢ y ⇓ₑ n2 →
+      σ ⊢ (EPlus x y) ⇓ₑ (VNumPlus n1 n2)
   | RMinus x y : ∀ σ n1 n2,
-      σ ⊢ x ⇓ n1 →
-      σ ⊢ y ⇓ n2 →
-      σ ⊢ (EMinus x y) ⇓ (VNumMinus n1 n2)
+      σ ⊢ x ⇓ₑ n1 →
+      σ ⊢ y ⇓ₑ n2 →
+      σ ⊢ (EMinus x y) ⇓ₑ (VNumMinus n1 n2)
   | RMult x y : ∀ σ n1 n2,
-      σ ⊢ x ⇓ n1 →
-      σ ⊢ y ⇓ n2 →
-      σ ⊢ (EMult x y) ⇓ (VNumMult n1 n2)
+      σ ⊢ x ⇓ₑ n1 →
+      σ ⊢ y ⇓ₑ n2 →
+      σ ⊢ (EMult x y) ⇓ₑ (VNumMult n1 n2)
   | RLt x y : ∀ σ n1 n2,
-      σ ⊢ x ⇓ n1 →
-      σ ⊢ y ⇓ n2 →
-      σ ⊢ (ELt x y) ⇓ (VNumLt n1 n2)
+      σ ⊢ x ⇓ₑ n1 →
+      σ ⊢ y ⇓ₑ n2 →
+      σ ⊢ (ELt x y) ⇓ₑ (VNumLt n1 n2)
   | REq x y : ∀ σ n1 n2,
-      σ ⊢ x ⇓ n1 →
-      σ ⊢ y ⇓ n2 →
-      σ ⊢ (EEq x y) ⇓ (VNumEq n1 n2)
+      σ ⊢ x ⇓ₑ n1 →
+      σ ⊢ y ⇓ₑ n2 →
+      σ ⊢ (EEq x y) ⇓ₑ (VNumEq n1 n2)
   | RAnd x y : ∀ σ b1 b2,
-      σ ⊢ x ⇓ b1 →
-      σ ⊢ y ⇓ b2 →
-      σ ⊢ (EAnd x y) ⇓ (VBoolAnd b1 b2)
+      σ ⊢ x ⇓ₑ b1 →
+      σ ⊢ y ⇓ₑ b2 →
+      σ ⊢ (EAnd x y) ⇓ₑ (VBoolAnd b1 b2)
   | RNeg x : ∀ σ b,
-      σ ⊢ x ⇓ b →
-      σ ⊢ (ENeg x) ⇓ (VBoolNed b)
-  (* | RFieldRead e1 e2 : ∀ σ l n,
-      σ ⊢ e1 ⇓ l →
-      σ ⊢ e2 ⇓ n → *)
-  where "s '⊢' e '⇓' v" := (evalExpR e s v) : type_scope.
+      σ ⊢ x ⇓ₑ b →
+      σ ⊢ (ENeg x) ⇓ₑ (VBoolNed b)
+  | RFieldRead e1 e2 : ∀ σ l n,
+      σ ⊢ e1 ⇓ₑ l →
+      σ ⊢ e2 ⇓ₑ n →
+      σ ⊢ (EFieldRead e1 e2) ⇓ₑ (fieldRead σ l n)
+  where "st '⊢' e '⇓ₑ' v" := (evalExpR st e v) : type_scope.
+
+  Reserved Notation "( st1 , c ) '⊢' ( e , s ) n '⇓∞' st2" (at level 90, left associativity).
+  Reserved Notation "( st1 , c ) '⊢' s '⇓' st2" (at level 90, left associativity).
+
+  Inductive evalLoopR : store → ctx → exp → stmt → nat → store → Prop :=
+  | RWhileZero : ∀ σ c e s, (σ, c) ⊢ (e, s) 0 ⇓∞ σ
+  | RWhileMore : ∀ (σ σ' σ'' : store) c n e s,
+      (σ, c) ⊢ (e, s) n ⇓∞ σ' →
+      σ' ⊢ e ⇓ₑ (VBool true) →
+      (σ', CWhile c n) ⊢ s ⇓ σ'' →
+      (σ, c) ⊢ (e, s) n+1 ⇓∞ σ''
+  where "( st1 , c ) ⊢ ( e , s ) n '⇓∞' st2" := (evalLoopR st1 c e s n st2) : type_scope
+  with evalStmtR : store → ctx → stmt → store → Prop :=
+  | RAlloc x : ∀ σ c,
+      (σ, c) ⊢ x ::= ALLOC ⇓ (store_update (store_update σ (LNew c) mt_obj)
+                                           (LId x)
+                                           (obj_update mt_obj 0 (VLoc (LNew c))))
+  where "( st1 , c ) '⊢' s '⇓' st2" := (evalStmtR st1 c s st2) : type_scope.
 
 End IMPRel.
 
