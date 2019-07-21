@@ -168,7 +168,8 @@ Module IMPRel.
   | VNum : nat -> val
   | VBool : bool -> val
   | VLoc : loc -> val
-  | VErr : val (* TODO: explicitly model error/undef/divergence? Related, the relational semantics for Abort *)
+  | VErr : val
+  (* TODO: explicitly model error/undef/divergence? Related, the relational semantics for Abort *)
   .
 
   (* Objects *)
@@ -189,7 +190,7 @@ Module IMPRel.
   Definition store := loc → obj.
 
   Definition mt_store : store := t_empty mt_obj.
-  Definition σ0 : store := mt_store.
+  Definition σ0 : store := mt_store. (* TODO: Follow Def 3.4 *)
 
   Definition store_update (st : store) (x : loc) (v : obj) :=
     t_update beq_loc st x v.
@@ -324,7 +325,83 @@ Module IMPRel.
   | RAbort : ∀ σ p, (σ, p) ⊢ ABORT ⇓ σ0
   where "( st1 , c ) '⊢' s '⇓' st2" := (evalStmtR st1 c s st2) : type_scope.
 
+  (* TODO: clean up this *)
+  Theorem exp_deterministic : ∀ σ e v1 v2,
+      σ ⊢ e ⇓ₑ v1 →
+      σ ⊢ e ⇓ₑ v2 →
+      v1 = v2.
+  Proof.
+    intros σ e v1 v2 E1 E2.
+    generalize dependent v2.
+    induction E1; intros; inversion E2; subst; auto.
+    - specialize IHE1_1 with (v2 := n0).
+      specialize IHE1_2 with (v2 := n3).
+      assert (n1 = n0). apply IHE1_1. apply H2.
+      assert (n2 = n3). apply IHE1_2. apply H4.
+      subst. reflexivity.
+    - specialize IHE1_1 with (v2 := n0).
+      specialize IHE1_2 with (v2 := n3).
+      assert (n1 = n0). apply IHE1_1. apply H2.
+      assert (n2 = n3). apply IHE1_2. apply H4.
+      subst. reflexivity.
+    - specialize IHE1_1 with (v2 := n0).
+      specialize IHE1_2 with (v2 := n3).
+      assert (n1 = n0). apply IHE1_1. apply H2.
+      assert (n2 = n3). apply IHE1_2. apply H4.
+      subst. reflexivity.
+    - specialize IHE1_1 with (v2 := n0).
+      specialize IHE1_2 with (v2 := n3).
+      assert (n1 = n0). apply IHE1_1. apply H2.
+      assert (n2 = n3). apply IHE1_2. apply H4.
+      subst. reflexivity.
+    - specialize IHE1_1 with (v2 := n0).
+      specialize IHE1_2 with (v2 := n3).
+      assert (n1 = n0). apply IHE1_1. apply H2.
+      assert (n2 = n3). apply IHE1_2. apply H4.
+      subst. reflexivity.
+    - specialize IHE1_1 with (v2 := b0).
+      specialize IHE1_2 with (v2 := b3).
+      assert (b1 = b0). apply IHE1_1. apply H2.
+      assert (b2 = b3). apply IHE1_2. apply H4.
+      subst. reflexivity.
+    - specialize IHE1 with (v2 := b0).
+      assert (b = b0). apply IHE1. apply H1.
+      subst. reflexivity.
+    - specialize IHE1_1 with (v2 := l0).
+      specialize IHE1_2 with (v2 := n0).
+      assert (l = l0). apply IHE1_1. apply H2.
+      assert (n = n0). apply IHE1_2. apply H4.
+      subst. reflexivity.
+    Qed.
+
+  Theorem stmt_deterministic : ∀ σ p s σ' σ'',
+      (σ, p) ⊢ s ⇓ σ'  →
+      (σ, p) ⊢ s ⇓ σ'' →
+      σ' = σ''.
+  Proof.
+    intros σ p s σ' σ'' E1 E2.
+    generalize dependent σ''.
+    induction E1; intros; inversion E2; subst; auto.
+    - assert (VLoc l = VLoc l0). { eapply exp_deterministic. eauto. auto. } inversion H2.
+      assert (VNum n = VNum n0). { eapply exp_deterministic. eauto. auto. } inversion H3.
+      assert (v = v0). { eapply exp_deterministic. eauto. auto. }
+      subst. reflexivity.
+    - assert (VBool true = VBool false).
+      { eapply exp_deterministic. eauto. auto. }
+      inversion H0.
+    - assert (VBool true = VBool false).
+      { eapply exp_deterministic. eauto. auto. }
+      inversion H0.
+    - (* TODO: determincity about loop *)
+    Admitted.
+
 End IMPRel.
+
+(* IMP Standard semantics, without context path *)
+
+Module IMPStd.
+
+End IMPStd.
 
 (* IMP Monadic functional semantics *)
 
