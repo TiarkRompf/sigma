@@ -100,10 +100,10 @@ Notation "'WHILE' b 'DO' s 'END'" :=
 Notation "'IF' e 'THEN' s1 'ELSE' s2 'FI'" :=
   (SIf e s1 s2) (at level 80, right associativity).
 
-Notation "e1 '[' e2 ']' ':=' e3" :=
+Notation "e1 '[[' e2 ']]' '::=' e3" :=
   (SAssign e1 e2 e3) (at level 80, right associativity).
 
-Notation "e1 '[' e2 ']'" :=
+Notation "e1 '[[' e2 ']]'" :=
   (EFieldRead e1 e2) (at level 80, right associativity).
 
 Notation "'ASSERT' e" :=
@@ -168,7 +168,7 @@ Module IMPRel.
   | VNum : nat -> val
   | VBool : bool -> val
   | VLoc : loc -> val
-  | VErr : val (* TODO: explicitly model error/undef? *)
+  | VErr : val (* TODO: explicitly model error/undef/divergence? Related, the relational semantics for Abort *)
   .
 
   (* Objects *)
@@ -295,11 +295,33 @@ Module IMPRel.
       (σ, c) ⊢ (e, s) n+1 ⇓∞ σ''
   where "( st1 , c ) ⊢ ( e , s ) n '⇓∞' st2" := (evalLoopR st1 c e s n st2) : type_scope
   with evalStmtR : store → path → stmt → store → Prop :=
-  | RAlloc x : ∀ σ c,
-      (σ, c) ⊢ x ::= ALLOC ⇓ (LNew c st↦ mt_obj ;
-                              LId x  st↦ (0 obj↦ VLoc (LNew c)) ;
+  | RAlloc x : ∀ σ p,
+      (σ, p) ⊢ x ::= ALLOC ⇓ (LNew p st↦ mt_obj ;
+                              LId x  st↦ (0 obj↦ VLoc (LNew p)) ;
                               σ)
-  (* TODO: ... *)
+  | RAssign e1 e2 e3 : ∀ σ p l n v,
+      σ ⊢ e1 ⇓ₑ (VLoc l) →
+      σ ⊢ e2 ⇓ₑ (VNum n) →
+      σ ⊢ e3 ⇓ₑ v →
+      (σ, p) ⊢ e1[[e2]] ::= e3 ⇓ (l st↦ (n obj↦ v ; σ l) ; σ)
+  | RIfTrue e s1 s2 : ∀ σ p σ',
+      σ ⊢ e ⇓ₑ (VBool true) →
+      (σ, PThen p) ⊢ s1 ⇓ σ' →
+      (σ, p) ⊢ SIf e s1 s2 ⇓ σ' (* FIXME: the notation doesn't work here *)
+  | RIfFalse e s1 s2 : ∀ σ p σ',
+      σ ⊢ e ⇓ₑ (VBool false) →
+      (σ, PElse p) ⊢ s2 ⇓ σ' →
+      (σ, p) ⊢ SIf e s1 s2 ⇓ σ'
+  | RWhile e s : ∀ σ p σ' n,
+      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+      σ' ⊢ e ⇓ₑ (VBool false) →
+      (σ, p) ⊢ WHILE e DO s END ⇓ σ'
+  | RSeq s1 s2 : ∀ σ p σ' σ'',
+      (σ,  PFst p) ⊢ s1 ⇓ σ' →
+      (σ', PSnd p) ⊢ s2 ⇓ σ'' →
+      (σ, p) ⊢ s1 ;; s2 ⇓ σ''
+  | RSkip : ∀ σ p, (σ, p) ⊢ SKIP ⇓ σ
+  | RAbort : ∀ σ p, (σ, p) ⊢ ABORT ⇓ σ0
   where "( st1 , c ) '⊢' s '⇓' st2" := (evalStmtR st1 c s st2) : type_scope.
 
 End IMPRel.

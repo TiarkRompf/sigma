@@ -165,7 +165,7 @@ Fixpoint eval_exp (e: exp) (sto: store): option val :=
 
 Fixpoint idx1 (i:nat) (m:nat) (p: nat -> option bool): option nat :=
   match m with 
-  | O => None
+  | O => None (* timeout *)
   | S m' =>
     LET b <-- p i IN
     if b then Some i else idx1 (i+1) m' p
