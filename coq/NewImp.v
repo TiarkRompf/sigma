@@ -92,7 +92,7 @@ Notation "x '::=' e" :=
   (SAssign x (ENum 0) e) (at level 80, right associativity).
 
 Notation "s1 ;; s2" :=
-  (SSeq s1 s2) (at level 80, right associativity).
+  (SSeq s1 s2) (at level 85, right associativity).
 
 Notation "'WHILE' b 'DO' s 'END'" :=
   (SWhile b s) (at level 80, right associativity).
@@ -474,6 +474,9 @@ Module IMPEval.
 
   Definition obj_update (st : obj) (x : nat) (v : val) :=
     t_update beq_nat st x (Some v).
+  
+  Notation "x 'obj↦' v ; m" := (obj_update m x v) (at level 60, v at next level, right associativity).
+  Notation "x 'obj↦' v" := (obj_update mt_obj x v) (at level 60).
 
   (* Stores *)
 
@@ -483,6 +486,10 @@ Module IMPEval.
 
   Definition store_update (st : store) (x : loc) (v : obj) :=
     t_update beq_loc st x (Some v).
+
+  Notation "x 'st↦' v ';' m" := (store_update m x v)
+    (at level 60, v at next level, right associativity).
+  Notation "x 'st↦' v" := (store_update mt_store x v) (at level 60).
 
   (* Monad operations *)
 
@@ -602,15 +609,15 @@ Module IMPEval.
   Fixpoint eval_stm (s: stmt) (σ: store) (c: path) (m: nat) : option store :=
     match s with
     | x ::= ALLOC =>
-      Some (store_update (store_update σ (LNew c) mt_obj)
-                         (LId x)
-                         (obj_update mt_obj 0 (VLoc (LNew c))))
-    | SAssign e1 e2 e3 =>
+      Some (LNew c st↦ mt_obj ;
+            LId x st↦ (0 obj↦ (VLoc (LNew c))) ;
+            σ)
+    | e1[[e2]] ::= e3 =>
       l ← eval_exp e1 σ >>= toLoc IN
       n ← eval_exp e2 σ >>= toNat IN
       v ← eval_exp e3 σ IN
       o ← σ l IN
-      Some (store_update σ l (obj_update o n v))
+      Some (l st↦ (n obj↦ v ; o) ; σ)
     | IF b THEN s1 ELSE s2 FI =>
       b ← eval_exp b σ >>= toBool IN
       if b
