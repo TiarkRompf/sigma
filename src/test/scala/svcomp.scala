@@ -53,6 +53,7 @@ abstract class SVCompSuite extends FileDiffSuite {
     "loop-invgen/NetBSD_loop_true-unreach-call.i",
     "loop-lit/gj2007b_true-unreach-call.c.i",
     "loop-lit/gj2007_true-unreach-call.c.i",
+    "loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call.i",
     "loop-invgen/down_true-unreach-call.i"
   )
 
@@ -66,7 +67,6 @@ abstract class SVCompSuite extends FileDiffSuite {
   )
 
   val simplification_missing = Array(
-    "loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call.i",
     "loop-invgen/nest-if3_true-unreach-call.i",
     "loop-invgen/large_const_true-unreach-call.i",
     "loop-invgen/string_concat-noarr_true-unreach-call.i",

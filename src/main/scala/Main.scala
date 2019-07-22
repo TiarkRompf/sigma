@@ -326,26 +326,45 @@ object MyMain {
     for (i = 0; i < 2 * n; i = i + 2)
       agg = agg + i;
 
-    assert(2 * agg == n * (n - 1));
+    assert(agg == n * (n - 1));
     return 0;
   }
   """
 
   val infloop = """
-    int main() {
-        int x = 0;
-        int y = 50;
-        while(x < 100) {
-          if (x < 50) {
-            x = x + 1;
-          } else {
-            y = y + 1
-            x = x + 1;
-          }
-        }
-        __VERIFIER_assert(y == 100);
-        return 0;
+  int main()
+  {
+    int p;
+    int i;
+    int leader_len;
+    int bufsize;
+    int bufsize_0;
+    int ielen;
+    leader_len = __VERIFIER_nondet_int();
+    bufsize = __VERIFIER_nondet_int();
+    ielen = __VERIFIER_nondet_int();
+    __VERIFIER_assume(leader_len < 1000000);
+    __VERIFIER_assume(bufsize < 1000000);
+    __VERIFIER_assume(ielen < 1000000);
+    if(leader_len >0); else goto END;
+    if(bufsize >0); else goto END;
+    if(ielen >0); else goto END;
+    if (bufsize < leader_len)
+      goto END;
+    p = 0;
+    bufsize_0 = bufsize;
+    bufsize -= leader_len;
+    p += leader_len;
+    if (bufsize < 2*ielen)
+      goto END;
+    for (i = 0; i < ielen && bufsize > 2; i++) {
+      __VERIFIER_assert(0<=p);
+      __VERIFIER_assert(p+1<bufsize_0);
+      p += 2;
     }
+   END:
+    ;
+  }
     """
 
 
