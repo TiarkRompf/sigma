@@ -288,7 +288,9 @@ Module IMPRel.
   Reserved Notation "( st1 , c ) '⊢' s '⇓' st2" (at level 90, left associativity).
 
   Inductive evalLoopR : store → path → exp → stmt → nat → store → Prop :=
-  | RWhileZero : ∀ σ c e s, (σ, c) ⊢ (e, s) 0 ⇓∞ σ
+  | RWhileZero : ∀ σ c e s,
+      σ ⊢ e ⇓ₑ (VBool false) → (* Note: add this to make it determinisitc? *)
+      (σ, c) ⊢ (e, s) 0 ⇓∞ σ
   | RWhileMore : ∀ (σ σ' σ'' : store) c n e s,
       (σ, c) ⊢ (e, s) n ⇓∞ σ' →
       σ' ⊢ e ⇓ₑ (VBool true) →
@@ -372,7 +374,22 @@ Module IMPRel.
       assert (l = l0). apply IHE1_1. apply H2.
       assert (n = n0). apply IHE1_2. apply H4.
       subst. reflexivity.
-    Qed.
+  Qed.
+
+  Theorem loop_determinisitc : ∀ σ p e s n1 n2 σ' σ'',
+      (* n1 = n2 → *)
+      (σ, p) ⊢ (e, s) n1 ⇓∞ σ' →
+      (σ, p) ⊢ (e, s) n2 ⇓∞ σ'' →
+      n1 = n2 ∧ σ' = σ''.
+  Proof.
+  Admitted.
+  (*
+    intros σ p e s n1 n2 σ' σ'' NEq E1 E2.
+    (* generalize dependent n2. *) generalize dependent σ''.
+    induction E1.
+    - intros. inversion E2. subst. auto. subst. omega.
+    - intros. induction E2. subst. omega.
+   *)
 
   Theorem stmt_deterministic : ∀ σ p s σ' σ'',
       (σ, p) ⊢ s ⇓ σ'  →
@@ -392,8 +409,14 @@ Module IMPRel.
     - assert (VBool true = VBool false).
       { eapply exp_deterministic. eauto. auto. }
       inversion H0.
-    - (* TODO: determincity about loop *)
-    Admitted.
+    - assert (n = n0 ∧ σ' = σ''). { eapply loop_determinisitc. eauto. auto. } inversion H1.
+      apply H3.
+    - specialize IHE1_1 with (σ'' := σ'0).
+      specialize IHE1_2 with (σ''0 := σ''0).
+      assert (σ' = σ'0). { apply IHE1_1. apply H3. } subst.
+      assert (σ'' = σ''0). { apply IHE1_2. apply H5. }
+      apply H.
+  Qed.
 
 End IMPRel.
 
