@@ -170,7 +170,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def equal(x: From, y: From)                  = s"($x == $y)"
       def not(x: From)                             = s"!($x)"
       def pair(x: From, y: From)                   = s"($x,$y)"
-      def iff(c: From, x: From, y: From)           = s"if ($c) { ${ident(x.toString)}} else {${ident(y.toString)}}"
+      def iff(c: From, x: From, y: From)           = s"if ($c) { ${ident(x.toString)} } else { ${ident(y.toString)} }"
       def sum(n: From, x: String, c: From)         = s"sum($n) { $x => $c }"
       def collect(n: From, x: String, c: From)     = s"collect($n) { $x =>\n${ident(s"$c")}\n}"
       def fixindex(x: String, c: From)             = s"fixindex { $x => $c }"
@@ -767,6 +767,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DEqual(Def(DIf(c,x,z)),y)) => iff(c,not(equal(x,y)),not(equal(z,y)))
         case Def(DEqual(x,Def(DIf(c,y,z)))) => iff(c,not(equal(x,y)),not(equal(x,z)))
         case Def(DEqual(x,y)) if x == y => const(0)
+        case Def(DIf(c, x, y)) => iff(c, not(x), not(y))
         case _ => super.not(e)
       }
       override def pair(x: From, y: From)            = (x,y) match {
@@ -779,8 +780,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case GConst(_) => x
         case Def(DNot(c)) => iff(c,y,x)
         case Def(DIf(c1,x1,y1)) => iff(c1,iff(x1,x,y),iff(y1,x,y))
-        case _ if (x,y) == (GConst(1),GConst(0)) => c
-        case _ if (x,y) == (GConst(0),GConst(1)) => not(c)
+        // case _ if (x,y) == (GConst(1),GConst(0)) => c
+        // case _ if (x,y) == (GConst(0),GConst(1)) => not(c)
         case _ if x == y => x
         case Def(c@DLess(GConst(a:Int),xx)) if { x match {
           case Def(DIf(Def(DLess(GConst(b:Int), `xx`)), aa, bb)) => a < b && y == bb
@@ -848,6 +849,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           super.collect(n,x,c) //subst(c,less(const(0),GRef(x)),const(1)))
       }
 
+      // FIXME: use dependsOnt
       def in(x: String, c: From): Boolean = c match {
         case GRef(y) => x == y
         case GConst(_) => false
@@ -1056,26 +1058,26 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
             (iff(less(n0,u1),b10X,b20X), iff(less(plus(n0,d),u1),b10,b20))
           }
 
-        case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(`n0`,u1)),b10,b20)))
-          // dual example: (B,(1,i)),(A,1)
-          if !dependsOn(u1,n0) => // test 6C2
-          IRD.printTerm(a)
-          IRD.printTerm(b0)
-          IRD.printTerm(b1)
-          println(s"hit if dual -- assume only last case differs") // XXX FIXME interact below
-          val d1 = plus(b10,times(b0,const(-1)))
-          if (d1.isInstanceOf[GConst]) {
-            println(s"const diff, so we can approx down ${termToString(d1)}")
-            val (ithen, nthen) = lub(a,b0,b10)(mkey(fsym,GConst("then")),n0)
-            val b20X = subst(b20,n0,plus(n0,const(-1)))
-            (iff(less(plus(n0,const(-1)),u1),ithen,b20X), iff(less(n0,u1),nthen,b20))
-          } else {
-            println(s"non-const diff -- not sure what to do")
-            val b10X = subst(b10,n0,plus(n0,const(-1)))
-            val b20X = subst(b20,n0,plus(n0,const(-1)))
-            (iff(less(plus(n0,const(-1)),u1),b10X,b20X), b1)
-            //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
-          }
+        // case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(`n0`,u1)),b10,b20)))
+        //   // dual example: (B,(1,i)),(A,1)
+        //   if !dependsOn(u1,n0) => // test 6C2
+        //   IRD.printTerm(a)
+        //   IRD.printTerm(b0)
+        //   IRD.printTerm(b1)
+        //   println(s"hit if dual -- assume only last case differs") // XXX FIXME interact below
+        //   val d1 = plus(b10,times(b0,const(-1)))
+        //   if (d1.isInstanceOf[GConst]) {
+        //     println(s"const diff, so we can approx down ${termToString(d1)}")
+        //     val (ithen, nthen) = lub(a,b0,b10)(mkey(fsym,GConst("then")),n0)
+        //     val b20X = subst(b20,n0,plus(n0,const(-1)))
+        //     (iff(less(plus(n0,const(-1)),u1),ithen,b20X), iff(less(n0,u1),nthen,b20))
+        //   } else {
+        //     println(s"non-const diff -- not sure what to do")
+        //     val b10X = subst(b10,n0,plus(n0,const(-1)))
+        //     val b20X = subst(b20,n0,plus(n0,const(-1)))
+        //     (iff(less(plus(n0,const(-1)),u1),b10X,b20X), b1)
+        //     //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
+        //   }
 
           // XXXXX FIXME / TODO
           // PROBLEM: boundary may change with each iteration!!!
@@ -1139,8 +1141,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               //    plus(ulo,times(plus(dn,const(1)),d)),
               //    plus(ulo,times(dh,d)))
               // piece-wise linear, e.g. if (n < 18) 1 else 0
-              case Def(DIf(Def(DLess(`n0`, up)), dx, dy))
-                if !IRD.dependsOn(up, n0) =>
+              case Def(DIf(Def(DLess(`n0`, up)), dx, dy)) if !IRD.dependsOn(up, n0) =>
                 val dn = plus(nhi,times(nlo,const(-1)))
                 println(s"split range of $n0 at $up: dx=$dx dy=$dy ulo=$ulo nlo=$nlo nhi=$nhi")
                 val (u0,u1,uhi) = break(ulo,nlo,up,dx)

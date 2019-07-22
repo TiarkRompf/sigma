@@ -332,40 +332,21 @@ object MyMain {
   """
 
   val infloop = """
-int main()
-{
-  int p;
-  int i;
-  int leader_len;
-  int bufsize;
-  int bufsize_0;
-  int ielen;
-  leader_len = __VERIFIER_nondet_int();
-  bufsize = __VERIFIER_nondet_int();
-  ielen = __VERIFIER_nondet_int();
-  __VERIFIER_assume(leader_len < 1000000);
-  __VERIFIER_assume(bufsize < 1000000);
-  __VERIFIER_assume(ielen < 1000000);
-  if(leader_len >0); else goto END;
-  if(bufsize >0); else goto END;
-  if(ielen >0); else goto END;
-  if (bufsize < leader_len)
-    goto END;
-  p = 0;
-  bufsize_0 = bufsize;
-  bufsize -= leader_len;
-  p += leader_len;
-  if (bufsize < 2*ielen)
-    goto END;
-  for (i = 0; i < ielen && bufsize > 2; i++) {
-    __VERIFIER_assert(0<=p);
-    __VERIFIER_assert(p+1<bufsize_0);
-    p += 2;
-  }
- END:
-  ;
-}
-"""
+    int main() {
+        int x = 0;
+        int y = 50;
+        while(x < 100) {
+          if (x < 50) {
+            x = x + 1;
+          } else {
+            y = y + 1
+            x = x + 1;
+          }
+        }
+        __VERIFIER_assert(y == 100);
+        return 0;
+    }
+    """
 
 
    def analyze(code: String) = {
@@ -383,9 +364,9 @@ int main()
     // Should be something like this for simple_code
     // { -100 + 1x0? >= 0 } ==> { 0 = 0 } &&
     // { 99 - 1x0? >= 0 } ==> { 100 - 1x0? >= 0 }
-    val validOmega = translateBoolExpr(valid.get)
-    println(s"Valid (omega form): $validOmega")
-    assert(verify(validOmega))
+    val validOmega = translateBoolExpr(IR.not(valid.get))
+    println(s"!valid (omega form): $validOmega")
+    assert(!verify(validOmega))
     //OmegaTest.test
   }
 

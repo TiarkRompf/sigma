@@ -47,17 +47,22 @@ abstract class SVCompSuite extends FileDiffSuite {
     "recursive-simple/*_false-unreach-call*.c",
     "recursive-simple/*_true-unreach-call*.c")
 
-  val success = Array(
+  val successAsIs = Array(
     "loop-invgen/nested6_true-unreach-call.i",
     "loop-invgen/up_true-unreach-call.i",
-    "loop-invgen/half_2_true-unreach-call.i",
     "loop-invgen/NetBSD_loop_true-unreach-call.i",
     "loop-lit/gj2007b_true-unreach-call.c.i",
+    "loop-lit/gj2007_true-unreach-call.c.i",
     "loop-invgen/down_true-unreach-call.i"
   )
 
+  val successModified = Array(
+    "loop-invgen/half_2_true-unreach-call.i"
+  )
+
+  val success = successAsIs ++ successModified
+
   val found0 = Array(
-    "loop-lit/gj2007_true-unreach-call.c.i"
   )
 
   val simplification_missing = Array(
