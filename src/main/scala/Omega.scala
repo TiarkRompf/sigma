@@ -1100,6 +1100,7 @@ object Omega {
       case GConst(0) => OProb(PFALSE)
       case GRef(x) if x.endsWith("?") => OProb(Problem(List(EQ(List(-1, 1), List(PConst, x))))) // x == 1
       case GRef(x) => findDefinition(x) match {
+        case Some(DMap(m)) => translateBoolExpr(m(GConst("$value")))
         case Some(d) => translateBoolExpr(d)
         case None => println(s"Missing variable: $x"); ???
       }
@@ -1125,7 +1126,7 @@ object Omega {
         //OConj(OImplies(cndProb, thnProb),
         ODisj(OConj(cndProb, thnProb),
               OConj(cndProb.negation, elsProb))
-      case _ => ???
+      case _ => println(e); ???
     }
   }
 
@@ -1138,6 +1139,7 @@ object Omega {
         assert(geqs.length == 2)
         ODisj(OProb(Problem(geqs(0))), OProb(Problem(geqs(1)))) //x =/= 1
       case GRef(x) => findDefinition(x) match {
+        case Some(DMap(m)) => negBoolExpr(m(GConst("$value")))
         case Some(d) => negBoolExpr(d)
         case None => println(s"Missing variable: $x"); ???
       }
@@ -1163,7 +1165,14 @@ object Omega {
         val lhs = translateBoolExpr(x)
         val rhs = translateBoolExpr(y)
         OConj(lhs, rhs).negation
-      case _ => ???
+      case DIf(cnd, thn, els) =>
+        val cndProb = negBoolExpr(cnd)
+        val thnProb = negBoolExpr(thn)
+        val elsProb = negBoolExpr(els)
+        //OConj(OImplies(cndProb, thnProb),
+        OConj(ODisj(cndProb, thnProb),
+              ODisj(cndProb.negation, elsProb))
+      case _ => println(e); ???
     }
   }
 
@@ -1201,7 +1210,8 @@ object Omega {
       case DCall(f, x) =>
         println(s"B Missing $e")
         List((1, s"$f($x)")) //FIXME
-      case _ => println(s"Missing $e"); ???
+      case DFixIndex(_, _) => ???
+      case _ => println(s"C Missing $e"); ??? // FIXME
     }
   }
 }

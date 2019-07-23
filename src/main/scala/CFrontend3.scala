@@ -26,11 +26,13 @@ object CFGtoEngine {
 
   val valid = GConst("valid")
   val store0 = GConst(Map(valid -> GConst(1)))
+  val constraints0 = List[OProb]()
 
   val itvec0 = IR.const("top")
 
   var store: Val = store0
   var itvec: Val = itvec0
+  var constraints = constraints0
 
   def evalType(node: IASTDeclSpecifier) = node match {
     case d: CASTSimpleDeclSpecifier     => CPrinter.types(d.getType)
@@ -451,16 +453,23 @@ object CFGtoEngine {
 
   def handleIf(c1: Val)(a: => Unit)(b: => Unit): Unit = {
     val save = store
+    val save1 = constraints
     //assert(c1)
+    println(s">> ${IR.termToString(c1)}")
+    constraints = (assumeTrue(c1)(save1).flatMap(toOProb(_)))++save1
     val e1 = a
-    val s1 = store
+    val s1 = simplify(store)(constraints)
+    println(s"then >> ${IR.termToString(s1)}\nunder: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
     store = save
     //assertNot(c1)
+    constraints = (assumeTrue(IR.not(c1))(save1).flatMap(toOProb(_)))++save1
     val e2 = b
-    val s2 = store
+    val s2 = simplify(store)(constraints)
+    println(s"else >> ${IR.termToString(s2)}\nunder: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
     store = gValTypeCheck(c1, GType.int) { c1 =>
       IR.iff(c1,s1,s2)
     }
+    constraints = save1
     //IR.iff(c1,e1,e2)
   }
 
@@ -491,7 +500,7 @@ object CFGtoEngine {
     case IR.Def(DIf(c, a, b)) if alwaysFalse(c) => assumeTrue(b)
     case IR.Def(DIf(c, a, b)) if simplifyBool(b)(toOProb(c) ++: constraints) == a => assumeTrue(b) // Generalize
     case IR.Def(DIf(c, a, b)) if alwaysFalse(IR.not(c)) => assumeTrue(a)
-    case a@_ => println(s"Nothing as been simplified: ${IR.termToString(a)}"); List(a)
+    case a@_ => println(s"Nothing has been simplified for ${IR.termToString(a)}"); List(a)
   }
 
   def simplifyBool(term: Val)(implicit constraints: List[OProb]): Val = term match {
@@ -582,6 +591,7 @@ object CFGtoEngine {
   def handleLoop(l:String)(body: => Unit): Unit = {
     import IR._
     val saveit = itvec
+    val save = constraints
 
     val loop = GRef(freshVar)
     val n0 = GRef(freshVar + "?")
@@ -603,6 +613,7 @@ object CFGtoEngine {
       println(s"## iteration $iterCount, f(0)=$before, f($n0)=$init")
       assert(!path.contains(init), "hitting recursion: "+(init::path))
       path = init::path
+      constraints = save
 
       store = init
       println(s"Init before loop: ${IR.termToString(init)}")
@@ -611,11 +622,17 @@ object CFGtoEngine {
       val more = l+"_more"
       store = IR.update(store, IR.const(more), GConst(0))
 
+      println(s"==== eval body $loop ($n0) ====")
       body // eval loop body ...
+      println("===========================")
 
-      var constraints: List[OProb] = toOProb(not(less(n0,const(0)))) ++: Nil
-      println(s"more: ${IR.termToString(IR.select(store,IR.const(more)))}")
+      println("Compute constraints:")
+      constraints = constraints ++ toOProb(not(less(n0,const(0)))).toList
+
+      println(s"$more: ${IR.termToString(IR.select(store,IR.const(more)))}")
       val cv = simplify(IR.select(store,IR.const(more)))(constraints)
+
+      println(s"cv: $n0 -- ${IR.termToString(cv)}")
 
       constraints ++= toOProb(simplify(not(less(fixindex(n0.toString, cv),n0)))(constraints))
 
@@ -702,6 +719,7 @@ object CFGtoEngine {
         println(s"Simplified store: ${IR.termToString(store)}")
         itvec = saveit
         println("======= Iteration Done =======\n")
+        constraints = save
         IR.const(())
       }
     }
@@ -716,6 +734,7 @@ object CFGtoEngine {
     // global reset ...
     store = store0
     itvec = itvec0
+    constraints = constraints0
     varCount = varCount0
     globalDefs = globalDefs0
     rebuildGlobalDefsCache()
