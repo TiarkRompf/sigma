@@ -284,9 +284,9 @@ Module IMPRel.
   Inductive evalLoopR : store → path → exp → stmt → nat → store → Prop :=
   | RWhileZero : ∀ σ c e s,
       (σ, c) ⊢ (e, s) 0 ⇓∞ σ
-  | RWhileFalse : ∀ σ c e s n,
+  (* | RWhileFalse : ∀ σ c e s n,
       σ ⊢ e ⇓ₑ (VBool false) → (* Note: is it necessary? *)
-      (σ, c) ⊢ (e, s) n ⇓∞ σ
+      (σ, c) ⊢ (e, s) n ⇓∞ σ *)
   | RWhileMore : ∀ (σ σ' σ'' : store) c n e s,
       (σ, c) ⊢ (e, s) n ⇓∞ σ' →
       σ' ⊢ e ⇓ₑ (VBool true) →
@@ -405,7 +405,7 @@ Module IMPRel.
   Qed.
 
   Theorem loop_determinisitc : ∀ σ p e s n σ' σ'',
-      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+      (σ, p) ⊢ (e, s) n ⇓∞ σ'  →
       (σ, p) ⊢ (e, s) n ⇓∞ σ'' →
       σ' = σ''
   with stmt_deterministic : ∀ σ p s σ' σ'',
@@ -417,17 +417,18 @@ Module IMPRel.
     - intros σ p e s n σ' σ'' E1 E2.
       generalize dependent σ''. induction E1.
       + intros. subst. inversion E2. auto. auto. omega.
-      + intros. inversion E2. auto. subst. auto. induction n0.
-        * assert (σ = σ'). { eapply loop0_store_inv. eauto. } subst.
-          assert (VBool true = VBool false). { eapply exp_deterministic. eauto. eauto. } inversion H3.
-        * eapply loop_false_store_inv. eauto. eauto.
+      (* + intros. inversion E2. auto. subst. omega.
+           induction n0.
+           * assert (σ = σ'). { eapply loop0_store_inv. eauto. } subst.
+             assert (VBool true = VBool false). { eapply exp_deterministic. eauto. eauto. } inversion H3.
+           * eapply loop_false_store_inv. eauto. eauto. *)
       + intros. inversion E2.
         * subst. omega.
-        * subst. assert (σ''0 = σ').
+        (* * subst. assert (σ''0 = σ').
           { eapply loop_false_store_inv. eauto. eauto. }
           subst. assert (VBool true = VBool false).
           { eapply exp_deterministic. eauto. eauto. }
-          inversion H2.
+          inversion H2. *)
         * subst. rewrite succ_eq in H1. subst.
           specialize IHE1 with (σ'' := σ'0).
           apply IHE1 in H2. subst.
@@ -438,8 +439,7 @@ Module IMPRel.
       induction E1; intros; inversion E2; auto.
       + assert (VLoc l = VLoc l0) as LEq. { eapply exp_deterministic. eauto. auto. } inversion LEq.
         assert (VNum idx = VNum idx0) as NEq. { eapply exp_deterministic. eauto. auto. } inversion NEq.
-        assert (v = v0). { eapply exp_deterministic. eauto. auto. }
-                         subst. reflexivity.
+        assert (v = v0). { eapply exp_deterministic. eauto. auto. } subst. reflexivity.
       + assert (VBool true = VBool false) as BEq.
         { eapply exp_deterministic. eauto. auto. } inversion BEq.
       + assert (VBool true = VBool false) as BEq.
@@ -451,6 +451,7 @@ Module IMPRel.
         assert (σ' = σ'0). { apply IHE1_1. apply H3. } subst.
         assert (σ'' = σ''0). { apply IHE1_2. apply H5. } apply H.
   Admitted.
+
 
 End IMPRel.
 
