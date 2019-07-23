@@ -590,34 +590,34 @@ Module IMPEval.
     | O => None
     | S m' =>
       b ← p i IN
-        if b then Some i else idx1 (i + 1) m' p
+      if b then Some i else idx1 (i + 1) m' p
     end.
 
   Fixpoint idx (m : nat) (p : nat -> option bool) : option nat :=
     idx1 0 m p.
   
-  Fixpoint eval_loop (b1: exp) (s: stmt) (σ: store) (c: path) (n: nat) (m: nat)
-           (evstmt: store -> path -> option store) : option store :=
+  Fixpoint eval_loop (b1: exp) (s: stmt) (σ: store) (c: path) (n: nat)
+           (evstmt: store -> path -> option (option store)) : option (option store) :=
     match n with
-    | O => Some σ
+    | O => Some (Some σ)
     | S n' =>
-      σ' ← eval_loop b1 s σ c n' m evstmt IN
+      σ' ↩ eval_loop b1 s σ c n' evstmt IN
       b ← eval_exp b1 σ' >>= toBool IN
-      if b then evstmt σ' (PWhile c n') else None (* error or timeout ??? *)
+      if b then evstmt σ' (PWhile c n') else Some None
     end.
 
-  Fixpoint eval_stm (s: stmt) (σ: store) (c: path) (m: nat) : option store :=
+  Fixpoint eval_stm (s: stmt) (σ: store) (c: path) (m: nat) : option (option store) :=
     match s with
     | x ::= ALLOC =>
-      Some (LNew c st↦ mt_obj ;
+      Some (Some (LNew c st↦ mt_obj ;
             LId x st↦ (0 obj↦ (VLoc (LNew c))) ;
-            σ)
+            σ))
     | e1[[e2]] ::= e3 =>
       l ← eval_exp e1 σ >>= toLoc IN
       n ← eval_exp e2 σ >>= toNat IN
       v ← eval_exp e3 σ IN
       o ← σ l IN
-      Some (l st↦ (n obj↦ v ; o) ; σ)
+      Some (Some (l st↦ (n obj↦ v ; o) ; σ))
     | IF b THEN s1 ELSE s2 FI =>
       b ← eval_exp b σ >>= toBool IN
       if b
@@ -625,20 +625,22 @@ Module IMPEval.
       else eval_stm s2 σ (PElse c) m
     | WHILE b1 DO s1 END =>
       n ← idx m (fun i =>
-                   match (σ' ← eval_loop b1 s1 σ c i m (fun σ'' c1 => eval_stm s1 σ'' c1 m) IN
+                   match (σ' ↩ eval_loop b1 s1 σ c i (fun σ'' c1 => eval_stm s1 σ'' c1 m) IN
                           b ← eval_exp b1 σ' >>= toBool IN
-                          Some (negb b)) with
-                   | Some b => Some b
-                   | None => Some true end
+                          Some (Some (negb b))) with
+                   | Some (Some b) => Some b
+                   | Some None => Some true (* error *)
+                   | None => None (* Timeout *)
+                   end
                 (* TODO: cleanup slightly. inline eval_loop? *)
                 ) IN
-      eval_loop b1 s1 σ c n m (fun σ' c1 => eval_stm s1 σ' c1 m)
+      eval_loop b1 s1 σ c n (fun σ' c1 => eval_stm s1 σ' c1 m)
     | s1 ;; s2 =>
-      σ' ← eval_stm s1 σ (PFst c) m IN
+      σ' ↩ eval_stm s1 σ (PFst c) m IN
       eval_stm s2 σ' (PSnd c) m
     | SKIP =>
-      Some σ
-    | SAbort => None
+      Some (Some σ)
+    | SAbort => Some None
     end.
 
 End IMPEval.
