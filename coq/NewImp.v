@@ -46,7 +46,7 @@ Definition update {A B : Type} (beq : A -> A -> bool)
 
 Inductive exp : Type :=
 (* Constants *)
-| EId : id -> exp
+(* | EId : id -> exp *)
 | ENum : nat -> exp
 | EBool : bool -> exp
 | ELoc : id -> exp
@@ -550,7 +550,7 @@ Module IMPEval.
 
   Fixpoint eval_exp (e: exp) (σ: store) : option val :=
     match e with
-    | EId x  => o ← (σ (LId x)) IN o 0
+    (* | EId x  => o ← (σ (LId x)) IN o 0 *)
     | ENum n => Some (VNum n)
     | EBool b => Some (VBool b)
     | ELoc x => Some (VLoc (LId x))
