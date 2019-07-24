@@ -9,16 +9,17 @@ Module IMPEvalTest.
   Definition Y : id := Id 12.
   Definition Z : id := Id 13.
   
-  Notation "σ '[' x ']'" := (EFieldRead (ELoc x) (ENum 0)) (at level 70).
-    (* (o ← σ (LId x) IN o 0) (at level 100). *)
+  Definition deref (σ : store) (x : id) :=
+    o ← σ (LId x) IN
+    o 0.
 
   Definition test_eval_stm (σ: store) (s: stmt) :=
     match eval_stm s σ PRoot 500 with
-    | Some (Some σ') => Some (Some (σ'[W], σ'[X], σ'[Y], σ'[Z]))
+    | Some (Some σ') => Some (Some (deref σ' W, deref σ' X, deref σ' Y, deref σ' Z))
     | Some None => Some None
     | None    => None
     end.
-
+  
   Compute
     (test_eval_stm σ0
                    (ELoc X ::= ENum 2;; ELoc Y ::= σ[X])).
