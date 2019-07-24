@@ -75,7 +75,7 @@ Inductive stmt : Type :=
 
 (* Syntatic sugar *)
 
-(* TODO: x == &x[0] ? *)
+Notation "'σ[' x ']'" := (EFieldRead (ELoc x) (ENum 0)) (at level 70).
 
 Definition fieldId (x : id) : nat :=
   match x with
@@ -158,49 +158,48 @@ Fixpoint beq_loc l1 l2 : bool :=
   | _, _ => false
   end.
 
+(* Values *)
+
+Inductive val : Type :=
+| VNum : nat -> val
+| VBool : bool -> val
+| VLoc : loc -> val
+.
+
+(* Objects *)
+
+Definition obj := nat ⇀ val. (* TODO: model partialness? *)
+
+Definition mt_obj : obj := t_empty None.
+Definition o0 : obj := mt_obj.
+
+Definition obj_update (st : obj) (x : nat) (v : val) :=
+  t_update beq_nat st x (Some v).
+
+Notation "x 'obj↦' v ; m" := (obj_update m x v) (at level 60, v at next level, right associativity).
+Notation "x 'obj↦' v" := (obj_update mt_obj x v) (at level 60).
+
+(* Stores *)
+
+Definition store := loc ⇀ obj.
+
+Definition mt_store : store := t_empty None.
+Definition σ0 : store := fun k =>
+                           match k with
+                           | LId x => Some mt_obj
+                           | LNew p => None
+                           end.
+
+Definition store_update (st : store) (x : loc) (v : obj) :=
+  t_update beq_loc st x (Some v).
+
+Notation "x 'st↦' v ';' m" := (store_update m x v)
+                                (at level 60, v at next level, right associativity).
+Notation "x 'st↦' v" := (store_update mt_store x v) (at level 60).
+
 (* IMP Relational big-step semantics *)
 
 Module IMPRel.
-
-  (* Values *)
-
-  Inductive val : Type :=
-  | VNum : nat -> val
-  | VBool : bool -> val
-  | VLoc : loc -> val
-  .
-
-  (* Objects *)
-
-  Definition obj := nat ⇀ val. (* TODO: model partialness? *)
-
-  Definition mt_obj : obj := t_empty None.
-  Definition o0 : obj := mt_obj.
-
-  Definition obj_update (st : obj) (x : nat) (v : val) :=
-    t_update beq_nat st x (Some v).
-
-  Notation "x 'obj↦' v ; m" := (obj_update m x v) (at level 60, v at next level, right associativity).
-  Notation "x 'obj↦' v" := (obj_update mt_obj x v) (at level 60).
-
-  (* Stores *)
-
-  Definition store := loc ⇀ obj.
-
-  Definition mt_store : store := t_empty None.
-  Definition σ0 : store := fun k =>
-                             match k with
-                             | LId x => Some mt_obj
-                             | LNew p => None
-                             end.
-
-  Definition store_update (st : store) (x : loc) (v : obj) :=
-    t_update beq_loc st x (Some v).
-
-  Notation "x 'st↦' v ';' m" := (store_update m x v)
-    (at level 60, v at next level, right associativity).
-  Notation "x 'st↦' v" := (store_update mt_store x v) (at level 60).
-
   (* Evaluation relation for expressions *)
 
   (*
@@ -459,42 +458,6 @@ End IMPStd.
 (* IMP Monadic functional semantics *)
 
 Module IMPEval.
-
-  Inductive val : Type :=
-  | VNum : nat -> val
-  | VBool : bool -> val
-  | VLoc : loc -> val
-  .
-
-  (* Objects *)
-
-  Definition obj := nat ⇀ val.
-
-  Definition mt_obj : obj := t_empty None.
-
-  Definition obj_update (st : obj) (x : nat) (v : val) :=
-    t_update beq_nat st x (Some v).
-
-  Notation "x 'obj↦' v ; m" := (obj_update m x v) (at level 60, v at next level, right associativity).
-  Notation "x 'obj↦' v" := (obj_update mt_obj x v) (at level 60).
-
-  (* Stores *)
-
-  Definition store := loc ⇀ obj.
-
-  Definition mt_store : store := t_empty None.
-  Definition σ0 : store := fun k =>
-                             match k with
-                             | LId x => Some mt_obj
-                             | LNew p => None
-                             end.
-
-  Definition store_update (st : store) (x : loc) (v : obj) :=
-    t_update beq_loc st x (Some v).
-
-  Notation "x 'st↦' v ';' m" := (store_update m x v)
-    (at level 60, v at next level, right associativity).
-  Notation "x 'st↦' v" := (store_update mt_store x v) (at level 60).
 
   (* Monad operations *)
 
