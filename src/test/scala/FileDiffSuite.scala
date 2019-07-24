@@ -117,8 +117,10 @@ trait FileDiffSuite extends FunSuite {
     new File(name) delete ()
   }
   def withOutFileChecked(name: String)(func: => Unit): Unit = {
+    println(s"Start $name")
     withOutFileIndented(name)(try func catch { case e => print("# "); e.printStackTrace; throw e })
+    println(s"Done $name")
     assertFileEqualsCheck(name)
   }
-  def printcheck(x:Any,y:Any) = assert({ println(x); x } === y)  
+  def printcheck(x:Any,y:Any) = assert({ println(x); x } === y)
 }
