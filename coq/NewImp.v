@@ -46,7 +46,7 @@ Definition update {A B : Type} (beq : A -> A -> bool)
 
 Inductive exp : Type :=
 (* Constants *)
-| EId : id -> exp
+(* | EId : id -> exp *)
 | ENum : nat -> exp
 | EBool : bool -> exp
 | ELoc : id -> exp
@@ -168,32 +168,34 @@ Module IMPRel.
   | VNum : nat -> val
   | VBool : bool -> val
   | VLoc : loc -> val
-  | VErr : val
-  (* TODO: explicitly model error/undef/divergence? Related, the relational semantics for Abort *)
   .
 
   (* Objects *)
 
-  Definition obj := nat → val. (* TODO: model partialness? *)
+  Definition obj := nat ⇀ val. (* TODO: model partialness? *)
 
-  Definition mt_obj : obj := t_empty VErr.
+  Definition mt_obj : obj := t_empty None.
   Definition o0 : obj := mt_obj.
 
   Definition obj_update (st : obj) (x : nat) (v : val) :=
-    t_update beq_nat st x v.
+    t_update beq_nat st x (Some v).
 
   Notation "x 'obj↦' v ; m" := (obj_update m x v) (at level 60, v at next level, right associativity).
   Notation "x 'obj↦' v" := (obj_update mt_obj x v) (at level 60).
 
   (* Stores *)
 
-  Definition store := loc → obj.
+  Definition store := loc ⇀ obj.
 
-  Definition mt_store : store := t_empty mt_obj.
-  Definition σ0 : store := mt_store. (* TODO: Follow Def 3.4 *)
+  Definition mt_store : store := t_empty None.
+  Definition σ0 : store := fun k =>
+                             match k with
+                             | LId x => Some mt_obj
+                             | LNew p => None
+                             end.
 
   Definition store_update (st : store) (x : loc) (v : obj) :=
-    t_update beq_loc st x v.
+    t_update beq_loc st x (Some v).
 
   Notation "x 'st↦' v ';' m" := (store_update m x v)
     (at level 60, v at next level, right associativity).
@@ -201,6 +203,7 @@ Module IMPRel.
 
   (* Evaluation relation for expressions *)
 
+  (*
   Definition VNumArith (op : nat → nat → nat) n1 n2 : val :=
     match n1, n2 with
     | (VNum x), (VNum y) => VNum (op x y)
@@ -237,45 +240,48 @@ Module IMPRel.
     | (VLoc l), (VNum n) => σ l n
     | _, _ => VErr
     end.
-
+   *)
+  
   Reserved Notation "st '⊢' e '⇓ₑ' v" (at level 90, left associativity).
 
   Inductive evalExpR : store → exp → val → Prop :=
-  | RId x :  ∀ σ, σ ⊢ (EId x) ⇓ₑ (σ (LId x)) 0
+  (* | RId x :  ∀ σ, σ ⊢ (EId x) ⇓ₑ (σ (LId x)) 0 *)
   | RNum n : ∀ σ, σ ⊢ (ENum n) ⇓ₑ (VNum n)
   | RBool b : ∀ σ, σ ⊢ (EBool b) ⇓ₑ (VBool b)
   | RLoc x : ∀ σ, σ ⊢ (ELoc x) ⇓ₑ (VLoc (LId x))
   | RPlus x y : ∀ σ n1 n2,
-      σ ⊢ x ⇓ₑ n1 →
-      σ ⊢ y ⇓ₑ n2 →
-      σ ⊢ (EPlus x y) ⇓ₑ (VNumPlus n1 n2)
+      σ ⊢ x ⇓ₑ (VNum n1) →
+      σ ⊢ y ⇓ₑ (VNum n2) →
+      σ ⊢ (EPlus x y) ⇓ₑ VNum (n1 + n2)
   | RMinus x y : ∀ σ n1 n2,
-      σ ⊢ x ⇓ₑ n1 →
-      σ ⊢ y ⇓ₑ n2 →
-      σ ⊢ (EMinus x y) ⇓ₑ (VNumMinus n1 n2)
+      σ ⊢ x ⇓ₑ (VNum n1) →
+      σ ⊢ y ⇓ₑ (VNum n2) →
+      σ ⊢ (EMinus x y) ⇓ₑ VNum (n1 - n2)
   | RMult x y : ∀ σ n1 n2,
-      σ ⊢ x ⇓ₑ n1 →
-      σ ⊢ y ⇓ₑ n2 →
-      σ ⊢ (EMult x y) ⇓ₑ (VNumMult n1 n2)
+      σ ⊢ x ⇓ₑ (VNum n1) →
+      σ ⊢ y ⇓ₑ (VNum n2) →
+      σ ⊢ (EMult x y) ⇓ₑ VNum (n1 * n2)
   | RLt x y : ∀ σ n1 n2,
-      σ ⊢ x ⇓ₑ n1 →
-      σ ⊢ y ⇓ₑ n2 →
-      σ ⊢ (ELt x y) ⇓ₑ (VNumLt n1 n2)
+      σ ⊢ x ⇓ₑ (VNum n1) →
+      σ ⊢ y ⇓ₑ (VNum n2) →
+      σ ⊢ (ELt x y) ⇓ₑ VBool (Nat.ltb n1 n2)
   | REq x y : ∀ σ n1 n2,
-      σ ⊢ x ⇓ₑ n1 →
-      σ ⊢ y ⇓ₑ n2 →
-      σ ⊢ (EEq x y) ⇓ₑ (VNumEq n1 n2)
+      σ ⊢ x ⇓ₑ (VNum n1) →
+      σ ⊢ y ⇓ₑ (VNum n2) →
+      σ ⊢ (EEq x y) ⇓ₑ VBool (Nat.eqb n1 n2)
   | RAnd x y : ∀ σ b1 b2,
-      σ ⊢ x ⇓ₑ b1 →
-      σ ⊢ y ⇓ₑ b2 →
-      σ ⊢ (EAnd x y) ⇓ₑ (VBoolAnd b1 b2)
+      σ ⊢ x ⇓ₑ (VBool b1) →
+      σ ⊢ y ⇓ₑ (VBool b2) →
+      σ ⊢ (EAnd x y) ⇓ₑ VBool (andb b1 b2)
   | RNeg x : ∀ σ b,
-      σ ⊢ x ⇓ₑ b →
-      σ ⊢ (ENeg x) ⇓ₑ (VBoolNed b)
-  | RFieldRead e1 e2 : ∀ σ l n,
-      σ ⊢ e1 ⇓ₑ l →
-      σ ⊢ e2 ⇓ₑ n →
-      σ ⊢ (EFieldRead e1 e2) ⇓ₑ (fieldRead σ l n)
+      σ ⊢ x ⇓ₑ (VBool b) →
+      σ ⊢ (ENeg x) ⇓ₑ VBool (negb b)
+  | RFieldRead e1 e2 : ∀ σ l n o v,
+      σ ⊢ e1 ⇓ₑ (VLoc l) →
+      σ ⊢ e2 ⇓ₑ (VNum n) →
+      σ l = Some o →
+      o n = Some v →
+      σ ⊢ (EFieldRead e1 e2) ⇓ₑ v
   where "st '⊢' e '⇓ₑ' v" := (evalExpR st e v) : type_scope.
 
   Reserved Notation "( st1 , c ) '⊢' ( e , s ) n '⇓∞' st2" (at level 90, left associativity).
@@ -298,11 +304,12 @@ Module IMPRel.
       (σ, p) ⊢ x ::= ALLOC ⇓ (LNew p st↦ mt_obj ;
                               LId x  st↦ (0 obj↦ VLoc (LNew p)) ;
                               σ)
-  | RAssign e1 e2 e3 : ∀ σ p l idx v,
+  | RAssign e1 e2 e3 : ∀ σ p l idx v o,
       σ ⊢ e1 ⇓ₑ (VLoc l) →
       σ ⊢ e2 ⇓ₑ (VNum idx) →
       σ ⊢ e3 ⇓ₑ v →
-      (σ, p) ⊢ e1[[e2]] ::= e3 ⇓ (l st↦ (idx obj↦ v ; σ l) ; σ)
+      σ l = Some o →
+      (σ, p) ⊢ e1[[e2]] ::= e3 ⇓ (l st↦ (idx obj↦ v ; o) ; σ)
   | RIfTrue e s1 s2 : ∀ σ p σ',
       σ ⊢ e ⇓ₑ (VBool true) →
       (σ, PThen p) ⊢ s1 ⇓ σ' →
@@ -320,15 +327,8 @@ Module IMPRel.
       (σ', PSnd p) ⊢ s2 ⇓ σ'' →
       (σ, p) ⊢ s1 ;; s2 ⇓ σ''
   | RSkip : ∀ σ p, (σ, p) ⊢ SKIP ⇓ σ
-  | RAbort : ∀ σ p, (σ, p) ⊢ ABORT ⇓ σ0
+  (* | RAbort : ∀ σ p, (σ, p) ⊢ ABORT ⇓ σ0 *)
   where "( st1 , c ) '⊢' s '⇓' st2" := (evalStmtR st1 c s st2) : type_scope.
-
-  Inductive result : stmt → Prop :=
-  | ResStore : ∀ σ p s,
-      (σ0, p) ⊢ s ⇓ σ → result s
-  | ResError : ∀ s, result s
-  | ResDiverge : ∀ s, result s
-  .
 
   (* TODO: clean up this *)
   Theorem exp_deterministic : ∀ σ e v1 v2,
@@ -339,44 +339,46 @@ Module IMPRel.
     intros σ e v1 v2 E1 E2.
     generalize dependent v2.
     induction E1; intros; inversion E2; subst; auto.
-    - specialize IHE1_1 with (v2 := n0).
-      specialize IHE1_2 with (v2 := n3).
-      assert (n1 = n0). apply IHE1_1. apply H2.
-      assert (n2 = n3). apply IHE1_2. apply H4.
-      subst. reflexivity.
-    - specialize IHE1_1 with (v2 := n0).
-      specialize IHE1_2 with (v2 := n3).
-      assert (n1 = n0). apply IHE1_1. apply H2.
-      assert (n2 = n3). apply IHE1_2. apply H4.
-      subst. reflexivity.
-    - specialize IHE1_1 with (v2 := n0).
-      specialize IHE1_2 with (v2 := n3).
-      assert (n1 = n0). apply IHE1_1. apply H2.
-      assert (n2 = n3). apply IHE1_2. apply H4.
-      subst. reflexivity.
-    - specialize IHE1_1 with (v2 := n0).
-      specialize IHE1_2 with (v2 := n3).
-      assert (n1 = n0). apply IHE1_1. apply H2.
-      assert (n2 = n3). apply IHE1_2. apply H4.
-      subst. reflexivity.
-    - specialize IHE1_1 with (v2 := n0).
-      specialize IHE1_2 with (v2 := n3).
-      assert (n1 = n0). apply IHE1_1. apply H2.
-      assert (n2 = n3). apply IHE1_2. apply H4.
-      subst. reflexivity.
-    - specialize IHE1_1 with (v2 := b0).
-      specialize IHE1_2 with (v2 := b3).
-      assert (b1 = b0). apply IHE1_1. apply H2.
-      assert (b2 = b3). apply IHE1_2. apply H4.
-      subst. reflexivity.
-    - specialize IHE1 with (v2 := b0).
-      assert (b = b0). apply IHE1. apply H1.
-      subst. reflexivity.
-    - specialize IHE1_1 with (v2 := l0).
-      specialize IHE1_2 with (v2 := n0).
-      assert (l = l0). apply IHE1_1. apply H2.
-      assert (n = n0). apply IHE1_2. apply H4.
-      subst. reflexivity.
+    - specialize IHE1_1 with (v2 := VNum n0).
+      specialize IHE1_2 with (v2 := VNum n3).
+      assert (VNum n1 = VNum n0). apply IHE1_1. apply H2.
+      assert (VNum n2 = VNum n3). apply IHE1_2. apply H4.
+      inversion H. inversion H0. subst. reflexivity.
+    - specialize IHE1_1 with (v2 := VNum n0).
+      specialize IHE1_2 with (v2 := VNum n3).
+      assert (VNum n1 = VNum n0). apply IHE1_1. apply H2.
+      assert (VNum n2 = VNum n3). apply IHE1_2. apply H4.
+      inversion H. inversion H0. subst. reflexivity.
+    - specialize IHE1_1 with (v2 := VNum n0).
+      specialize IHE1_2 with (v2 := VNum n3).
+      assert (VNum n1 = VNum n0). apply IHE1_1. apply H2.
+      assert (VNum n2 = VNum n3). apply IHE1_2. apply H4.
+      inversion H. inversion H0. subst. reflexivity.
+    - specialize IHE1_1 with (v2 := VNum n0).
+      specialize IHE1_2 with (v2 := VNum n3).
+      assert (VNum n1 = VNum n0). apply IHE1_1. apply H2.
+      assert (VNum n2 = VNum n3). apply IHE1_2. apply H4.
+      inversion H. inversion H0. subst. reflexivity.
+    - specialize IHE1_1 with (v2 := VNum n0).
+      specialize IHE1_2 with (v2 := VNum n3).
+      assert (VNum n1 = VNum n0). apply IHE1_1. apply H2.
+      assert (VNum n2 = VNum n3). apply IHE1_2. apply H4.
+      inversion H. inversion H0. subst. reflexivity.
+    - specialize IHE1_1 with (v2 := VBool b0).
+      specialize IHE1_2 with (v2 := VBool b3).
+      assert (VBool b1 = VBool b0). apply IHE1_1. apply H2.
+      assert (VBool b2 = VBool b3). apply IHE1_2. apply H4.
+      inversion H. inversion H0. subst. reflexivity.
+    - specialize IHE1 with (v2 := VBool b0).
+      assert (VBool b = VBool b0). apply IHE1. apply H1.
+      inversion H. subst. reflexivity.
+    - specialize IHE1_1 with (v2 := VLoc l0).
+      specialize IHE1_2 with (v2 := VNum n0).
+      assert (VLoc l = VLoc l0). apply IHE1_1. apply H3.
+      assert (VNum n = VNum n0). apply IHE1_2. apply H4.
+      inversion H1. inversion H2. subst.
+      remember (σ l0) as σl. rewrite H6 in H. inversion H. subst.
+      remember (o n0) as on. rewrite H0 in H8. inversion H8. reflexivity.
   Qed.
 
   Lemma loop0_store_inv : ∀ σ σ' p e s,
@@ -404,54 +406,47 @@ Module IMPRel.
     - intros. subst. reflexivity.
   Qed.
 
-  Theorem loop_determinisitc : ∀ σ p e s n σ' σ'',
-      (σ, p) ⊢ (e, s) n ⇓∞ σ'  →
-      (σ, p) ⊢ (e, s) n ⇓∞ σ'' →
-      σ' = σ''
+  Theorem loop_determinisitc : ∀ σ p e s n1 n2 σ' σ'',
+      (σ, p) ⊢ (e, s) n1 ⇓∞ σ'  →
+      (σ, p) ⊢ (e, s) n2 ⇓∞ σ'' →
+      n1 = n2 <-> σ' = σ''
   with stmt_deterministic : ∀ σ p s σ' σ'',
       (σ, p) ⊢ s ⇓ σ'  →
       (σ, p) ⊢ s ⇓ σ'' →
       σ' = σ''.
   Proof.
     (* loop determinisitc *)
-    - intros σ p e s n σ' σ'' E1 E2.
-      generalize dependent σ''. induction E1.
-      + intros. subst. inversion E2. auto. auto. omega.
-      (* + intros. inversion E2. auto. subst. omega.
-           induction n0.
-           * assert (σ = σ'). { eapply loop0_store_inv. eauto. } subst.
-             assert (VBool true = VBool false). { eapply exp_deterministic. eauto. eauto. } inversion H3.
-           * eapply loop_false_store_inv. eauto. eauto. *)
-      + intros. inversion E2.
-        * subst. omega.
-        (* * subst. assert (σ''0 = σ').
-          { eapply loop_false_store_inv. eauto. eauto. }
-          subst. assert (VBool true = VBool false).
-          { eapply exp_deterministic. eauto. eauto. }
-          inversion H2. *)
-        * subst. rewrite succ_eq in H1. subst.
-          specialize IHE1 with (σ'' := σ'0).
-          apply IHE1 in H2. subst.
-          eapply stmt_deterministic. eauto. eauto.
+    - intros σ p e s n1 n2 σ' σ'' E1 E2. split.
+      (* n1 = n2 -> σ' = σ'' *)
+      ++ intros. subst.
+         generalize dependent σ''. induction E1.
+         + intros. subst. inversion E2. auto. auto. omega.
+         + intros. inversion E2.
+            * subst. omega.
+            * subst. rewrite succ_eq in H1. subst.
+            specialize IHE1 with (σ'' := σ'0).
+            apply IHE1 in H2. subst.
+            eapply stmt_deterministic. eauto. eauto.
+      (* σ' = σ'' -> n1 = n2 *)
+      ++ intros. admit.
     (* stmt determinisitc *)
     - intros σ p s σ' σ'' E1 E2.
       generalize dependent σ''.
       induction E1; intros; inversion E2; auto.
       + assert (VLoc l = VLoc l0) as LEq. { eapply exp_deterministic. eauto. auto. } inversion LEq.
         assert (VNum idx = VNum idx0) as NEq. { eapply exp_deterministic. eauto. auto. } inversion NEq.
-        assert (v = v0). { eapply exp_deterministic. eauto. auto. } subst. reflexivity.
+        assert (v = v0). { eapply exp_deterministic. eauto. auto. } subst.
+        remember (σ l0) as σl. rewrite H12 in H2. inversion H2. subst. reflexivity.
       + assert (VBool true = VBool false) as BEq.
         { eapply exp_deterministic. eauto. auto. } inversion BEq.
       + assert (VBool true = VBool false) as BEq.
         { eapply exp_deterministic. eauto. auto. } inversion BEq.
-      + assert (n = n0). { admit. } eapply loop_determinisitc. eauto. subst.
-        assert (σ' = σ''). { eapply loop_determinisitc. eauto. eauto. } subst. auto.
+      + subst. admit.
       + specialize IHE1_1 with (σ'' := σ'0).
         specialize IHE1_2 with (σ''0 := σ''0).
         assert (σ' = σ'0). { apply IHE1_1. apply H3. } subst.
         assert (σ'' = σ''0). { apply IHE1_2. apply H5. } apply H.
-  Admitted.
-
+     Admitted.
 
 End IMPRel.
 
@@ -543,7 +538,7 @@ Module IMPEval.
 
   Fixpoint eval_exp (e: exp) (σ: store) : option val :=
     match e with
-    | EId x  => o ← (σ (LId x)) IN o 0
+    (* | EId x  => o ← (σ (LId x)) IN o 0 *)
     | ENum n => Some (VNum n)
     | EBool b => Some (VBool b)
     | ELoc x => Some (VLoc (LId x))
