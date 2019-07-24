@@ -653,6 +653,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (a,Def(DPlus(Def(DTimes(a1,GConst(k))), c))) if a == a1 => plus(times(a, plus(const(k), const(1))), c) // a + ((a * k) + c) --> a * (k + 1) + c
         case (Def(DTimes(a1,GConst(k))),Def(DPlus(a,c))) if a == a1 => plus(times(a, plus(const(k), const(1))), c) // (a * k) + a + c --> a * (k + 1) + c
         case (a1, Def(DPlus(b, Def(DPlus(Def(DTimes(b1, GConst(-1))), c))))) if a1 == b1 => plus(b, c) // a + (b + ((a * -1) + c)) --> b + c
+        // (x45? * 2) + (x116? + (x45? * -1))
+        case (Def(DTimes(a1, k1: GConst)), Def(DPlus(b, Def(DTimes(b1, k2: GConst))))) if a1 == b1 => plus(times(a1, plus(k1, k2)), b) // (a * k1) + (b + (a * k2)) -->  (a * (k1 + k2)) + b
         case (Def(DTimes(j1, Def(DTimes(i1, m1)))), Def(DPlus(Def(DTimes(j2, Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))))), x)))
         if j1 == j2 && i1 == i2 && m1 == m2 => x
         case (Def(DTimes(i1, m1)), Def(DPlus(Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))), x)))
@@ -767,6 +769,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DEqual(Def(DIf(c,x,z)),y)) => iff(c,not(equal(x,y)),not(equal(z,y)))
         case Def(DEqual(x,Def(DIf(c,y,z)))) => iff(c,not(equal(x,y)),not(equal(x,z)))
         case Def(DEqual(x,y)) if x == y => const(0)
+        // case Def(DEqual(x,y)) => iff(less(x, y), const(1), less(y, x))
         case Def(DIf(c, x, y)) => iff(c, not(x), not(y))
         case _ => super.not(e)
       }
@@ -865,7 +868,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DLess(Def(DPlus(a, GRef(`x`))),u)) if !in(x, a) => plus(u, times(a, const(-1)))
         case Def(DNot(Def(DEqual(GRef(`x`),u)))) => u
         case Def(DNot(Def(DEqual(u,GRef(`x`))))) => u
+        // !(a - x == u) -> !(a == x)
+        case Def(DNot(Def(DEqual(Def(DPlus(a, Def(DTimes(GRef(`x`), GConst(-1))))), u)))) if !in(x, a) => plus(a, times(u, const(-1)))
         case Def(DLess(Def(DTimes(GRef(`x`), GConst(k: Int))),u)) => times(u, const(1.0/k))
+        // ((x4? + ((x18? * x644?) + x681?)) < x0?
+        // case Def(DLess(Def(DPlus(a, Def(DPlus(b, GRef(`x`))))),c)) if !in(x, a) && !in(x, b) => plus(c, times(plus(a, b), const(-1)))
         // case Def(DMap(d)) if d.contains(GConst("value")) => fixindex(x, select(c, GConst("value")))
         case _ =>
           super.fixindex(x,c)
@@ -1156,6 +1163,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
                 val (u0,u1,uhi) = break(ulo,nlo,up,const(1))
                 val (v0,v1,vhi) = break(uhi,up,nhi,const(0))
                 (iff(less(n0,up), u0, v0), iff(less(n0,up), u1, v1), vhi)
+              // case Def(DIf(GRef(s), _, _)) if s.endsWith("?") => ???
               case _ =>
 
                 val pp = poly(d)
@@ -1190,7 +1198,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
                     IRD.printTerm(dd)
                     val pp2 = poly(dd)
                     println("poly2: " + pp2)
-                    assert(pp == pp2)
+                    assert(pp == pp2, s"$pp != $pp2")
 
                     (plus(ulo,r0), plus(ulo,r1), plus(ulo,rh))
 

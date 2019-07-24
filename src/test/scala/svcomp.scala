@@ -51,10 +51,14 @@ abstract class SVCompSuite extends FileDiffSuite {
     "loop-invgen/nested6_true-unreach-call.i",
     "loop-invgen/up_true-unreach-call.i",
     "loop-invgen/NetBSD_loop_true-unreach-call.i",
+    "loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call.i",
+    "loop-invgen/down_true-unreach-call.i",
     "loop-lit/gj2007b_true-unreach-call.c.i",
     "loop-lit/gj2007_true-unreach-call.c.i",
-    "loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call.i",
-    "loop-invgen/down_true-unreach-call.i"
+    "loop-lit/cggmp2005b_true-unreach-call.c.i", // invalid j
+    "loop-lit/jm2006_variant_true-unreach-call.c.i",
+    "loop-lit/jm2006_true-unreach-call.c.i",
+    "loop-lit/cggmp2005_variant_true-unreach-call.c.i"
   )
 
   val successModified = Array(
@@ -67,13 +71,10 @@ abstract class SVCompSuite extends FileDiffSuite {
   )
 
   val simplification_missing = Array(
-    "loop-invgen/nest-if3_true-unreach-call.i",
-    "loop-invgen/large_const_true-unreach-call.i",
-    "loop-invgen/string_concat-noarr_true-unreach-call.i",
-    "loop-lit/afnp2014_true-unreach-call.c.i",
-    "loop-lit/jm2006_variant_true-unreach-call.c.i", // check
-    "loop-lit/jm2006_true-unreach-call.c.i", // check
-    "loop-lit/cggmp2005_variant_true-unreach-call.c.i", // check
+    "loop-invgen/nest-if3_true-unreach-call.i",             // random
+    "loop-invgen/large_const_true-unreach-call.i",          // random
+    "loop-invgen/string_concat-noarr_true-unreach-call.i",  // random, min/max
+    "loop-lit/afnp2014_true-unreach-call.c.i",              // random
     "loop-lit/css2003_true-unreach-call.c.i",
     "loop-lit/gsv2008_true-unreach-call.c.i",
     "loop-lit/cggmp2005_true-unreach-call.c.i",
@@ -100,9 +101,7 @@ abstract class SVCompSuite extends FileDiffSuite {
     "loop-invgen/apache-get-tag_true-unreach-call.i"
   )
 
-  val loop_runs_once_or_less = Array(
-    "loop-invgen/nested9_true-unreach-call.i",
-    "loop-lit/cggmp2005b_true-unreach-call.c.i"
+  val loop_runs_once_or_less = Array[String](
   )
 
   val toolong = Array(
@@ -110,6 +109,7 @@ abstract class SVCompSuite extends FileDiffSuite {
   )
 
   val errors = Array(
+    "loop-invgen/nested9_true-unreach-call.i",
     "loop-invgen/id_build_true-unreach-call.i"
   )
 

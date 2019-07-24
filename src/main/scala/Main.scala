@@ -294,23 +294,22 @@ object MyMain {
   """
 
   val sv2 = """
-  int main() {
+int main() {
     int i,j,k,n,l,m;
-
     n = __VERIFIER_nondet_int();
     m = __VERIFIER_nondet_int();
     l = __VERIFIER_nondet_int();
-    __VERIFIER_assume(-LARGE_INT < n && n < LARGE_INT);
-    __VERIFIER_assume(-LARGE_INT < m && m < LARGE_INT);
-    __VERIFIER_assume(-LARGE_INT < l && l < LARGE_INT);
+    __VERIFIER_assume(-1000000 < n && n < 1000000);
+    __VERIFIER_assume(-1000000 < m && m < 1000000);
+    __VERIFIER_assume(-1000000 < l && l < 1000000);
     if(3*n<=m+l); else goto END;
     for (i=0;i<n;i++)
-      for (j = 2*i;j<3*i;j++)
-        for (k = i; k< j; k++)
-          __VERIFIER_assert( k-i <= 2*n );
-          END:
-          return 0;
-  }
+        for (j = 2*i;j<3*i;j++)
+            for (k = i; k< j; k++)
+                __VERIFIER_assert( k-i <= 2*n );
+END:
+    return 0;
+}
   """
 
   val incr2 = """
@@ -332,41 +331,59 @@ object MyMain {
   """
 
   val infloop = """
-  int main()
-  {
-    int p;
-    int i;
-    int leader_len;
-    int bufsize;
-    int bufsize_0;
-    int ielen;
-    leader_len = __VERIFIER_nondet_int();
-    bufsize = __VERIFIER_nondet_int();
-    ielen = __VERIFIER_nondet_int();
-    __VERIFIER_assume(leader_len < 1000000);
-    __VERIFIER_assume(bufsize < 1000000);
-    __VERIFIER_assume(ielen < 1000000);
-    if(leader_len >0); else goto END;
-    if(bufsize >0); else goto END;
-    if(ielen >0); else goto END;
-    if (bufsize < leader_len)
-      goto END;
-    p = 0;
-    bufsize_0 = bufsize;
-    bufsize -= leader_len;
-    p += leader_len;
-    if (bufsize < 2*ielen)
-      goto END;
-    for (i = 0; i < ielen && bufsize > 2; i++) {
-      __VERIFIER_assert(0<=p);
-      __VERIFIER_assert(p+1<bufsize_0);
-      p += 2;
+int main() {
+    int lo, mid, hi;
+    lo = 0;
+    mid = __VERIFIER_nondet_int();
+    __VERIFIER_assume(mid > 0 && mid <= 1000000);
+    hi = 2*mid;
+    while (mid > 0) {
+        lo = lo + 1;
+        hi = hi - 1;
+        mid = mid - 1;
     }
-   END:
-    ;
-  }
+    __VERIFIER_assert(lo == hi);
+    return 0;
+}
     """
 
+    val nbreak = """
+int main() {
+    int x = 0;
+    int y = 50;
+    while(x < 100) {
+      if (x < 50) {
+        x = x + 1;
+      } else {
+        x = x + 1;
+        y = y + 1;
+      }
+    }
+    __VERIFIER_assert(y == 100);
+    return 0;
+}
+          """
+
+  val sin = """
+int main() {
+  int i,j,k;
+  i = 0;
+  k = 9;
+  j = -100;
+  while (i <= 100) {
+    i = i + 1;
+    while (j < 20) {
+      j = i + j;
+    }
+    k = 4;
+    while (k <= 3) {
+      k = k + 1;
+    }
+  }
+  __VERIFIER_assert(k == 4);
+  return 0;
+}
+"""
 
    def analyze(code: String) = {
     val parsed = parseCString(code)
