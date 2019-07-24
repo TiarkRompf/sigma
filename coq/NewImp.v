@@ -46,7 +46,7 @@ Definition update {A B : Type} (beq : A -> A -> bool)
 
 Inductive exp : Type :=
 (* Constants *)
-(* | EId : id -> exp *)
+| EId : id -> exp
 | ENum : nat -> exp
 | EBool : bool -> exp
 | ELoc : id -> exp
@@ -241,7 +241,7 @@ Module IMPRel.
     | _, _ => VErr
     end.
    *)
-  
+
   Reserved Notation "st '⊢' e '⇓ₑ' v" (at level 90, left associativity).
 
   Inductive evalExpR : store → exp → val → Prop :=
@@ -474,7 +474,7 @@ Module IMPEval.
 
   Definition obj_update (st : obj) (x : nat) (v : val) :=
     t_update beq_nat st x (Some v).
-  
+
   Notation "x 'obj↦' v ; m" := (obj_update m x v) (at level 60, v at next level, right associativity).
   Notation "x 'obj↦' v" := (obj_update mt_obj x v) (at level 60).
 
@@ -483,6 +483,11 @@ Module IMPEval.
   Definition store := loc ⇀ obj.
 
   Definition mt_store : store := t_empty None.
+  Definition σ0 : store := fun k =>
+                             match k with
+                             | LId x => Some mt_obj
+                             | LNew p => None
+                             end.
 
   Definition store_update (st : store) (x : loc) (v : obj) :=
     t_update beq_loc st x (Some v).
@@ -498,7 +503,7 @@ Module IMPEval.
     | VNum n => Some n
     | _      => None
     end.
-  
+
   Definition toBool v :=
     match v with
     | VBool b => Some b
@@ -545,7 +550,7 @@ Module IMPEval.
 
   Fixpoint eval_exp (e: exp) (σ: store) : option val :=
     match e with
-    (* | EId x  => o ← (σ (LId x)) IN o 0 *)
+    | EId x  => o ← (σ (LId x)) IN o 0
     | ENum n => Some (VNum n)
     | EBool b => Some (VBool b)
     | ELoc x => Some (VLoc (LId x))
@@ -595,7 +600,9 @@ Module IMPEval.
 
   Fixpoint idx (m : nat) (p : nat -> option bool) : option nat :=
     idx1 0 m p.
-  
+
+  (* TODO: distinguish divergence and runtime error *)
+
   Fixpoint eval_loop (b1: exp) (s: stmt) (σ: store) (c: path) (n: nat)
            (evstmt: store -> path -> option (option store)) : option (option store) :=
     match n with
@@ -603,7 +610,7 @@ Module IMPEval.
     | S n' =>
       σ' ↩ eval_loop b1 s σ c n' evstmt IN
       b ← eval_exp b1 σ' >>= toBool IN
-      if b then evstmt σ' (PWhile c n') else Some None
+      if b then evstmt σ' (PWhile c n') else None (* error or timeout ??? *)
     end.
 
   Fixpoint eval_stm (s: stmt) (σ: store) (c: path) (m: nat) : option (option store) :=
@@ -629,8 +636,8 @@ Module IMPEval.
                           b ← eval_exp b1 σ' >>= toBool IN
                           Some (Some (negb b))) with
                    | Some (Some b) => Some b
-                   | Some None => Some true (* error *)
-                   | None => None (* Timeout *)
+                   | Some None => Some true
+                   | None => None
                    end
                 (* TODO: cleanup slightly. inline eval_loop? *)
                 ) IN
