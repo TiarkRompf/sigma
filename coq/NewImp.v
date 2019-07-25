@@ -424,7 +424,8 @@ Module IMPRel.
   Lemma loop_false_n_ge : ∀ σ σ' σ'' p e s n,
       (σ, p) ⊢ (e, s) n ⇓∞ σ' →
       σ' ⊢ e ⇓ₑ (VBool false) →
-      ∀ m, m >= n → (σ, p) ⊢ (e, s) m ⇓∞ σ'' →
+      ∀ m, m >= n →
+           (σ, p) ⊢ (e, s) m ⇓∞ σ'' →
            σ' = σ''.
   Proof.
   Admitted.
@@ -432,11 +433,26 @@ Module IMPRel.
   Lemma loop_false_n_gt : ∀ σ σ' σ'' p e s n,
       (σ, p) ⊢ (e, s) n ⇓∞ σ' →
       σ' ⊢ e ⇓ₑ (VBool false) →
-      ∀ m, m > n → (σ, p) ⊢ (e, s) m ⇓∞ σ'' →
+      ∀ m, m > n →
+           (σ, p) ⊢ (e, s) m ⇓∞ σ'' →
            σ' = σ''.
   Proof.
-  Admitted.
+    intros. apply (@loop_false_n_ge _ _ _ _ _ _ n H H0 m).
+    omega. auto.
+  Qed.
 
+  Lemma loop_exists_lower_bound : ∀ σ σ' σ'' p e s n,
+      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+      σ' ⊢ e ⇓ₑ (VBool false) →
+      ∃ m, m <= n →
+           (σ, p) ⊢ (e, s) m ⇓∞ σ'' →
+           σ' = σ''.
+  Proof.
+    intros. induction n.
+    - exists 0. intros. inversion H. subst. inversion H2. reflexivity. omega. omega.
+    - exists (S n). intros. 
+    
+ 
   Theorem loop_determinisitc : ∀ σ p e s n1 n2 σ' σ'',
       (σ, p) ⊢ (e, s) n1 ⇓∞ σ'  →
       (σ, p) ⊢ (e, s) n2 ⇓∞ σ'' →
@@ -450,7 +466,7 @@ Module IMPRel.
   Proof.
     (* loop determinisitc *)
     - intros σ p e s n1 n2 σ' σ'' E1 E2 F1 F2.
-      generalize dependent σ''. generalize dependent n2. destruct n1.
+      generalize dependent σ''. generalize dependent n2. induction n1.
       + intros. destruct n2.
         * assert (σ = σ'). eapply loop0_store_inv. eauto.
           assert (σ = σ''). eapply loop0_store_inv. eauto.
@@ -465,7 +481,10 @@ Module IMPRel.
         * induction n2.
           ** symmetry. apply (@loop_false_n_gt _ _ _ _ _ _ 0 E2 F2 (S (S n1))).
              omega. auto.
-          ** 
+          ** induction n2.
+            ++ symmetry. apply (@loop_false_n_gt _ _ _ _ _ _ 1 E2 F2 (S (S n1))).
+               omega. auto.
+            ++ 
             symmetry. apply (@loop_false_n_gt _ _ _ _ _ _ (S n2) E2 F2 (S (S n1))).
              2: auto. 
           
