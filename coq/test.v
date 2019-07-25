@@ -50,7 +50,7 @@ Module IMPEvalTest.
                    (X ::= ALLOC ;; ELoc X[[ENum 0]] ::= ENum 2;;
                     ELoc X[[ENum 1]] ::= ENum 3;; ELoc Y ::= ELoc X[[ENum 1]])).
   (*   ====>
-       Some (None, Some 2, Some 5, None)   *)    
+       Some (None, Some 2, Some 3, None)   *)
 
   Definition while1 : stmt :=
     ELoc X ::= ENum 4;;
@@ -83,7 +83,7 @@ Module IMPEvalTest.
   Compute
     (test_eval_stm σ0 while2).
   (*   ====>
-       Some (Some 10, Some 0, Some 5, 0)   *)
+       Some (Some 10, Some 0, Some 5, Some 5)   *)
 
   Compute
     (test_eval_stm σ0
