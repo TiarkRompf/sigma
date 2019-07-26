@@ -53,12 +53,16 @@ abstract class SVCompSuite extends FileDiffSuite {
     "loop-invgen/NetBSD_loop_true-unreach-call.i",
     "loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call.i",
     "loop-invgen/down_true-unreach-call.i",
+    "loop-invgen/seq_true-unreach-call.i",
     "loop-lit/gj2007b_true-unreach-call.c.i",
     "loop-lit/gj2007_true-unreach-call.c.i",
-    "loop-lit/cggmp2005b_true-unreach-call.c.i", // invalid j
     "loop-lit/jm2006_variant_true-unreach-call.c.i",
     "loop-lit/jm2006_true-unreach-call.c.i",
-    "loop-lit/cggmp2005_variant_true-unreach-call.c.i"
+    "loop-lit/cggmp2005_variant_true-unreach-call.c.i",
+    "loop-lit/css2003_true-unreach-call.c.i",
+    "loop-lit/hhk2008_true-unreach-call.c.i",
+    "loop-lit/cggmp2005_true-unreach-call.c.i",
+    "loop-lit/bhmr2007_true-unreach-call.c.i"
   )
 
   val successModified = Array(
@@ -70,17 +74,19 @@ abstract class SVCompSuite extends FileDiffSuite {
   val found0 = Array(
   )
 
+  val sndDegree_condition = Array(
+    "loop-lit/gsv2008_true-unreach-call.c.i"
+    )
+
+  val incorrect = Array(
+    "loop-lit/cggmp2005b_true-unreach-call.c.i" // invalid j
+    )
+
   val simplification_missing = Array(
     "loop-invgen/nest-if3_true-unreach-call.i",             // random
     "loop-invgen/large_const_true-unreach-call.i",          // random
     "loop-invgen/string_concat-noarr_true-unreach-call.i",  // random, min/max
-    "loop-lit/afnp2014_true-unreach-call.c.i",              // random
-    "loop-lit/css2003_true-unreach-call.c.i",
-    "loop-lit/gsv2008_true-unreach-call.c.i",
-    "loop-lit/cggmp2005_true-unreach-call.c.i",
-    "loop-lit/bhmr2007_true-unreach-call.c.i",
-    "loop-lit/hhk2008_true-unreach-call.c.i", // check <<<
-    "loop-invgen/seq_true-unreach-call.i"
+    "loop-lit/afnp2014_true-unreach-call.c.i"              // random
   )
 
   val array_missing = Array(

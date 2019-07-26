@@ -332,20 +332,50 @@ END:
 
   val infloop = """
 int main() {
-    int lo, mid, hi;
-    lo = 0;
-    mid = __VERIFIER_nondet_int();
-    __VERIFIER_assume(mid > 0 && mid <= 1000000);
-    hi = 2*mid;
-    while (mid > 0) {
-        lo = lo + 1;
-        hi = hi - 1;
-        mid = mid - 1;
-    }
-    __VERIFIER_assert(lo == hi);
-    return 0;
+  int n0, n1;
+  int i0 = 0;
+  int k = 0;
+  n0 = __VERIFIER_nondet_int();
+  n1 = __VERIFIER_nondet_int();
+  __VERIFIER_assume(-1000000 <= n0 && n0 < 1000000);
+  __VERIFIER_assume(-1000000 <= n1 && n1 < 1000000);
+  while( i0 < n0 ) {
+    i0++;
+    k++;
+  }
+  int i1 = 0;
+  while( i1 < n1 ) {
+    i1++;
+    k++;
+  }
+  int j1 = 0;
+  while( j1 < n0 + n1 ) {
+      __VERIFIER_assert(k > 0);
+      j1++;
+      k--;
+  }
 }
     """
+
+    val aaa = """
+    int main() {
+      int i, n, a, b;
+      i = 0; a = 0; b = 0; n = __VERIFIER_nondet_int();
+      __VERIFIER_assume(n >= 0 && n <= 1000000);
+      while (i < n) {
+        if (__VERIFIER_nondet_int()) {
+          a = a + 1;
+          b = b + 2;
+        } else {
+          a = a + 2;
+          b = b + 1;
+        }
+        i = i + 1;
+      }
+      __VERIFIER_assert(a + b == 3*n);
+      return 0;
+    }
+"""
 
     val nbreak = """
 int main() {

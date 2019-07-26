@@ -25,7 +25,8 @@ object CFGtoEngine {
 
 
   val valid = GConst("valid")
-  val store0 = GConst(Map(valid -> GConst(1)))
+  val rand = GRef("rand?")
+  val store0 = GConst(Map(valid -> GConst(1))) // , rand -> rand))
   val constraints0 = List[OProb]()
 
   val itvec0 = IR.const("top")
@@ -138,7 +139,7 @@ object CFGtoEngine {
           }
       case node: CASTBinaryExpression =>
           val op = CPrinter.operators2(node.getOperator)
-          lazy val arg1 = evalExp(node.getOperand1)
+          lazy val arg1 = evalExp(node.getOperand1) // Dangerous for side effect...
           lazy val arg2 = evalExp(node.getOperand2)
           op match {
             case "op_plus" =>
@@ -255,8 +256,9 @@ object CFGtoEngine {
                   // val idx = IR.pair(itvec, IR.const("&"+name))
                   // val idx = IR.pair(IR.const("&"+name), itvec)
                   val idx = IR.const("&" + name)
-                  store = IR.update(store, idx, arg2)
-                  arg2
+                  val sarg2 = arg2 // side effect!!!!
+                  store = IR.update(store, idx, sarg2)
+                  sarg2
                 // case array: CASTArraySubscriptExpression =>
                 //   val name = array.getArrayExpression.asInstanceOf[CASTIdExpression].getName.toString // FIXME may not be static
                 //   val x = array.getSubscriptExpression
@@ -311,11 +313,9 @@ object CFGtoEngine {
           val arg = node.getParameterExpression
           fun.asInstanceOf[CASTIdExpression].getName.toString match {
             case "__VERIFIER_nondet_int" =>
-              val newV = typedGVal(GRef(freshVar + "?"), GType.int)
-              // val idx = IR.pair(GConst(location.getOrElseUpdate(node.hashCode, next("rand"))),itvec)
-              // store = IR.update(store, idx, newV)
-              // typedGVal(idx, GType.pointer(GType.int))
-              newV
+              val idx = IR.pair(GConst(location.getOrElseUpdate(node.hashCode, next("rand"))),itvec)
+              typedGVal(IR.select(rand, idx), GType.int)
+              // newV
             case "__VERIFIER_assume" =>
               constraints = assumeTrue(evalExp(arg))(constraints):::constraints
               println(s"Assume: constraints: ${constraints.mkString("\n\t", "\n\t", "\n")}")
@@ -456,22 +456,25 @@ object CFGtoEngine {
   }
 
   def handleIf(c1: Val)(a: => Unit)(b: => Unit): Unit = {
+    println(s"if condition: ${IR.termToString(c1)}")
+
     val save = store
     val save1 = constraints
     //assert(c1)
-    println(s">> ${IR.termToString(c1)}")
+    println(s"store before then >> ${IR.termToString(store)}")
     if (IR.select(c1, value) != GConst(0))
       constraints = assumeTrue(c1)(save1):::save1
     val e1 = a
     val s1 = simplify(store)(constraints)
-    println(s"then >> ${IR.termToString(s1)}\nunder: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
-    store = save
+    println(s"store after then >> ${IR.termToString(s1)}\nunder: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
     //assertNot(c1)
     if (IR.select(c1, value) != GConst(1))
       constraints = assumeTrue(IR.not(c1))(save1):::save1
+    store = save
+    println(s"\nstore before else >> ${IR.termToString(store)}")
     val e2 = b
     val s2 = simplify(store)(constraints)
-    println(s"else >> ${IR.termToString(s2)}\nunder: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
+    println(s"store after else >> ${IR.termToString(s2)}\nunder: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
     store = gValTypeCheck(c1, GType.int) { c1 =>
       IR.iff(c1,s1,s2)
     }
@@ -507,7 +510,19 @@ object CFGtoEngine {
     case IR.Def(DIf(c, a, b)) if simplifyBool(b)(toOProb(c) ++: constraints) == a => assumeTrue(b) // Generalize
     case IR.Def(DIf(c, a, b)) if alwaysFalse(IR.not(c)) => assumeTrue(a)
     case IR.Def(DMap(m)) => m.get(GConst("$value")).fold(toOProb(cond).toList)(assumeTrue(_))
-    case IR.Def(DNot(IR.Def(DEqual(a, b)))) => assumeTrue(IR.less(b, a)) // HACK... may be false
+    // case IR.Def(DNot(IR.Def(DEqual(a, b)))) => assumeTrue(IR.less(b, a)) // HACK... may be false
+    case IR.Def(DNot(IR.Def(DEqual(a, b)))) =>
+      val x = IR.less(a, b)
+      val y = IR.less(b, a)
+      val xAF = alwaysFalse(x)
+      val yAF = alwaysFalse(y)
+
+      (xAF,yAF) match {
+        case (true, false) => toOProb(y).toList
+        case (false, true) => toOProb(x).toList
+        case (true, true) => ???
+        case (false, false) => println(s"Can't extract information from this situation"); Nil
+      }
     case IR.Def(DTimes(a, b)) => assumeTrue(a) ++ assumeTrue(b)
     case a@_ => println(s"Nothing has been simplified for ${IR.termToString(a)}"); toOProb(a).toList
   }
@@ -525,7 +540,7 @@ object CFGtoEngine {
         IR.times(sx, sy)
     case _ if alwaysFalse(term) => IR.const(0)
     case _ if alwaysFalse(IR.not(term)) => IR.const(1)
-    // case IR.Def(DIf(c, GConst(1), GConst(0))) => simplifyBool(c)          // can generalize with alwaysFalse...
+    case IR.Def(DIf(c, GConst(1), GConst(0))) => simplifyBool(c)          // can generalize with alwaysFalse...
     case IR.Def(DIf(c, GConst(0), GConst(1))) => simplifyBool(IR.not(c))
     case IR.Def(DIf(c, a, b)) =>
       val sc = simplifyBool(c)
@@ -535,13 +550,13 @@ object CFGtoEngine {
         simplifyBool(a)(toOProb(sc) ++: constraints)
       else {
         // IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
-        val t = simplify(a)(toOProb(sc) ++: constraints)
-        val e = simplify(b)(toOProb(IR.not(sc)) ++: constraints)
-        if (alwaysFalse(IR.not(t))(toOProb(sc) ++: constraints) && alwaysFalse(e)(toOProb(IR.not(sc)) ++: constraints))
-          ??? // sc
-        else if (alwaysFalse(t)(toOProb(sc) ++: constraints) && alwaysFalse(IR.not(e))(toOProb(IR.not(sc)) ++: constraints)) {
-          println(s"${IR.termToString(t)} -- ${IR.termToString(e)}"); ??? // IR.not(sc)
-        } else
+        val t = simplifyBool(a)(toOProb(sc) ++: constraints)
+        val e = simplifyBool(b)(toOProb(IR.not(sc)) ++: constraints)
+        // if (alwaysFalse(IR.not(t))(toOProb(sc) ++: constraints) && alwaysFalse(e)(toOProb(IR.not(sc)) ++: constraints)) {
+        //   println(s"${IR.termToString(t)} -- ${IR.termToString(e)}"); sc
+        // } else if (alwaysFalse(t)(toOProb(sc) ++: constraints) && alwaysFalse(IR.not(e))(toOProb(IR.not(sc)) ++: constraints)) {
+        //   println(s"${IR.termToString(t)} -- ${IR.termToString(e)}"); ??? // IR.not(sc)
+        // } else
           IR.iff(sc, t, e)
       }
     case IR.Def(DLess(x, y))  =>
@@ -566,8 +581,12 @@ object CFGtoEngine {
         simplify(b)(toOProb(IR.not(sc)) ++: constraints)
       else if (alwaysFalse(IR.not(sc)))
         simplify(a)(toOProb(sc) ++: constraints)
-      else {
+      else if (alwaysFalse(IR.not(IR.equal(a, b)))) {
+        println(s"${IR.termToString(a)} -- ${IR.termToString(b)}")
+        simplify(a)
+      } else {
         // FIXME: working on that
+        // How to make it better?
         val sa = simplify(a)(toOProb(IR.not(sc)) ++: constraints)
         if (sa == b) {
           simplify(a)(constraints) // Not sure adding sc == 1 is correct (toOProb(sc) ++: constraints)
@@ -576,7 +595,12 @@ object CFGtoEngine {
           if (sb == a) {
             simplify(b)(constraints)
           } else {
-            IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
+            val na = simplify(a)(toOProb(sc) ++: constraints)
+            val nb = simplify(b)(toOProb(IR.not(sc)) ++: constraints)
+            if (alwaysFalse(IR.not(IR.equal(na, nb))))
+              na
+            else
+              IR.iff(sc, na, nb)
           }
         }
       }
@@ -590,24 +614,36 @@ object CFGtoEngine {
         key -> (if (isBool(key)) simplifyBool(value) else simplify(value))
       }) // FIXME ???
     case IR.Def(DUpdate(x, f, y))  => IR.update(simplify(x), simplify(f), simplify(y))
+    case r@IR.Def(DSelect(x@GRef("rand?"), f)) =>
+        IR.select(x, simplify(f))
     case IR.Def(DSelect(x, f))     => IR.select(simplify(x), simplify(f))
+    // (x26? * rand?((&rand:1,top))) + (x26? * (rand?((&rand:0,top)) * -1))
+    case IR.Def(DPlus(IR.Def(DTimes(a, b)), IR.Def(DTimes(a1, IR.Def(DTimes(b1, k: GConst)))))) if a == a1 && alwaysFalse(IR.not(IR.equal(b, b1))) => IR.times(a, IR.times(b, IR.plus(IR.const(1), k)))
+    // (x26? * a1) + ((x26? * (a0 * -1)) + 1)
+    case IR.Def(DPlus(IR.Def(DTimes(a, b)), IR.Def(DPlus(IR.Def(DTimes(a1, IR.Def(DTimes(b1, k: GConst)))), d)))) if a == a1 && alwaysFalse(IR.not(IR.equal(b, b1))) => IR.plus(IR.times(a, IR.times(b, IR.plus(IR.const(1), k))), d)
+    // ((x15? * (a0 * a0)) + ((x15? * (a0 * (a1 * -1))) + 1)))
+    case IR.Def(DPlus(IR.Def(DTimes(k1, IR.Def(DTimes(a1, a2)))), IR.Def(DPlus(IR.Def(DTimes(k2, IR.Def(DTimes(a3, IR.Def(DTimes(a4, k3)))))), d))))
+    if k1 == k2 && alwaysFalse(IR.not(IR.equal(a1, a2))) && alwaysFalse(IR.not(IR.equal(a2, a3))) && alwaysFalse(IR.not(IR.equal(a3, a4))) => IR.plus(IR.times(IR.times(IR.const(1), k3), IR.times(k1, IR.times(a1, a2))), d)
+    // (a0 * a0) + ((x15? * (a0 * -2)) + ((a0 * (a1 * -1)) + (x15? * (a1 * 2))))
+    case IR.Def(DPlus(a, IR.Def(DPlus(IR.Def(DTimes(c1, IR.Def(DTimes(a3, k1)))), IR.Def(DPlus(b, IR.Def(DTimes(c2, IR.Def(DTimes(a4, k2))))))))))
+    if c1 == c2 && alwaysFalse(IR.not(IR.equal(a3, a4))) => IR.plus(IR.times(c1, IR.times(a3, IR.plus(k1, k2))), IR.plus(a, b))
     case IR.Def(DPlus(x, y))       => IR.plus(simplify(x), simplify(y))
     case IR.Def(DTimes(x, y))      => IR.times(simplify(x), simplify(y))
     case IR.Def(DPair(x, y))       => IR.pair(simplify(x), simplify(y))
     case IR.Def(DLess(x, y))       => simplifyBool(term)
     case IR.Def(DEqual(x, y))      => simplifyBool(term)
     case IR.Def(DNot(x))           => simplifyBool(term)
-    case IR.Def(DSum(n, x, c))     => IR.sum(simplify(n), x, simplify(c))
+    case IR.Def(DSum(n, x, c))     => IR.sum(simplify(n), x, c) // simplify(c))
     case IR.Def(DCollect(n, x, c)) => IR.collect(simplify(n), x, simplify(c)) // (toOProb(IR.not(IR.less(GRef(x), 0))) ++: constraints))
     case IR.Def(DCall(f, x))       => IR.call(simplify(f), simplify(x))
     case IR.Def(DFun(f, x, y))     => IR.fun(f, x, simplify(y))
     case IR.Def(DHasField(x, f))   => IR.hasfield(simplify(x), simplify(f))
-    // case x@GRef(_) =>
-    //   if (alwaysFalse(IR.not(IR.equal(x, IR.const(0))))) { // FIXME: hack if GRef(x) == 0
-    //     println(s"Simplifed $x to 0"); IR.const(0)
-    //   } else {
-    //     x
-    //   }
+    case x@GRef(_) =>
+      if (alwaysFalse(IR.not(IR.equal(x, IR.const(0))))) { // FIXME: hack if GRef(x) == 0
+        println(s"Simplifed $x to 0"); IR.const(0)
+      } else {
+        x
+      }
     case _ => term
   }
 
@@ -623,7 +659,7 @@ object CFGtoEngine {
 
     itvec = pair(itvec,n0)
 
-    println(s"begin loop f(n)=$loop($n0), iteration vector $itvec {")
+    println(s"\n\n\nbegin loop f(n)=$loop($n0), iteration vector $itvec {")
 
     println(s"initial assumption: f(0)=$before, f($n0)=$before, f($n0+1)=$before")
 
@@ -638,8 +674,8 @@ object CFGtoEngine {
       path = init::path
       constraints = toOProb(not(less(n0, const(0)))) ++: save
 
-      store = init
-      println(s"Init before loop: ${IR.termToString(init)}")
+      store = init // simplify(init)(save)
+      println(s"Init before loop: ${IR.termToString(store)}")
 
       // s"bool ${l}_more = false"
       val more = l+"_more"
@@ -710,7 +746,9 @@ object CFGtoEngine {
       val (initNew,nextNew) = lub(sBefore, sInit, next)(loop,n0)
       println("\n**********************************")
       println(s"Init new:\n${IR.termToString(initNew)}")
+      // println(s"Init new:\n${IR.termToString(simplify(initNew)(constraints))}")
       println(s"Next new:\n${IR.termToString(nextNew)}")
+      // println(s"Next new:\n${IR.termToString(simplify(nextNew)(constraints))}")
       println("**********************************\n")
 
       println(s"} -> f($n0)=$initNew, f($n0+1)=$nextNew")
@@ -746,9 +784,12 @@ object CFGtoEngine {
 
         // wrap up
         println(s"} end loop $loop, trip count ${IR.termToString(nX)}, state")
+
+        println(s"Constraints: ${constraints.mkString("\n\t", "\n\t", "\n")}")
+
         println(s"Simplified store: ${IR.termToString(store)}")
         itvec = saveit
-        println("======= Iteration Done =======\n")
+        println(s"======= Iteration $loop Done =======\n\n\n\n")
         constraints = save
         IR.const(())
       }
@@ -845,16 +886,19 @@ object CFGtoEngine {
         evalBody(idom, cont)
       }
 
+
       if (idom.nonEmpty)
         consume(idom.head, stop, cont)
     }
 
     time{consume(entryLabel, Set.empty, Set.empty)}
 
-    var store2 = simplify(store)(Nil)
+    println(s"Final store: ${IR.termToString(store)}")
+    println(s"Constraints: ${constraints.mkString("\n\t", "\n\t", "\n")}")
+    var store2 = simplify(store)(constraints)
     var go = true
     while (go) {
-      val ns = simplify(store2)(Nil)
+      val ns = simplify(store2)(constraints)
       go = ns != store2
       store2 = ns
     }
