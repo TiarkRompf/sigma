@@ -317,7 +317,11 @@ object CFGtoEngine {
               typedGVal(IR.select(rand, idx), GType.int)
               // newV
             case "__VERIFIER_assume" =>
-              constraints = assumeTrue(evalExp(arg))(constraints):::constraints
+              val exp = evalExp(arg)
+              println(s"Assume arg: ${IR.termToString(exp)}")
+              val nAss = assumeTrue(exp)(constraints)
+              println(s"New constraints: ${nAss.mkString("\n\t", "\n\t", "\n")}")
+              constraints = nAss:::constraints
               println(s"Assume: constraints: ${constraints.mkString("\n\t", "\n\t", "\n")}")
               GError
             case "assert" | "__VERIFIER_assert" =>
@@ -507,8 +511,8 @@ object CFGtoEngine {
     case IR.Def(DIf(c, a, b)) if alwaysFalse(b)(toOProb(IR.not(c)) ++: constraints) => toOProb(c) ++: assumeTrue(a)
     case IR.Def(DIf(c, a, b)) if alwaysFalse(a)(toOProb(c) ++: constraints) => toOProb(IR.not(c)) ++: assumeTrue(b)
     case IR.Def(DIf(c, a, b)) if alwaysFalse(c) => assumeTrue(b)
-    case IR.Def(DIf(c, a, b)) if simplifyBool(b)(toOProb(c) ++: constraints) == a => assumeTrue(b) // Generalize
     case IR.Def(DIf(c, a, b)) if alwaysFalse(IR.not(c)) => assumeTrue(a)
+    case IR.Def(DIf(c, a, b)) if simplifyBool(b)(toOProb(c) ++: constraints) == a => assumeTrue(b) // Generalize
     case IR.Def(DMap(m)) => m.get(GConst("$value")).fold(toOProb(cond).toList)(assumeTrue(_))
     // case IR.Def(DNot(IR.Def(DEqual(a, b)))) => assumeTrue(IR.less(b, a)) // HACK... may be false
     case IR.Def(DNot(IR.Def(DEqual(a, b)))) =>
@@ -544,9 +548,9 @@ object CFGtoEngine {
     case IR.Def(DIf(c, GConst(0), GConst(1))) => simplifyBool(IR.not(c))
     case IR.Def(DIf(c, a, b)) =>
       val sc = simplifyBool(c)
-      if (alwaysFalse(sc))
+      if (sc == GConst(0) || alwaysFalse(sc))
         simplifyBool(b)(toOProb(IR.not(sc)) ++: constraints)
-      else if (alwaysFalse(IR.not(sc)))
+      else if (sc == GConst(1) || alwaysFalse(IR.not(sc)))
         simplifyBool(a)(toOProb(sc) ++: constraints)
       else {
         // IR.iff(sc, simplify(a)(toOProb(sc) ++: constraints), simplify(b)(toOProb(IR.not(sc)) ++: constraints))
@@ -558,6 +562,14 @@ object CFGtoEngine {
         //   println(s"${IR.termToString(t)} -- ${IR.termToString(e)}"); ??? // IR.not(sc)
         // } else
           IR.iff(sc, t, e)
+      }
+    case IR.Def(DLess(GConst(k: Int), y)) =>
+      y match {
+        case GConst(k1: Int) => ??? // const(if (k < k1) 1 else 0)
+        case IR.Def(DPlus(a, b)) if simplify(IR.less(IR.const(k), a)) == IR.const(1) && simplify(IR.less(IR.const(-1), b)) == IR.const(1) => IR.const(1)
+        case IR.Def(DSum(_, _, rhs)) if k == -1 && simplify(IR.less(IR.const(-1), rhs)) == IR.const(1) => IR.const(1)
+        case IR.Def(DSum(l, _, rhs)) if k >= 0 && simplify(IR.less(IR.const(0), l)) == IR.const(1) && simplify(IR.less(IR.const(k), rhs)) == IR.const(1) => IR.const(1)
+        case _ => IR.less(IR.const(k), simplify(y))
       }
     case IR.Def(DLess(x, y))  =>
       val t = IR.less(simplify(x), simplify(y))
@@ -727,6 +739,7 @@ object CFGtoEngine {
 
       constraints = trueClauses:::constraints
       val next = simplify(afterB)(constraints)
+
       println(s"Store after simplifications: ${IR.termToString(next)}")
       println(s"Under the constraints: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
       println(s"Before the loop: ${save.mkString("\n\t- ", "\n\t- ", "\n")}")

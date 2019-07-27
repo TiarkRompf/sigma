@@ -1148,7 +1148,12 @@ object Omega {
     }
   }
 
-  def randName(it: Any) = it.toString.replace(",","_").replaceAll("[()]","") + "?"
+  def randName(it: GVal): String = it match {
+    case Def(DPair(l, r)) => randName(l) + "_" + randName(r)
+    case GRef(l) => l
+    case GConst(k) => k.toString.replaceAll("[()]","_")
+  }
+  def sumName(l: Any, idx: String, rhs: Any) = s"sum_${l}_${idx}_$rhs"
   def negBoolExpr(e: Def): OStruct = {
     e match {
       case DLess(x, y) =>
@@ -1218,6 +1223,7 @@ object Omega {
       case DCall(f, x) =>
         println(s"B Missing $e")
         List((1, s"$f($x)")) //FIXME
+      case DSum(l, idx, rhs) => List((1, sumName(l, idx, rhs)))
       case DFixIndex(_, _) => ???
       case _ => println(s"C Missing $e"); ??? // FIXME
     }

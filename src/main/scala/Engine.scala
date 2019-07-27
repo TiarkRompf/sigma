@@ -670,6 +670,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (Def(DTimes(a0, k)), Def(DPlus(b, a1))) if a0 == a1 => plus(times(a0, plus(k, const(1))), b)
         // (x190? * -1) + ((a0 * -1) + ((a1 * -1) + (x190? + -1)))
         case (Def(DTimes(a, k)), Def(DPlus(o1, Def(DPlus(o2, Def(DPlus(a1, o3))))))) if a == a1 => plus(times(a, plus(k, const(1))), plus(o1, plus(o2, o3)))
+        // (a1 + (sum1 + (a0 + ((a1 * -1) + (sum2 * -1)))))
+        // sum1 + (a0 + ((a1 * -1) + (sum2 * -1)))
+        case (s1, Def(DPlus(a0, Def(DPlus(a1, Def(DTimes(s2, k))))))) if s1 == s2 => plus(times(s1, plus(const(1), k)), plus(a0, a1))
         case (Def(DTimes(j1, Def(DTimes(i1, m1)))), Def(DPlus(Def(DTimes(j2, Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))))), x)))
         if j1 == j2 && i1 == i2 && m1 == m2 => x
         case (Def(DTimes(i1, m1)), Def(DPlus(Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))), x)))
@@ -731,6 +734,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (GConst(0),Def(DPlus(a,Def(DPlus(b,GConst(c:Int)))))) if c < 0 =>  less(const(-c),plus(a,b))
         case (GConst(c1:Int),Def(DPlus(a,GConst(c2:Int)))) =>  less(const(c1-c2),a)
         case (GConst(c1:Int),Def(DPlus(a,Def(DPlus(b,GConst(c2:Int)))))) =>  less(const(c1-c2),plus(a,b))
+        case (GConst(c1:Int),Def(DPlus(a,Def(DPlus(b,Def(DPlus(c,GConst(c2:Int)))))))) =>  less(const(c1-c2),plus(a,plus(b,c)))
         // x < a - b  -->  b + x < a
         case (x,Def(DPlus(a,Def(DTimes(b,GConst(-1)))))) => less(plus(b,x), a)
         // 0 < -a + b  -->  a < b
@@ -873,10 +877,13 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
 
       // FIXME: use dependsOnt
       def in(x: String, c: From): Boolean = c match {
-        case GRef(y) => x == y
-        case GConst(_) => false
         case Def(DPlus(a, b)) => in(x, a) || in(x, b)
         case Def(DTimes(a, b)) => in(x, a) || in(x, b)
+        case Def(DEqual(a, b)) => in(x, a) || in(x, b)
+        case Def(DSelect(a, b)) => in(x, a) || in(x, b)
+        case GRef(y) => x == y
+        case GConst(_) => false
+        case _ => false
       }
 
       override def fixindex(x: String, c: From)       = c match {
@@ -1035,8 +1042,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       // returns: new values before,after
       def lub(a: GVal, b0: GVal, b1: GVal)(fsym: GVal, n0: GVal): (GVal, GVal) = { println(s"lub_$fsym($a,$b0,$b1)"); (a,b0,b1) } match {
         case (a,b0,b1) if a == b1 => (a,a)
+        case (GError, _, Def(DSelect(GRef("rand?"), itvec))) =>
+          (b0, b1)
         case (_, _, Def(DMap(m2))) =>
-          val m = m2.keys filterNot { k => s"$k".endsWith("_more\"") } map { k => (k, lub(select(a,k),select(b0,k),select(b1,k))(mkey(fsym,k),n0)) }
+          val m = m2.keys filterNot { k => s"$k".endsWith("_more\"") /* || s"$k".contains("valid") */ } map { k => (k, lub(select(a,k),select(b0,k),select(b1,k))(mkey(fsym,k),n0)) }
           (map(m.map(kv=>(kv._1,kv._2._1)).toMap), map(m.map(kv=>(kv._1,kv._2._2)).toMap))
         case (a,b0, Def(DUpdate(bX, `n0`, y))) if bX == b0 || (bX == map(Map()) && b0 == GError) => // array creation
           IRD.printTerm(a)
@@ -1070,6 +1079,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           val b0X = subst(b1,n0,plus(n0,const(-1)))
           (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
           //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?*/
+        case (a, Def(DPlus(a1, Def(DSum(l, idx, rhs)))), o) if a == a1 && {
+          val d = plus(o, times(b0, const(-1))) // difference
+          subst(d, n0, l) == subst(rhs, GRef(idx), l) // if the difference at index `length` is equal to the sum in the term for idx == length
+        } =>
+          (b0, plus(a, sum(plus(l, const(1)), idx, rhs)))
         // case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(d@GConst(_)/*`n0`*/,u1)),b10,b20)))
         //   // dual example: (B,(1,i)),(A,1)
         //   if !dependsOn(u1,n0) => // test 6C2
@@ -1193,7 +1207,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               case d@Def(DIf(Def(DSelect(GRef("rand?"), itvec)), dx: GConst, dy: GConst)) if IRD.dependsOn(itvec, n0) => // more generic: condition is random depending on n0 e.g. rand() == 3 etc...
                 val idx = n0.toString + fsym // need unique but deterministic name
                 val rhs = subst(d, n0, GRef(idx))
-                (sum(n0, idx, rhs), sum(plus(n0, const(1)), idx, rhs), sum(n0, idx, rhs))
+                (plus(ulo, sum(n0, idx, rhs)), sum(plus(n0, const(1)), idx, rhs), sum(n0, idx, rhs))
+              case d@Def(DIf(c, _, _)) if in("rand?", c) =>
+                val idx = n0.toString + fsym // need unique but deterministic name
+                val rhs = subst(d, n0, GRef(idx))
+                (plus(ulo, sum(n0, idx, rhs)), sum(plus(n0, const(1)), idx, rhs), sum(n0, idx, rhs))
               case _ =>
 
                 val pp = poly(d)
