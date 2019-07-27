@@ -91,7 +91,7 @@ object Term {
 }
 
 object Constraint {
-  val PConst = "_"
+  val PConst = " " // make sure PConst is the lower
 
   def removeByIdx[T](lst: List[T], idx: Int): List[T] = {
     lst.take(idx) ++ lst.drop(idx+1)
@@ -130,7 +130,7 @@ import Constraint._
 
 trait Constraint[C <: Constraint[C]] extends Term {
   assert(coefficients.length == vars.length)
-  assert(vars(0) == PConst)
+  assert(vars(0) == PConst, s"$vars")
 
   def normalize(): Option[Constraint[C]]
 
@@ -1126,12 +1126,14 @@ object Omega {
         //OConj(OImplies(cndProb, thnProb),
         ODisj(OConj(cndProb, thnProb),
               OConj(cndProb.negation, elsProb))
-      case _ => println(e); ???
+      case DSelect(GRef("rand?"), it) => OProb(Problem(List(EQ(List(-1, 1), List(PConst, randName(it)))))) // x == 1
+      case _ => println(s"E Missing $e"); ???
     }
   }
 
   def negBoolExpr(e: GVal): OStruct = {
     e match {
+      case GError => ???
       case GConst(1) => OProb(PFALSE)
       case GConst(0) => OProb(PTRUE)
       case GRef(x) if x.endsWith("?") =>
@@ -1146,6 +1148,7 @@ object Omega {
     }
   }
 
+  def randName(it: Any) = it.toString.replace(",","_").replaceAll("[()]","") + "?"
   def negBoolExpr(e: Def): OStruct = {
     e match {
       case DLess(x, y) =>
@@ -1172,7 +1175,11 @@ object Omega {
         //OConj(OImplies(cndProb, thnProb),
         OConj(ODisj(cndProb, thnProb),
               ODisj(cndProb.negation, elsProb))
-      case _ => println(e); ???
+      case DSelect(GRef("rand?"), it) =>
+        val geqs = NEQ(List(-1, 1), List(PConst, randName(it))).toGEQ
+        assert(geqs.length == 2)
+        ODisj(OProb(Problem(geqs(0))), OProb(Problem(geqs(1)))) //x =/= 1
+      case _ => println(s"D Missing $e"); ???
     }
   }
 
@@ -1207,6 +1214,7 @@ object Omega {
         //       If we know x > n && y > m (n>0&&m>0), then could infer that x*y > n*m
         println(s"A Missing $e")
         List((1, s"$x*$y"))   //FIXME
+      case DSelect(GRef("rand?"), it) => List((1, randName(it)))
       case DCall(f, x) =>
         println(s"B Missing $e")
         List((1, s"$f($x)")) //FIXME

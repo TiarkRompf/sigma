@@ -50,8 +50,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       }
     }
 
-    val debugF = false
-    val debugSet = Set("Simplify", "Assert")
+    val debugF = true
+    val debugSet = Set[String]() // "Simplify", "Assert")
     def debug(pref: String, s: => String) = if (debugF && debugSet(pref)) println(s"$pref: " + s)
   }
 
@@ -153,6 +153,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       type From = Any
       type To = String
 
+      var st = 0
+
       def ident(s: String) = s //"  " + (s split("\n") mkString("\n  "))
       def map(m: Map[From,From])                   = /*if (m.keySet.map(_.toString) == Set("\"val\"")) // FIXME: HACK
                                                        s"[${m.getOrElse(GConst("val"), m("\"val\""))}]"
@@ -177,7 +179,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def call(f: From, x: From)                   = s"$f($x)"
       def fun(f: String, x: String, y: From)       = s"{ $x => $y }"
       def other(s: String)                         = s
-      def hasfield(x: From, f: From)               = s"$x contains $f"
+      def hasfield(x: From, f: From)               = s"$x contains $f ($st)"
     }
 
     object DDef extends DIntf {
@@ -244,9 +246,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
 
     def freshVar = { varCount += 1; "x"+(varCount - 1) }
 
-    def reflect(x: String, s: String): String = { println(s"val $x = $s"); x }
+    def reflect(x: String, s: String): String = { println(s"+ val $x = $s"); x }
 
-    def reflect(s: String): String = { val x = freshVar; println(s"val $x = $s"); x }
+    def reflect(s: String): String = { val x = freshVar; println(s"* val $x = $s"); x }
     def reify(x: => String): String = captureOutputResult(x)._1
 
     def findDefinition(s: String): Option[Def] = globalDefsRhs.get(s)
@@ -257,7 +259,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       globalDefs = (x->s)::globalDefs
       globalDefsRhs = globalDefsRhs + (x->s)
       globalDefsLhs = globalDefsLhs + (s->x)
-      println(s"val $x = $s")
+      // println(s"- val $x = $s")
       GRef(x)
     }
     //globalDefs.collect { case (k,`s`) => GRef(k) }.headOption getOrElse {
@@ -281,7 +283,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       type To = String
       val next = DString
       def const(x: Any) = s"$x"
-      def pre(x: GVal) = findDefinition(x.toString).map(d=>mirrorDef(d,this)).getOrElse(x.toString)
+      def pre(x: GVal): String = (findDefinition(x.toString).map {
+        case d => mirrorDef(d,this)
+      }).getOrElse(x.toString)
+
       def preBlock(x: GVal) = {
         val s = pre(x)
         if (s startsWith "if") s"{\n  ${s.replace("\n","\n  ")}\n}"
@@ -544,8 +549,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           }
         // NOTE: it would be desirable to assimilate DUpdate into DCollect here,
         // but that makes it harder to pattern match in `lub` later.
-        //case Def(DCollect(x2,f2,y2)) if f == x2 =>
-        //collect(plus(x2,const(1)),f2,iff(equal(GRef(f2),f),subst(y,f,GRef(f2)),y2))
+        // case Def(DCollect(x2,f2,y2)) if f == x2 => collect(plus(x2,const(1)),f2,iff(equal(GRef(f2),f),subst(y,f,GRef(f2)),y2))
         // TODO: DUpdate
         // case Def(DUpdate(x2,f2,y2)) => if (f2 == f) y2 else select(x2,f)
         case Def(DUpdate(x2,f2,y2)) if f2 == f => update(x2,f,y) // this one is conservative: m + (f -> y1) + (f -> y2)   --->  m + (f -> y2)  TODO: more aggressive, e.g. remove f in m, too?
@@ -564,8 +568,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case GError => GError
         case GConst(m:Map[From,From]) =>
           f match {
+            case GConst((u,v)) => select(select(x,const(u)),const(v))
             case GConst(_) =>
               m.getOrElse(f, GError)
+            case Def(DPair(u,v)) => select(select(x,u),v)
             case _ =>
               var res: From = GError
               for ((k,v) <- m) {
@@ -646,15 +652,24 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (Def(DIf(c,x,z)),_) => iff(c,plus(x,y),plus(z,y))
         case (_,Def(DIf(c,y,z))) => iff(c,plus(x,y),plus(x,z))
         // random simplifications ...
+        case (Def(DSum(l1, n1, rhs1)), Def(DSum(l2, n2, rhs2))) if l1 == l2 => sum(l1, n1, plus(rhs1, if (n1 == n2) rhs2 else subst(rhs2, GRef(n2), GRef(n1))))
         case (GConst(c),b:GRef) => plus(b,const(c)) // CAVE: non-int consts!
+        case (GConst(c),b:DSelect) => plus(b,const(c)) // CAVE: non-int consts!
         case (Def(DPlus(a,b)),_) => plus(a,plus(b,y))
         case (a,Def(DTimes(a1,GConst(k)))) if a == a1 => times(a, plus(const(k), const(1))) // a + (a * k) --> a * (k + 1)
         case (Def(DTimes(a1,GConst(k))),a) if a == a1 => times(a, plus(const(k), const(1))) // (a * k) + a --> a * (k + 1)
         case (a,Def(DPlus(Def(DTimes(a1,GConst(k))), c))) if a == a1 => plus(times(a, plus(const(k), const(1))), c) // a + ((a * k) + c) --> a * (k + 1) + c
         case (Def(DTimes(a1,GConst(k))),Def(DPlus(a,c))) if a == a1 => plus(times(a, plus(const(k), const(1))), c) // (a * k) + a + c --> a * (k + 1) + c
         case (a1, Def(DPlus(b, Def(DPlus(Def(DTimes(b1, GConst(-1))), c))))) if a1 == b1 => plus(b, c) // a + (b + ((a * -1) + c)) --> b + c
-        // (x45? * 2) + (x116? + (x45? * -1))
         case (Def(DTimes(a1, k1: GConst)), Def(DPlus(b, Def(DTimes(b1, k2: GConst))))) if a1 == b1 => plus(times(a1, plus(k1, k2)), b) // (a * k1) + (b + (a * k2)) -->  (a * (k1 + k2)) + b
+        //  ((x18? * x4?) + (x4? + (x18? + (x18? * (x4? * -1)))))
+        case (Def(DTimes(a, b)), Def(DPlus(c, Def(DPlus(d, Def(DTimes(a1, Def(DTimes(b1, k: GConst))))))))) if a == a1 && b == b1 => plus(times(a, times(b, plus(const(1), k))), plus(c, d)) // a * b + (c + (a * (b * k))) --> a * b * (1 + k) + c
+        // ((a * k) + (b + (c + ((a * k1) + d)))) --> (a * (k + k1)) + (b + (c + d))
+        case (Def(DTimes(a, k)), Def(DPlus(b, Def(DPlus(c, Def(DPlus(Def(DTimes(a1, k1)), d))))))) if a == a1 => plus(times(a, plus(k, k1)), plus(b, plus(c, d)))
+        // (a0 * -1) + ((a0 * (a1 * -1)) + a0)
+        case (Def(DTimes(a0, k)), Def(DPlus(b, a1))) if a0 == a1 => plus(times(a0, plus(k, const(1))), b)
+        // (x190? * -1) + ((a0 * -1) + ((a1 * -1) + (x190? + -1)))
+        case (Def(DTimes(a, k)), Def(DPlus(o1, Def(DPlus(o2, Def(DPlus(a1, o3))))))) if a == a1 => plus(times(a, plus(k, const(1))), plus(o1, plus(o2, o3)))
         case (Def(DTimes(j1, Def(DTimes(i1, m1)))), Def(DPlus(Def(DTimes(j2, Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))))), x)))
         if j1 == j2 && i1 == i2 && m1 == m2 => x
         case (Def(DTimes(i1, m1)), Def(DPlus(Def(DTimes(i2, Def(DTimes(m2, GConst(-1))))), x)))
@@ -695,6 +710,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (_, Def(DIf(c,y,z))) => iff(c,times(x,y),times(x,z))
         // random simplifications ...
         case (GConst(c),b:GRef) => times(b,const(c)) // CAVE: non-int consts!
+        case (GConst(c),b:DSelect) => times(b,const(c)) // CAVE: non-int consts!
         case (Def(DTimes(a,b)),_) => times(a,times(b,y))
         case (Def(DPlus(a,b)),c) => plus(times(a,c), times(b,c))
         case (a,Def(DPlus(b,c))) => plus(times(a,b), times(a,c))
@@ -730,6 +746,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         // 0 < a * k
         case (GConst(0),Def(DTimes(a,GConst(k: Int)))) => if (k > 0) less(const(0), a) else less(a, const(0))
         case (GConst(0),Def(DTimes(a,GConst(k: Double)))) => if (k > 0.0) less(const(0), a) else less(a, const(0))
+        // ((x6? * 2) < ((x6? * -1) + 10))
+        case (Def(DTimes(x, k: GConst)), Def(DPlus(Def(DTimes(x1, k1: GConst)), u))) if x == x1 => less(times(x, plus(k, times(k1, const(-1)))), u)
         case (x, Def(DPlus(x1, GConst(k: Int)))) if x == x1 => const(if (k > 0) 1 else 0)
         case _ if x == y => const(0)
         // case (GConst(0),Def(DPlus())) => y
@@ -823,7 +841,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
                 return x
               }*/
               if (thenp == elsep) thenp
-              else if (thenp == const(1) && elsep == const(0)) c
+              // else if (thenp == const(1) && elsep == const(0)) c
               else {
                 if (thenp == x && elsep == y)
                   super.iff(c,thenp,elsep)
@@ -844,6 +862,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       }
 
       override def sum(n: From, x: String, c: From) = c match {
+        case GConst(_) => iff(less(const(-1), n), times(n, c), const(0))
         case _ =>
           super.sum(n,x,c) //subst(c,less(const(0),GRef(x)),const(1)))
       }
@@ -868,11 +887,13 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DLess(Def(DPlus(a, GRef(`x`))),u)) if !in(x, a) => plus(u, times(a, const(-1)))
         case Def(DNot(Def(DEqual(GRef(`x`),u)))) => u
         case Def(DNot(Def(DEqual(u,GRef(`x`))))) => u
-        // !(a - x == u) -> !(a == x)
+        // !(a - x == u) -> !(a - u == x)
         case Def(DNot(Def(DEqual(Def(DPlus(a, Def(DTimes(GRef(`x`), GConst(-1))))), u)))) if !in(x, a) => plus(a, times(u, const(-1)))
         case Def(DLess(Def(DTimes(GRef(`x`), GConst(k: Int))),u)) => times(u, const(1.0/k))
         // ((x4? + ((x18? * x644?) + x681?)) < x0?
         // case Def(DLess(Def(DPlus(a, Def(DPlus(b, GRef(`x`))))),c)) if !in(x, a) && !in(x, b) => plus(c, times(plus(a, b), const(-1)))
+        // x559? => (((x15? * 2) + (x409? + x559?)) < rand?((&rand:1,top)))
+        case Def(DLess(Def(DPlus(a, Def(DPlus(b, GRef(`x`))))),u)) if !in(x, a) && !in(x, b) && !in(x, u) => plus(u, times(plus(a, b), const(-1)))
         // case Def(DMap(d)) if d.contains(GConst("value")) => fixindex(x, select(c, GConst("value")))
         case _ =>
           super.fixindex(x,c)
@@ -990,6 +1011,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     import Test1._
     import IRD._
 
+    def isRand(a: GVal) = a match {
+      case Def(DSelect(GRef("rand?"), _)) => true
+      case _ => false
+    }
+
       // def diff(a: GVal, b: GVal): GVal = (a, b) match {
       //   case (Def(DPair(a1, a2)), Def(DPair(b1, b2))) => pair(diff(a1, b1), diff(a2, b2))
       //   case (GConst(_: String), GConst(_: String)) => ???
@@ -1010,8 +1036,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def lub(a: GVal, b0: GVal, b1: GVal)(fsym: GVal, n0: GVal): (GVal, GVal) = { println(s"lub_$fsym($a,$b0,$b1)"); (a,b0,b1) } match {
         case (a,b0,b1) if a == b1 => (a,a)
         case (_, _, Def(DMap(m2))) =>
-          val m = (m2.keys) map { k => (k, lub(select(a,k),select(b0,k),select(b1,k))(mkey(fsym,k),n0)) }
-          println(m)
+          val m = m2.keys filterNot { k => s"$k".endsWith("_more\"") } map { k => (k, lub(select(a,k),select(b0,k),select(b1,k))(mkey(fsym,k),n0)) }
           (map(m.map(kv=>(kv._1,kv._2._1)).toMap), map(m.map(kv=>(kv._1,kv._2._2)).toMap))
         case (a,b0, Def(DUpdate(bX, `n0`, y))) if bX == b0 || (bX == map(Map()) && b0 == GError) => // array creation
           IRD.printTerm(a)
@@ -1045,25 +1070,27 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           val b0X = subst(b1,n0,plus(n0,const(-1)))
           (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
           //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?*/
-        case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(d@GConst(_)/*`n0`*/,u1)),b10,b20)))
-          // dual example: (B,(1,i)),(A,1)
-          if !dependsOn(u1,n0) => // test 6C2
-          IRD.printTerm(a)
-          IRD.printTerm(b0)
-          IRD.printTerm(b1)
-          println(s"hit if dual cst -- assume only last case differs") // XXX FIXME interact below
-          val d1 = plus(b10,times(b0,const(-1)))
-          if (d1.isInstanceOf[GConst]) {
-            println(s"const diff, so we can approx down ${termToString(d1)}")
-            val (ithen, nthen) = lub(a,b0,b10)(mkey(fsym,GConst("then")),n0)
-            val b20X = subst(b20,n0,plus(n0,const(-1)))
-            (iff(less(n0,u1),ithen,b20X), iff(less(plus(n0,d),u1),nthen,b20))
-          } else {
-            println(s"non-const diff -- not sure what to do")
-            val b10X = subst(b10,n0,plus(n0,const(-1)))
-            val b20X = subst(b20,n0,plus(n0,const(-1)))
-            (iff(less(n0,u1),b10X,b20X), iff(less(plus(n0,d),u1),b10,b20))
-          }
+        // case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(d@GConst(_)/*`n0`*/,u1)),b10,b20)))
+        //   // dual example: (B,(1,i)),(A,1)
+        //   if !dependsOn(u1,n0) => // test 6C2
+        //   IRD.printTerm(a)
+        //   IRD.printTerm(b0)
+        //   IRD.printTerm(b1)
+        //   println(s"hit if dual cst -- assume only last case differs") // XXX FIXME interact below
+        //   val d1 = plus(b10,times(b0,const(-1)))
+        //   println(s"diff = ${IRD.termToString(d1)}")
+        //   ???
+        //   if (d1.isInstanceOf[GConst]) {
+        //     println(s"const diff, so we can approx down ${termToString(d1)}")
+        //     val (ithen, nthen) = lub(a,b0,b10)(mkey(fsym,GConst("then")),n0)
+        //     val b20X = subst(b20,n0,plus(n0,const(-1)))
+        //     (iff(less(n0,u1),ithen,b20X), iff(less(plus(n0,d),u1),nthen,b20))
+        //   } else {
+        //     println(s"non-const diff -- not sure what to do")
+        //     val b10X = subst(b10,n0,plus(n0,const(-1)))
+        //     val b20X = subst(b20,n0,plus(n0,const(-1)))
+        //     (iff(less(n0,u1),b10X,b20X), iff(less(plus(n0,d),u1),b10,b20))
+        //   }
 
         // case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(`n0`,u1)),b10,b20)))
         //   // dual example: (B,(1,i)),(A,1)
@@ -1163,7 +1190,10 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
                 val (u0,u1,uhi) = break(ulo,nlo,up,const(1))
                 val (v0,v1,vhi) = break(uhi,up,nhi,const(0))
                 (iff(less(n0,up), u0, v0), iff(less(n0,up), u1, v1), vhi)
-              // case Def(DIf(GRef(s), _, _)) if s.endsWith("?") => ???
+              case d@Def(DIf(Def(DSelect(GRef("rand?"), itvec)), dx: GConst, dy: GConst)) if IRD.dependsOn(itvec, n0) => // more generic: condition is random depending on n0 e.g. rand() == 3 etc...
+                val idx = n0.toString + fsym // need unique but deterministic name
+                val rhs = subst(d, n0, GRef(idx))
+                (sum(n0, idx, rhs), sum(plus(n0, const(1)), idx, rhs), sum(n0, idx, rhs))
               case _ =>
 
                 val pp = poly(d)
