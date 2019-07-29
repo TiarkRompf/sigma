@@ -720,6 +720,152 @@ Module IMPRel.
 
 End IMPRel.
 
+(* IMP Relational semantics with explicit upper bound. *)
+
+Module IMPRel2.
+
+  Reserved Notation "st '⊢' e '⇓ₑ' v" (at level 90, left associativity).
+
+  Inductive evalExpR : store → exp → val → Prop :=
+  (* | RId x :  ∀ σ, σ ⊢ (EId x) ⇓ₑ (σ (LId x)) 0 *)
+  | RNum n : ∀ σ, σ ⊢ (ENum n) ⇓ₑ (VNum n)
+  | RBool b : ∀ σ, σ ⊢ (EBool b) ⇓ₑ (VBool b)
+  | RLoc x : ∀ σ, σ ⊢ (ELoc x) ⇓ₑ (VLoc (LId x))
+  | RPlus x y : ∀ σ n1 n2,
+      σ ⊢ x ⇓ₑ (VNum n1) →
+      σ ⊢ y ⇓ₑ (VNum n2) →
+      σ ⊢ (EPlus x y) ⇓ₑ VNum (n1 + n2)
+  | RMinus x y : ∀ σ n1 n2,
+      σ ⊢ x ⇓ₑ (VNum n1) →
+      σ ⊢ y ⇓ₑ (VNum n2) →
+      σ ⊢ (EMinus x y) ⇓ₑ VNum (n1 - n2)
+  | RMult x y : ∀ σ n1 n2,
+      σ ⊢ x ⇓ₑ (VNum n1) →
+      σ ⊢ y ⇓ₑ (VNum n2) →
+      σ ⊢ (EMult x y) ⇓ₑ VNum (n1 * n2)
+  | RLt x y : ∀ σ n1 n2,
+      σ ⊢ x ⇓ₑ (VNum n1) →
+      σ ⊢ y ⇓ₑ (VNum n2) →
+      σ ⊢ (ELt x y) ⇓ₑ VBool (Nat.ltb n1 n2)
+  | REq x y : ∀ σ n1 n2,
+      σ ⊢ x ⇓ₑ (VNum n1) →
+      σ ⊢ y ⇓ₑ (VNum n2) →
+      σ ⊢ (EEq x y) ⇓ₑ VBool (Nat.eqb n1 n2)
+  | RAnd x y : ∀ σ b1 b2,
+      σ ⊢ x ⇓ₑ (VBool b1) →
+      σ ⊢ y ⇓ₑ (VBool b2) →
+      σ ⊢ (EAnd x y) ⇓ₑ VBool (andb b1 b2)
+  | RNeg x : ∀ σ b,
+      σ ⊢ x ⇓ₑ (VBool b) →
+      σ ⊢ (ENeg x) ⇓ₑ VBool (negb b)
+  | RFieldRead e1 e2 : ∀ σ l n o v,
+      σ ⊢ e1 ⇓ₑ (VLoc l) →
+      σ ⊢ e2 ⇓ₑ (VNum n) →
+      σ l = Some o →
+      o n = Some v →
+      σ ⊢ (EFieldRead e1 e2) ⇓ₑ v
+  where "st '⊢' e '⇓ₑ' v" := (evalExpR st e v) : type_scope.
+
+  Reserved Notation "( st1 , c ) '⊢' ( e , s ) n '⇓∞' st2" (at level 90, left associativity).
+  Reserved Notation "( st1 , c ) '⊢' ( s , m ) '⇓' st2" (at level 90, left associativity).
+
+  Inductive evalLoopR : store → path → exp → stmt → nat → store → Prop :=
+  | RWhileZero : ∀ σ c e s,
+      (σ, c) ⊢ (e, s) 0 ⇓∞ σ
+  | RWhileMore : ∀ (σ σ' σ'' : store) c n m e s,
+      (σ, c) ⊢ (e, s) n ⇓∞ σ' →
+      σ' ⊢ e ⇓ₑ (VBool true) →
+      (σ', PWhile c n) ⊢ (s , m) ⇓ σ'' →
+      (σ, c) ⊢ (e, s) 1+n ⇓∞ σ''
+  where "( st1 , c ) ⊢ ( e , s ) n '⇓∞' st2" := (evalLoopR st1 c e s n st2) : type_scope
+  with evalStmtR : store → path → stmt → nat → store → Prop :=
+   | RAlloc x : ∀ σ p m,
+       (σ, p) ⊢ (x ::= ALLOC, m) ⇓ (LNew p st↦ mt_obj ;
+                                    LId x  st↦ (0 obj↦ VLoc (LNew p)) ;
+                                    σ)
+  | RAssign e1 e2 e3 : ∀ σ p l idx v o m,
+      σ ⊢ e1 ⇓ₑ (VLoc l) →
+      σ ⊢ e2 ⇓ₑ (VNum idx) →
+      σ ⊢ e3 ⇓ₑ v →
+      σ l = Some o →
+      (σ, p) ⊢ (e1[[e2]] ::= e3, m) ⇓ (l st↦ (idx obj↦ v ; o) ; σ)
+  | RIfTrue e s1 s2 : ∀ σ p σ' m,
+      σ ⊢ e ⇓ₑ (VBool true) →
+      (σ, PThen p) ⊢ (s1, m) ⇓ σ' →
+      (σ, p) ⊢ (SIf e s1 s2, m) ⇓ σ' (* FIXME: the notation doesn't work here *)
+  | RIfFalse e s1 s2 : ∀ σ p σ' m,
+      σ ⊢ e ⇓ₑ (VBool false) →
+      (σ, PElse p) ⊢ (s2, m) ⇓ σ' →
+      (σ, p) ⊢ (SIf e s1 s2, m) ⇓ σ'
+  | RWhile e s : ∀ σ p σ' n m,
+      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+      σ' ⊢ e ⇓ₑ (VBool false) →
+      n <= m →
+      (σ, p) ⊢ (WHILE e DO s END, m) ⇓ σ'
+  | RSeq s1 s2 : ∀ σ p σ' σ'' m,
+      (σ,  PFst p) ⊢ (s1, m) ⇓ σ' →
+      (σ', PSnd p) ⊢ (s2, m) ⇓ σ'' →
+      (σ, p) ⊢ (s1 ;; s2, m) ⇓ σ''
+  | RSkip : ∀ σ p m, (σ, p) ⊢ (SKIP, m) ⇓ σ
+  where "( st1 , c ) '⊢' ( s , m ) '⇓' st2" := (evalStmtR st1 c s m st2) : type_scope.
+
+  Theorem exp_deterministic : ∀ σ e v1 v2,
+      σ ⊢ e ⇓ₑ v1 →
+      σ ⊢ e ⇓ₑ v2 →
+      v1 = v2.
+  Proof. Admitted.
+
+  Theorem loop_determinisitc : ∀ σ σ' σ'' c e s n,
+      (σ, c) ⊢ (e, s) n ⇓∞ σ'  →
+      (σ, c) ⊢ (e, s) n ⇓∞ σ'' →
+      σ' = σ''.
+  Proof. Admitted.
+
+  Theorem loop_false_store_Sn_inv : ∀ σ σ' p e s n,
+      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+      σ' ⊢ e ⇓ₑ (VBool false) →
+      (σ, p) ⊢ (e, s) S n ⇓∞ σ'.
+  Proof. Admitted.
+
+  Lemma loop_false_store_inv : ∀ σ σ' p e s n,
+      σ ⊢ e ⇓ₑ (VBool false) →
+      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+      σ = σ'.
+  Proof.
+    intros. induction H0. auto. assert (σ ⊢ e ⇓ₑ VBool false) as H'.
+    auto. apply IHevalLoopR in H. subst.
+    assert (VBool false = VBool true). eapply exp_deterministic. eauto. eauto.
+    discriminate H.
+  Qed.
+
+  Theorem loop_false_store_m_inv : ∀ σ σ' σ'' p e s n m,
+      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+      σ' ⊢ e ⇓ₑ (VBool false) →
+      n <= m →
+      (σ, p) ⊢ (e, s) m ⇓∞ σ'' →
+      σ' = σ''.
+  Proof.
+    Admitted.
+
+  Theorem stmt_deterministic : ∀ σ σ' σ'' p s m,
+      (σ, p) ⊢ (s, m) ⇓ σ'  →
+      (σ, p) ⊢ (s, m) ⇓ σ'' →
+      σ' = σ''.
+  Proof.
+    intros σ σ' σ'' p s m E1 E2. generalize dependent σ''.
+    induction E1; intros; inversion E2; subst; auto.
+    - admit.
+    - admit.
+    - admit.
+    - assert ((σ, p) ⊢ (e, s) m ⇓∞ σ'). 
+      eapply loop_false_store_m_inv. eauto. eauto. eauto.
+      assert ((σ, p) ⊢ (e, s) m ⇓∞ σ''). eapply loop_false_store_m_inv. eauto. eauto. eauto.
+      eapply loop_determinisitc. eauto. eauto.
+    - admit.
+    
+
+End IMPRel2.
+
 (* IMP Standard semantics, without context path *)
 
 Module IMPStd.
