@@ -10,6 +10,52 @@ Require Import Coq.omega.Omega.
 Require Import Utf8.
 Import ListNotations.
 
+Lemma succ_eq : forall x y : nat, x + 1 = y + 1 <-> x = y.
+Proof.
+  intros. split.
+  - intros. induction x. inversion H. omega. omega.
+  - intros. subst. reflexivity.
+Qed.
+
+Fixpoint ble_nat (n m : nat) : bool :=
+  match n with
+  | O => true
+  | S n' => 
+    match m with
+    | O => false
+    | S m' => ble_nat n' m'
+    end
+  end.
+
+Definition blt_nat (n m : nat) : bool := andb (negb (beq_nat n m)) (ble_nat n m).
+
+Lemma beq_reflect : ∀ x y, reflect (x = y) (x =? y).
+Proof.
+  intros x y.
+  apply iff_reflect. symmetry. apply beq_nat_true_iff.
+Qed.
+
+Lemma blt_reflect : ∀ x y, reflect (x < y) (x <? y).
+Proof.
+  intros x y.
+  apply iff_reflect. symmetry. apply Nat.ltb_lt.
+Qed.
+
+Lemma ble_reflect : ∀ x y, reflect (x ≤ y) (x <=? y).
+Proof.
+  intros x y.
+  apply iff_reflect. symmetry. apply Nat.leb_le.
+Qed.
+
+Hint Resolve blt_reflect ble_reflect beq_reflect : bdestruct.
+Ltac bdestruct X :=
+  let H := fresh in let e := fresh "e" in
+                    evar (e: Prop);
+                    assert (H: reflect e X); subst e;
+                    [eauto with bdestruct
+                    | destruct H as [H|H];
+                      [ | try first [apply not_lt in H | apply not_le in H] ] ].
+
 (* Maps *)
 
 Inductive id : Type :=
@@ -197,49 +243,14 @@ Notation "x 'st↦' v ';' m" := (store_update m x v)
                                 (at level 60, v at next level, right associativity).
 Notation "x 'st↦' v" := (store_update mt_store x v) (at level 60).
 
+Lemma store_dec : ∀ (σ σ' : store), σ = σ' ∨ σ <> σ'.
+Proof.
+Admitted.
+
 (* IMP Relational big-step semantics *)
 
 Module IMPRel.
   (* Evaluation relation for expressions *)
-
-  (*
-  Definition VNumArith (op : nat → nat → nat) n1 n2 : val :=
-    match n1, n2 with
-    | (VNum x), (VNum y) => VNum (op x y)
-    | _, _ => VErr
-    end.
-
-  Definition VNumPlus : val → val → val := VNumArith plus.
-  Definition VNumMinus : val → val → val := VNumArith minus.
-  Definition VNumMult : val → val → val := VNumArith mult.
-
-  Definition VNumComp (op : nat → nat → bool) n1 n2 : val :=
-    match n1, n2 with
-    | (VNum x), (VNum y) => VBool (op x y)
-    | _, _ => VErr
-    end.
-
-  Definition VNumLt : val → val → val := VNumComp Nat.ltb.
-  Definition VNumEq : val → val → val := VNumComp Nat.eqb.
-
-  Definition VBoolAnd b1 b2 : val :=
-    match b1, b2 with
-    | (VBool b1), (VBool b2) => VBool (andb b1 b2)
-    | _, _ => VErr
-    end.
-
-  Definition VBoolNed b : val :=
-    match b with
-    | VBool b => VBool (negb b)
-    | _ => VErr
-    end.
-
-  Definition fieldRead (σ : store) (l : val) (i : val) : val :=
-    match l, i with
-    | (VLoc l), (VNum n) => σ l n
-    | _, _ => VErr
-    end.
-   *)
 
   Reserved Notation "st '⊢' e '⇓ₑ' v" (at level 90, left associativity).
 
@@ -332,7 +343,6 @@ Module IMPRel.
       (σ', PSnd p) ⊢ s2 ⇓ σ'' →
       (σ, p) ⊢ s1 ;; s2 ⇓ σ''
   | RSkip : ∀ σ p, (σ, p) ⊢ SKIP ⇓ σ
-  (* | RAbort : ∀ σ p, (σ, p) ⊢ ABORT ⇓ σ0 *)
   where "( st1 , c ) '⊢' s '⇓' st2" := (evalStmtR st1 c s st2) : type_scope.
 
   Scheme evalLoopRelMut := Induction for evalLoopR Sort Prop
@@ -389,13 +399,6 @@ Module IMPRel.
       remember (o n0) as on. rewrite H0 in H8. inversion H8. reflexivity.
   Qed.
 
-  Lemma succ_eq : forall x y : nat, x + 1 = y + 1 <-> x = y.
-  Proof.
-    intros. split.
-    - intros. induction x. inversion H. omega. omega.
-    - intros. subst. reflexivity.
-  Qed.
-
   Lemma loop0_store_inv : ∀ σ σ' p e s,
       (σ, p) ⊢ (e, s) 0 ⇓∞ σ' →
       σ = σ'.
@@ -414,6 +417,17 @@ Module IMPRel.
     discriminate H.
   Qed.
 
+  Lemma loop_false_inv : ∀ σ σ' p e s n v,
+      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+      σ ⊢ e ⇓ₑ (VBool false) →
+      σ' ⊢ e ⇓ₑ (VBool v) →
+      false = v.
+  Proof.
+    intros. assert (σ = σ'). eapply loop_false_store_inv. eauto. eauto.
+    subst. assert (VBool false = VBool v). eapply exp_deterministic.
+    eauto. eauto. inversion H2. reflexivity.
+  Qed.
+
   Lemma loop_false_store_inv2 : ∀ σ p e s n,
       σ ⊢ e ⇓ₑ (VBool false) →
       (σ, p) ⊢ (e, s) n ⇓∞ σ.
@@ -422,141 +436,6 @@ Module IMPRel.
     - eapply RWhileZero.
     - eapply RWhileFalse. eauto. eauto.
   Qed.
-
-  Lemma loop_false_inv : ∀ σ σ' p e s n v,
-      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
-      σ ⊢ e ⇓ₑ (VBool false) →
-      σ' ⊢ e ⇓ₑ (VBool v) →
-      false = v.
-  Proof.
-    intros. induction n.
-    - eapply loop0_store_inv in H. subst.
-      assert (VBool false = VBool v). eapply exp_deterministic.
-      eauto. eauto. inversion H. reflexivity.
-    - assert (σ = σ'). eapply loop_false_store_inv.
-      eauto. eauto. subst.
-      assert (VBool false = VBool v). eapply exp_deterministic.
-      eauto. eauto. inversion H2. reflexivity.
-  Qed.
-
-  Lemma loop0_deterministic : ∀ σ p e s σ' σ'',
-      (σ, p) ⊢ (e, s) 0 ⇓∞ σ'  →
-      (σ, p) ⊢ (e, s) 0 ⇓∞ σ'' →
-      σ' = σ''.
-  Proof.
-    intros.
-    assert (σ = σ'). eapply loop0_store_inv. eauto.
-    assert (σ = σ''). eapply loop0_store_inv. eauto.
-    subst. reflexivity.
-  Qed.
-
-  Lemma loop_false_deterministic : ∀ σ p e s n1 n2 σ' σ'',
-      σ ⊢ e ⇓ₑ (VBool false) →
-      (σ, p) ⊢ (e, s) n1 ⇓∞ σ'  →
-      (σ, p) ⊢ (e, s) n2 ⇓∞ σ'' →
-      σ' = σ''.
-  Proof.
-    intros. generalize dependent n2. induction H0.
-    - intros. inversion H1; subst.
-      + reflexivity.
-      + eapply loop_false_store_inv. eauto. eauto.
-      + assert (false = true). eapply loop_false_inv. eauto. eauto. eauto. inversion H4.
-    - intros. eapply IHevalLoopR. eauto. eauto.
-    - intros. assert (false = true). apply (@loop_false_inv _ _ _ _ _ _ _ H0 H H1).
-      inversion H4.
-  Qed.
-
-  (*
-  Lemma loop_true_determinisitc : ∀ σ p e s n σ' σ'',
-      (∃ σ0, (σ, p) ⊢ (e, s) n ⇓∞ σ0 →
-             σ0 ⊢ e ⇓ₑ (VBool true) →
-             (σ0, PWhile p n) ⊢ s ⇓ σ' ) →
-      (σ, p) ⊢ (e, s) 1+n ⇓∞ σ' →
-      (σ, p) ⊢ (e, s) 1+n ⇓∞ σ'' →
-      σ' = σ''.
-  Proof.
-    intros. 
-    *)
-  Fixpoint ble_nat (n m : nat) : bool :=
-    match n with
-    | O => true
-    | S n' => 
-      match m with
-      | O => false
-      | S m' => ble_nat n' m'
-      end
-    end.
-
-  Definition blt_nat (n m : nat) : bool := andb (negb (beq_nat n m)) (ble_nat n m).
-
-  Lemma beq_reflect : ∀ x y, reflect (x = y) (x =? y).
-  Proof.
-    intros x y.
-    apply iff_reflect. symmetry. apply beq_nat_true_iff.
-  Qed.
-  Lemma blt_reflect : ∀ x y, reflect (x < y) (x <? y).
-  Proof.
-    intros x y.
-    apply iff_reflect. symmetry. apply Nat.ltb_lt.
-  Qed.
-  Lemma ble_reflect : ∀ x y, reflect (x ≤ y) (x <=? y).
-  Proof.
-    intros x y.
-    apply iff_reflect. symmetry. apply Nat.leb_le.
-  Qed.
-
-  Hint Resolve blt_reflect ble_reflect beq_reflect : bdestruct.
-  Ltac bdestruct X :=
-    let H := fresh in let e := fresh "e" in
-                      evar (e: Prop);
-                      assert (H: reflect e X); subst e;
-                      [eauto with bdestruct
-                      | destruct H as [H|H];
-                        [ | try first [apply not_lt in H | apply not_le in H] ] ].
-
-  Lemma store_dec : ∀ (σ σ' : store), σ = σ' ∨ σ <> σ'.
-  Proof.
-  Admitted.
-
-  Lemma loop_sigma_exists : ∀ n σ p e s,
-      ∃ σ', (σ, p) ⊢ (e, s) n ⇓∞ σ'.
-  Proof.
-  Admitted.
-  (*
-    intros. induction n.
-    - exists σ. apply RWhileZero.
-    - destruct IHn. assert (σ = x ∨ σ <> x). apply store_dec.
-      destruct H0.
-      + induction H; subst.
-        * assert (∃ v, σ ⊢ e ⇓ₑ (VBool v)). admit.
-          destruct H. destruct x.
-          ** assert ((σ, c) ⊢ (e, s) 0 ⇓∞ σ). eapply RWhileZero.
-            assert (∃ σ'', (σ, PWhile c 0) ⊢ s ⇓ σ''). admit.
-            destruct H2. exists x. eapply RWhileMore. eauto. eauto. eauto.
-          ** exists σ. eapply RWhileFalse.  eauto.
-          * exists σ.  eapply RWhileFalse. eauto.
-          * exists σ''. eapply RWhileMore in H. 2: eauto. 2: eauto.
-          assert (∃ σ''', (σ'', PWhile c (1 + n)) ⊢ s ⇓ σ'''). admit.
-          destruct H0.
-          Admitted.
-   *)
-         
-  Theorem loop_false_store_inv3' : ∀ σ σ' σ'' σ''' p e s n,
-      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
-      (σ', p) ⊢ (e, s) 1 ⇓∞ σ'' →
-      (σ, p) ⊢ (e, s) 1+n ⇓∞ σ''' →
-      σ'' = σ'''.
-  Proof.
-    Admitted.
-
-  Lemma loop_false_inv3 : ∀ n σ σ' σ'' p e s v,
-      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
-      σ' ⊢ e ⇓ₑ (VBool false) →
-      (σ, p) ⊢ (e, s) n ⇓∞ σ'' →
-      σ'' ⊢ e ⇓ₑ (VBool v) →
-      false = v.
-  Proof.
-    Admitted.
 
   Theorem loop_false_store_inv3 : ∀ σ σ' σ'' p e s n m,
       (σ, p) ⊢ (e, s) n ⇓∞ σ' →
@@ -585,34 +464,97 @@ Module IMPRel.
     - eapply loop_false_store_inv. eauto. eauto.
     - eapply loop_false_store_inv. eauto. eauto.
   Qed.
+         
+  Theorem loop_store_one_step_inv : ∀ σ σ' σ'' σ''' p e s n,
+      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+      (σ', p) ⊢ (e, s) 1 ⇓∞ σ'' →
+      (σ, p) ⊢ (e, s) S n ⇓∞ σ''' →
+      σ'' = σ'''.
+  Proof.
+    Admitted.
 
-  Theorem loop_false_true_bot : ∀ σ σ' σ'' c e s n,
-      (σ, c)⊢ (e, s) n ⇓∞ σ' →
-      σ' ⊢ e ⇓ₑ VBool false →
-      (σ, c)⊢ (e, s) S n ⇓∞ σ'' →
-      σ'' ⊢ e ⇓ₑ VBool true →
-      False.
+  Lemma loop0_deterministic : ∀ σ p e s σ' σ'',
+      (σ, p) ⊢ (e, s) 0 ⇓∞ σ'  →
+      (σ, p) ⊢ (e, s) 0 ⇓∞ σ'' →
+      σ' = σ''.
+  Proof.
+    intros.
+    assert (σ = σ'). eapply loop0_store_inv. eauto.
+    assert (σ = σ''). eapply loop0_store_inv. eauto.
+    subst. reflexivity.
+  Qed.
+
+  Lemma loop_false_deterministic : ∀ σ p e s n1 n2 σ' σ'',
+      σ ⊢ e ⇓ₑ (VBool false) →
+      (σ, p) ⊢ (e, s) n1 ⇓∞ σ'  →
+      (σ, p) ⊢ (e, s) n2 ⇓∞ σ'' →
+      σ' = σ''.
+  Proof.
+    intros. generalize dependent n2. induction H0.
+    - intros. inversion H1; subst.
+      + reflexivity.
+      + eapply loop_false_store_inv. eauto. eauto.
+      + assert (false = true). eapply loop_false_inv. eauto. eauto. eauto. inversion H4.
+    - intros. eapply IHevalLoopR. eauto. eauto.
+    - intros. assert (false = true). apply (@loop_false_inv _ _ _ _ _ _ _ H0 H H1).
+      inversion H4.
+  Qed.
+
+  Lemma loop_sigma_exists : ∀ n σ p e s,
+      ∃ σ', (σ, p) ⊢ (e, s) n ⇓∞ σ'.
+  Proof.
   Admitted.
-
-  Theorem loop_false_inv_nSn : ∀ n σ σ' σ'' p e s v,
-      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
-      σ' ⊢ e ⇓ₑ (VBool false) →
-      (σ, p) ⊢ (e, s) S n ⇓∞ σ'' →
-      σ'' ⊢ e ⇓ₑ (VBool v) →
-      false = v
-  with loop_false_inv_nltm : ∀ n m σ σ' σ'' p e s v,
-      n < m →
-      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
-      σ' ⊢ e ⇓ₑ (VBool false) →
-      (σ, p) ⊢ (e, s) m ⇓∞ σ'' →
-      σ'' ⊢ e ⇓ₑ (VBool v) →
-      false = v
-  with loop_false_store_inv_nSn : ∀ (n : nat) σ σ1 σ2 p e s,
+  (*
+    intros. induction n.
+    - exists σ. apply RWhileZero.
+    - destruct IHn. assert (σ = x ∨ σ <> x). apply store_dec.
+      destruct H0.
+      + induction H; subst.
+        * assert (∃ v, σ ⊢ e ⇓ₑ (VBool v)). admit.
+          destruct H. destruct x.
+          ** assert ((σ, c) ⊢ (e, s) 0 ⇓∞ σ). eapply RWhileZero.
+            assert (∃ σ'', (σ, PWhile c 0) ⊢ s ⇓ σ''). admit.
+            destruct H2. exists x. eapply RWhileMore. eauto. eauto. eauto.
+          ** exists σ. eapply RWhileFalse.  eauto.
+          * exists σ.  eapply RWhileFalse. eauto.
+          * exists σ''. eapply RWhileMore in H. 2: eauto. 2: eauto.
+          assert (∃ σ''', (σ'', PWhile c (1 + n)) ⊢ s ⇓ σ'''). admit.
+          destruct H0.
+          Admitted.
+   *)
+              
+  Theorem loop_false_store_inv_nSn : ∀ (n : nat) σ σ1 σ2 p e s,
       (σ, p) ⊢ (e, s) n ⇓∞ σ1 →
       σ1 ⊢ e ⇓ₑ (VBool false) →
       (σ, p) ⊢ (e, s) S n ⇓∞ σ2 →
-      σ1 = σ2
-  with loop_false_store_nltm : ∀ n m σ σ1 σ2 p e s,
+      σ1 = σ2.
+  Admitted.
+  (*
+    Proof.
+      intros. generalize dependent σ2. induction H; intros.
+      - eapply loop_false_store_inv. apply H0. apply H1.
+      - inversion H2; subst.
+        + eapply IHevalLoopR. apply H0. apply H4.
+        + assert (σ' = σ'0). eapply IHevalLoopR. apply H0. apply H4.
+          subst. assert (VBool false = VBool true).
+          eapply exp_deterministic. apply H0. apply H5. inversion H3.
+      - inversion H3; subst.
+        + inversion H5; subst.
+          * assert (σ' = σ2). eapply loop_same_n_deterministic. apply H. apply H6.
+            subst. assert (VBool false = VBool true). eapply exp_deterministic.
+            eauto. eauto. inversion H4.
+          * assert (σ' = σ'0). eapply loop_same_n_deterministic. apply H. apply H6.
+            subst. eapply stmt_deterministic. apply H2. apply H13.
+        + inversion H5; subst.
+          * assert (VBool false = VBool true). eapply exp_deterministic.
+            eauto. eauto. inversion H4.
+          * assert (σ' = σ'1). eapply loop_same_n_deterministic. eauto. eauto.
+            subst. assert (σ'' = σ'0). eapply stmt_deterministic. eauto. eauto.
+            subst. assert (VBool false = VBool true).
+            eapply exp_deterministic. eauto. eauto. inversion H4.
+   *)
+  
+  Theorem loop_false_store_inv_nltm : ∀ n m σ σ1 σ2 p e s,
       n < m →
       (σ, p) ⊢ (e, s) n ⇓∞ σ1 →
       σ1 ⊢ e ⇓ₑ (VBool false) →
@@ -626,49 +568,35 @@ Module IMPRel.
       (σ, p) ⊢ s ⇓ σ'  →
       (σ, p) ⊢ s ⇓ σ'' →
       σ' = σ''.
-  Proof. {
-      intros. assert (σ' = σ''). eapply loop_false_store_inv_nSn. eauto.
-      eauto. eauto. subst. assert (VBool false = VBool v).
-      eapply exp_deterministic. eauto. eauto. inversion H3.
-      reflexivity.
-    } {
-      intros. assert (σ' = σ''). eapply loop_false_store_nltm. eauto.
-      eauto. eauto. eauto. subst. assert (VBool false = VBool v).
-      eapply exp_deterministic. eauto. eauto. inversion H4.
-      reflexivity.
-    } {
-      intros n. induction n; intros.
-      - assert (σ = σ1). eapply loop0_store_inv. eauto. subst.
-        assert (σ1 = σ2). eapply loop_false_store_inv. eauto. eauto.
-        subst. reflexivity.
-      - (* inversion H1; subst.
-        + apply (loop_same_n_deterministic (S n) σ p e s σ1 σ2 H H3).
-        + assert (σ1 = σ'). apply (loop_same_n_deterministic (S n) σ p e s σ1 σ' H H3).
-          subst. assert (VBool false = VBool true).
-          eapply exp_deterministic. eauto. eauto. inversion H2.
-         *)
-        inversion H; inversion H1; subst.
-        + eapply IHn. eauto. eauto. eauto.
-        + assert (σ1 = σ'0). apply (@IHn _ _ _ _ _ _ H3 H8 H11).
-          subst. assert (VBool false = VBool true). eapply exp_deterministic.
-          eauto. eauto. inversion H2.
-        + (* eapply loop_same_n_deterministic. eauto. eauto. *)
-          inversion H12; subst.
-          * symmetry. eapply IHn. eauto. eauto. eauto.
-          * assert (σ' = σ'0). eapply loop_same_n_deterministic. eauto. eauto.
-            subst. eapply stmt_deterministic. eauto. eauto.
-        + (* assert (σ1 = σ'0). eapply loop_same_n_deterministic. eauto. eauto.
-          subst. assert (VBool false = VBool true). eapply exp_deterministic.
-          eauto. eauto. inversion H2. *)
-          inversion H12; subst.
-          * assert (σ' = σ'0). eapply loop_same_n_deterministic. eauto. eauto. subst.
-            assert (VBool false = VBool true). eapply exp_deterministic.
-            eauto. eauto. inversion H2.
-          * assert (σ1 = σ'0). eapply loop_same_n_deterministic. eauto. eauto. subst.
-            assert (VBool false = VBool true). eapply exp_deterministic.
-            eauto. eauto. inversion H2.
-    }
+  Proof.
     {
+      intros. generalize dependent n. generalize dependent σ1.
+      induction H2; intros.
+      - omega.
+      - inversion H2; subst.
+        + assert (n0 = 0). omega. subst. eapply loop0_deterministic. eauto. eauto.
+        + assert (n0 <= 1 + n1). omega. inversion H6.
+          * subst. apply (@loop_same_n_deterministic _ _ _ _ _ _ _ H3 H2).
+          * assert (n0 < 1 + n1). omega. eapply IHevalLoopR. eauto. apply H9. apply H3.
+        + assert (n0 <= 1 + n1). omega. inversion H7.
+          * subst. apply (loop_same_n_deterministic _ _ _ _ _ _ _ H3 H2).
+          * assert (n0 < 1 + n1). omega. eapply IHevalLoopR. eauto. apply H10. apply H3.
+      - assert (n0 <= n). omega. inversion H4; subst.
+        * assert (σ1 = σ'). eapply loop_false_store_inv. eauto. eauto. subst.
+          assert (VBool false = VBool true). eapply exp_deterministic. eauto. eauto.
+          inversion H6.
+        * assert (σ1 = σ'). eapply IHevalLoopR. eauto. eauto. eauto. subst.
+          assert (VBool false = VBool true). eapply exp_deterministic. eauto. eauto.
+          inversion H8.
+        * inversion H5.
+          ++ subst. assert (σ' = σ1). apply (@loop_same_n_deterministic _ _ _ _ _ _ _ H2 H4).
+             subst.  assert (VBool false = VBool true). eapply exp_deterministic. eauto.
+             eauto. inversion H9.
+          ++ subst. assert (1 + n1 < S m). omega. assert (σ1 = σ'). eapply IHevalLoopR.
+             apply H1. apply H10. apply H4. subst. assert (VBool false = VBool true).
+             eapply exp_deterministic. eauto. eauto. inversion H11.
+    }
+          (*
       intros n m. induction m; intros.
       - omega.
       - inversion H; subst.
@@ -681,53 +609,114 @@ Module IMPRel.
               subst. assert (VBool false = VBool true). eapply exp_deterministic.
               eauto. eauto. inversion H5.
           } eapply IHm. eauto. eauto. eauto. eauto.
-      }
-    Admitted.
-
-
-  Theorem loop_same_n_deterministic1 : ∀ n σ p e s σ' σ'',
-      (σ, p) ⊢ (e, s) n ⇓∞ σ'  →
-      (σ, p) ⊢ (e, s) n ⇓∞ σ'' →
-      σ' = σ''
-  with stmt_deterministic1 : ∀ σ p s σ' σ'',
-      (σ, p) ⊢ s ⇓ σ'  →
-      (σ, p) ⊢ s ⇓ σ'' →
-      σ' = σ''.
-    Proof. {
-      intro n. induction n; intros.
-      - eapply loop0_deterministic. eauto. eauto.
-      - inversion H; inversion H0; subst.
-        + eapply IHn. eauto. eauto.
-        + assert (σ' = σ'1). apply (@IHn σ p e s σ' σ'1).  eauto. eauto.
+           *)
+    {
+      intros n σ p e s σ' σ'' E1 E2. 
+      generalize dependent σ''.
+      induction E1; intros.
+      - eapply loop0_deterministic. eapply RWhileZero.
+        eauto.
+      - eapply loop_false_store_inv_nltm. eauto. eauto. eauto. eauto.
+      - inversion E2; subst.
+        + assert (σ' = σ''0). eapply IHE1. apply H2.
           subst. assert (VBool false = VBool true).
-          eapply exp_deterministic. eauto. eauto. inversion H1.
-        + assert (σ'0 = σ''). eapply IHn. eauto. eauto. eauto.
-        + assert (σ'0 = σ'1). apply (@IHn σ p e s σ'0 σ'1). eauto. eauto.
-          subst. apply (stmt_deterministic1 σ'1 (PWhile p n) s σ' σ'' H8 H17).
+          eapply exp_deterministic. apply H7. apply H.
+          inversion H1.
+        + assert (σ' = σ'0). eapply IHE1. apply H2. subst.
+          eapply stmt_deterministic. apply H0. apply H8.
     } {
     intros σ p s σ' σ'' E1 E2.
       generalize dependent σ''.
       induction E1; intros; inversion E2; auto.
-      + assert (VLoc l = VLoc l0) as LEq. { eapply exp_deterministic. eauto. auto. } inversion LEq.
+      - assert (VLoc l = VLoc l0) as LEq. { eapply exp_deterministic. eauto. auto. } inversion LEq.
         assert (VNum idx = VNum idx0) as NEq. { eapply exp_deterministic. eauto. auto. } inversion NEq.
         assert (v = v0). { eapply exp_deterministic. eauto. auto. } subst.
         remember (σ l0) as σl. rewrite H12 in H2. inversion H2. subst. reflexivity.
-      + assert (VBool true = VBool false) as BEq.
+      - assert (VBool true = VBool false) as BEq.
         { eapply exp_deterministic. eauto. auto. } inversion BEq.
-      + assert (VBool true = VBool false) as BEq.
+      - assert (VBool true = VBool false) as BEq.
         { eapply exp_deterministic. eauto. auto. } inversion BEq.
-      + subst. bdestruct (n =? n0).
-        * subst. apply (loop_same_n_deterministic n0 σ p e s σ' σ'' H H5).
-        * bdestruct (n <? n0).
-          apply (loop_false_store_nltm n n0 σ σ' σ'' p e s H2 H H0 H5).
+      - subst. bdestruct (n =? n0).
+        + subst. apply (loop_same_n_deterministic n0 σ p e s σ' σ'' H H5).
+        + bdestruct (n <? n0).
+          apply (loop_false_store_inv_nltm n n0 σ σ' σ'' p e s H2 H H0 H5).
           assert (n > n0). omega. symmetry.
-          apply (loop_false_store_nltm n0 n σ σ'' σ' p e s H3 H5 H7 H).
-      + specialize IHE1_1 with (σ'' := σ'0).
+          apply (loop_false_store_inv_nltm n0 n σ σ'' σ' p e s H3 H5 H7 H).
+        (*
+        + subst. apply (loop_same_n_deterministic n0 σ p e s σ' σ'' H H5).
+        + inversion H; subst.
+          * eapply loop_false_store_inv. apply H0. apply H5.
+          * inversion H5; subst.
+            ++ symmetry. eapply loop_false_store_inv. apply H7. apply H2.
+            ++ assert (n1 <> n). omega.
+               bdestruct (n1 <? n).
+               eapply loop_false_store_inv_nltm. eauto. eauto. eauto. eauto.
+               assert (n1 > n). omega.
+               symmetry. eapply loop_false_store_inv_nltm. eauto. eauto. eauto. eauto.
+            ++ assert (n1 <> n). omega.
+               bdestruct (n1 <? n).
+               ** assert (σ' = σ'0). eapply loop_false_store_inv_nltm. apply H10.
+               eauto. eauto. eauto. subst.
+               assert (VBool false = VBool true). eapply exp_deterministic. eauto. eauto.
+               inversion H11.
+               ** assert (n1 >= n+1). omega.
+                  inversion H11. { subst. eapply loop_same_n_deterministic. eauto.
+                                   assert (1+n = n + 1). omega. rewrite <- H12. apply H5. }
+                                 { assert (n1 > 1 + n). omega. symmetry.
+                                   eapply (@loop_false_store_inv_nltm (1 + n) n1).
+                                   eauto. eauto. eauto. eauto. }
+          * inversion H5; subst.
+            ++ assert (σ'' = σ'0). eapply loop_false_store_inv. eauto. eauto.
+               subst. assert (VBool false = VBool true). eapply exp_deterministic.
+               eauto. eauto. inversion H6.
+            ++ assert (n1 <> n). omega.
+               bdestruct (n1 <? n).
+               ** assert (n1 + 1 <= n). omega.
+                  inversion H11. { subst. assert (1 + n1 = n1 + 1). omega. rewrite H12 in H.
+                                   eapply loop_same_n_deterministic. eauto. eauto. }
+                                 { assert (1 + n1 < n). omega.
+                                   eapply loop_false_store_inv_nltm. apply H14. apply H. apply H0. apply H6. }
+               ** assert (n1 > n). omega. assert (σ'' = σ'0).
+                  eapply loop_false_store_inv_nltm. apply H11. eauto. eauto. eauto.
+                  subst. assert (VBool false = VBool true). eapply exp_deterministic.
+                  eauto. eauto. inversion H12.
+            ++ assert (n1 <> n). omega.
+               bdestruct (n <? n1).
+               ** assert (σ'1 = σ'0). eapply loop_false_store_inv_nltm. eauto. eauto.
+                  *)
+      - specialize IHE1_1 with (σ'' := σ'0).
         specialize IHE1_2 with (σ''0 := σ''0).
         assert (σ' = σ'0). { apply IHE1_1. apply H3. } subst.
         assert (σ'' = σ''0). { apply IHE1_2. apply H5. } apply H.
     }
-    Qed.
+  Admitted.
+  
+  Theorem loop_false_inv_nSn : ∀ n σ σ' σ'' p e s v,
+      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+      σ' ⊢ e ⇓ₑ (VBool false) →
+      (σ, p) ⊢ (e, s) S n ⇓∞ σ'' →
+      σ'' ⊢ e ⇓ₑ (VBool v) →
+      false = v.
+  Proof.
+      intros. assert (σ' = σ''). eapply loop_false_store_inv_nSn. eauto.
+      eauto. eauto. subst. assert (VBool false = VBool v).
+      eapply exp_deterministic. eauto. eauto. inversion H3.
+      reflexivity.
+  Qed.
+
+  Theorem loop_false_inv_nltm : ∀ n m σ σ' σ'' p e s v,
+      n < m →
+      (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+      σ' ⊢ e ⇓ₑ (VBool false) →
+      (σ, p) ⊢ (e, s) m ⇓∞ σ'' →
+      σ'' ⊢ e ⇓ₑ (VBool v) →
+      false = v.
+  Proof.
+      intros. assert (σ' = σ''). eapply loop_false_store_inv_nltm. eauto.
+      eauto. eauto. eauto. subst. assert (VBool false = VBool v).
+      eapply exp_deterministic. eauto. eauto. inversion H4.
+      reflexivity.
+  Qed.
 
 End IMPRel.
 
