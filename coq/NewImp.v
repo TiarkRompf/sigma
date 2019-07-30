@@ -861,14 +861,38 @@ Module IMPRel2.
       (σ', p) ⊢ (e, s) m ⇓∞ σ'' →
       (σ, p) ⊢ (e, s) n + m ⇓∞ σ''.
   Proof.
-      Admitted.
+  Admitted. 
+
+  (*
+  Theorem loop_false_store_Sn_inv σ σ' σ'' p e s n
+      (H : (σ, p) ⊢ (e, s) n ⇓∞ σ')
+      (H0 : σ' ⊢ e ⇓ₑ (VBool false))
+      (H1 : (σ, p) ⊢ (e, s) S n ⇓∞ σ'') :
+      False
+  with loop_false_store_m_inv n m σ σ' σ'' p e s
+      (H : (σ, p) ⊢ (e, s) n ⇓∞ σ')
+      (H0 : σ' ⊢ e ⇓ₑ (VBool false))
+      (H1 : (σ, p) ⊢ (e, s) m ⇓∞ σ'')
+      (H2 : n < m) :
+       False
+  with loop_determinisitc n σ σ' σ'' p e s
+      (H : (σ, p) ⊢ (e, s) n ⇓∞ σ')
+      (H0 : (σ, p) ⊢ (e, s) n ⇓∞ σ'') :
+      σ' = σ''
+  with stmt_deterministic σ σ' σ'' p s
+      (E1 : (σ, p) ⊢ (s) ⇓ σ')
+      (E2 : (σ, p) ⊢ (s) ⇓ σ'') :
+      σ' = σ''.
+   *)
 
   Theorem loop_false_store_Sn_inv : ∀ σ σ' σ'' p e s n,
       (σ, p) ⊢ (e, s) n ⇓∞ σ' →
       σ' ⊢ e ⇓ₑ (VBool false) →
       (σ, p) ⊢ (e, s) S n ⇓∞ σ'' →
-      False
-  with loop_false_store_m_inv : ∀ n m σ σ' σ'' p e s,
+      False.
+  Admitted. 
+
+  Theorem loop_false_store_m_inv : ∀ n m σ σ' σ'' p e s,
       (σ, p) ⊢ (e, s) n ⇓∞ σ' →
       σ' ⊢ e ⇓ₑ (VBool false) →
       (σ, p) ⊢ (e, s) m ⇓∞ σ'' →
@@ -883,18 +907,19 @@ Module IMPRel2.
       (σ, p) ⊢ (s) ⇓ σ'' →
       σ' = σ''.
   Proof.
+    (*
     {
       intros. remember (S n) as sn. induction H1; subst.
       - omega.
       - inversion Heqsn. subst.
-        assert (σ' = σ'0). eapply loop_determinisitc.
-        apply H. apply H1. subst.
+        assert (σ'0 = σ'). eapply loop_determinisitc.
+        apply H1. apply H. subst.
         assert (VBool false = VBool true). eapply exp_deterministic.
         eauto. eauto. inversion H4.
     }
+    *)
     {
-            (*
-      intros. generalize dependent σ'. generalize dependent n.
+      intros. generalize dependent n. generalize dependent σ'.
       induction H1; intros.
       - omega.
       - inversion H3; subst.
@@ -903,16 +928,25 @@ Module IMPRel2.
           eauto. eauto. inversion H5.
         + assert (1 + n1 <= n). omega.
           inversion H8.
-          * subst. assert (σ' = σ'0). eapply loop_determinisitc. eauto. eauto.
+          * subst. inversion H1; subst.
+            assert (σ'1 = σ'2). eapply loop_determinisitc. eauto. eauto.
+            subst. assert (σ'0 = σ'). eapply stmt_deterministic. eauto. eauto.
             subst. assert (VBool false = VBool true). eapply exp_deterministic.
             eauto. eauto. inversion H9.
-          * assert (1 + n1 < n). omega.
-            eapply IHevalLoopR. apply H11. apply H3. apply H4.
+            (*
+            assert (σ' = σ'0). eapply loop_determinisitc. eauto. eauto.
+            subst. assert (VBool false = VBool true). eapply exp_deterministic.
+            eauto. eauto. inversion H9.
              *)
+          * assert (1 + n1 < n). omega.
+            eapply IHevalLoopR. apply H2. apply H3. apply H11.
+      (*
       intros. generalize dependent σ''. induction H2; intros.
-      - eapply loop_false_store_Sn_inv in H. apply H. apply H0. apply H1.
-      - assert (n < m). omega.  inversion H1; subst.
+      - eapply loop_false_store_Sn_inv in H.
+        apply H. apply H0. apply H1.
+      - assert (n < m). omega. inversion H1; subst.
         eapply IHle. apply H5.
+       *)
     }
     {
       intros. generalize dependent σ''.
@@ -931,7 +965,8 @@ Module IMPRel2.
        *)
     }
     {
-      intros σ σ' σ'' p s E1 E2. generalize dependent σ''.
+      intros σ σ' σ'' p s E1 E2.
+      generalize dependent σ''.
       induction E1; intros; inversion E2; subst; auto.
       - assert (VLoc l = VLoc l0) as LEq. { eapply exp_deterministic. eauto. auto. } inversion LEq.
         assert (VNum idx = VNum idx0) as NEq. { eapply exp_deterministic. eauto. auto. } inversion NEq.
@@ -941,8 +976,7 @@ Module IMPRel2.
         { eapply exp_deterministic. eauto. auto. } inversion BEq.
       - assert (VBool true = VBool false) as BEq.
         { eapply exp_deterministic. eauto. auto. } inversion BEq.
-      -
-        bdestruct (n =? n0).
+      - bdestruct (n =? n0).
         + subst. eapply loop_determinisitc. eauto. eauto.
         + bdestruct (n <? n0).
           * eapply loop_false_store_m_inv in H5. 2: apply H. 2: apply H0.
