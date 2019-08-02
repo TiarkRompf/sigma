@@ -51,7 +51,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     }
 
     val debugF = true
-    val debugSet = Set[String]() // "Simplify", "Assert")
+    val debugSet = Set[String]("Assert") // , "Declarator", "TypeCheck")
     def debug(pref: String, s: => String) = if (debugF && debugSet(pref)) println(s"$pref: " + s)
   }
 
@@ -74,6 +74,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     case class GConst(x: Any) extends GVal
     case object GError extends GVal
 
+    val valid = GConst("valid")
+    val randKey = GRef("r?")
+
     object GType {
       val int = GConst("int")
       val string = GConst("string")
@@ -94,6 +97,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     case class DSelect(x: GVal, f: GVal) extends Def
     case class DPlus(x: GVal, y: GVal) extends Def
     case class DTimes(x: GVal, y: GVal) extends Def
+    case class DDiv(x: GVal, y: GVal) extends Def
     case class DLess(x: GVal, y: GVal) extends Def
     case class DEqual(x: GVal, y: GVal) extends Def
     case class DNot(x: GVal) extends Def
@@ -101,6 +105,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     case class DIf(c: GVal, x: GVal, y: GVal) extends Def
     case class DSum(n: GVal, x: String, c: GVal) extends Def
     case class DCollect(n: GVal, x: String, c: GVal) extends Def
+    case class DForall(n: GVal, x: String, c: GVal) extends Def
     case class DFixIndex(x: String, c: GVal) extends Def
     case class DCall(f: GVal, x: GVal) extends Def
     case class DFun(f: String, x: String, y: GVal) extends Def
@@ -113,6 +118,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       case DSelect(x: GVal, f: GVal)                => dst.select(x,f)
       case DPlus(x: GVal, y: GVal)                  => dst.plus(x,y)
       case DTimes(x: GVal, y: GVal)                 => dst.times(x,y)
+      case DDiv(x: GVal, y: GVal)                   => dst.div(x,y)
       case DLess(x: GVal, y: GVal)                  => dst.less(x,y)
       case DEqual(x: GVal, y: GVal)                 => dst.equal(x,y)
       case DNot(x: GVal)                            => dst.not(x)
@@ -120,6 +126,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       case DIf(c: GVal, x: GVal, y: GVal)           => dst.iff(c,x,y)
       case DSum(n: GVal, x: String, c: GVal)        => dst.sum(n,x,c)
       case DCollect(n: GVal, x: String, c: GVal)    => dst.collect(n,x,c)
+      case DForall(n: GVal, x: String, c: GVal)     => dst.forall(n,x,c)
       case DFixIndex(x: String, c: GVal)            => dst.fixindex(x,c)
       case DCall(f: GVal, x: GVal)                  => dst.call(f,x)
       case DFun(f: String, x: String, y: GVal)      => dst.fun(f,x,y)
@@ -135,6 +142,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def select(x: From, f: From): To
       def plus(x: From, y: From): To
       def times(x: From, y: From): To
+      def div(x: From, y: From): To
       def less(x: From, y: From): To
       def equal(x: From, y: From): To
       def not(x: From): To
@@ -142,6 +150,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def iff(c: From, x: From, y: From): To
       def sum(n: From, x: String, c: From): To
       def collect(n: From, x: String, c: From): To
+      def forall(n: From, x: String, c: From): To
       def fixindex(x: String, c: From): To
       def call(f: From, x: From): To
       def fun(f: String, x: String, y: From): To
@@ -152,8 +161,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     object DString extends DIntf {
       type From = Any
       type To = String
-
-      var st = 0
 
       def ident(s: String) = s //"  " + (s split("\n") mkString("\n  "))
       def map(m: Map[From,From])                   = /*if (m.keySet.map(_.toString) == Set("\"val\"")) // FIXME: HACK
@@ -168,6 +175,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def select(x: From, f: From)                 = s"$x($f)"
       def plus(x: From, y: From)                   = s"($x + $y)"
       def times(x: From, y: From)                  = s"($x * $y)"
+      def div(x: From, y: From)                    = s"($x / $y)"
       def less(x: From, y: From)                   = s"($x < $y)"
       def equal(x: From, y: From)                  = s"($x == $y)"
       def not(x: From)                             = s"!($x)"
@@ -175,11 +183,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def iff(c: From, x: From, y: From)           = s"if ($c) { ${ident(x.toString)} } else { ${ident(y.toString)} }"
       def sum(n: From, x: String, c: From)         = s"sum($n) { $x => $c }"
       def collect(n: From, x: String, c: From)     = s"collect($n) { $x =>\n${ident(s"$c")}\n}"
+      def forall(n: From, x: String, c: From)      = s"forall($n) { $x =>\n${ident(s"$c")}\n}"
       def fixindex(x: String, c: From)             = s"fixindex { $x => $c }"
       def call(f: From, x: From)                   = s"$f($x)"
       def fun(f: String, x: String, y: From)       = s"{ $x => $y }"
       def other(s: String)                         = s
-      def hasfield(x: From, f: From)               = s"$x contains $f ($st)"
+      def hasfield(x: From, f: From)               = s"$x contains $f"
     }
 
     object DDef extends DIntf {
@@ -190,6 +199,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def select(x: From, f: From)                 = DSelect(x,f)
       def plus(x: From, y: From)                   = DPlus(x,y)
       def times(x: From, y: From)                  = DTimes(x,y)
+      def div(x: From, y: From)                    = DDiv(x,y)
       def less(x: From, y: From)                   = DLess(x,y)
       def equal(x: From, y: From)                  = DEqual(x,y)
       def not(x: From)                             = DNot(x)
@@ -197,6 +207,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def iff(c: From, x: From, y: From)           = DIf(c,x,y)
       def sum(n: From, x: String, c: From)         = DSum(n,x,c)
       def collect(n: From, x: String, c: From)     = DCollect(n,x,c)
+      def forall(n: From, x: String, c: From)      = DForall(n,x,c)
       def fixindex(x: String, c: From)             = DFixIndex(x,c)
       def call(f: From, x: From)                   = DCall(f,x)
       def fun(f: String, x: String, y: From)       = DFun(f,x,y)
@@ -215,6 +226,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def select(x: From, f: From)                 = post(next.select(pre(x),pre(f)))
       def plus(x: From, y: From)                   = post(next.plus(pre(x),pre(y)))
       def times(x: From, y: From)                  = post(next.times(pre(x),pre(y)))
+      def div(x: From, y: From)                    = post(next.div(pre(x),pre(y)))
       def less(x: From, y: From)                   = post(next.less(pre(x),pre(y)))
       def equal(x: From, y: From)                  = post(next.equal(pre(x),pre(y)))
       def not(x: From)                             = post(next.not(pre(x)))
@@ -222,6 +234,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def iff(c: From, x: From, y: From)           = post(next.iff(pre(c),pre(x),pre(y)))
       def sum(n: From, x: String, c: From)         = post(next.sum(pre(n),x,pre(c)))
       def collect(n: From, x: String, c: From)     = post(next.collect(pre(n),x,pre(c)))
+      def forall(n: From, x: String, c: From)      = post(next.forall(pre(n),x,pre(c)))
       def fixindex(x: String, c: From)             = post(next.fixindex(x,pre(c)))
       def call(f: From, x: From)                   = post(next.call(pre(f),pre(x)))
       def fun(f: String, x: String, y: From)       = post(next.fun(f,x,pre(y)))
@@ -483,6 +496,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DPair(x,y))     => pair(subst(x,a,b),subst(y,a,b))
         case Def(DPlus(x,y))     => plus(subst(x,a,b),subst(y,a,b))
         case Def(DTimes(x,y))    => times(subst(x,a,b),subst(y,a,b))
+        case Def(DDiv(x,y))      => div(subst(x,a,b),subst(y,a,b))
         case Def(o@DLess(u,v))     =>
           a match { // TODO
             case Def(p@DLess(`u`,s)) =>
@@ -494,10 +508,15 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DNot(x))        => not(subst(x,a,b))
         case Def(DCall(f,y))     => call(subst(f,a,b),subst(y,a,b))
         case Def(DFun(f,x1,y))   => x//subst(y,a,b); x // binding??
-        case Def(DSum(n,x,y))    => sum(subst(n,a,b),x,subst(y,a,b))
+        case Def(DSum(n,x,y))    =>
+          val sn = subst(n,a,b)
+          sum(sn,x,subst(y,a,b))
         case Def(DCollect(n,x,y))=>
           val sn = subst(n,a,b)
           collect(sn,x,subst(y,a,b))
+        case Def(DForall(n,x,y))=>
+          val sn = subst(n,a,b)
+          forall(sn,x,subst(y,a,b))
         case Def(DFixIndex(x,y)) => fixindex(x,subst(y,a,b))
         case Def(DHasField(x,y)) => hasfield(subst(x,a,b), subst(y,a,b))
         case Def(d)              => throw new Exception("no subst: "+x+"="+d)
@@ -636,7 +655,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           }
         case Def(DUpdate(x2,f2,y2)) => iff(equal(f2,f), const(1), hasfield(x2,f))
         case Def(DIf(c,x,y)) => iff(c,hasfield(x,f),hasfield(y,f))
-        case Def(DCollect(n,x,c)) => const(1) // FIXME: check bounds!!
+        case Def(DCollect(n,x,c)) => times(less(const(-1), f), less(f, n))
         case Def(DPair(u,v)) => times(hasfield(v, f), hasfield(u, select(v,f)))  // FIXMEGreg: I don't understand that case
         case _ => super.hasfield(x, f)
       }
@@ -653,9 +672,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (_,Def(DIf(c,y,z))) => iff(c,plus(x,y),plus(x,z))
         // random simplifications ...
         case (Def(DSum(l1, n1, rhs1)), Def(DSum(l2, n2, rhs2))) if l1 == l2 => sum(l1, n1, plus(rhs1, if (n1 == n2) rhs2 else subst(rhs2, GRef(n2), GRef(n1))))
+        case (Def(DSum(l1, n1, rhs1)), Def(DTimes(Def(DSum(l2, n2, rhs2)), GConst(-1)))) if l1 == plus(l2, const(1)) && rhs1 == rhs2 => subst(rhs1, GRef(n1), l2)
+        // (sum(x17?) { x17?x16_&b_$value? => (x17?x16_&b_$value? * -1) } + (x17? * -1))
+        case (Def(DSum(l, n, rhs)), v) if v == subst(rhs, GRef(n), l) => sum(plus(l, const(1)), n, rhs)
         case (GConst(c),b:GRef) => plus(b,const(c)) // CAVE: non-int consts!
         case (GConst(c),b:DSelect) => plus(b,const(c)) // CAVE: non-int consts!
         case (Def(DPlus(a,b)),_) => plus(a,plus(b,y))
+        // (r?((&r:0,top)) + (((r?((&r:0,top)) / 2) * -1)
+        case (a, Def(DTimes(Def(DDiv(Def(DPlus(a1, GConst(1))), GConst(2))), GConst(-1)))) if a == a1 => div(a, const(2)) // generalize!
         case (a,Def(DTimes(a1,GConst(k)))) if a == a1 => times(a, plus(const(k), const(1))) // a + (a * k) --> a * (k + 1)
         case (Def(DTimes(a1,GConst(k))),a) if a == a1 => times(a, plus(const(k), const(1))) // (a * k) + a --> a * (k + 1)
         case (a,Def(DPlus(Def(DTimes(a1,GConst(k))), c))) if a == a1 => plus(times(a, plus(const(k), const(1))), c) // a + ((a * k) + c) --> a * (k + 1) + c
@@ -723,11 +747,43 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (x,GConst((v1,v2))) => pair(times(x,const(v1)),times(x,const(v2)))
         case _ => super.times(x,y)
       }
+
+      override def div(x: From, y: From) = (x,y) match {
+        case (GConst(k1: Int), GConst(k2: Int)) => const(k1 / k2)
+        // ((x17? * 2) + 2) / 2
+        case (Def(DPlus(Def(DTimes(a, GConst(k: Int))), GConst(k1: Int))), GConst(k2: Int)) if k % k2 == 0 => plus(times(a, const(k / k2)), const(k1 / k2))
+        case _ => super.div(x, y)
+      }
+
       override def less(x: From, y: From)            = (x,y) match {
         case (GConst(x:Int),GConst(y:Int)) => GConst(if (x < y) 1 else 0)
         case (Def(DIf(c,x,z)),_) => iff(c,less(x,y),less(z,y))
         case (_,Def(DIf(c,y,z))) => iff(c,less(x,y),less(x,z))
         // random simplifications ...
+        // a == b / c => b \in [ a * c, a * c + c - 1 ]
+        case (a, Def(DDiv(b, c))) => less(plus(times(a, c), plus(c, const(-1))), b) // a < b / c ==> a * c + (c - 1) < b.
+        case (Def(DDiv(b, c)), a) => less(b, times(a, c))                           // a / b < c ==> a < b * c
+        // // (a / b) * b < c ==> (a - a % b) < c a % b max value is b - 1
+        case (Def(DTimes(Def(DDiv(a, b)), b1)), c) if b == b1 => less(plus(a, plus(const(1), times(b, const(-1)))), c)
+        case (GConst(k: Int), Def(f: DFixIndex)) if k < 0 => const(1) // fixindex >= 0
+        case (Def(DTimes(Def(f: DFixIndex), GConst(k: Int))), GConst(k2: Int)) if k <= 0 && k2 > 0 => const(1) // - fixindex * k <= 0 < k
+        // case (Def(DFixIndex(idx, Def(DIf(a, b, GConst(0))))), u) => iff(less(fixindex(idx, a), u), const(1), less(fixindex(idx, b), u)) // valid but it breaks some structur... loop-lit/afnp2014_true-unreach-call.c.i
+        // case (l, Def(DFixIndex(idx, Def(DIf(a, b, GConst(0)))))) => iff(less(l, fixindex(idx, a)), const(1), less(l, fixindex(idx, b)))
+        case (GConst(0), Def(DPlus(Def(DTimes(a1, Def(DTimes(a2, GConst(a: Double))))), Def(DPlus(Def(DTimes(a3, GConst(b: Double))) , GConst(c: Int)))))) if a1 == a2 && a2 == a3 =>
+          val delta = b * b - 4 * a * c
+          if (delta < 0)
+            if (a > 0) const(1) else const(0)
+          else if (a > 0) { // todo non trivial cases
+            if (delta > 0)
+              ???
+            else
+              ???
+          } else {
+            if (delta > 0)
+              ???
+            else
+              ???
+          }
         case (GConst(x: Int),Def(DPlus(a,GConst(b:Int)))) =>  less(const(x-b),a)
         case (GConst(x: Int),Def(DTimes(a,GConst(-1)))) =>  less(a, const(-x))
         case (GConst(0),Def(DPlus(a,GConst(b:Int)))) if b < 0 =>  less(const(-b),a)
@@ -735,6 +791,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (GConst(c1:Int),Def(DPlus(a,GConst(c2:Int)))) =>  less(const(c1-c2),a)
         case (GConst(c1:Int),Def(DPlus(a,Def(DPlus(b,GConst(c2:Int)))))) =>  less(const(c1-c2),plus(a,b))
         case (GConst(c1:Int),Def(DPlus(a,Def(DPlus(b,Def(DPlus(c,GConst(c2:Int)))))))) =>  less(const(c1-c2),plus(a,plus(b,c)))
+
+        case (a, Def(DPlus(Def(DTimes(a1, Def(DTimes(a2, k)))), Def(DPlus(Def(DTimes(a3, k2)) , k3))))) if a == a1 && a1 == a2 && a2 == a3 => less(const(0), plus(times(a, times(a, k)), plus(times(a, plus(k2, const(-1))), k3)))
         // x < a - b  -->  b + x < a
         case (x,Def(DPlus(a,Def(DTimes(b,GConst(-1)))))) => less(plus(b,x), a)
         // 0 < -a + b  -->  a < b
@@ -745,6 +803,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (Def(DTimes(a1,GConst(b1:Int))), Def(DTimes(a2,GConst(b2:Int)))) if b1 > 0 && b2 % b1 == 0 => less(a1, times(const(b2 / b1), a2))
         // a1 * b1 < b2 -[b1 > 0]-> a1 < ceil(b2 / b1)
         case (Def(DTimes(a1,GConst(b1:Int))), GConst(b2:Int)) if b1 > 0 => less(a1, const((b2 + b1 - 1) / b1))
+        // case (Def(DTimes(a1,b@GConst(b1:Int))), u) if b1 > 0 => less(a1, div(plus(u, const(b1-1)), b))
         // x + c < x --> c < 0
         case (Def(DPlus(x, c)), x1) if x == x1 => less(c, const(0))
         // 0 < a * k
@@ -755,6 +814,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (x, Def(DPlus(x1, GConst(k: Int)))) if x == x1 => const(if (k > 0) 1 else 0)
         case _ if x == y => const(0)
         // case (GConst(0),Def(DPlus())) => y
+        // ((x5? * -1) < -99)
+        case (Def(DTimes(a, GConst(k: Int))), GConst(k1: Int)) if k <= 0 && k1 <= 0 => less(const(-k1), times(a, const(-k)))
         case _ => super.less(x,y)
       }
       override def equal(x: From, y: From)           = (x,y) match {
@@ -775,13 +836,18 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
               times(equal(v1, n(k1)), inner)
           }
         case _ if x == y => const(1)
+        // a == b / c => b \in [ a * c, a * c + c - 1 ]
+        case (a, Def(DDiv(b, c))) => iff(less(plus(times(a, c), const(-1)), b), less(b, plus(times(a, c), c)), const(0))
+        case (Def(DDiv(b, c)), a) => iff(less(plus(times(a, c), const(-1)), b), less(b, plus(times(a, c), c)), const(0))
         case _ => super.equal(x,y)
       }
       override def not(e: From)                      = e match {
         case GConst(0) => GConst(1)
         case GConst(1) => GConst(0)
         case Def(DNot(x)) => x
+        case Def(DLess(GConst(0), c@Def(_: DFixIndex))) => equal(const(0), c)
         case Def(DLess(x, y)) => less(y, plus(x, const(1)))
+        case Def(DIf(c, t, e)) => iff(c, not(t), not(e))
         case Def(DEqual(GConst(x),GConst(y))) => GConst(if (x == y) 0 else 1)
         case Def(DEqual(GConst(x:Int),Def(DPair(_,_)))) => const(1)
         case Def(DEqual(GConst(x:String),Def(DPair(_,_)))) => const(1)
@@ -824,11 +890,29 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         // Here we extend to if (0<x6) u-x6 else u-1 in the hope that the condition
         // becomes redundant later
         case Def(DLess(GConst(1),xx)) if subst(x,xx,const(1)) == y => iff(less(const(0),xx),x,y)
+        // case Def(DLess(GConst(0), c@Def(_: DFixIndex))) if {
+        //   y == const(0) && x == c // if (0 < fixindex) fixindex else 0 => fixindex because fixindex >= 0
+        // } => c
+        case Def(DLess(GConst(0), c@Def(_: DFixIndex))) if subst(x, c, const(0)) == y => x
+          // x match {
+          //   // if (0 < fixindex) forall(fixindex) rhs else 1 => forall(fixindex) rhs because forall(0) _ = 1
+          //   case Def(DForall(c1, _, _)) if y == const(1) => c == c1
+          //   // if (0 < fixindex) sum(fixindex) rhs else 0 => sum(fixindex) rhs because sum(0) _ = 1
+          //   case Def(DSum(c1, _, _)) if y == const(0) => c == c1
+          //   case _ => false
+          // }
+        // } => x
         case _ =>
           (x,y) match {
             case (Def(DMap(m1)), Def(DMap(m2))) =>
               // push inside maps
               map((m1.keySet++m2.keySet) map { k => k -> iff(c,m1.getOrElse(k,GError),m2.getOrElse(k,GError)) } toMap)
+            case (GError, Def(DMap(m2))) =>
+              // push inside maps
+              map(m2.keySet map { k => k -> iff(c,GError,m2.getOrElse(k,GError)) } toMap)
+            case (Def(DMap(m1)), GError) =>
+              // push inside maps
+              map(m1.keySet map { k => k -> iff(c,m1.getOrElse(k,GError),GError) } toMap)
             case (Def(DMap(m)), GError) if m.keySet == Set(GConst("$value"), GConst("$type")) =>
               map(Map(GConst("$value") -> iff(c, m(GConst("$value")), GError), GConst("$type") -> m(GConst("$type"))))
             case _ =>
@@ -865,25 +949,43 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         }
       }
 
-      override def sum(n: From, x: String, c: From) = c match {
+      override def sum(n: From, x: String, c: From) = if (n == const(0)) const(0) else c match {
         case GConst(_) => iff(less(const(-1), n), times(n, c), const(0))
+        case Def(DIf(Def(DLess(GConst(k: Int), GRef(`x`))), t, _)) if k < 0 => sum(n, x, t)
+        // sum(x17?) { x17?x16_&b_$value? => if (r?((&r:0,top))) { 1 } else { (x17?x16_&b_$value? * -1) } }
+        case Def(DIf(c, t, e)) if !in(GRef(x), c) => iff(c, sum(n, x, t), sum(n, x, e))
+        // sum(x17?) { x17?x16_&b_$value? => ((x17?x16_&b_$value? * -1) + -1) }
+        case Def(DPlus(a, k: GConst)) => plus(sum(n, x, a), sum(n, x, k))
         case _ =>
           super.sum(n,x,c) //subst(c,less(const(0),GRef(x)),const(1)))
       }
       override def collect(n: From, x: String, c: From) = c match {
+        case Def(DIf(Def(DLess(GRef(x), `n`)), rhs, _)) => collect(n, x, rhs)
         case _ =>
           super.collect(n,x,c) //subst(c,less(const(0),GRef(x)),const(1)))
       }
+      override def forall(n: From, x: String, c: From) = if (n == const(0)) const(1) else c match {
+        case GConst(0) => GConst(0)
+        case GConst(k: Int) => ???
+        case _ =>
+          super.forall(n,x,c)
+      }
 
       // FIXME: use dependsOnt
-      def in(x: String, c: From): Boolean = c match {
+      def in(x: GRef, c: From): Boolean = c match {
+        case c: GRef if x == c => true
         case Def(DPlus(a, b)) => in(x, a) || in(x, b)
         case Def(DTimes(a, b)) => in(x, a) || in(x, b)
         case Def(DEqual(a, b)) => in(x, a) || in(x, b)
         case Def(DSelect(a, b)) => in(x, a) || in(x, b)
-        case GRef(y) => x == y
+        case Def(DPair(a, b))   => in(x, a) || in(x, b)
+        case Def(DSum(l, _, rhs)) => in(x, l) || in(x, rhs)
+        case Def(DIf(a, b, c)) => in(x, a) || in(x, b) || in(x, c)
+        case Def(DLess(a, b)) => in(x, a) || in(x, b)
         case GConst(_) => false
-        case _ => false
+        case Def(c) => println(s"in missing: ${c.getClass}"); ???
+        case c: GRef => false
+        case _ => println(s"in missing: $c -- ${c.getClass}"); ???
       }
 
       override def fixindex(x: String, c: From)       = c match {
@@ -891,17 +993,23 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         //case GConst(1) => const("infty")
         case Def(DLess(GRef(`x`),u)) => u
         // case Def(DLess(Def(DPlus(a, b)),u)) if !in(x, a) => fixindex(x, less(b, plus(u, times(a, const(-1)))))
-        case Def(DLess(Def(DPlus(a, GRef(`x`))),u)) if !in(x, a) => plus(u, times(a, const(-1)))
+        case Def(DLess(Def(DPlus(a, y@GRef(`x`))),u)) if !in(y, a) => plus(u, times(a, const(-1)))
         case Def(DNot(Def(DEqual(GRef(`x`),u)))) => u
         case Def(DNot(Def(DEqual(u,GRef(`x`))))) => u
         // !(a - x == u) -> !(a - u == x)
-        case Def(DNot(Def(DEqual(Def(DPlus(a, Def(DTimes(GRef(`x`), GConst(-1))))), u)))) if !in(x, a) => plus(a, times(u, const(-1)))
-        case Def(DLess(Def(DTimes(GRef(`x`), GConst(k: Int))),u)) => times(u, const(1.0/k))
+        case Def(DNot(Def(DEqual(Def(DPlus(a, Def(DTimes(y@GRef(`x`), GConst(-1))))), u)))) if !in(y, a) => plus(a, times(u, const(-1)))
+        case Def(DLess(Def(DTimes(y@GRef(`x`), k)),u)) if !in(y, k) => div(plus(u, plus(k, const(-1))), k)
         // ((x4? + ((x18? * x644?) + x681?)) < x0?
         // case Def(DLess(Def(DPlus(a, Def(DPlus(b, GRef(`x`))))),c)) if !in(x, a) && !in(x, b) => plus(c, times(plus(a, b), const(-1)))
-        // x559? => (((x15? * 2) + (x409? + x559?)) < rand?((&rand:1,top)))
-        case Def(DLess(Def(DPlus(a, Def(DPlus(b, GRef(`x`))))),u)) if !in(x, a) && !in(x, b) && !in(x, u) => plus(u, times(plus(a, b), const(-1)))
+        // x559? => ((x15? * 2) + (x409? + x559?)) < rand?((&rand:1,top))
+        case Def(DLess(Def(DPlus(a, Def(DPlus(b, y@GRef(`x`))))),u)) if !in(y, a) && !in(y, b) && !in(y, u) => plus(u, times(plus(a, b), const(-1)))
+        // x112? => ((x9? * 120) + (x112? + -100)) < 20
+        case Def(DLess(Def(DPlus(a, Def(DPlus(y@GRef(`x`), b)))),u)) if !in(y, u) && !in(y, a) && !in(y, b) => plus(u, times(plus(a, b), const(-1)))
         // case Def(DMap(d)) if d.contains(GConst("value")) => fixindex(x, select(c, GConst("value")))
+        // x5? => if ((x5? < 50)) { 1 } else { (x5? < 100) }
+        case Def(DIf(Def(DLess(GRef(`x`), u1)), GConst(1), Def(DLess(y@GRef(`x`), u2)))) => fixindex(x, iff(less(u1, u2), less(y, u2), less(y, u1)))
+        // x22? => if (r?(("&r:2",("top",x22?)))) { (x22? < (r?((&r:1,top)) + -2)) } else { 0 } } // &&
+        // case Def(DIf(c, Def(DLess(y@GRef(`x`), u2)), GConst(0))) => fixindex(x, iff(less(u1, u2), less(y, u2), less(y, u1)))
         case _ =>
           super.fixindex(x,c)
       }
@@ -1019,276 +1127,322 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     import IRD._
 
     def isRand(a: GVal) = a match {
-      case Def(DSelect(GRef("rand?"), _)) => true
+      case Def(DSelect(key, _)) => randKey == key
       case _ => false
     }
 
-      // def diff(a: GVal, b: GVal): GVal = (a, b) match {
-      //   case (Def(DPair(a1, a2)), Def(DPair(b1, b2))) => pair(diff(a1, b1), diff(a2, b2))
-      //   case (GConst(_: String), GConst(_: String)) => ???
-      //   case (GConst(a: Int), GConst(b: Int)) => GConst(a - b)
-      //   case _ => plus(a, times(b, const(-1)))
-      // }
-      // 1) if the type is non-primitive (i.e. Map), break into components
-      // 2) when updating a structure at the loop index: assume we're building an array
-      // 3) for primitives: compute diff d = f(n+1) - f(n)
-      //    a) if expression for d is defined piecewise (i.e. if (n < c) ...), break into segments
-      //    b) for each segment:
-      //         identify polynomial degree of d
-      //         integrate (with starting value f(0) = a) to derive new formula for f(n) and f(n+1))
+    def quantifier(n0: GVal, fsym: GVal) = n0.toString + fsym + "?"  // need unique but deterministic name. ? imply there is no Def
 
-      // signature:
-      // a: value before loop. b0: value before iteration. b1: value after iteration.
-      // returns: new values before,after
-      def lub(a: GVal, b0: GVal, b1: GVal)(fsym: GVal, n0: GVal): (GVal, GVal) = { println(s"lub_$fsym($a,$b0,$b1)"); (a,b0,b1) } match {
-        case (a,b0,b1) if a == b1 => (a,a)
-        case (GError, _, Def(DSelect(GRef("rand?"), itvec))) =>
-          (b0, b1)
-        case (_, _, Def(DMap(m2))) =>
-          val m = m2.keys filterNot { k => s"$k".endsWith("_more\"") /* || s"$k".contains("valid") */ } map { k => (k, lub(select(a,k),select(b0,k),select(b1,k))(mkey(fsym,k),n0)) }
-          (map(m.map(kv=>(kv._1,kv._2._1)).toMap), map(m.map(kv=>(kv._1,kv._2._2)).toMap))
-        case (a,b0, Def(DUpdate(bX, `n0`, y))) if bX == b0 || (bX == map(Map()) && b0 == GError) => // array creation
-          IRD.printTerm(a)
-          IRD.printTerm(b0)
-          IRD.printTerm(b1)
-          //use real index var !!
-          val nX = mkey(fsym,n0)
-          println(s"hit update at loop index -- assume collect")
-          val r0 = collect(n0, nX.toString, subst(y,n0,nX))
-          val r1 = collect(plus(n0,const(1)), nX.toString, subst(y,n0,nX))
-          (r0, r1)
+    def lubBool(a: GVal, b0: GVal, b1: GVal)(fsym: GVal, n0: GVal): (GVal, GVal) = { println(s"lubBool_$fsym($a,$b0,$b1)"); (a,b0,b1) } match {
+      case (a,b0,b1) if a == b1 => (a,a)
+      case (a, b0, rhs@Def(DLess(`n0`, u))) if !IRD.dependsOn(u, n0) => // forall creation
+        val idx = quantifier(n0, fsym)
+        val nrhs = subst(rhs, n0, GRef(idx))
+        (times(a, forall(n0, idx, nrhs)), times(a, forall(plus(n0,const(1)), idx, nrhs)))
+      case (a, b0, Def(DTimes(bX, rhs@Def(DLess(`n0`, u))))) if b0 == bX && !IRD.dependsOn(u, n0) => // forall creation
+        val idx = quantifier(n0, fsym)
+        val nrhs = subst(rhs, n0, GRef(idx))
+        (times(a, forall(n0, idx, nrhs)), times(a, forall(plus(n0,const(1)), idx, nrhs)))
+      case _ =>
+        println(s"n0: $n0")
+        IRD.printTerm(a)
+        IRD.printTerm(b0)
+        IRD.printTerm(b1)
+        (b0, b1)
+    }
 
-        case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]))
-          if !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] => // diff op should take precedence
-          // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
-          IRD.printTerm(a)
-          IRD.printTerm(b0)
-          IRD.printTerm(b1)
-          println(s"hit pair -- assume only 0 case differs (loop peeling)")
-          val b0X = subst(b1,n0,plus(n0,const(-1)))
-          (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
-          //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
-        /* in test 6C2, this case conflicts with the next
-        case (a/*@Def(DPair(a1,a2))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]), b1/*@Def(DPair(b01,b02))*/)
-          if { !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] } => // XXX diff op should take precedence
-          // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
-          IRD.printTerm(a)
-          IRD.printTerm(b0)
-          IRD.printTerm(b1)
-          println(s"hit pair -- assume only 0 case differs (loop peeling)")
-          val b0X = subst(b1,n0,plus(n0,const(-1)))
-          (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
-          //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?*/
-        case (a, Def(DPlus(a1, Def(DSum(l, idx, rhs)))), o) if a == a1 && {
-          val d = plus(o, times(b0, const(-1))) // difference
-          subst(d, n0, l) == subst(rhs, GRef(idx), l) // if the difference at index `length` is equal to the sum in the term for idx == length
-        } =>
-          (b0, plus(a, sum(plus(l, const(1)), idx, rhs)))
-        // case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(d@GConst(_)/*`n0`*/,u1)),b10,b20)))
-        //   // dual example: (B,(1,i)),(A,1)
-        //   if !dependsOn(u1,n0) => // test 6C2
-        //   IRD.printTerm(a)
-        //   IRD.printTerm(b0)
-        //   IRD.printTerm(b1)
-        //   println(s"hit if dual cst -- assume only last case differs") // XXX FIXME interact below
-        //   val d1 = plus(b10,times(b0,const(-1)))
-        //   println(s"diff = ${IRD.termToString(d1)}")
-        //   ???
-        //   if (d1.isInstanceOf[GConst]) {
-        //     println(s"const diff, so we can approx down ${termToString(d1)}")
-        //     val (ithen, nthen) = lub(a,b0,b10)(mkey(fsym,GConst("then")),n0)
-        //     val b20X = subst(b20,n0,plus(n0,const(-1)))
-        //     (iff(less(n0,u1),ithen,b20X), iff(less(plus(n0,d),u1),nthen,b20))
-        //   } else {
-        //     println(s"non-const diff -- not sure what to do")
-        //     val b10X = subst(b10,n0,plus(n0,const(-1)))
-        //     val b20X = subst(b20,n0,plus(n0,const(-1)))
-        //     (iff(less(n0,u1),b10X,b20X), iff(less(plus(n0,d),u1),b10,b20))
-        //   }
+    // def diff(a: GVal, b: GVal): GVal = (a, b) match {
+    //   case (Def(DPair(a1, a2)), Def(DPair(b1, b2))) => pair(diff(a1, b1), diff(a2, b2))
+    //   case (GConst(_: String), GConst(_: String)) => ???
+    //   case (GConst(a: Int), GConst(b: Int)) => GConst(a - b)
+    //   case _ => plus(a, times(b, const(-1)))
+    // }
+    // 1) if the type is non-primitive (i.e. Map), break into components
+    // 2) when updating a structure at the loop index: assume we're building an array
+    // 3) for primitives: compute diff d = f(n+1) - f(n)
+    //    a) if expression for d is defined piecewise (i.e. if (n < c) ...), break into segments
+    //    b) for each segment:
+    //         identify polynomial degree of d
+    //         integrate (with starting value f(0) = a) to derive new formula for f(n) and f(n+1))
 
-        // case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(`n0`,u1)),b10,b20)))
-        //   // dual example: (B,(1,i)),(A,1)
-        //   if !dependsOn(u1,n0) => // test 6C2
-        //   IRD.printTerm(a)
-        //   IRD.printTerm(b0)
-        //   IRD.printTerm(b1)
-        //   println(s"hit if dual -- assume only last case differs") // XXX FIXME interact below
-        //   val d1 = plus(b10,times(b0,const(-1)))
-        //   if (d1.isInstanceOf[GConst]) {
-        //     println(s"const diff, so we can approx down ${termToString(d1)}")
-        //     val (ithen, nthen) = lub(a,b0,b10)(mkey(fsym,GConst("then")),n0)
-        //     val b20X = subst(b20,n0,plus(n0,const(-1)))
-        //     (iff(less(plus(n0,const(-1)),u1),ithen,b20X), iff(less(n0,u1),nthen,b20))
-        //   } else {
-        //     println(s"non-const diff -- not sure what to do")
-        //     val b10X = subst(b10,n0,plus(n0,const(-1)))
-        //     val b20X = subst(b20,n0,plus(n0,const(-1)))
-        //     (iff(less(plus(n0,const(-1)),u1),b10X,b20X), b1)
-        //     //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
-        //   }
+    // signature:
+    // a: value before loop. b0: value before iteration. b1: value after iteration.
+    // returns: new values before,after
+    def lub(a: GVal, b0: GVal, b1: GVal)(fsym: GVal, n0: GVal): (GVal, GVal) = { println(s"lub_$fsym($a,$b0,$b1)"); (a,b0,b1) } match {
+      case (a,b0,b1) if a == b1 => (a,a)
+      case (GError, _, Def(DSelect(`randKey`, itvec))) =>
+        (b0, b1)
+      case (_, _, Def(DMap(m2))) =>
+        val m = m2.keys filterNot { k => s"$k".contains("$more") /* || s"$k".contains("valid") */ } map {
+          case `valid` => (valid, lubBool(select(a,valid),select(b0,valid),select(b1,valid))(mkey(fsym,valid),n0))
+          case k if s"$k".contains("$more") => (k, (select(b0,k), select(b1,k)))
+          case k => (k, lub(select(a,k),select(b0,k),select(b1,k))(mkey(fsym,k),n0))
+        }
+        (map(m.map(kv=>(kv._1,kv._2._1)).toMap), map(m.map(kv=>(kv._1,kv._2._2)).toMap))
+      case (a,b0, Def(DUpdate(bX, `n0`, y))) if bX == b0 || (bX == map(Map()) && b0 == GError) => // array creation
+        IRD.printTerm(a)
+        IRD.printTerm(b0)
+        IRD.printTerm(b1)
+        //use real index var !!
+        val nX = mkey(fsym,n0)
+        println(s"hit update at loop index -- assume collect")
+        val r0 = collect(n0, nX.toString, subst(y,n0,nX))
+        val r1 = collect(plus(n0,const(1)), nX.toString, subst(y,n0,nX))
+        (r0, r1)
 
-          // XXXXX FIXME / TODO
-          // PROBLEM: boundary may change with each iteration!!!
+      case (a, Def(DCollect(l1, idx1, rhs1)), Def(DCollect(l2, idx2, Def(DIf(Def(DEqual(GRef(idx3), up)), rhs2, rhs3))))) if l1 == l2 && idx2 == idx3 && subst(rhs1, GRef(idx1), GRef(idx2)) == rhs3 && (up == n0 || up == const(0)) =>
+        val na = collect(l1, idx1, iff(less(GRef(idx1), up), subst(rhs2, n0, GRef(idx1)), rhs1))
+        val nb = collect(l1, idx1, iff(less(GRef(idx1), plus(up, const(1))), subst(rhs2, n0, GRef(idx1)), rhs1))
+        (na, nb)
 
-        case _ =>
-          // value after the loop (b) does depend on loop index and differs from val before loop.
-          // handle in
-          // TODO: case for alloc in loop -- x(0)=(A,1), x(i>0)=(B,(1,i))
-          // (trying to handle this one above...)
+      case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]))
+        if !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] => // diff op should take precedence
+        // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
+        IRD.printTerm(a)
+        IRD.printTerm(b0)
+        IRD.printTerm(b1)
+        println(s"hit pair -- assume only 0 case differs (loop peeling)")
+        val b0X = subst(b1,n0,plus(n0,const(-1)))
+        (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
+        //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
+      /* in test 6C2, this case conflicts with the next
+      case (a/*@Def(DPair(a1,a2))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]), b1/*@Def(DPair(b01,b02))*/)
+        if { !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] } => // XXX diff op should take precedence
+        // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
+        IRD.printTerm(a)
+        IRD.printTerm(b0)
+        IRD.printTerm(b1)
+        println(s"hit pair -- assume only 0 case differs (loop peeling)")
+        val b0X = subst(b1,n0,plus(n0,const(-1)))
+        (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
+        //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?*/
+      case (a, bo@Def(DSum(l, idx, Def(DIf(c1, t1, GConst(0))))), Def(DIf(c2, t2, e2@Def(_: DSum)))) if b0 == e2 && subst(t1, GRef(idx), l) == t2 => // backtrack sum? simple assignment...
+        // reverse fixindex to have the last index rather than first. May want to make an auxiliary funciton for that...
+        val lastIdx = plus(plus(n0, const(-1)), times(fixindex(idx, iff(less(GRef(idx), plus(n0, const(-1))), subst(c1, GRef(idx), plus(plus(n0, const(-1)), times(GRef(idx), const(-1)))), const(0))), const(-1))) // last assignment
+        val aa = subst(t1, GRef(idx), lastIdx)   // can be arbitrary...
+        (aa, subst(aa, n0, plus(n0, const(1))))
+      // specialcase for t2 == n0
+      case (a, b0@Def(DPlus(`n0`, Def(DPlus(Def(DTimes(Def(DFixIndex(idx, Def(DIf(Def(DLess(_, Def(DPlus(`n0`, GConst(-1))))),rhs, GConst(0))))), GConst(-1))), GConst(-1))))), Def(DIf(c, t, e@Def(_)))) if t == n0 && b0 == e => // subst(c, n0, plus(n0, times(GRef(idx), const(-1)))) == rhs =>
+        IRD.printTerm(rhs)
+        IRD.printTerm(subst(c, n0, plus(plus(n0, const(-1)), times(GRef(idx), const(-1)))))
+        println("===========")
+        IRD.printTerm(b0)
+        IRD.printTerm(e)
+        (b0, subst(b0, n0, plus(n0, const(1))))
+      case (a, Def(DPlus(a1, Def(DSum(l, idx, rhs)))), o) if a == a1 && {
+        val d = plus(o, times(b0, const(-1))) // difference
+        subst(d, n0, l) == subst(rhs, GRef(idx), l) // if the difference at index `length` is equal to the sum in the term for idx == length
+      } =>
+        (b0, plus(a, sum(plus(l, const(1)), idx, rhs)))
+      // case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(d@GConst(_)/*`n0`*/,u1)),b10,b20)))
+      //   // dual example: (B,(1,i)),(A,1)
+      //   if !dependsOn(u1,n0) => // test 6C2
+      //   IRD.printTerm(a)
+      //   IRD.printTerm(b0)
+      //   IRD.printTerm(b1)
+      //   println(s"hit if dual cst -- assume only last case differs") // XXX FIXME interact below
+      //   val d1 = plus(b10,times(b0,const(-1)))
+      //   println(s"diff = ${IRD.termToString(d1)}")
+      //   ???
+      //   if (d1.isInstanceOf[GConst]) {
+      //     println(s"const diff, so we can approx down ${termToString(d1)}")
+      //     val (ithen, nthen) = lub(a,b0,b10)(mkey(fsym,GConst("then")),n0)
+      //     val b20X = subst(b20,n0,plus(n0,const(-1)))
+      //     (iff(less(n0,u1),ithen,b20X), iff(less(plus(n0,d),u1),nthen,b20))
+      //   } else {
+      //     println(s"non-const diff -- not sure what to do")
+      //     val b10X = subst(b10,n0,plus(n0,const(-1)))
+      //     val b20X = subst(b20,n0,plus(n0,const(-1)))
+      //     (iff(less(n0,u1),b10X,b20X), iff(less(plus(n0,d),u1),b10,b20))
+      //   }
 
-          println(s"numerical diff d=f($n0+1)-f($n0) = ${IRD.termToString(b1)} - ${IRD.termToString(b0)} = {")
+      // case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,b1@Def(DIf(Def(DLess(`n0`,u1)),b10,b20)))
+      //   // dual example: (B,(1,i)),(A,1)
+      //   if !dependsOn(u1,n0) => // test 6C2
+      //   IRD.printTerm(a)
+      //   IRD.printTerm(b0)
+      //   IRD.printTerm(b1)
+      //   println(s"hit if dual -- assume only last case differs") // XXX FIXME interact below
+      //   val d1 = plus(b10,times(b0,const(-1)))
+      //   if (d1.isInstanceOf[GConst]) {
+      //     println(s"const diff, so we can approx down ${termToString(d1)}")
+      //     val (ithen, nthen) = lub(a,b0,b10)(mkey(fsym,GConst("then")),n0)
+      //     val b20X = subst(b20,n0,plus(n0,const(-1)))
+      //     (iff(less(plus(n0,const(-1)),u1),ithen,b20X), iff(less(n0,u1),nthen,b20))
+      //   } else {
+      //     println(s"non-const diff -- not sure what to do")
+      //     val b10X = subst(b10,n0,plus(n0,const(-1)))
+      //     val b20X = subst(b20,n0,plus(n0,const(-1)))
+      //     (iff(less(plus(n0,const(-1)),u1),b10X,b20X), b1)
+      //     //(iff(less(const(0),n0),b0X,a), b1) XX FIXME?
+      //   }
 
-          // look at numeric difference. see if symbolic values before/after are generalized in a corresponding way.
-          // widen: compute new symbolic val before from symbolic val after (e.g. closed form)
-          // if that's not possible, widen to explicit recursive form.
-          //val b0 = iff(less(const(0), n0), subst(subst(b,less(const(0),n0),const(1)),n0,plus(n0,const(-1))), a) // take from 'init'?
-          //val b1 = iff(less(const(0), n0), b, a)
-          val d1 = plus(b1,times(b0,const(-1)))
+        // XXXXX FIXME / TODO
+        // PROBLEM: boundary may change with each iteration!!!
 
-          println("} = " + IRD.termToString(d1))
+      case _ =>
+        // value after the loop (b) does depend on loop index and differs from val before loop.
+        // handle in
+        // TODO: case for alloc in loop -- x(0)=(A,1), x(i>0)=(B,(1,i))
+        // (trying to handle this one above...)
 
-          if (d1 != GError) { // do we have an integer?
+        println(s"numerical diff d=f($n0+1)-f($n0) = ${IRD.termToString(b1)} - ${IRD.termToString(b0)} = {")
 
-            def poly(x: GVal): List[GVal] = x match {
-              case `n0` => List(const(0),const(1))
-              case Def(DTimes(`n0`,y)) =>
-                val py = poly(y)
-                if (py.isEmpty) Nil else const(0)::py
-              case Def(DPlus(a,b)) =>
-                val (pa,pb) = (poly(a),poly(b))
-                if (pa.isEmpty || pb.isEmpty) Nil else {
-                  val degree = pa.length max pb.length
-                  (pa.padTo(degree,const(0)),pb.padTo(degree,const(0))).zipped.map(plus)
-                    .reverse.dropWhile(_ == const(0)).reverse // dropRightWhile
-                }
-              case _ if !IRD.dependsOn(x, n0) => List(x)
-              case _ => Nil // marker: not a simple polynomial
-            }
+        // look at numeric difference. see if symbolic values before/after are generalized in a corresponding way.
+        // widen: compute new symbolic val before from symbolic val after (e.g. closed form)
+        // if that's not possible, widen to explicit recursive form.
+        //val b0 = iff(less(const(0), n0), subst(subst(b,less(const(0),n0),const(1)),n0,plus(n0,const(-1))), a) // take from 'init'?
+        //val b1 = iff(less(const(0), n0), b, a)
+        val d1 = plus(b1,times(b0,const(-1)))
 
-            /*
-              piecewise composition, multiple intervals.
+        println("} = " + IRD.termToString(d1))
 
-              input:
-                (value at start index, start index, end index, value increment)
-              output:
-                (value before iteration, value after iteration, value at end index)
+        if (d1 != GError) { // do we have an integer?
 
-              current iteration is assumed to be between start and end index
-            */
-            val fail = new Exception
-            def break(ulo: GVal, nlo: GVal, nhi: GVal, d: GVal): (GVal,GVal,GVal) = d match {
-              // XX now handled in poly case below
-              // loop invariant stride, i.e. constant delta i.e. linear in loop index
-              // case d if !IRD.dependsOn(d, n0) && d != const("undefined") =>
-              //   println(s"confirmed iterative loop, d = $d")
-              //   // before: ul + n * d
-              //   // after:  ul + (n+1) * d
-              //   val dn = plus(n0,times(nlo,const(-1)))
-              //   val dh = plus(nhi,times(nlo,const(-1)))
-              //   (plus(ulo,times(dn,d)),
-              //    plus(ulo,times(plus(dn,const(1)),d)),
-              //    plus(ulo,times(dh,d)))
-              // piece-wise linear, e.g. if (n < 18) 1 else 0
-              case Def(DIf(Def(DLess(`n0`, up)), dx, dy)) if !IRD.dependsOn(up, n0) =>
-                val dn = plus(nhi,times(nlo,const(-1)))
-                println(s"split range of $n0 at $up: dx=$dx dy=$dy ulo=$ulo nlo=$nlo nhi=$nhi")
-                val (u0,u1,uhi) = break(ulo,nlo,up,dx)
-                val (v0,v1,vhi) = break(uhi,up,nhi,dy)
-                println(s"before ($u0,$v0), after ($u1,$v1)")
-                val (r0,r1) = (iff(less(n0,up), u0, v0), iff(less(n0,up), u1, v1))
-                IRD.printTerm(r0)
-                IRD.printTerm(r1)
-                (r0,r1,vhi)
-              case Def(DLess(`n0`, up)) // short cut
-                if !IRD.dependsOn(up, n0) =>
-                val (u0,u1,uhi) = break(ulo,nlo,up,const(1))
-                val (v0,v1,vhi) = break(uhi,up,nhi,const(0))
-                (iff(less(n0,up), u0, v0), iff(less(n0,up), u1, v1), vhi)
-              case d@Def(DIf(Def(DSelect(GRef("rand?"), itvec)), dx: GConst, dy: GConst)) if IRD.dependsOn(itvec, n0) => // more generic: condition is random depending on n0 e.g. rand() == 3 etc...
-                val idx = n0.toString + fsym // need unique but deterministic name
-                val rhs = subst(d, n0, GRef(idx))
-                (plus(ulo, sum(n0, idx, rhs)), sum(plus(n0, const(1)), idx, rhs), sum(n0, idx, rhs))
-              case d@Def(DIf(c, _, _)) if in("rand?", c) =>
-                val idx = n0.toString + fsym // need unique but deterministic name
-                val rhs = subst(d, n0, GRef(idx))
-                (plus(ulo, sum(n0, idx, rhs)), sum(plus(n0, const(1)), idx, rhs), sum(n0, idx, rhs))
-              case _ =>
+          def poly(x: GVal): List[GVal] = x match {
+            case `n0` => List(const(0),const(1))
+            case Def(DTimes(`n0`,y)) =>
+              val py = poly(y)
+              if (py.isEmpty) Nil else const(0)::py
+            case Def(DPlus(a,b)) =>
+              val (pa,pb) = (poly(a),poly(b))
+              if (pa.isEmpty || pb.isEmpty) Nil else {
+                val degree = pa.length max pb.length
+                (pa.padTo(degree,const(0)),pb.padTo(degree,const(0))).zipped.map(plus)
+                  .reverse.dropWhile(_ == const(0)).reverse // dropRightWhile
+              }
+            case _ if !IRD.dependsOn(x, n0) => List(x)
+            case _ => Nil // marker: not a simple polynomial
+          }
 
-                val pp = poly(d)
-                println("poly: " + pp)
-                pp match {
-                  case List(coeff0) =>
-                    val d = coeff0
-                    println(s"confirmed iterative loop, d = $d")
-                    // before: ul + n * d
-                    // after:  ul + (n+1) * d
-                    val dn = plus(n0,times(nlo,const(-1)))
-                    val dh = plus(nhi,times(nlo,const(-1)))
-                    (plus(ulo,times(dn,d)),
-                     plus(ulo,times(plus(dn,const(1)),d)),
-                     plus(ulo,times(dh,d)))
+          /*
+            piecewise composition, multiple intervals.
 
-                  case List(coeff0, coeff1) =>
-                    println(s"found 2nd order polynomial: f'($n0)=$coeff1*$n0+$coeff0 -> f($n0)=$coeff1*$n0/2($n0+1)+$coeff0*$n0")
+            input:
+              (value at start index, start index, end index, value increment)
+            output:
+              (value before iteration, value after iteration, value at end index)
 
-                    // f(n) = c1 * n/2*(n+1) + c0 * n + ul   <--- ul not added here but below
-                    def eval(nX: GVal) =
-                      plus(times(times(times(nX,plus(nX,const(-1))),const(0.5)), coeff1), times(nX, coeff0))
+            current iteration is assumed to be between start and end index
+          */
+          val fail = new Exception
+          def break(ulo: GVal, nlo: GVal, nhi: GVal, d: GVal): (GVal,GVal,GVal) = d match {
+            // XX now handled in poly case below
+            // loop invariant stride, i.e. constant delta i.e. linear in loop index
+            // case d if !IRD.dependsOn(d, n0) && d != const("undefined") =>
+            //   println(s"confirmed iterative loop, d = $d")
+            //   // before: ul + n * d
+            //   // after:  ul + (n+1) * d
+            //   val dn = plus(n0,times(nlo,const(-1)))
+            //   val dh = plus(nhi,times(nlo,const(-1)))
+            //   (plus(ulo,times(dn,d)),
+            //    plus(ulo,times(plus(dn,const(1)),d)),
+            //    plus(ulo,times(dh,d)))
+            // piece-wise linear, e.g. if (n < 18) 1 else 0
+            case Def(DIf(Def(DLess(`n0`, up)), dx, dy)) if !IRD.dependsOn(up, n0) =>
+              val dn = plus(nhi,times(nlo,const(-1)))
+              println(s"split range of $n0 at $up: dx=$dx dy=$dy ulo=$ulo nlo=$nlo nhi=$nhi")
+              val (u0,u1,uhi) = break(ulo,nlo,up,dx)
+              val (v0,v1,vhi) = break(uhi,up,nhi,dy)
+              println(s"before ($u0,$v0), after ($u1,$v1)")
+              val (r0,r1) = (iff(less(n0,up), u0, v0), iff(less(n0,up), u1, v1))
+              IRD.printTerm(r0)
+              IRD.printTerm(r1)
+              (r0,r1,vhi)
+            case Def(DLess(`n0`, up)) // short cut
+              if !IRD.dependsOn(up, n0) =>
+              val (u0,u1,uhi) = break(ulo,nlo,up,const(1))
+              val (v0,v1,vhi) = break(uhi,up,nhi,const(0))
+              (iff(less(n0,up), u0, v0), iff(less(n0,up), u1, v1), vhi)
+            case d@Def(DIf(Def(DSelect(`randKey`, itvec)), dx: GConst, dy: GConst)) if IRD.dependsOn(itvec, n0) => // more generic: condition is random depending on n0 e.g. rand() == 3 etc...
+              val idx = quantifier(n0, fsym)
+              val rhs = subst(d, n0, GRef(idx))
+              (plus(ulo, sum(n0, idx, rhs)), sum(plus(n0, const(1)), idx, rhs), sum(n0, idx, rhs))
+            case _ =>
 
-                    val r0 = eval(n0)
-                    val r1 = eval(plus(n0,const(1)))
-                    val rh = eval(nhi)
+              val pp = poly(d)
+              println("poly: " + pp)
+              pp match {
+                case List(coeff0) =>
+                  val d = coeff0
+                  println(s"confirmed iterative loop, d = $d")
+                  // before: ul + n * d
+                  // after:  ul + (n+1) * d
+                  val dn = plus(n0,times(nlo,const(-1)))
+                  val dh = plus(nhi,times(nlo,const(-1)))
+                  (plus(ulo,times(dn,d)),
+                   plus(ulo,times(plus(dn,const(1)),d)),
+                   plus(ulo,times(dh,d)))
 
-                    // sanity check that we get the same diff
-                    IRD.printTerm(r0)
-                    IRD.printTerm(r1)
-                    val dd = plus(r1,times(r0, const(-1)))
-                    IRD.printTerm(dd)
-                    val pp2 = poly(dd)
-                    println("poly2: " + pp2)
-                    assert(pp == pp2, s"$pp != $pp2")
+                case List(coeff0, coeff1) =>
+                  println(s"found 2nd order polynomial: f'($n0)=$coeff1*$n0+$coeff0 -> f($n0)=$coeff1*$n0/2($n0+1)+$coeff0*$n0")
 
-                    (plus(ulo,r0), plus(ulo,r1), plus(ulo,rh))
+                  // f(n) = c1 * n/2*(n+1) + c0 * n + ul   <--- ul not added here but below
+                  def eval(nX: GVal) =
+                    plus(times(times(times(nX,plus(nX,const(-1))),const(0.5)), coeff1), times(nX, coeff0))
 
+                  val r0 = eval(n0)
+                  val r1 = eval(plus(n0,const(1)))
+                  val rh = eval(nhi)
+
+                  // sanity check that we get the same diff
+                  IRD.printTerm(r0)
+                  IRD.printTerm(r1)
+                  val dd = plus(r1,times(r0, const(-1)))
+                  IRD.printTerm(dd)
+                  val pp2 = poly(dd)
+                  println("poly2: " + pp2)
+                  assert(pp == pp2, s"$pp != $pp2")
+
+                  (plus(ulo,r0), plus(ulo,r1), plus(ulo,rh))
+
+                case _ => d match {
+                  case d@Def(DIf(c@Def(_: DSelect), _, _)) if in(randKey, c) =>
+                    println(IRD.termToString(d))
+                    val idx = quantifier(n0, fsym)
+                    val rhs = subst(d, n0, GRef(idx))
+                    val (a, b, c) = (plus(ulo, sum(n0, idx, rhs)), plus(ulo, sum(plus(n0, const(1)), idx, rhs)), sum(n0, idx, rhs))
+                    (a, b, c)
                   case _ =>
                     println("giving up for term:")
                     IRD.printTerm(d)
                     throw fail
                 }
-            }
-
-            try {
-              val (u0,u1,uhi) = break(a,const(0),n0,d1)
-              return (u0,u1)
-            } catch {
-              case `fail` =>
-            }
+              }
           }
 
-          // fall-through case
-          println(s"recursive fun $fsym (init $a)")
+          try {
+            val (u0,u1,uhi) = break(a,const(0),n0,d1)
+            return (u0,u1)
+          } catch {
+            case `fail` =>
+          }
+        }
 
-          def wrapZero(x: GVal): GVal = x//iff(less(const(0), n0), x, a)
+        // fall-through case
+        println(s"recursive fun $fsym (init $a)")
 
-          (wrapZero(call(fsym,plus(n0,const(0)))),
-           b1)//wrapZero(call(fsym,n0)))
-      }
+        def wrapZero(x: GVal): GVal = x//iff(less(const(0), n0), x, a)
+
+        (wrapZero(call(fsym,plus(n0,const(0)))),
+         b1)//wrapZero(call(fsym,n0)))
+    }
 
 
-      // generate function definitions for recursive functions (even if not required)
+    // generate function definitions for recursive functions (even if not required)
 
-      // b: loop body
+    // b: loop body
 
-      def lubfun(fsym: GVal, n0: GVal, b: GVal): GVal = b match {
-        case Def(DMap(m2)) =>
-          val m = (m2.keys) map { k => k -> lubfun(mkey(fsym,k),n0,select(b,k)) }
-          val b1 = map(m.toMap)
-          fun(fsym.toString, n0.toString, b1)
-          call(fsym,n0)
-        case _ =>
-          fun(fsym.toString, n0.toString, b)
-          call(fsym,n0)
-      }
+    def lubfun(fsym: GVal, n0: GVal, b: GVal): GVal = b match {
+      case Def(DMap(m2)) =>
+        val m = (m2.keys) map { k => k -> lubfun(mkey(fsym,k),n0,select(b,k)) }
+        val b1 = map(m.toMap)
+        fun(fsym.toString, n0.toString, b1)
+        call(fsym,n0)
+      case _ =>
+        fun(fsym.toString, n0.toString, b)
+        call(fsym,n0)
+    }
 
 
   }

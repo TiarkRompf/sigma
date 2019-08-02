@@ -276,6 +276,14 @@ case class EQ(coefficients: List[Int], vars: List[String]) extends Constraint[EQ
   }
 }
 
+object GEQ {
+  def create(lhs: List[(Int, String)], rhs: List[(Int, String)]): GEQ = {
+    val (coefs, vars) = reorder(0::lhs.map(_._1)++scale(rhs.map(_._1), -1), PConst::lhs.map(_._2)++rhs.map(_._2))
+    GEQ(coefs, vars)
+  }
+
+}
+
 /* Linear Inequality: \Sigma a_i x_i >= 0 where x_0 = 1
  */
 case class GEQ(coefficients: List[Int], vars: List[String]) extends Constraint[GEQ] {
@@ -705,7 +713,7 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
 
   def upperBounds(x: String) = { getGeqs.filter(_.isUpperBound(x)) }
 
-  def lowerBounds(x: String) = { getGeqs.filter(_.isLowerBound(x)) }
+  def lowerBounds(x: String) = { getGeqs.filter(p => p.containsVar(x) && p.isLowerBound(x)) }
 
   def hasIntSolutions(): Boolean = {
     normalize match {
@@ -734,15 +742,16 @@ case class Problem(cs: List[Constraint[_]], pvars: List[String] = List(), substs
               /* real shadow has int solution; but dark shadow does not */
               val x = p.chooseVarMinCoef()
               /* m is the most negative coefficient of x */
-              val m = (for (c <- p.cs if c.containsVar(x)) yield {
+              val lm = (for (c <- p.cs if c.containsVar(x)) yield {
                 c.getCoefficientByVar(x)
-              }).sorted.head
+              }).sorted
+              val m = lm.head
 
               for (lb <- p.lowerBounds(x)) {
                 val coefx = lb.getCoefficientByVar(x)
                 val j = (floor(abs(m * coefx) - abs(m) - coefx) / abs(m)).toInt
                 if (debug) println(s"### x: $x m: $m, j: $j, coefx: $coefx ###")
-                for (j <- 0 to j) {
+                for (j <- (0 min j) to (0 max j)) {
                   val (newCoefs, newVars) = reorder((-1*j)::lb.coefficients, PConst::lb.vars)
                   if (p.copy(EQ(newCoefs, newVars)::p.cs).hasIntSolutions) return true
                 }
@@ -1107,6 +1116,12 @@ object Omega {
     }
   }
 
+  def range(low: GVal, up: GVal, idx: String) = {
+    // val rLow = translateArithExpr(low)
+    // val rIdx = List((1, idx))
+    // val rLen = translateArithExpr(up)
+    translateBoolExpr(IR.times(IR.less(IR.plus(low, IR.const(-1)), GRef(idx)), IR.less(GRef(idx), up)))
+  }
   def translateBoolExpr(e: Def): OStruct = {
     e match {
       case DLess(x, y) =>
@@ -1126,7 +1141,8 @@ object Omega {
         //OConj(OImplies(cndProb, thnProb),
         ODisj(OConj(cndProb, thnProb),
               OConj(cndProb.negation, elsProb))
-      case DSelect(GRef("rand?"), it) => OProb(Problem(List(EQ(List(-1, 1), List(PConst, randName(it)))))) // x == 1
+      case DSelect(`randKey`, it) => OProb(Problem(List(EQ(List(-1, 1), List(PConst, randName(it)))))) // x == 1
+      case DForall(l, idx, rhs) => OConj(range(GConst(0), l, idx), translateBoolExpr(rhs))
       case _ => println(s"E Missing $e"); ???
     }
   }
@@ -1154,6 +1170,7 @@ object Omega {
     case GConst(k) => k.toString.replaceAll("[()]","_")
   }
   def sumName(l: Any, idx: String, rhs: Any) = s"sum_${l}_${idx}_$rhs"
+  def fixName(idx: String, rhs: Any) = s"fix_${idx}_$rhs"
   def negBoolExpr(e: Def): OStruct = {
     e match {
       case DLess(x, y) =>
@@ -1180,10 +1197,15 @@ object Omega {
         //OConj(OImplies(cndProb, thnProb),
         OConj(ODisj(cndProb, thnProb),
               ODisj(cndProb.negation, elsProb))
-      case DSelect(GRef("rand?"), it) =>
+      case DSelect(`randKey`, it) =>
         val geqs = NEQ(List(-1, 1), List(PConst, randName(it))).toGEQ
         assert(geqs.length == 2)
         ODisj(OProb(Problem(geqs(0))), OProb(Problem(geqs(1)))) //x =/= 1
+      case DForall(l, idx, rhs) =>
+        val res = OConj(range(GConst(0), l, idx), negBoolExpr(rhs))
+        println(s">> ${termToString(l)} -- $idx -- ${termToString(rhs)}")
+        println(s"\n\nres >>> $res")
+        res
       case _ => println(s"D Missing $e"); ???
     }
   }
@@ -1192,11 +1214,13 @@ object Omega {
     e match {
       case GConst(n: Int) => List((n, PConst))
       case GRef(x) if x.endsWith("?") => List((1, x))
+      case GConst(p@(_, _)) => translateArithExpr(select(store, e))
       case GRef(x) => findDefinition(x) match {
+        case Some(DMap(m)) => translateArithExpr(m(GConst("$value")))
         case Some(gval) => translateArithExpr(gval)
         case None => println(s"Missing variable $x"); ???
       }
-      case _ => println(s"Missing $e"); ???
+      case _ => println(s"E Missing $e -- ${e.getClass}"); ???
     }
   }
 
@@ -1219,13 +1243,17 @@ object Omega {
         //       If we know x > n && y > m (n>0&&m>0), then could infer that x*y > n*m
         println(s"A Missing $e")
         List((1, s"$x*$y"))   //FIXME
-      case DSelect(GRef("rand?"), it) => List((1, randName(it)))
+      case DSelect(`randKey`, it) => List((1, randName(it)))
       case DCall(f, x) =>
         println(s"B Missing $e")
         List((1, s"$f($x)")) //FIXME
       case DSum(l, idx, rhs) => List((1, sumName(l, idx, rhs)))
-      case DFixIndex(_, _) => ???
-      case _ => println(s"C Missing $e"); ??? // FIXME
+      case DFixIndex(idx, rhs) => List((1, fixName(idx, rhs)))
+      case DIf(_, _, _) => ??? // FIXME
+      case DCollect(_, _, _) => ???
+      case _ =>
+        // (new Throwable()).printStackTrace()
+        println(s"C Missing $e -- ${e.getClass}"); ??? // FIXME
     }
   }
 }

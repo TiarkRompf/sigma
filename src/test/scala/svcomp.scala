@@ -54,6 +54,7 @@ abstract class SVCompSuite extends FileDiffSuite {
     "loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call.i",
     "loop-invgen/down_true-unreach-call.i",
     "loop-invgen/seq_true-unreach-call.i",
+    "loop-invgen/nest-if3_true-unreach-call.i",
     "loop-lit/gj2007b_true-unreach-call.c.i",
     "loop-lit/gj2007_true-unreach-call.c.i",
     "loop-lit/jm2006_variant_true-unreach-call.c.i",
@@ -63,11 +64,18 @@ abstract class SVCompSuite extends FileDiffSuite {
     "loop-lit/hhk2008_true-unreach-call.c.i",
     "loop-lit/cggmp2005_true-unreach-call.c.i",
     "loop-lit/bhmr2007_true-unreach-call.c.i",
-    "loop-invgen/nest-if3_true-unreach-call.i"
+    "loop-invgen/large_const_true-unreach-call.i",
+    "loop-lit/afnp2014_true-unreach-call.c.i",
+    "loop-lit/mcmillan2006_true-unreach-call.c.i",
+    "loop-lit/gr2006_true-unreach-call.c.i",
+    "loop-invgen/fragtest_simple_true-unreach-call.i", // not sure it is correct
+    "loop-invgen/id_trans_false-unreach-call.i",
+    "loop-lit/ddlm2013_true-unreach-call.c.i"
   )
 
   val successModified = Array(
-    "loop-invgen/half_2_true-unreach-call.i"
+    "loop-invgen/half_2_true-unreach-call.i",
+    "loop-invgen/sendmail-close-angle_true-unreach-call.i"
   )
 
   val success = successAsIs ++ successModified
@@ -76,7 +84,7 @@ abstract class SVCompSuite extends FileDiffSuite {
   )
 
   val sndDegree_condition = Array(
-    "loop-lit/gsv2008_true-unreach-call.c.i"
+    "loop-lit/gsv2008_true-unreach-call.c.i" // complicated logic
     )
 
   val incorrect = Array(
@@ -84,27 +92,13 @@ abstract class SVCompSuite extends FileDiffSuite {
     )
 
   val simplification_missing = Array(
-    "loop-invgen/large_const_true-unreach-call.i",          // random
-    "loop-invgen/string_concat-noarr_true-unreach-call.i",  // random, min/max
-    "loop-lit/afnp2014_true-unreach-call.c.i"              // random
-  )
-
-  val array_missing = Array(
-    "loop-lit/mcmillan2006_true-unreach-call.c.i"
-  )
-
-  val interger_div_missing = Array(
-    "loop-invgen/id_trans_false-unreach-call.i",
-    "loop-lit/ddlm2013_true-unreach-call.c.i"
+    "loop-invgen/string_concat-noarr_true-unreach-call.i"  // random, infinite loop?
   )
 
   val break_missing = Array(
-    "loop-lit/gr2006_true-unreach-call.c.i",
-    "loop-invgen/apache-escape-absolute_true-unreach-call.i",
-    "loop-invgen/heapsort_true-unreach-call.i",
-    "loop-invgen/sendmail-close-angle_true-unreach-call.i",
-    "loop-invgen/fragtest_simple_true-unreach-call.i",
-    "loop-invgen/apache-get-tag_true-unreach-call.i"
+    "loop-invgen/apache-escape-absolute_true-unreach-call.i", // != makes the analysis difficult
+    "loop-invgen/heapsort_true-unreach-call.i", // heap sort -- successive div
+    "loop-invgen/apache-get-tag_true-unreach-call.i" // complex control flow
   )
 
   val loop_runs_once_or_less = Array[String](
@@ -119,7 +113,7 @@ abstract class SVCompSuite extends FileDiffSuite {
     "loop-invgen/id_build_true-unreach-call.i"
   )
 
-  val handle = (success ++ simplification_missing ++ interger_div_missing ++ break_missing ++ loop_runs_once_or_less ++ toolong ++ errors).toSet
+  val handle = (success ++ simplification_missing ++ break_missing ++ loop_runs_once_or_less ++ toolong ++ errors).toSet
 
   def extractAll(patterns: Array[String]) = {
     var tot = 0
@@ -173,7 +167,7 @@ abstract class SVCompSuite extends FileDiffSuite {
           case Def(DMap(m)) => m.get(GConst("valid"))
         }).getOrElse(GError)
 
-        assert(if (props.values.head) valid == GConst(1) else valid == GConst(0), s"wanted ${props.values.head} -- got ${IR.termToString(valid)}")
+        assert(if (props.values.head) valid == GConst(1) else valid != GConst(1), s"wanted ${props.values.head} -- got ${IR.termToString(valid)}")
 
       }
     }}

@@ -319,7 +319,7 @@ END:
     int agg = 0;
 
     n = __VERIFIER_nondet_int();
-    if (n < 0) n = 0;
+    if (n <= 0) n = 0;
 
 
     for (i = 0; i < 2 * n; i = i + 2)
@@ -331,6 +331,7 @@ END:
   """
 
   val infloop = """
+int __VERIFIER_nondet_int();
 int main(int argc, char* argv[]) {
   int c1 = 4000;
   int c2 = 2000;
@@ -363,61 +364,54 @@ int main(int argc, char* argv[]) {
     """
 
     val aaa = """
-    int main() {
-      int i, n, a, b;
-      i = 0; a = 0; b = 0; n = __VERIFIER_nondet_int();
-      __VERIFIER_assume(n >= 0 && n <= 1000000);
-      while (i < n) {
-        if (__VERIFIER_nondet_int()) {
-          a = a + 1;
-          b = b + 2;
-        } else {
-          a = a + 2;
-          b = b + 1;
-        }
-        i = i + 1;
-      }
-      __VERIFIER_assert(a + b == 3*n);
-      return 0;
-    }
+int main() {
+  int n = __VERIFIER_nondet_int();
+  __VERIFIER_assume(0 <= n && n <= 1000);
+  int *x = malloc(n * sizeof(int));
+  for (int i = 0; i < n; i++) x[i] = 0;
+  for (int i = 0; i < n; i++) __VERIFIER_assert(x[i] == 0);
+  return 0;
+}
 """
 
     val nbreak = """
 int main() {
-    int x = 0;
-    int y = 50;
-    while(x < 100) {
-      if (x < 50) {
-        x = x + 1;
-      } else {
-        x = x + 1;
-        y = y + 1;
-      }
-    }
-    __VERIFIER_assert(y == 100);
-    return 0;
+  int n,i,k;
+  // n = __VERIFIER_nondet_int();
+  n = __VERIFIER_nondet_int();
+  __VERIFIER_assume(n <= 1000000);
+  k = n;
+  i = 0;
+  while( i < n ) {
+    k--;
+    i = i + 2;
+  }
+  int j = 0;
+  while( j < n/2 ) {
+    __VERIFIER_assert(k > 0);
+    k--;
+    j++;
+  }
+  return 0;
 }
-          """
+"""
 
   val sin = """
 int main() {
-  int i,j,k;
-  i = 0;
-  k = 9;
-  j = -100;
-  while (i <= 100) {
-    i = i + 1;
-    while (j < 20) {
-      j = i + j;
+  int i,k,n,l;
+  n = __VERIFIER_nondet_int();
+  l = __VERIFIER_nondet_int();
+  __VERIFIER_assume(l>0);
+  __VERIFIER_assume(l < 1000000);
+  __VERIFIER_assume(n < 1000000);
+  for (k=1;k<n;k++){
+    for (i=l;i<n;i++){
+      __VERIFIER_assert(1<=i);
     }
-    k = 4;
-    while (k <= 3) {
-      k = k + 1;
-    }
+    if(__VERIFIER_nondet_int())
+      l = l + 1;
   }
-  __VERIFIER_assert(k == 4);
-  return 0;
-}
+ }
 """
 
    def analyze(code: String) = {
@@ -430,19 +424,16 @@ int main() {
       case GConst(m: Map[GVal,GVal]) => m.get(GConst("valid"))
       case Def(DMap(m)) => m.get(GConst("valid"))
     }
-    println(s"Valid: ${termToString(valid.get)}")
+    println(s"\n\nValid: ${termToString(valid.get)}")
 
     // Should be something like this for simple_code
     // { -100 + 1x0? >= 0 } ==> { 0 = 0 } &&
     // { 99 - 1x0? >= 0 } ==> { 100 - 1x0? >= 0 }
-    val validOmega = translateBoolExpr(IR.not(valid.get))
-    println(s"!valid (omega form): $validOmega")
-    assert(!verify(validOmega))
     //OmegaTest.test
   }
 
 
   def main(arr: Array[String]) = {
-    analyze(infloop) // constant(arr(0).toInt))
+    analyze(sin) // constant(arr(0).toInt))
   }
 }

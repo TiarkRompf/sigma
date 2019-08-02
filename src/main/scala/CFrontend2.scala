@@ -31,7 +31,17 @@ object CFGBase {
     val loopHeaders: Set[String],
     val loopBodies:  Map[String,Set[String]],
     val postDom:     Map[String,Set[String]]
-  )  
+  ) {
+    override def toString = s"""
+    label: ${entryLabel}
+    blocks: ${blocks mkString("\n\t", "\n\t", "\n")}
+    blockIndex: ${blockIndex}
+    loopHeaders: ${loopHeaders}
+    loopBodies: ${loopBodies}
+    postDominators: ${postDom}
+    """
+  }
+
 }
 
 
@@ -58,6 +68,7 @@ object CtoCFG {
     blocks += b
     blockIndex(blockName) = b
     stms.clear
+    println(s"New block: $b")
     blockName = null
   }
   def startBlock(s: String) = {
@@ -69,7 +80,7 @@ object CtoCFG {
     case node: CASTTranslationUnit =>
       var map = Map.empty[String,CFG]
       val decls = node.getDeclarations
-      decls foreach { 
+      decls foreach {
         case d: CASTFunctionDefinition =>
           val name = d.getDeclarator.getName.toString
           map += (name -> funToCFG(d))
@@ -99,7 +110,7 @@ object CtoCFG {
     def dfs(l: String, path: List[String]): Unit = {
       if (path contains l) {
         loopHeaders += l
-        // Note: may reach loop header on multiple paths 
+        // Note: may reach loop header on multiple paths
         // -> don't overwrite previous body nodes
         val bodyNodes = path.takeWhile(_ != l)
         val prev = loopBodies.getOrElseUpdate(l,Set())
@@ -136,6 +147,8 @@ object CtoCFG {
   }
 
 
+  var curLoopEnd: String = null
+  var curLoopBegin: String = null
   def stmToCFG(node: IASTStatement): Unit = node match {
       case node: CASTCompoundStatement =>
           // TODO: push / pop scope
@@ -148,6 +161,12 @@ object CtoCFG {
           val clabel = freshLabel("WhileHead")
           val blabel = freshLabel("WhileBody")
           val elabel = freshLabel("WhileExit")
+
+          val save = curLoopEnd
+          val save1 = curLoopBegin
+          curLoopEnd = elabel
+          curLoopBegin = clabel
+
           endBlock(Jump(clabel))
           startBlock(clabel)
           endBlock(CJump(c,blabel,elabel))
@@ -155,11 +174,14 @@ object CtoCFG {
           stmToCFG(b)
           endBlock(Jump(clabel))
           startBlock(elabel)
+
+          curLoopEnd = save
+          curLoopBegin = save1
       /*case node: CASTDoStatement =>
           val c = node.getCondition
           val b = node.getBody
           print("do ")
-          stmToCFG(b)      
+          stmToCFG(b)
           println("while "+evalExp(c))*/
       case node: CASTForStatement =>
           val c = node.getConditionExpression
@@ -169,6 +191,12 @@ object CtoCFG {
           val clabel = freshLabel("ForHead")
           val blabel = freshLabel("ForBody")
           val elabel = freshLabel("ForExit")
+
+          val save = curLoopEnd
+          val save1 = curLoopBegin
+          curLoopEnd = elabel
+          curLoopBegin = clabel
+
           stmToCFG(i)
           endBlock(Jump(clabel))
           startBlock(clabel)
@@ -178,6 +206,9 @@ object CtoCFG {
           if (p != null) stmToCFG(new CASTExpressionStatement(p.copy))
           endBlock(Jump(clabel))
           startBlock(elabel)
+
+          curLoopEnd = save
+          curLoopBegin = save1
 
       case node: CASTIfStatement =>
           val c = node.getConditionExpression
@@ -209,16 +240,19 @@ object CtoCFG {
       case node: CASTGotoStatement =>
           endBlock(Jump(node.getName.toString))
           startBlock(freshLabel())
-/*      case node: CASTBreakStatement =>
+      case node: CASTBreakStatement =>
           println("break / TODO")
+          endBlock(Jump(curLoopEnd))
+
       case node: CASTContinueStatement =>
           println("continue / TODO")
-*/          
+          endBlock(Jump(curLoopBegin))
+
       case node: CASTReturnStatement =>
           endBlock(Return(node.getReturnValue))
           startBlock(freshLabel())
       case node: CASTNullStatement =>
-      case null => 
+      case null =>
       case _ => stms += node
   }
 
@@ -253,7 +287,7 @@ object CFGPrinter {
     var fuel = 1*1000
     def consume(l: String, stop: Set[String], cont: Set[String]): Unit = {
       fuel -= 1; if (fuel == 0) throw new Exception("XXX consume out of fuel")
-      
+
       if (stop contains l) {
         //println("// break "+l)
         return
@@ -277,7 +311,7 @@ object CFGPrinter {
       var idomIn = sdomIn.filter(n => sdomIn.forall(postDom(n)))
 
 
-      // Currently there's an issue in 
+      // Currently there's an issue in
       // loop-invgen/string_concat-noarr_true-unreach-call_true-termination.i
       // TODO: use Cooper's algorithm to compute idom directly
       if (idom.contains("STUCK")) idom = Set("STUCK") // HACK
@@ -288,12 +322,12 @@ object CFGPrinter {
       def evalBody(stop1: Set[String], cont1: Set[String]): Unit = {
         b.stms.foreach(evalStm)
         b.cnt match {
-          case Return(e) => 
+          case Return(e) =>
             println("return "+evalExp(e))
             assert(idom.isEmpty)
-          case Jump(a) => 
+          case Jump(a) =>
             assert(a == l || idom == Set(a), s"a=$a, l=$l, idom=$idom, pdom=${postDom(l)}") // handled below
-          case CJump(c,a,b) => 
+          case CJump(c,a,b) =>
             println("if "+evalExp(c)+" {")
             consume(a, stop1, cont1)
             println("} else {")
@@ -303,7 +337,7 @@ object CFGPrinter {
       }
 
       // Some complication: the immediate post-dominator
-      // of a loop header may be *inside* the loop. 
+      // of a loop header may be *inside* the loop.
       // Need to consume rest of loop body, too.
       val isLoop = loopHeaders contains l
       if (isLoop) {
