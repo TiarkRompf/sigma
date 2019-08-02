@@ -331,29 +331,34 @@ END:
   """
 
   val infloop = """
-int main() {
-  int n0, n1;
-  int i0 = 0;
-  int k = 0;
-  n0 = __VERIFIER_nondet_int();
-  n1 = __VERIFIER_nondet_int();
-  __VERIFIER_assume(-1000000 <= n0 && n0 < 1000000);
-  __VERIFIER_assume(-1000000 <= n1 && n1 < 1000000);
-  while( i0 < n0 ) {
-    i0++;
-    k++;
+int main(int argc, char* argv[]) {
+  int c1 = 4000;
+  int c2 = 2000;
+  int c3 = 10000;
+  int n, v;
+  int i, k, j;
+  n = __VERIFIER_nondet_int();
+  __VERIFIER_assume(0 <= n && n < 10);
+  k = 0;
+  i = 0;
+  while( i < n ) {
+    i++;
+    v = __VERIFIER_nondet_int();
+    __VERIFIER_assume(0 <= v && v < 2);
+    if( v == 0 )
+      k += c1;
+    else if( v == 1 )
+      k += c2;
+    else
+      k += c3;
   }
-  int i1 = 0;
-  while( i1 < n1 ) {
-    i1++;
-    k++;
+  j = 0;
+  while( j < n ) {
+    __VERIFIER_assert(k > 0);
+    j++;
+    k--;
   }
-  int j1 = 0;
-  while( j1 < n0 + n1 ) {
-      __VERIFIER_assert(k > 0);
-      j1++;
-      k--;
-  }
+  return 0;
 }
     """
 

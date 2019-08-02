@@ -62,7 +62,8 @@ abstract class SVCompSuite extends FileDiffSuite {
     "loop-lit/css2003_true-unreach-call.c.i",
     "loop-lit/hhk2008_true-unreach-call.c.i",
     "loop-lit/cggmp2005_true-unreach-call.c.i",
-    "loop-lit/bhmr2007_true-unreach-call.c.i"
+    "loop-lit/bhmr2007_true-unreach-call.c.i",
+    "loop-invgen/nest-if3_true-unreach-call.i"
   )
 
   val successModified = Array(
@@ -83,7 +84,6 @@ abstract class SVCompSuite extends FileDiffSuite {
     )
 
   val simplification_missing = Array(
-    "loop-invgen/nest-if3_true-unreach-call.i",             // random
     "loop-invgen/large_const_true-unreach-call.i",          // random
     "loop-invgen/string_concat-noarr_true-unreach-call.i",  // random, min/max
     "loop-lit/afnp2014_true-unreach-call.c.i"              // random
