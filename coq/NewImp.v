@@ -606,6 +606,8 @@ Module IMPEval.
 
   (* IMP Evaluation function *)
 
+  Reserved Notation "'〚' e '〛' ( st ) " (at level 90, left associativity).
+
   Fixpoint eval_exp (e: exp) (σ: store) : option val :=
     match e with
     (* | EId x  => o ← (σ (LId x)) IN o 0 *)
@@ -613,38 +615,39 @@ Module IMPEval.
     | EBool b => Some (VBool b)
     | ELoc x => Some (VLoc (LId x))
     | EPlus x y =>
-      a ← eval_exp x σ >>= toNat IN
-      b ← eval_exp y σ >>= toNat IN
+      a ← 〚x〛(σ) >>= toNat IN
+      b ← 〚y〛(σ) >>= toNat IN
       Some (VNum (a + b))
     | EMinus x y =>
-      a ← eval_exp x σ >>= toNat IN
-      b ← eval_exp y σ >>= toNat IN
+      a ← 〚x〛(σ) >>= toNat IN
+      b ← 〚y〛(σ) >>= toNat IN
       Some (VNum (a - b))
     | EMult x y =>
-      a ← eval_exp x σ >>= toNat IN
-      b ← eval_exp y σ >>= toNat IN
+      a ← 〚x〛(σ) >>= toNat IN
+      b ← 〚y〛(σ) >>= toNat IN
       Some (VNum (a * b))
     | ELt x y =>
-      a ← eval_exp x σ >>= toNat IN
-      b ← eval_exp y σ >>= toNat IN
+      a ← 〚x〛(σ) >>= toNat IN
+      b ← 〚y〛(σ) >>= toNat IN
       Some (VBool (a <? b))
     | EEq x y =>
-      a ← eval_exp x σ >>= toNat IN
-      b ← eval_exp y σ >>= toNat IN
+      a ← 〚x〛(σ) >>= toNat IN
+      b ← 〚y〛(σ) >>= toNat IN
       Some (VBool (a =? b))
     | EAnd x y =>
-      a ← eval_exp x σ >>= toBool IN
-      b ← eval_exp y σ >>= toBool IN
+      a ← 〚x〛(σ) >>= toBool IN
+      b ← 〚y〛(σ) >>= toBool IN
       Some (VBool (andb a b))
     | ENeg x =>
-      a ← eval_exp x σ >>= toBool IN
+      a ← 〚x〛(σ) >>= toBool IN
       Some (VBool (negb a))
     | EFieldRead e1 e2 =>
-      l ← eval_exp e1 σ >>= toLoc IN
-      n ← eval_exp e2 σ >>= toNat IN
+      l ← 〚e1〛(σ) >>= toLoc IN
+      n ← 〚e2〛(σ) >>= toNat IN
       o ← σ l IN
       o n
-    end.
+    end
+  where "'〚' e '〛' ( st ) " := (eval_exp e st) : type_scope.
 
   (* TODO: out-of-fuel or error? *)
 
@@ -667,9 +670,11 @@ Module IMPEval.
     | O => Some (Some σ)
     | S n' =>
       σ' ↩ eval_loop b1 s σ c n' evstmt IN
-      b ← eval_exp b1 σ' >>= toBool IN
-      if b then evstmt σ' (PWhile c n') else None (* error or timeout ??? *)
+      b ↩ Some (eval_exp b1 σ' >>= toBool) IN
+      if b then evstmt σ' (PWhile c n') else Some None (* error or timeout ??? *)
     end.
+
+  Reserved Notation "'〚' s '〛' ( st , c ) ( m )" (at level 90, left associativity).
 
   Fixpoint eval_stm (s: stmt) (σ: store) (c: path) (m: nat) : option (option store) :=
     match s with
@@ -678,20 +683,20 @@ Module IMPEval.
             LId x st↦ (0 obj↦ (VLoc (LNew c))) ;
             σ))
     | e1[[e2]] ::= e3 =>
-      l ← eval_exp e1 σ >>= toLoc IN
-      n ← eval_exp e2 σ >>= toNat IN
-      v ← eval_exp e3 σ IN
+      l ↩ Some (〚e1〛(σ) >>= toLoc) IN
+      n ↩ Some (〚e2〛(σ) >>= toNat) IN
+      v ↩ Some (〚e3〛(σ)) IN
       o ← σ l IN
       Some (Some (l st↦ (n obj↦ v ; o) ; σ))
     | IF b THEN s1 ELSE s2 FI =>
-      b ← eval_exp b σ >>= toBool IN
+      b ↩ Some (〚b〛(σ) >>= toBool) IN
       if b
-      then eval_stm s1 σ (PThen c) m
-      else eval_stm s2 σ (PElse c) m
+      then 〚s1〛(σ, PThen c)(m)
+      else 〚s2〛(σ, PElse c)(m)
     | WHILE b1 DO s1 END =>
       n ← idx m (fun i =>
-                   match (σ' ↩ eval_loop b1 s1 σ c i (fun σ'' c1 => eval_stm s1 σ'' c1 m) IN
-                          b ← eval_exp b1 σ' >>= toBool IN
+                   match (σ' ↩ eval_loop b1 s1 σ c i (fun σ'' c1 => 〚s1〛(σ'', c1)(m)) IN
+                          b ↩ Some (〚b1〛(σ') >>= toBool) IN
                           Some (Some (negb b))) with
                    | Some (Some b) => Some b
                    | Some None => Some true
@@ -699,13 +704,16 @@ Module IMPEval.
                    end
                 (* TODO: cleanup slightly. inline eval_loop? *)
                 ) IN
-      eval_loop b1 s1 σ c n (fun σ' c1 => eval_stm s1 σ' c1 m)
+      eval_loop b1 s1 σ c n (fun σ' c1 => 〚s1〛(σ', c1)(m))
     | s1 ;; s2 =>
-      σ' ↩ eval_stm s1 σ (PFst c) m IN
-      eval_stm s2 σ' (PSnd c) m
+      σ' ↩ 〚s1〛(σ, PFst c)(m) IN
+      〚s2〛(σ', PSnd c)(m)
     | SKIP =>
       Some (Some σ)
     | SAbort => Some None
-    end.
+    end
+  where "'〚' s '〛' ( st , c ) ( m )" := (eval_stm s st c m) : type_scope.
+
+  Definition eval (s: stmt) := 〚s〛(σ0, PRoot)(500).
 
 End IMPEval.
