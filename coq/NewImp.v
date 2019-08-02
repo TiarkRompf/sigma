@@ -529,6 +529,7 @@ Module IMPRel.
     (* stmt determinisitc *)
    *)
 
+(*
   Theorem loop_false_store_inv3 : ∀ σ σ' σ'' p e s n,
       (σ, p) ⊢ (e, s) n ⇓∞ σ' →
       σ' ⊢ e ⇓ₑ (VBool false) →
@@ -602,7 +603,7 @@ Module IMPRel.
         specialize IHE1_2 with (σ''0 := σ''0).
         assert (σ' = σ'0). { apply IHE1_1. apply H3. } subst.
         assert (σ'' = σ''0). { apply IHE1_2. apply H5. } apply H.
-    Qed.
+    Qed.*)
 End IMPRel.
 
 (* IMP Standard semantics, without context path *)
@@ -614,10 +615,6 @@ End IMPStd.
 (* IMP Monadic functional semantics *)
 
 Module IMPEval.
-
-  Inductive result : Type :=
-  | RStore : option store -> result
-  | RUndefined : result.
 
   (* Monad operations *)
 
@@ -727,15 +724,13 @@ Module IMPEval.
   Fixpoint idx (m : nat) (p : nat -> option bool) : option nat :=
     idx1 0 m p.
 
-  (* TODO: distinguish divergence and runtime error *)
-
   Fixpoint eval_loop (b1: exp) (s: stmt) (σ: store) (c: path) (n: nat)
            (evstmt: store -> path -> option (option store)) : option (option store) :=
     match n with
     | O => Some (Some σ)
     | S n' =>
       σ' ↩ eval_loop b1 s σ c n' evstmt IN
-      b ← eval_exp b1 σ' >>= toBool IN
+      b ↩ Some (eval_exp b1 σ' >>= toBool) IN
       if b then evstmt σ' (PWhile c n') else Some None (* error or timeout ??? *)
     end.
 
@@ -748,20 +743,20 @@ Module IMPEval.
             LId x st↦ (0 obj↦ (VLoc (LNew c))) ;
             σ))
     | e1[[e2]] ::= e3 =>
-      l ← eval_exp e1 σ >>= toLoc IN
-      n ← eval_exp e2 σ >>= toNat IN
-      v ← eval_exp e3 σ IN
+      l ↩ Some (〚e1〛(σ) >>= toLoc) IN
+      n ↩ Some (〚e2〛(σ) >>= toNat) IN
+      v ↩ Some (〚e3〛(σ)) IN
       o ← σ l IN
       Some (Some (l st↦ (n obj↦ v ; o) ; σ))
     | IF b THEN s1 ELSE s2 FI =>
-      b ← eval_exp b σ >>= toBool IN
+      b ↩ Some (〚b〛(σ) >>= toBool) IN
       if b
       then 〚s1〛(σ, PThen c)(m)
       else 〚s2〛(σ, PElse c)(m)
     | WHILE b1 DO s1 END =>
       n ← idx m (fun i =>
                    match (σ' ↩ eval_loop b1 s1 σ c i (fun σ'' c1 => 〚s1〛(σ'', c1)(m)) IN
-                          b ← eval_exp b1 σ' >>= toBool IN
+                          b ↩ Some (〚b1〛(σ') >>= toBool) IN
                           Some (Some (negb b))) with
                    | Some (Some b) => Some b
                    | Some None => Some true
