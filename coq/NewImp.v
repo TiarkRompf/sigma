@@ -254,7 +254,7 @@ Module IMPRel.
 
   Reserved Notation "st '⊢' e '⇓ₑ' v" (at level 90, left associativity).
 
-  Inductive evalExpR : store → exp → val → Prop :=
+  Inductive evalExp : store → exp → val → Prop :=
   (* | RId x :  ∀ σ, σ ⊢ (EId x) ⇓ₑ (σ (LId x)) 0 *)
   | RNum n : ∀ σ, σ ⊢ (ENum n) ⇓ₑ (VNum n)
   | RBool b : ∀ σ, σ ⊢ (EBool b) ⇓ₑ (VBool b)
@@ -292,12 +292,12 @@ Module IMPRel.
       σ l = Some o →
       o n = Some v →
       σ ⊢ (EFieldRead e1 e2) ⇓ₑ v
-  where "st '⊢' e '⇓ₑ' v" := (evalExpR st e v) : type_scope.
+  where "st '⊢' e '⇓ₑ' v" := (evalExp st e v) : type_scope.
 
   Reserved Notation "( st1 , c ) '⊢' ( e , s ) n '⇓∞' st2" (at level 90, left associativity).
   Reserved Notation "( st1 , c ) '⊢' s '⇓' st2" (at level 90, left associativity).
 
-  Inductive evalLoopR : store → path → exp → stmt → nat → store → Prop :=
+  Inductive evalLoop : store → path → exp → stmt → nat → store → Prop :=
   | RWhileZero : ∀ σ c e s,
       (σ, c) ⊢ (e, s) 0 ⇓∞ σ
   | RWhileMore : ∀ (σ σ' σ'' : store) c n e s,
@@ -305,8 +305,8 @@ Module IMPRel.
       σ' ⊢ e ⇓ₑ (VBool true) →
       (σ', PWhile c n) ⊢ s ⇓ σ'' →
       (σ, c) ⊢ (e, s) 1+n ⇓∞ σ''
-  where "( st1 , c ) ⊢ ( e , s ) n '⇓∞' st2" := (evalLoopR st1 c e s n st2) : type_scope
-  with evalStmtR : store → path → stmt → store → Prop :=
+  where "( st1 , c ) ⊢ ( e , s ) n '⇓∞' st2" := (evalLoop st1 c e s n st2) : type_scope
+  with evalStmt : store → path → stmt → store → Prop :=
   | RAlloc x : ∀ σ p,
       (σ, p) ⊢ x ::= ALLOC ⇓ (LNew p st↦ mt_obj ;
                               LId x  st↦ (0 obj↦ VLoc (LNew p)) ;
@@ -334,10 +334,10 @@ Module IMPRel.
       (σ', PSnd p) ⊢ s2 ⇓ σ'' →
       (σ, p) ⊢ s1 ;; s2 ⇓ σ''
   | RSkip : ∀ σ p, (σ, p) ⊢ SKIP ⇓ σ
-  where "( st1 , c ) '⊢' s '⇓' st2" := (evalStmtR st1 c s st2) : type_scope.
+  where "( st1 , c ) '⊢' s '⇓' st2" := (evalStmt st1 c s st2) : type_scope.
 
-  Scheme evalLoopRelMut := Induction for evalLoopR Sort Prop
-    with evalStmtRelMut := Induction for evalStmtR Sort Prop.
+  Scheme evalLoopRelMut := Induction for evalLoop Sort Prop
+    with evalStmtRelMut := Induction for evalStmt Sort Prop.
 
   (* TODO: clean up this *)
   Theorem exp_deterministic : ∀ σ e v1 v2,
@@ -403,7 +403,7 @@ Module IMPRel.
       σ = σ'.
   Proof.
     intros. induction H0. auto. auto. assert (σ ⊢ e ⇓ₑ VBool false) as H'.
-    auto. apply IHevalLoopR in H. subst.
+    auto. apply IHevalLoop in H. subst.
     assert (VBool false = VBool true). eapply exp_deterministic. eauto. eauto.
     discriminate H.
   Qed.
@@ -608,46 +608,46 @@ Module IMPEval.
 
   Reserved Notation "'〚' e '〛' ( st ) " (at level 90, left associativity).
 
-  Fixpoint eval_exp (e: exp) (σ: store) : option val :=
+  Fixpoint evalExp (e: exp) (σ: store) : option val :=
     match e with
     (* | EId x  => o ← (σ (LId x)) IN o 0 *)
     | ENum n => Some (VNum n)
     | EBool b => Some (VBool b)
     | ELoc x => Some (VLoc (LId x))
     | EPlus x y =>
-      a ← 〚x〛(σ) >>= toNat IN
-      b ← 〚y〛(σ) >>= toNat IN
+      a ←〚x〛(σ) >>= toNat IN
+      b ←〚y〛(σ) >>= toNat IN
       Some (VNum (a + b))
     | EMinus x y =>
-      a ← 〚x〛(σ) >>= toNat IN
-      b ← 〚y〛(σ) >>= toNat IN
+      a ←〚x〛(σ) >>= toNat IN
+      b ←〚y〛(σ) >>= toNat IN
       Some (VNum (a - b))
     | EMult x y =>
-      a ← 〚x〛(σ) >>= toNat IN
-      b ← 〚y〛(σ) >>= toNat IN
+      a ←〚x〛(σ) >>= toNat IN
+      b ←〚y〛(σ) >>= toNat IN
       Some (VNum (a * b))
     | ELt x y =>
-      a ← 〚x〛(σ) >>= toNat IN
-      b ← 〚y〛(σ) >>= toNat IN
+      a ←〚x〛(σ) >>= toNat IN
+      b ←〚y〛(σ) >>= toNat IN
       Some (VBool (a <? b))
     | EEq x y =>
-      a ← 〚x〛(σ) >>= toNat IN
-      b ← 〚y〛(σ) >>= toNat IN
+      a ←〚x〛(σ) >>= toNat IN
+      b ←〚y〛(σ) >>= toNat IN
       Some (VBool (a =? b))
     | EAnd x y =>
-      a ← 〚x〛(σ) >>= toBool IN
-      b ← 〚y〛(σ) >>= toBool IN
+      a ←〚x〛(σ) >>= toBool IN
+      b ←〚y〛(σ) >>= toBool IN
       Some (VBool (andb a b))
     | ENeg x =>
-      a ← 〚x〛(σ) >>= toBool IN
+      a ←〚x〛(σ) >>= toBool IN
       Some (VBool (negb a))
     | EFieldRead e1 e2 =>
-      l ← 〚e1〛(σ) >>= toLoc IN
-      n ← 〚e2〛(σ) >>= toNat IN
+      l ←〚e1〛(σ) >>= toLoc IN
+      n ←〚e2〛(σ) >>= toNat IN
       o ← σ l IN
       o n
     end
-  where "'〚' e '〛' ( st ) " := (eval_exp e st) : type_scope.
+  where "'〚' e '〛' ( st ) " := (evalExp e st) : type_scope.
 
   (* TODO: out-of-fuel or error? *)
 
@@ -664,19 +664,19 @@ Module IMPEval.
 
   (* TODO: distinguish divergence and runtime error *)
 
-  Fixpoint eval_loop (b1: exp) (s: stmt) (σ: store) (c: path) (n: nat)
+  Fixpoint evalLoop (b1: exp) (s: stmt) (σ: store) (c: path) (n: nat)
            (evstmt: store -> path -> option (option store)) : option (option store) :=
     match n with
     | O => Some (Some σ)
     | S n' =>
-      σ' ↩ eval_loop b1 s σ c n' evstmt IN
-      b ↩ Some (eval_exp b1 σ' >>= toBool) IN
+      σ' ↩ evalLoop b1 s σ c n' evstmt IN
+      b  ↩ Some (〚b1〛(σ') >>= toBool) IN
       if b then evstmt σ' (PWhile c n') else Some None (* error or timeout ??? *)
     end.
 
   Reserved Notation "'〚' s '〛' ( st , c ) ( m )" (at level 90, left associativity).
 
-  Fixpoint eval_stm (s: stmt) (σ: store) (c: path) (m: nat) : option (option store) :=
+  Fixpoint evalStmt (s: stmt) (σ: store) (c: path) (m: nat) : option (option store) :=
     match s with
     | x ::= ALLOC =>
       Some (Some (LNew c st↦ mt_obj ;
@@ -695,25 +695,85 @@ Module IMPEval.
       else 〚s2〛(σ, PElse c)(m)
     | WHILE b1 DO s1 END =>
       n ← idx m (fun i =>
-                   match (σ' ↩ eval_loop b1 s1 σ c i (fun σ'' c1 => 〚s1〛(σ'', c1)(m)) IN
+                   match (σ' ↩ evalLoop b1 s1 σ c i (fun σ'' c1 => 〚s1〛(σ'', c1)(m)) IN
                           b ↩ Some (〚b1〛(σ') >>= toBool) IN
                           Some (Some (negb b))) with
                    | Some (Some b) => Some b
                    | Some None => Some true
                    | None => None
                    end
-                (* TODO: cleanup slightly. inline eval_loop? *)
+                (* TODO: cleanup slightly. inline evalLoop? *)
                 ) IN
-      eval_loop b1 s1 σ c n (fun σ' c1 => 〚s1〛(σ', c1)(m))
+      evalLoop b1 s1 σ c n (fun σ' c1 => 〚s1〛(σ', c1)(m))
     | s1 ;; s2 =>
       σ' ↩ 〚s1〛(σ, PFst c)(m) IN
       〚s2〛(σ', PSnd c)(m)
-    | SKIP =>
-      Some (Some σ)
+    | SKIP => Some (Some σ)
     | SAbort => Some None
     end
-  where "'〚' s '〛' ( st , c ) ( m )" := (eval_stm s st c m) : type_scope.
+  where "'〚' s '〛' ( st , c ) ( m )" := (evalStmt s st c m) : type_scope.
 
   Definition eval (s: stmt) := 〚s〛(σ0, PRoot)(500).
 
 End IMPEval.
+
+Module Adequacy.
+
+  Import IMPRel.
+  Import IMPEval.
+
+  Theorem exp_adequacy : ∀ e σ v,
+    σ ⊢ e ⇓ₑ v <-> 〚 e 〛(σ) = Some v.
+  Proof.
+    intros. split.
+    - intros. induction H; simpl; auto.
+      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
+      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
+      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
+      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
+      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
+      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
+      + rewrite IHevalExp. simpl.  reflexivity.
+      + rewrite IHevalExp1.  rewrite IHevalExp2. simpl. rewrite H1. auto.
+    - intros. generalize dependent v.
+      induction e; intros; inversion H; inversion H; clear H2.
+      + eapply RNum.
+      + eapply RBool.
+      + eapply RLoc.
+      + destruct (〚e1〛(σ)); destruct (〚e2〛(σ)); inversion H1.
+        * destruct v0; destruct v1; simpl in H1; inversion H1.
+          eapply RPlus. eapply IHe1. reflexivity. eapply IHe2. reflexivity.
+        * destruct v0; simpl in H1; inversion H1.
+      + destruct (〚e1〛(σ)); destruct (〚e2〛(σ)); inversion H1.
+        * destruct v0; destruct v1; simpl in H1; inversion H1.
+          eapply RMinus. eapply IHe1. reflexivity. eapply IHe2. reflexivity.
+        * destruct v0; simpl in H1; inversion H1.
+      + destruct (〚e1〛(σ)); destruct (〚e2〛(σ)); inversion H1.
+        * destruct v0; destruct v1; simpl in H1; inversion H1.
+          eapply RMult. eapply IHe1. reflexivity. eapply IHe2. reflexivity.
+        * destruct v0; simpl in H1; inversion H1.
+      + destruct (〚e1〛(σ)); destruct (〚e2〛(σ)); inversion H1.
+        * destruct v0; destruct v1; simpl in H1; inversion H1.
+          eapply RLt. eapply IHe1. reflexivity. eapply IHe2. reflexivity.
+        * destruct v0; simpl in H1; inversion H1.
+      + destruct (〚e1〛(σ)); destruct (〚e2〛(σ)); inversion H1.
+        * destruct v0; destruct v1; simpl in H1; inversion H1.
+          eapply REq. eapply IHe1. reflexivity. eapply IHe2. reflexivity.
+        * destruct v0; simpl in H1; inversion H1.
+      + destruct (〚e1〛(σ)); destruct (〚e2〛(σ)); inversion H1.
+        * destruct v0; destruct v1; simpl in H1; inversion H1.
+          eapply RAnd. eapply IHe1. reflexivity. eapply IHe2. reflexivity.
+        * destruct v0; simpl in H1; inversion H1.
+      + destruct (〚e〛(σ)); inversion H1.
+        * destruct v0; simpl in H1; inversion H1.
+          eapply RNeg. eapply IHe. reflexivity.
+      + destruct (〚e1〛(σ)); destruct (〚e2〛(σ)); inversion H1.
+        * destruct v0; destruct v1; simpl in H1; inversion H1.
+          simpl in H2. case_eq (σ l); intros; rewrite H0 in H1.
+          eapply RFieldRead. eapply IHe1. reflexivity. eapply IHe2. reflexivity.
+          eapply H0. eapply H1.
+          inversion H1.
+        * destruct v0; simpl in H1; inversion H1.
+  Qed.
+        
+End Adequacy.

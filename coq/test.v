@@ -13,34 +13,34 @@ Module IMPEvalTest.
     o ← σ (LId x) IN
     o 0.
 
-  Definition test_eval_stm (σ: store) (s: stmt) :=
-    match eval_stm s σ PRoot 500 with
+  Definition test_eval_stmt (σ: store) (s: stmt) :=
+    match evalStmt s σ PRoot 500 with
     | Some (Some σ') => Some (Some (deref σ' W, deref σ' X, deref σ' Y, deref σ' Z))
     | Some None => Some None
     | None    => None
     end.
 
   Example testcase_1:
-    (test_eval_stm σ0
+    (test_eval_stmt σ0
                    (ELoc X ::= ENum 2;;
                     ELoc Y ::= σ[X])) = Some (Some (None, Some (VNum 2), Some (VNum 2), None)).
   Proof. reflexivity. Qed.
 
   Example testcase_2:
-    (test_eval_stm σ0
+    (test_eval_stmt σ0
                    (ELoc X ::= ENum 2;;
                     ELoc X ::= EPlus (σ[X]) (ENum 3))) = Some (Some (None, Some (VNum 5), None, None)).
   Proof. reflexivity. Qed.
 
   Example testcase_3:
-    (test_eval_stm σ0
+    (test_eval_stmt σ0
                    (X ::= ALLOC;;
                     ELoc X ::= ENum 2;;
                     ELoc Y ::= σ[X])) = Some (Some (None, Some (VNum 2), Some (VNum 2), None)).
   Proof. reflexivity. Qed.
 
   Example testcase_4:
-    (test_eval_stm σ0
+    (test_eval_stmt σ0
                    (X ::= ALLOC;;
                     ELoc X ::= ENum 2;;
                     Y ::= ALLOC;;
@@ -48,7 +48,7 @@ Module IMPEvalTest.
   Proof. reflexivity. Qed.
 
   Example testcase_5:
-    (test_eval_stm σ0
+    (test_eval_stmt σ0
                    (X ::= ALLOC;;
                     ELoc X[[ENum 0]] ::= ENum 2;;
                     ELoc X[[ENum 1]] ::= ENum 3;;
@@ -65,7 +65,7 @@ Module IMPEvalTest.
     END.
 
   Example testcase_6:
-    (test_eval_stm σ0 while1) = Some (Some (None, Some (VNum 4), Some (VNum 24), Some (VNum 0))).
+    (test_eval_stmt σ0 while1) = Some (Some (None, Some (VNum 4), Some (VNum 24), Some (VNum 0))).
   Proof. reflexivity. Qed.
 
   Definition while2 : stmt :=
@@ -83,11 +83,11 @@ Module IMPEvalTest.
     END.
 
   Example testcase_7:
-    (test_eval_stm σ0 while2) = Some (Some (Some (VNum 10), Some (VNum 0), Some (VNum 5), Some (VNum 5))).
+    (test_eval_stmt σ0 while2) = Some (Some (Some (VNum 10), Some (VNum 0), Some (VNum 5), Some (VNum 5))).
   Proof. reflexivity. Qed.
 
   Example testcase_8:
-    (test_eval_stm σ0
+    (test_eval_stmt σ0
                 (ELoc X ::= ENum 2;;
                 IF ELt (σ[X]) (ENum 1)
                 THEN ELoc Y ::= ENum 3
@@ -96,24 +96,24 @@ Module IMPEvalTest.
   Proof. reflexivity. Qed.
 
   Example testcase_9:
-    (test_eval_stm σ0
+    (test_eval_stmt σ0
                    (ELoc X ::= σ[Z])) = Some None.
   Proof. reflexivity. Qed.
 
   Example testcase_10:
-    (test_eval_stm σ0
+    (test_eval_stmt σ0
                    (WHILE (EBool true) DO SKIP END)) = None.
   Proof. reflexivity. Qed.
 
   Example testcase_11:
-    (test_eval_stm σ0
+    (test_eval_stmt σ0
                    (X ::= ALLOC;;
                     ELoc X[[ENum 0]] ::= ENum 2;;
                     ELoc Y ::= ELoc X[[ENum 1]])) = Some None.
   Proof. reflexivity. Qed.
 
   Example testcase_12:
-    (test_eval_stm σ0
+    (test_eval_stmt σ0
                    (ELoc X[[ENum 1]] ::= ENum 2)) = Some (Some (None, None, None, None)). (* error or allowed ??? *)
   Proof. reflexivity. Qed.
 
