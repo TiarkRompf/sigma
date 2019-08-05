@@ -775,5 +775,37 @@ Module Adequacy.
           inversion H1.
         * destruct v0; simpl in H1; inversion H1.
   Qed.
+
+  (*
+  Theorem exp_adequacy_error : ∀ e σ,
+    ¬ (exists v, σ ⊢ e ⇓ₑ v) <-> 〚 e 〛(σ) = None.
+  Theorem exp_adequacy_error : ∀ e σ v,
+    ¬ (σ ⊢ e ⇓ₑ v) <-> 〚 e 〛(σ) = None.
+   *)
+
+  Theorem stmt_adequacy : ∀ s σ σ' n,
+      (σ, PRoot) ⊢ s ⇓ σ' <-> 〚s〛(σ, PRoot)(n) = Some (Some σ').
+  Proof.
+    intros. split.
+    - intros. induction H; simpl.
+      + reflexivity.
+      + assert (〚 e1 〛(σ) = Some (VLoc l)). eapply exp_adequacy. eauto.
+        assert (〚 e2 〛(σ) = Some (VNum idx0)). eapply exp_adequacy. eauto.
+        assert (〚 e3 〛(σ) = Some v). eapply exp_adequacy. eauto.
+        rewrite H3. rewrite H4. rewrite H5. simpl. rewrite H2.
+        reflexivity.
+      + assert (〚 e 〛(σ) = Some (VBool true)). eapply exp_adequacy. eauto.
+        rewrite H1. simpl. auto.
+      + assert (〚 e 〛(σ) = Some (VBool false)). eapply exp_adequacy. eauto.
+        rewrite H1. simpl. auto.
+      + assert (〚 e 〛(σ') = Some (VBool false)). eapply exp_adequacy. eauto.
+        admit.
+      + rewrite IHevalStmt1. rewrite IHevalStmt2. reflexivity.
+      + reflexivity.
+    - intros. generalize dependent σ'. induction s; intros.
+      + simpl in H. inversion H. eapply RAlloc.
+      +
+                
+      
         
 End Adequacy.
