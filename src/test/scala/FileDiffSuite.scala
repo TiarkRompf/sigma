@@ -5,7 +5,7 @@ import org.scalatest._
 import scala.Console
 
 trait FileDiffSuite extends FunSuite {
-  val overwriteCheckFiles = true // should be false; temporary set to true only to simplify development
+  val overwriteCheckFiles = false // should be false; temporary set to true only to simplify development
 
   def indent(str: String) = {
     val s = new StringWriter

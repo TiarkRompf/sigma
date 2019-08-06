@@ -1,16 +1,7 @@
 package analysis
 
-import CBase._
-import CtoCFG._
-import CFGtoEngine._
-
-import CFrontend2._
-import Test1._
-import IRD._
-
-import Omega._
-
-object MyMain {
+object MyMain extends CFGtoEngine with Omega {
+  import IRD._
   def testOmega = {
     import Constraint._
     import Problem._
@@ -330,7 +321,7 @@ END:
   }
   """
 
-  val infloop = """
+  val infloopcode = """
 int __VERIFIER_nondet_int();
 int main(int argc, char* argv[]) {
   int c1 = 4000;
@@ -375,28 +366,38 @@ int main() {
 """
 
     val nbreak = """
-int main() {
-  int n,i,k;
-  // n = __VERIFIER_nondet_int();
+int main(int argc, char* argv[]) {
+  int c1 = 4000;
+  int c2 = 2000;
+  int c3 = 10000;
+  int n, v;
+  int i, k, j;
   n = __VERIFIER_nondet_int();
-  __VERIFIER_assume(n <= 1000000);
-  k = n;
+  __VERIFIER_assume(0 <= n && n < 10);
+  k = 0;
   i = 0;
   while( i < n ) {
-    k--;
-    i = i + 2;
+    i++;
+    v = __VERIFIER_nondet_int();
+    __VERIFIER_assume(0 <= v && v < 2);
+    if( v == 0 )
+      k += c1;
+    else if( v == 1 )
+      k += c2;
+    else
+      k += c3;
   }
-  int j = 0;
-  while( j < n/2 ) {
+  j = 0;
+  while( j < n ) {
     __VERIFIER_assert(k > 0);
-    k--;
     j++;
+    k--;
   }
   return 0;
 }
 """
 
-  val sin = """
+  val sin0 = """
 int main() {
   int i,k,n,l;
   n = __VERIFIER_nondet_int();
@@ -414,11 +415,45 @@ int main() {
  }
 """
 
-   def analyze(code: String) = {
+  val sin = """
+int main() {
+    int i,j,k,n,l,m;
+    n = __VERIFIER_nondet_int();
+    m = __VERIFIER_nondet_int();
+    l = __VERIFIER_nondet_int();
+    __VERIFIER_assume(-1000000 < n && n < 1000000);
+    __VERIFIER_assume(-1000000 < m && m < 1000000);
+    __VERIFIER_assume(-1000000 < l && l < 1000000);
+    if(3*n<=m+l); else goto END;
+    for (i=0;i<n;i++) {
+      for (j = 2*i;j<3*i;j++)
+          for (k = i; k< j; k++)
+              __VERIFIER_assert( k-i <= 2*n );
+    }
+END:
+    return 0;
+}
+"""
+
+  def sin2 = """
+void f(int n) {
+  if (n<3) return;
+  n--;
+  f(n);
+  ERROR: __VERIFIER_error();
+}
+
+int main(void) {
+  f(4);
+}
+"""
+
+  def analyze(code: String) = {
     val parsed = parseCString(code)
     val cfgs = fileToCFG(parsed)
 
-    val store = evalCFG(cfgs("main"))
+    val (args, cfg) = cfgs("main")
+    val store = evalCFG(args, cfg, funcs = cfgs)
 
     val valid = store match {
       case GConst(m: Map[GVal,GVal]) => m.get(GConst("valid"))
@@ -434,6 +469,6 @@ int main() {
 
 
   def main(arr: Array[String]) = {
-    analyze(sin) // constant(arr(0).toInt))
+    analyze(sin2) // constant(arr(0).toInt))
   }
 }

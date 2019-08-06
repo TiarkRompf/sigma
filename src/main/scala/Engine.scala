@@ -51,12 +51,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     }
 
     val debugF = true
-    val debugSet = Set[String]("Assert") // , "Declarator", "TypeCheck")
+    val debugSet = Set[String]("Assert", "select") // , "Declarator", "TypeCheck")
     def debug(pref: String, s: => String) = if (debugF && debugSet(pref)) println(s"$pref: " + s)
   }
 
 
-  object Test1 {
+  trait Test1 {
     import Util._
 
     // *** intermediate language / IR interfaces
@@ -76,6 +76,9 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
 
     val valid = GConst("valid")
     val randKey = GRef("r?")
+    val value = GConst("$value")
+    val tpe = GConst("$type")
+    val infloop = GConst("$infloop")
 
     object GType {
       val int = GConst("int")
@@ -165,8 +168,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       def ident(s: String) = s //"  " + (s split("\n") mkString("\n  "))
       def map(m: Map[From,From])                   = /*if (m.keySet.map(_.toString) == Set("\"val\"")) // FIXME: HACK
                                                        s"[${m.getOrElse(GConst("val"), m("\"val\""))}]"
-                                                     else*/ if (m.keySet.map(_.toString) == Set("\"$value\"", "\"$type\"")) // FIXME: HACK
-                                                       s"[ ${m.getOrElse(GConst("$value"), m("\"$value\""))} : ${m.getOrElse(GConst("$type"), m("\"$type\""))} ]"
+                                                     else*/ if (m.keySet.map(_.toString) == Set(value.toString, tpe.toString)) // FIXME: HACK
+                                                       s"[ ${m.getOrElse(value, m(value.toString))} : ${m.getOrElse(tpe, m(tpe.toString))} ]"
                                                      else {
                                                       s"{ ${m map { case (key, value) => s"$key -> $value" } mkString(",")} }"
                                                        //m.toString //s"{\n${ident(m map { case (key, value) => s"$key -> $value" } mkString(",\n"))}\n}"
@@ -671,6 +674,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (Def(DIf(c,x,z)),_) => iff(c,plus(x,y),plus(z,y))
         case (_,Def(DIf(c,y,z))) => iff(c,plus(x,y),plus(x,z))
         // random simplifications ...
+        case _ if x == y => times(x, const(2))
         case (Def(DSum(l1, n1, rhs1)), Def(DSum(l2, n2, rhs2))) if l1 == l2 => sum(l1, n1, plus(rhs1, if (n1 == n2) rhs2 else subst(rhs2, GRef(n2), GRef(n1))))
         case (Def(DSum(l1, n1, rhs1)), Def(DTimes(Def(DSum(l2, n2, rhs2)), GConst(-1)))) if l1 == plus(l2, const(1)) && rhs1 == rhs2 => subst(rhs1, GRef(n1), l2)
         // (sum(x17?) { x17?x16_&b_$value? => (x17?x16_&b_$value? * -1) } + (x17? * -1))
@@ -678,6 +682,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (GConst(c),b:GRef) => plus(b,const(c)) // CAVE: non-int consts!
         case (GConst(c),b:DSelect) => plus(b,const(c)) // CAVE: non-int consts!
         case (Def(DPlus(a,b)),_) => plus(a,plus(b,y))
+        // (x45? + (x45? + (x115? + ((x115? * (x45? * -2)) + (x115? + -1)))))
+        case (a, Def(DPlus(a1, b))) if a == a1 => plus(times(a, const(2)), b)
         // (r?((&r:0,top)) + (((r?((&r:0,top)) / 2) * -1)
         case (a, Def(DTimes(Def(DDiv(Def(DPlus(a1, GConst(1))), GConst(2))), GConst(-1)))) if a == a1 => div(a, const(2)) // generalize!
         case (a,Def(DTimes(a1,GConst(k)))) if a == a1 => times(a, plus(const(k), const(1))) // a + (a * k) --> a * (k + 1)
@@ -752,6 +758,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case (GConst(k1: Int), GConst(k2: Int)) => const(k1 / k2)
         // ((x17? * 2) + 2) / 2
         case (Def(DPlus(Def(DTimes(a, GConst(k: Int))), GConst(k1: Int))), GConst(k2: Int)) if k % k2 == 0 => plus(times(a, const(k / k2)), const(k1 / k2))
+        // (x17? * 2) / 2
+        case (Def(DTimes(a, GConst(k: Int))), GConst(k2: Int)) if k % k2 == 0 => times(a, const(k / k2))
         case _ => super.div(x, y)
       }
 
@@ -913,8 +921,8 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
             case (Def(DMap(m1)), GError) =>
               // push inside maps
               map(m1.keySet map { k => k -> iff(c,m1.getOrElse(k,GError),GError) } toMap)
-            case (Def(DMap(m)), GError) if m.keySet == Set(GConst("$value"), GConst("$type")) =>
-              map(Map(GConst("$value") -> iff(c, m(GConst("$value")), GError), GConst("$type") -> m(GConst("$type"))))
+            case (Def(DMap(m)), GError) if m.keySet == Set(value, tpe) =>
+              map(Map(value -> iff(c, m(value), GError), tpe -> m(tpe)))
             case _ =>
               // generate node, but remove nested tests on same condition
               val thenp = subst(x,c,GConst(1))
@@ -982,6 +990,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         case Def(DSum(l, _, rhs)) => in(x, l) || in(x, rhs)
         case Def(DIf(a, b, c)) => in(x, a) || in(x, b) || in(x, c)
         case Def(DLess(a, b)) => in(x, a) || in(x, b)
+        case Def(DFixIndex(y, rhs)) => GRef(y) != x && in(x, rhs)
         case GConst(_) => false
         case Def(c) => println(s"in missing: ${c.getClass}"); ???
         case c: GRef => false
@@ -1122,8 +1131,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
 
   // *** polynomial approximation / lub computation for while loops
 
-  object Approx {
-    import Test1._
+  trait Approx extends Test1 {
     import IRD._
 
     def isRand(a: GVal) = a match {
@@ -1170,7 +1178,12 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
     // returns: new values before,after
     def lub(a: GVal, b0: GVal, b1: GVal)(fsym: GVal, n0: GVal): (GVal, GVal) = { println(s"lub_$fsym($a,$b0,$b1)"); (a,b0,b1) } match {
       case (a,b0,b1) if a == b1 => (a,a)
-      case (GError, _, Def(DSelect(`randKey`, itvec))) =>
+      case (GError, _, Def(DSelect(`randKey`, itvec))) => (subst(b1, n0, plus(n0, const(-1))), b1)
+      case (GError, GError, Def(DMap(m))) if m.contains(value) => (subst(b1, n0, plus(n0, const(-1))), b1)
+      case (GError, _, _) => // Def(DSelect(`randKey`, itvec))) =>
+        IRD.printTerm(a)
+        IRD.printTerm(b0)
+        IRD.printTerm(b1)
         (b0, b1)
       case (_, _, Def(DMap(m2))) =>
         val m = m2.keys filterNot { k => s"$k".contains("$more") /* || s"$k".contains("valid") */ } map {
@@ -1179,10 +1192,13 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           case k => (k, lub(select(a,k),select(b0,k),select(b1,k))(mkey(fsym,k),n0))
         }
         (map(m.map(kv=>(kv._1,kv._2._1)).toMap), map(m.map(kv=>(kv._1,kv._2._2)).toMap))
-      case (a,b0, Def(DUpdate(bX, `n0`, y))) if bX == b0 || (bX == map(Map()) && b0 == GError) => // array creation
+      case (_: GConst, _, GConst(b)) if subst(b0, n0, const(1)) == b1 =>
         IRD.printTerm(a)
         IRD.printTerm(b0)
         IRD.printTerm(b1)
+        (b1, b1)
+        ???
+      case (a,b0, Def(DUpdate(bX, `n0`, y))) if bX == b0 || (bX == map(Map()) && b0 == GError) => // array creation
         //use real index var !!
         val nX = mkey(fsym,n0)
         println(s"hit update at loop index -- assume collect")
@@ -1198,9 +1214,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       case (a/*@Def(DPair(a1,a2))*/,b0/*@Def(DPair(b01,b02))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]))
         if !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] => // diff op should take precedence
         // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
-        IRD.printTerm(a)
-        IRD.printTerm(b0)
-        IRD.printTerm(b1)
         println(s"hit pair -- assume only 0 case differs (loop peeling)")
         val b0X = subst(b1,n0,plus(n0,const(-1)))
         (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
@@ -1209,9 +1222,6 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
       case (a/*@Def(DPair(a1,a2))*/,Def(DPair(_,_)) | GConst(_: Tuple2[_,_]), b1/*@Def(DPair(b01,b02))*/)
         if { !plus(b1,times(b0,const(-1))).isInstanceOf[GConst] } => // XXX diff op should take precedence
         // example: (A,1), (B,(1,i)) TODO: safe?? // test 6B1
-        IRD.printTerm(a)
-        IRD.printTerm(b0)
-        IRD.printTerm(b1)
         println(s"hit pair -- assume only 0 case differs (loop peeling)")
         val b0X = subst(b1,n0,plus(n0,const(-1)))
         (iff(less(const(0),n0),b0X,a), iff(less(const(-1),n0),b1,a))
@@ -1229,6 +1239,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
         IRD.printTerm(b0)
         IRD.printTerm(e)
         (b0, subst(b0, n0, plus(n0, const(1))))
+      case (a, Def(DPlus(a1, Def(DSum(l, idx, rhs)))), o) if a == a1 && {
+        val d = plus(o, times(b0, const(-1))) // difference
+        subst(d, n0, l) == subst(rhs, GRef(idx), l) // if the difference at index `length` is equal to the sum in the term for idx == length
+      } =>
+        (b0, plus(a, sum(plus(l, const(1)), idx, rhs)))
       case (a, Def(DPlus(a1, Def(DSum(l, idx, rhs)))), o) if a == a1 && {
         val d = plus(o, times(b0, const(-1))) // difference
         subst(d, n0, l) == subst(rhs, GRef(idx), l) // if the difference at index `length` is equal to the sum in the term for idx == length
@@ -1368,11 +1383,13 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
                   println(s"confirmed iterative loop, d = $d")
                   // before: ul + n * d
                   // after:  ul + (n+1) * d
+
                   val dn = plus(n0,times(nlo,const(-1)))
                   val dh = plus(nhi,times(nlo,const(-1)))
                   (plus(ulo,times(dn,d)),
-                   plus(ulo,times(plus(dn,const(1)),d)),
-                   plus(ulo,times(dh,d)))
+                    plus(ulo,times(plus(dn,const(1)),d)),
+                    plus(ulo,times(dh,d)))
+
 
                 case List(coeff0, coeff1) =>
                   println(s"found 2nd order polynomial: f'($n0)=$coeff1*$n0+$coeff0 -> f($n0)=$coeff1*$n0/2($n0+1)+$coeff0*$n0")
@@ -1394,10 +1411,13 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
                   println("poly2: " + pp2)
                   assert(pp == pp2, s"$pp != $pp2")
 
-                  (plus(ulo,r0), plus(ulo,r1), plus(ulo,rh))
+                  // if (ulo == GError)
+                  //   (r0, r1, rh)
+                  // else
+                    (plus(ulo,r0), plus(ulo,r1), plus(ulo,rh))
 
                 case _ => d match {
-                  case d@Def(DIf(c@Def(_: DSelect), _, _)) if in(randKey, c) =>
+                  case d@Def(DIf(c, _, _)) if in(randKey, c) =>
                     println(IRD.termToString(d))
                     val idx = quantifier(n0, fsym)
                     val rhs = subst(d, n0, GRef(idx))

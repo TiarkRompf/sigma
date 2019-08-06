@@ -1,14 +1,7 @@
 package analysis
 
-import CBase._
-import CtoCFG._
-import CFGtoEngine._
-
-import CFrontend2._
-import Test1._
-import IRD._
-
-class CTest2 extends FileDiffSuite {
+class CTest2 extends FileDiffSuite with CFGtoEngine {
+  import IRD._
 
   val prefix = "test-out/test-c-2"
 
@@ -16,8 +9,9 @@ class CTest2 extends FileDiffSuite {
     val parsed = parseCString(code)
     val cfgs = fileToCFG(parsed)
 
-    evalCfgUnit(parsed)
-    val store = evalCFG(cfgs("main"))
+    // evalCfgUnit(parsed)
+    val (args, cfg) = cfgs("main")
+    val store = evalCFG(args, cfg)
     val valid = store match {
       case GConst(m: Map[GVal,GVal]) => m.get(GConst("valid"))
       case Def(DMap(m)) => m.get(GConst("valid"))

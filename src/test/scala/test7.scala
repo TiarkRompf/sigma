@@ -1,8 +1,6 @@
 package analysis
 
-import SimpleFrontend._
-
-class TestAnalysis7 extends RunAndCheckSuite {
+class TestAnalysis7 extends RunAndCheckSuite with SimpleFrontend {
 
   val prefix = "test-out/test-analysis-7"
 

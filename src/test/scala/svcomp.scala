@@ -1,10 +1,6 @@
 package analysis
 
 import Util._
-import CBase._
-import Test1._
-import CFrontend2._
-import IRD._
 import scala.io.Source
 
 abstract class SVCompSuite extends FileDiffSuite {
@@ -42,11 +38,82 @@ abstract class SVCompSuite extends FileDiffSuite {
     )
 
   val recursive = Array(
-    // "recursive/*_false-unreach-call*.c",
-    // "recursive/*_true-unreach-call*.c",
-    "recursive-simple/*_false-unreach-call*.c",
-    "recursive-simple/*_true-unreach-call*.c")
+  "recursive-simple/sum_25x0_false-unreach-call.c",
+  "recursive-simple/afterrec_false-unreach-call.c",
+  "recursive-simple/sum_15x0_false-unreach-call.c",
+  "recursive-simple/fibo_2calls_2_false-unreach-call.c",
+  // "recursive-simple/id_b3_o2_false-unreach-call.c", // random values
+  "recursive-simple/fibo_5_false-unreach-call.c",
+  // "recursive-simple/sum_non_false-unreach-call.c",  // random values
+  "recursive-simple/fibo_2calls_4_false-unreach-call.c",
+  // "recursive-simple/id_o100_false-unreach-call.c",  // random values
+  // "recursive-simple/id_o3_false-unreach-call.c",    // random values
+  "recursive-simple/sum_10x0_false-unreach-call.c",
+  "recursive-simple/sum_20x0_false-unreach-call.c",
+  "recursive-simple/id_i20_o20_false-unreach-call.c",
+  // "recursive-simple/fibo_25_false-unreach-call.c", // fibo(25) OoM
+  // "recursive-simple/sum_non_eq_false-unreach-call.c",
+  "recursive-simple/fibo_2calls_5_false-unreach-call.c",
+  "recursive-simple/afterrec_2calls_false-unreach-call.c",
+  // "recursive-simple/id_o200_false-unreach-call.c",
+  // "recursive-simple/id_o1000_false-unreach-call.c",
+  "recursive-simple/id_i10_o10_false-unreach-call.c",
+  "recursive-simple/id2_i5_o5_false-unreach-call.c",
+  "recursive-simple/id_i5_o5_false-unreach-call.c",
+  "recursive-simple/fibo_10_false-unreach-call.c",
+  "recursive-simple/sum_2x3_false-unreach-call.c",
+  "recursive-simple/fibo_15_false-unreach-call.c",
+  "recursive-simple/fibo_2calls_15_false-unreach-call.c",
+  "recursive-simple/id_i15_o15_false-unreach-call.c",
+  "recursive-simple/id_i25_o25_false-unreach-call.c",
+  // "recursive-simple/id_o10_false-unreach-call.c",
+  "recursive-simple/fibo_2calls_10_false-unreach-call.c",
+  // "recursive-simple/id_o20_false-unreach-call.c",
+  // "recursive-simple/id2_b3_o2_false-unreach-call.c",
+  "recursive-simple/fibo_2calls_20_false-unreach-call.c",
+  // "recursive-simple/fibo_2calls_25_false-unreach-call.c",
+  "recursive-simple/fibo_2calls_6_false-unreach-call.c",
+  "recursive-simple/fibo_7_false-unreach-call.c",
+  "recursive-simple/fibo_20_false-unreach-call.c",
+  "recursive-simple/fibo_2calls_8_false-unreach-call.c",
+  "recursive-simple/id_i25_o25_true-unreach-call.c",
+  // "recursive-simple/id_b2_o3_true-unreach-call.c",
+  "recursive-simple/afterrec_true-unreach-call.c",
+  "recursive-simple/id_i10_o10_true-unreach-call.c",
+  "recursive-simple/id2_i5_o5_true-unreach-call.c",
+  "recursive-simple/id_i5_o5_true-unreach-call.c",
+  // "recursive-simple/id_b3_o5_true-unreach-call.c",
+  "recursive-simple/fibo_15_true-unreach-call.c",
+  "recursive-simple/fibo_2calls_4_true-unreach-call.c",
+  "recursive-simple/fibo_2calls_8_true-unreach-call.c",
+  "recursive-simple/fibo_2calls_10_true-unreach-call.c",
+  // "recursive-simple/id2_b5_o10_true-unreach-call.c",
+  // "recursive-simple/id2_b3_o5_true-unreach-call.c",
+  "recursive-simple/id_i20_o20_true-unreach-call.c",
+  "recursive-simple/fibo_2calls_6_true-unreach-call.c",
+  "recursive-simple/sum_2x3_true-unreach-call.c",
+  // "recursive-simple/id_b5_o10_true-unreach-call.c",
+  // "recursive-simple/sum_non_true-unreach-call.c",
+  "recursive-simple/fibo_2calls_5_true-unreach-call.c",
+  // "recursive-simple/sum_non_eq_true-unreach-call.c",
+  "recursive-simple/fibo_7_true-unreach-call.c",
+  "recursive-simple/fibo_10_true-unreach-call.c",
+  // "recursive-simple/fibo_2calls_25_true-unreach-call.c",
+  "recursive-simple/sum_15x0_true-unreach-call.c",
+  "recursive-simple/fibo_5_true-unreach-call.c",
+  // "recursive-simple/id2_b2_o3_true-unreach-call.c",
+  "recursive-simple/sum_25x0_true-unreach-call.c",
+  "recursive-simple/fibo_2calls_15_true-unreach-call.c",
+  // "recursive-simple/fibo_25_true-unreach-call.c",
+  "recursive-simple/sum_20x0_true-unreach-call.c",
+  "recursive-simple/fibo_2calls_2_true-unreach-call.c",
+  "recursive-simple/fibo_2calls_20_true-unreach-call.c",
+  "recursive-simple/sum_10x0_true-unreach-call.c",
+  "recursive-simple/fibo_20_true-unreach-call.c",
+  "recursive-simple/afterrec_2calls_true-unreach-call.c",
+  "recursive-simple/id_i15_o15_true-unreach-call.c"
 
+    )
   val successAsIs = Array(
     "loop-invgen/nested6_true-unreach-call.i",
     "loop-invgen/up_true-unreach-call.i",
@@ -54,7 +121,7 @@ abstract class SVCompSuite extends FileDiffSuite {
     "loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call.i",
     "loop-invgen/down_true-unreach-call.i",
     "loop-invgen/seq_true-unreach-call.i",
-    "loop-invgen/nest-if3_true-unreach-call.i",
+    "loop-invgen/nest-if3_true-unreach-call.i", // this one is pretty cool
     "loop-lit/gj2007b_true-unreach-call.c.i",
     "loop-lit/gj2007_true-unreach-call.c.i",
     "loop-lit/jm2006_variant_true-unreach-call.c.i",
@@ -70,25 +137,24 @@ abstract class SVCompSuite extends FileDiffSuite {
     "loop-lit/gr2006_true-unreach-call.c.i",
     "loop-invgen/fragtest_simple_true-unreach-call.i", // not sure it is correct
     "loop-invgen/id_trans_false-unreach-call.i",
-    "loop-lit/ddlm2013_true-unreach-call.c.i"
+    "loop-lit/ddlm2013_true-unreach-call.c.i",
+    "loop-invgen/nested9_true-unreach-call.i",
+    "loop-invgen/half_2_true-unreach-call.i",
+    "loop-invgen/id_build_true-unreach-call.i"
   )
 
   val successModified = Array(
-    "loop-invgen/half_2_true-unreach-call.i",
     "loop-invgen/sendmail-close-angle_true-unreach-call.i"
   )
 
   val success = successAsIs ++ successModified
-
-  val found0 = Array(
-  )
 
   val sndDegree_condition = Array(
     "loop-lit/gsv2008_true-unreach-call.c.i" // complicated logic
     )
 
   val incorrect = Array(
-    "loop-lit/cggmp2005b_true-unreach-call.c.i" // invalid j
+    "loop-lit/cggmp2005b_true-unreach-call.c.i" // hit recursion
     )
 
   val simplification_missing = Array(
@@ -101,19 +167,11 @@ abstract class SVCompSuite extends FileDiffSuite {
     "loop-invgen/apache-get-tag_true-unreach-call.i" // complex control flow
   )
 
-  val loop_runs_once_or_less = Array[String](
-  )
-
   val toolong = Array(
     "loop-invgen/SpamAssassin-loop_true-unreach-call.i"
   )
 
-  val errors = Array(
-    "loop-invgen/nested9_true-unreach-call.i",
-    "loop-invgen/id_build_true-unreach-call.i"
-  )
-
-  val handle = (success ++ simplification_missing ++ break_missing ++ loop_runs_once_or_less ++ toolong ++ errors).toSet
+  val handle = (success ++ simplification_missing ++ break_missing ++ toolong).toSet
 
   def extractAll(patterns: Array[String]) = {
     var tot = 0
@@ -147,29 +205,35 @@ abstract class SVCompSuite extends FileDiffSuite {
   def testOne(dir: String, file: String, props: Map[String,Boolean]) = {
     val key = dir+"/"+file
     test(key) { withOutFileChecked(out_prefix+key) {
-      println("// # "+key)
-      val parsed = parseCFile(sv_bench_root+"/"+dir+"/"+file)
-      println("// # literal source")
-      println(readFile(sv_bench_root+"/"+key))
-      //println("// # custom traverser")
-      //Util.time{evalCfgUnit(parsed)}
-      //println("// # default pretty printer")
-      //prettyPrintDefault(parsed)
-      Util.time {
-        import CtoCFG._
-        import CFGtoEngine._
+      var res: String = "ERROR"
+      object Runner extends CFGtoEngine {
+        import IRD._
+        def run = {
+          println("// # "+key)
+          val parsed = parseCFile(sv_bench_root+"/"+dir+"/"+file)
+          println("// # literal source")
+          println(readFile(sv_bench_root+"/"+key))
 
-        val cfgs = fileToCFG(parsed)
-        val store = evalCFG(cfgs("main"))
+          withOutFileDiscarded("useless") {
+            val cfgs = fileToCFG(parsed)
+            val (args, cfg) = cfgs("main")
+            val store = evalCFG(args, cfg, funcs = cfgs)
 
-        val valid = (store match {
-          case GConst(m: Map[GVal,GVal]) => m.get(GConst("valid"))
-          case Def(DMap(m)) => m.get(GConst("valid"))
-        }).getOrElse(GError)
+            res = termToString(store)
 
-        assert(if (props.values.head) valid == GConst(1) else valid != GConst(1), s"wanted ${props.values.head} -- got ${IR.termToString(valid)}")
+            val valid = (store match {
+              case GConst(m: Map[GVal,GVal]) => m.get(GConst("valid"))
+              case Def(DMap(m)) => m.get(GConst("valid"))
+            }).getOrElse(GError)
 
+            assert(if (props.values.head) valid == GConst(1) else valid != GConst(1), s"wanted ${props.values.head} -- got ${termToString(valid)} (${termToString(store)})")
+          }
+        }
       }
+      Runner.run
+
+      println("\n\nFinal store:")
+      println(res)
     }}
   }
 
@@ -184,9 +248,9 @@ class SVCompLoops extends SVCompSuite {
   extractAll(loops)
 }
 
-// class SVCompRecursive extends SVCompSuite {
-//     extractAll(recursive)
-// }
+class SVCompRecursive extends SVCompSuite {
+  runAll(recursive)
+}
 
 
 class SVCompRunSuccess extends SVCompSuite {

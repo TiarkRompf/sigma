@@ -26,9 +26,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
       we need assert() to signal verification failures
 */
 
-  object SimpleFrontend {
-    import Test1._
-    import Approx._
+  trait SimpleFrontend extends Test1 with Approx {
 
     // *** input language Exp
 
@@ -182,7 +180,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
         val cv_before = eval(c)
         store = subst(store, cv_before, GConst(1))
         val first = store
-        
+
         println(s"initial assumption: f(0)=$first, f($n0)=$first, f($n0+1)=$first")
 
         var init = first
@@ -223,14 +221,14 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
           printMap(initNew)
           println("*** nextNew ***")
           printMap(nextNew)
- 
+
           // evaluate loop condition based on new approximation
           store = initNew
-          
+
           val cv = eval(c)
 
           store = subst(store, cv, GConst(1))
-            
+
           // are we done or do we need another iteration?
           if (init != store) { init = store; iterCount += 1; iter } else {
             // no further information was gained: go ahead
@@ -312,9 +310,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
 
   }
 
-  object Main {
-    import Test1._
-    import SimpleFrontend._
+  trait MainAux extends SimpleFrontend {
     // *** run and test
 
     def run(testProg: Exp): Unit = runAndCheck(testProg)
@@ -359,7 +355,7 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutpu
         Assign("r", Ref("a"))
       ))
 
-      Main.runAndCheck(prog)
+      runAndCheck(prog)
       ()
     }
 

@@ -8,8 +8,7 @@ import mutable.ArrayBuffer
 
 import Util._
 
-object CFGBase {
-  import CBase._
+trait CFGBase extends CBase {
 
   abstract class Continuation
   case class Return(e: IASTExpression) extends Continuation
@@ -45,8 +44,7 @@ object CFGBase {
 }
 
 
-object CtoCFG {
-  import CFGBase._
+trait CtoCFG extends CFGBase {
 
   // CFG builder state follows
 
@@ -76,14 +74,15 @@ object CtoCFG {
     stms.clear
   }
 
-  def fileToCFG(node: IASTTranslationUnit): Map[String,CFG] = node match {
+  def fileToCFG(node: IASTTranslationUnit): Map[String,(Seq[String], CFG)] = node match {
     case node: CASTTranslationUnit =>
-      var map = Map.empty[String,CFG]
+      var map = Map.empty[String,(Seq[String], CFG)]
       val decls = node.getDeclarations
       decls foreach {
         case d: CASTFunctionDefinition =>
           val name = d.getDeclarator.getName.toString
-          map += (name -> funToCFG(d))
+          val args = d.getDeclarator.asInstanceOf[CASTFunctionDeclarator].getParameters.map(_.getDeclarator.getName.toString)
+          map += (name -> (args, funToCFG(d)))
         case _ => // ignore
       }
       map
@@ -259,9 +258,7 @@ object CtoCFG {
 }
 
 
-object CFGPrinter {
-  import CPrinter._
-  import CFGBase._
+trait CFGPrinter extends CPrinter with CFGBase {
 
   def evalCFG(cfg: CFG): Unit = {
     import cfg._
@@ -361,14 +358,12 @@ object CFGPrinter {
 }
 
 
-object CFrontend2 {
-  import CBase._
-  import CtoCFG._
-  import CFGPrinter._
+object CFrontend2 extends CtoCFG with CFGPrinter {
 
   def evalCfgUnit(parsed: IASTTranslationUnit) = {
     val cfgs = fileToCFG(parsed)
-    evalCFG(cfgs("main"))
+    val (args, cfg) = cfgs("main")
+    evalCFG(cfg)
   }
 }
 

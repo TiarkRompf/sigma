@@ -33,7 +33,7 @@ import Util._
       first compute cfg, then dominators, then reconstruct while/if
 */
 
-object CBase {
+trait CBase {
 
   val language: ILanguage = GCCLanguage.getDefault() // GNUC
 
@@ -62,19 +62,19 @@ object CBase {
   }
 
   object FileContentProvider extends InternalFileContentProvider {
-    def getContentForInclusion(pFilePath: IIndexFileLocation,pAstPath: String): InternalFileContent = 
+    def getContentForInclusion(pFilePath: IIndexFileLocation,pAstPath: String): InternalFileContent =
       InternalParserUtil.createFileContent(pFilePath)
-    def getContentForInclusion(pFilePath: String,pMacroDictionary: IMacroDictionary): InternalFileContent = 
+    def getContentForInclusion(pFilePath: String,pMacroDictionary: IMacroDictionary): InternalFileContent =
       InternalParserUtil.createExternalFileContent(pFilePath,
             InternalParserUtil.SYSTEM_DEFAULT_ENCODING);
   }
 
   def parseCFile(name: String) =
-    language.getASTTranslationUnit(wrapFile(name), 
+    language.getASTTranslationUnit(wrapFile(name),
       StubScannerInfo, FileContentProvider, null, PARSER_OPTIONS, parserLog)
 
   def parseCString(code: String) =
-    language.getASTTranslationUnit(wrapCode("anon.c", code), 
+    language.getASTTranslationUnit(wrapCode("anon.c", code),
       StubScannerInfo, FileContentProvider, null, PARSER_OPTIONS, parserLog)
 
 
@@ -99,10 +99,7 @@ object CBase {
 
 
 // custom pretty printer code below
-
 object CPrinter {
-  import CBase._
-
   val types = Array(
   "t_unspecified", // = 0;
   "t_void", // = 1;
@@ -166,7 +163,7 @@ object CPrinter {
   // <code>op_not</code> ==> ! exp
   "op_not", // = 7;
   // sizeof.
-  // <code>op_sizeof</code> ==> sizeof exp  
+  // <code>op_sizeof</code> ==> sizeof exp
   "op_sizeof", // = 8;
   // Postfix increment.
   // <code>op_postFixIncr</code> ==> exp++
@@ -280,6 +277,11 @@ object CPrinter {
     // <code>op_typeof</code> is used for typeof( typeId ) type expressions.
     "op_typeof" // = 3;
   )
+}
+
+trait CPrinter extends CBase {
+  import CPrinter._
+
 
   def evalType(node: IASTDeclSpecifier) = node match {
     case d: CASTSimpleDeclSpecifier     => types(d.getType)
@@ -340,7 +342,7 @@ object CPrinter {
       print("(")
       var first = true
       for (d <- xs) {
-        if (!first) print(",")        
+        if (!first) print(",")
         print(evalType(d.getDeclSpecifier))
         print(" ")
         evalDeclarator(d.getDeclarator)
@@ -395,7 +397,7 @@ object CPrinter {
           val c = node.getCondition
           val b = node.getBody
           print("do ")
-          evalStm(b)      
+          evalStm(b)
           println("while "+evalExp(c))
       case node: CASTForStatement =>
           val c = node.getConditionExpression
@@ -436,7 +438,7 @@ object CPrinter {
           println("return "+evalExp(node.getReturnValue))
       case node: CASTNullStatement =>
           println("{}")
-      case null => 
+      case null =>
           println("{}")
       case _ => println("stm "+node)
   }

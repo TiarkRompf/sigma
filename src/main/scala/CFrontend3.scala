@@ -7,18 +7,14 @@ import scala.collection.{mutable,immutable}
 import mutable.ArrayBuffer
 
 import Util._
-import Omega._
 
-object CFGtoEngine {
-  import CFGBase._
-  import Test1._
-  import Approx._
+trait CFGtoEngine extends CtoCFG with Approx with Omega {
   val IR = IRD
 
   type Val = IR.From
 
-  val value = GConst("$value")
-  val tpe = GConst("$type")
+  // val value = GConst("$value")
+  // val tpe = GConst("$type")
   def typedGVal(x: Val, tp: Val) = IR.map(Map(value -> x, tpe -> tp))
   def gValValue(x: Val) = IR.select(x, value)
   def gValType(x: Val) = IR.select(x, tpe)
@@ -26,12 +22,15 @@ object CFGtoEngine {
 
   val store0 = GConst(Map(valid -> GConst(1))) // , rand -> rand))
   val constraints0 = List[OProb]()
+  var funs: Map[String,(Seq[String], CFG)] = _
 
   val itvec0 = IR.const("top")
 
   var store: Val = store0
   var itvec: Val = itvec0
   var constraints = constraints0
+  var location = new mutable.HashMap[Any,String]()
+  var locNum =   new mutable.HashMap[String,Int]()
 
   def evalType(node: IASTDeclSpecifier) = node match {
     case d: CASTSimpleDeclSpecifier     => CPrinter.types(d.getType)
@@ -40,10 +39,11 @@ object CFGtoEngine {
     case d: CASTCompositeTypeSpecifier  => d.getName // enough?
   }
 
+  val checkValid = false
   def updateValid(check: Val) = {
     val oldValid = IR.select(store, valid)
     val newValid = IR.times(oldValid, check)
-    if (debugF && newValid == GConst(0)) {
+    if (checkValid && newValid == GConst(0)) {
       println(s"Not valid anymore...\n\n${IR.termToString(oldValid)} =>\n\n${IR.termToString(check)}\n")
       ???
     }
@@ -79,8 +79,6 @@ object CFGtoEngine {
       case _ => GError}), GError)
   }
 
-  val location = new mutable.HashMap[Any,String]()
-  val locNum =   new mutable.HashMap[String,Int]()
   def next(st: String) = { val idx = locNum.getOrElse(st, 0); locNum(st) = idx + 1; s"&$st:$idx" }
   def evalExp(node: IASTNode): Val = { /* println(s"NODE: $node"); */ node } match {
       case node: CASTLiteralExpression =>
@@ -313,25 +311,31 @@ object CFGtoEngine {
           }
       case node: CASTFunctionCallExpression =>
           val fun = node.getFunctionNameExpression
-          val arg = node.getParameterExpression
+          val args = node.getArguments
           fun.asInstanceOf[CASTIdExpression].getName.toString match {
             case "__VERIFIER_nondet_int" =>
               val idx = IR.pair(GConst(location.getOrElseUpdate(node.hashCode, next("r"))),itvec)
               typedGVal(IR.select(randKey, idx), GType.int)
               // newV
             case "__VERIFIER_assume" =>
-              constraints = assumeTrue(evalExp(arg))(constraints):::constraints
+              assert(args.length == 1)
+              constraints = assumeTrue(evalExp(args(0)))(constraints):::constraints
               println(s"Assume new constraints: ${constraints.mkString("\n\t", "\n\t", "\n")}")
               GError
+            case "__VERIFIER_error" =>
+              assert(args.length == 0)
+              store = updateValid(IR.const(0))
+              typedGVal(IR.const(()), GType.void)
             case "assert" | "__VERIFIER_assert" =>
-
-              gValTypeCheck(evalExp(arg), GType.int) { arg =>
+              assert(args.length == 1)
+              gValTypeCheck(evalExp(args(0)), GType.int) { arg =>
                   debug("Assert", s"original - ${IR.termToString(arg)} -- simplified: ${IR.termToString(simplifyBool(arg)(constraints))}")
                   store = updateValid(simplifyBool(arg)(constraints))
                   typedGVal(IR.const(()), GType.void)
               }
             case "malloc" =>
-              val newV = gValTypeCheck(evalExp(arg), GType.int) { arg =>
+              assert(args.length == 1)
+              val newV = gValTypeCheck(evalExp(args(0)), GType.int) { arg =>
                 // typedGVal(IR.map(Map(GConst("value") -> typedGVal(GConst(0), GType.int), GConst("next") -> typedGVal(GConst(0), GType.pointer(GConst("list"))))), GConst("list"))
                 typedGVal(IR.collect(arg, freshVar + "?", GError), GType.pointer(GType.int))
               }
@@ -339,6 +343,19 @@ object CFGtoEngine {
               val idx = IR.pair(GConst(location.getOrElseUpdate(node.hashCode, next("new"))),itvec)
               store = IR.update(store, idx, newV)
               typedGVal(idx, GType.pointer(GType.pointer(GType.int)))
+            case name if funs.contains(name) =>
+              val (argsName, cfg) = funs(name)
+              assert(argsName.length == args.length, s"${argsName.length} == ${args.length}")
+              val eargs = args map evalExp
+              println(s"function call args:")
+              (argsName zip eargs) map { case (name, l) => println(s"\t $name -> ${IR.termToString(l)}") }
+
+              val iStore = ((argsName zip eargs) map {
+                case (name, l) => IR.const("&" + name) -> l
+              }).toMap
+              val fStore = evalCFG(argsName, cfg, GConst(iStore + (valid -> GConst(1))), funs)
+              store = updateValid(IR.select(fStore, valid))
+              IR.select(fStore, IR.const("return"))
             case name =>
               println("ERROR: unknown function call: "+name)
               GConst("<call "+name+">")
@@ -399,7 +416,7 @@ object CFGtoEngine {
         }
 
       case null => typedGVal(GConst(0), GType.int)
-      //case _ => "(exp "+node+")"
+      case node => println(s"Handle: ${node.getClass}"); ???
   }
 
   def makePtrType(n: Int, tp: GVal) = {
@@ -470,30 +487,38 @@ object CFGtoEngine {
     val save1 = constraints
     //assert(c1)
     println(s"store before then >> ${IR.termToString(store)}")
-    if (IR.select(c1, value) != GConst(0))
+    val s1 = if (IR.select(c1, value) != GConst(0)) {
       constraints = assumeTrue(c1)(save1):::save1
-    val e1 = a
-    val s1 = simplify(store)(constraints)
-    println(s"store after then >> ${IR.termToString(s1)}\nunder: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
+      val e1 = a
+      val s1 = simplify(store)(constraints)
+      println(s"store after then >> ${IR.termToString(s1)}\nunder: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
+      Some(s1)
+    } else None
     //assertNot(c1)
-    if (IR.select(c1, value) != GConst(1))
+    val s2 = if (IR.select(c1, value) != GConst(1)) {
       constraints = assumeTrue(IR.not(c1))(save1):::save1
-    store = save
-    println(s"\nstore before else >> ${IR.termToString(store)}")
-    val e2 = b
-    val s2 = simplify(store)(constraints)
-    println(s"store after else >> ${IR.termToString(s2)}\nunder: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
-    store = gValTypeCheck(c1, GType.int) { c1 =>
-      IR.iff(c1,s1,s2)
-    }
+      store = save
+      println(s"\nstore before else >> ${IR.termToString(store)}")
+      val e2 = b
+      val s2 = simplify(store)(constraints)
+      println(s"store after else >> ${IR.termToString(s2)}\nunder: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
+      Some(s2)
+    } else None
+
+    store = if (s1.isDefined && s2.isDefined)
+      gValTypeCheck(c1, GType.int) { c1 =>
+        IR.iff(c1,s1.get,s2.get)
+      }
+    else s1.getOrElse(s2.get)
     constraints = save1
+    println(s"store after if >> ${IR.termToString(store)}\nunder: ${constraints.mkString("\n\t- ", "\n\t- ", "\n")}")
     //IR.iff(c1,e1,e2)
   }
 
   def printList(seq: List[Val]) = println(seq map("\t" + IR.termToString(_)) mkString("\n"))
 
   def toOStruct(term: Val): Option[OStruct] = try {
-    Some(translateBoolExpr(term))
+    Some(translateBoolExpr(term)(store))
   } catch {
     case _: NotImplementedError => None
   }
@@ -706,7 +731,8 @@ object CFGtoEngine {
         constraints = toOProb(not(less(n0, const(0)))) ++: save
 
         store = init
-        println(s"Init before loop: ${IR.termToString(init)}")
+        println(s"\n\nInit before loop: ${IR.termToString(init)}")
+        println(s"With constraints: \n${constraints.mkString("\n\t", "\n\t", "\n\n")}")
 
         // s"bool ${l}_more = false"
         val more = l+"_$more"
@@ -716,8 +742,6 @@ object CFGtoEngine {
         body // eval loop body ...
         println("===========================")
 
-        println(s"Compute constraints: (old)\n${constraints.mkString("\n\t", "\n\t", "\n")}")
-        constraints = constraints ++ toOProb(not(less(n0,const(0)))).toList
 
         println(s"$more: ${IR.termToString(IR.select(store,IR.const(more)))}")
         val cv = simplifyBool(IR.select(store,IR.const(more)))(constraints)
@@ -727,7 +751,7 @@ object CFGtoEngine {
         constraints ++= toOProb(simplify(not(less(fixindex(n0.toString, cv),n0)))(constraints))
 
         // FIXME: is it still necessary? Should be handle by simplification step.
-        // useful for complex situation: x + sim ... != y
+        // useful for complex situation: x + sum ... != y
         store = subst(store,less(fixindex(n0.toString, cv),n0),const(0)) // i <= n-1
         store = subst(store,less(n0,const(0)),const(0)) // 0 <= i
 
@@ -778,6 +802,7 @@ object CFGtoEngine {
         val (initNew,nextNew) = lub(sBefore, sInit, next)(loop,n0)
         println("\n**********************************")
         println(s"Init new:\n${IR.termToString(initNew)}")
+        println(s"Init :\n${IR.termToString(init)}")
         println(s"Next new:\n${IR.termToString(nextNew)}")
         println("**********************************\n")
 
@@ -789,37 +814,42 @@ object CFGtoEngine {
           println("==========================\n")
           iter
         } else {
-          // no further information was gained: go ahead
-          // and generate the final (set of) recursive
-          // functions, or closed forms.
-          println(s"create function def f(n) = $loop($n0) {")
+          if (cv == IR.const(1)) {
+            println(s"Inifinite loop detected!")
+            val oldValid = IR.select(store, valid)
+            store = GConst(Map(valid -> IR.iff(IR.select(store, valid), infloop, IR.const(0))))
+          } else {
+            // no further information was gained: go ahead
+            // and generate the final (set of) recursive
+            // functions, or closed forms.
+            println(s"create function def f(n) = $loop($n0) {")
 
-          // given f(n+1) = nextNew, derive formula for f(n)
-          val body = iff(less(const(0),n0),
-            subst(nextNew,n0,plus(n0,const(-1))),
-            before)
+            // given f(n+1) = nextNew, derive formula for f(n)
+            val body = iff(less(const(0),n0),
+              subst(nextNew,n0,plus(n0,const(-1))),
+              before)
 
-          // create function definition, which we call below
-          lubfun(loop,n0,body)
+            // create function definition, which we call below
+            lubfun(loop,n0,body)
 
-          println("}")
+            println("}")
+            // compute trip count
+            val nX = fixindex(n0.toString, cv)
 
-          // compute trip count
-          val nX = fixindex(n0.toString, cv)
+            // invoke computed function at trip count
+            val tmp = call(loop,nX)
+            println(s"Store non simplified loop $loop: ${IR.termToString(tmp)}")
+            store = simplify(tmp)(save)
 
-          // invoke computed function at trip count
-          val tmp = call(loop,nX)
-          println(s"Store non simplified loop $loop: ${IR.termToString(tmp)}")
-          store = simplify(tmp)(save)
+            // wrap up
+            println(s"} end loop $loop, trip count ${IR.termToString(nX)}, state")
 
-          // wrap up
-          println(s"} end loop $loop, trip count ${IR.termToString(nX)}, state")
-
-          println(s"Constraints: ${constraints.mkString("\n\t", "\n\t", "\n")}")
+            println(s"Constraints: ${constraints.mkString("\n\t", "\n\t", "\n")}")
+          }
 
           println(s"Simplified store: ${IR.termToString(store)}")
           itvec = saveit
-          println("======= Iteration Done =======\n\n\n\n")
+          println(s"======= Iteration Done ($iterCount) =======\n\n\n\n")
           constraints = save
           IR.const(())
         }
@@ -828,112 +858,132 @@ object CFGtoEngine {
         iter
       }
 
-      def evalCFG(cfg: CFG): GVal = {
+      def evalCFG(attr: Seq[String], cfg: CFG, initStore: GVal = store0, funcs: Map[String, (Seq[String], CFG)] = Map()): GVal = {
         import cfg._
         val blockIndex = cfg.blockIndex
 
+        // FIXME: handle side effect var better!
+
         // global reset ...
-        store = store0
-        itvec = itvec0
-        constraints = constraints0
-        varCount = varCount0
-        globalDefs = globalDefs0
-        rebuildGlobalDefsCache()
+        val save0 = store
+        val save1 = itvec
+        val save2 = constraints
+        val save3 = varCount
+        val save4 = funs
+        val save5 = globalDefs
 
-        var fuel = 1*1000
-        def consume(l: String, stop: Set[String], cont: Set[String]): Unit = {
-          fuel -= 1; if (fuel == 0) {
-            println(l,stop,cont,postDom(l))
-            throw new Exception("XXX consume out of fuel")
+        try {
+          // global reset ...
+          store = initStore
+          itvec = itvec0
+          constraints = constraints0
+          // varCount = varCount0
+          funs = funcs
+          // globalDefs = globalDefs0
+          // rebuildGlobalDefsCache()
+
+          var fuel = 1*1000
+          def consume(l: String, stop: Set[String], cont: Set[String]): Unit = {
+            fuel -= 1; if (fuel == 0) {
+              println(l,stop,cont,postDom(l))
+              throw new Exception("XXX consume out of fuel")
+            }
+
+            debug("consume", s"label $l -- stop: $stop -- cont: $cont")
+
+            if (stop contains l) {
+              //println("// break "+l)
+              return
+            }
+            if (cont contains l) {
+              //println("// continue "+l)
+              return handleContinue(l)
+            }
+
+            //println("// "+l)
+            val b = blockIndex(l)
+
+            // strict post-dominators (without self, and without loop body)
+            val sdom = postDom(l)-l -- loopBodies.getOrElse(l,Set())
+            // immediate post-dominator (there can be at most one)
+            var idom = sdom.filter(n => sdom.forall(postDom(n)))
+            // the same, but may be inside loop body
+            val sdomIn = postDom(l)-l
+            // immediate post-dominator (may be inside loop)
+            var idomIn = sdomIn.filter(n => sdomIn.forall(postDom(n)))
+            debug("consume", s"sdom: $sdom -- idom: $idom -- sdomIn: $sdomIn -- idomIn: $idomIn")
+
+            // Currently there's an issue in
+            // loop-invgen/string_concat-noarr_true-unreach-call_true-termination.i
+            // TODO: use Cooper's algorithm to compute idom directly
+            if (idom.contains("STUCK")) idom = Set("STUCK") // HACK
+            if (l == "STUCK") idom = Set() // HACK
+            assert(idom.size <= 1, s"sdom($l) = $sdom\nidom($l) = ${idom}")
+
+
+          def evalBody(stop1: Set[String], cont1: Set[String]): Unit = {
+            debug("consume", s"eval body (${b.stms.length})")
+            b.stms.foreach { stm =>
+              evalStm(stm)
+            }
+            debug("consume", s"continue to ${b.cnt}")
+            b.cnt match {
+              case Return(e) =>
+                handleReturn(evalExp(e))
+                assert(idom.isEmpty)
+              case Jump(a) =>
+                assert(a == l || idom == Set(a)) // handled below
+              case CJump(c,a,b) =>
+                handleIf(evalExp(c)) {
+                  consume(a, stop1, cont1)
+                  } {
+                    consume(b, stop1, cont1)
+                  }
+            }
           }
 
-          debug("consume", s"label $l -- stop: $stop -- cont: $cont")
+          // Some complication: the immediate post-dominator
+          // of a loop header may be *inside* the loop.
+          // Need to consume rest of loop body, too.
+          val isLoop = loopHeaders contains l
+          if (isLoop) {
+            debug("consume", "It is a loop!")
+            handleLoop(l) {
+              evalBody(idomIn, cont + l)
+              if (idomIn.nonEmpty) // continue consuming loop body
+                consume(idomIn.head, idom, cont + l)
+            }
+            } else {
+              debug("consume", "Not a loop!")
+              evalBody(idom, cont)
+            }
 
-          if (stop contains l) {
-            //println("// break "+l)
-            return
+            if (idom.nonEmpty)
+              consume(idom.head, stop, cont)
           }
-          if (cont contains l) {
-            //println("// continue "+l)
-            return handleContinue(l)
+
+          time{consume(entryLabel, Set.empty, Set.empty)}
+
+          println(s"Constraints: ${constraints.mkString("\n\t", "\n\t", "\n")}")
+          var store2 = simplify(store)(constraints)
+          var go = true
+          while (go) {
+            val ns = simplify(store2)(constraints)
+            go = ns != store2
+            store2 = ns
           }
-
-          //println("// "+l)
-          val b = blockIndex(l)
-
-          // strict post-dominators (without self, and without loop body)
-          val sdom = postDom(l)-l -- loopBodies.getOrElse(l,Set())
-          // immediate post-dominator (there can be at most one)
-          var idom = sdom.filter(n => sdom.forall(postDom(n)))
-          // the same, but may be inside loop body
-          val sdomIn = postDom(l)-l
-          // immediate post-dominator (may be inside loop)
-          var idomIn = sdomIn.filter(n => sdomIn.forall(postDom(n)))
-          debug("consume", s"sdom: $sdom -- idom: $idom -- sdomIn: $sdomIn -- idomIn: $idomIn")
-
-          // Currently there's an issue in
-          // loop-invgen/string_concat-noarr_true-unreach-call_true-termination.i
-          // TODO: use Cooper's algorithm to compute idom directly
-          if (idom.contains("STUCK")) idom = Set("STUCK") // HACK
-          if (l == "STUCK") idom = Set() // HACK
-          assert(idom.size <= 1, s"sdom($l) = $sdom\nidom($l) = ${idom}")
-
-
-        def evalBody(stop1: Set[String], cont1: Set[String]): Unit = {
-          debug("consume", s"eval body (${b.stms.length})")
-          b.stms.foreach { stm =>
-            evalStm(stm)
-          }
-          debug("consume", s"continue to ${b.cnt}")
-          b.cnt match {
-            case Return(e) =>
-              handleReturn(evalExp(e))
-              assert(idom.isEmpty)
-            case Jump(a) =>
-              assert(a == l || idom == Set(a)) // handled below
-            case CJump(c,a,b) =>
-              handleIf(evalExp(c)) {
-                consume(a, stop1, cont1)
-                } {
-                  consume(b, stop1, cont1)
-                }
-          }
+          println("## term:")
+          val out = IR.termToString(store2)
+          println(out)
+          store2
+        } finally {
+          store = save0
+          itvec = save1
+          constraints = save2
+          // varCount = save3
+          funs = save4
+          // globalDefs = save5
         }
-
-        // Some complication: the immediate post-dominator
-        // of a loop header may be *inside* the loop.
-        // Need to consume rest of loop body, too.
-        val isLoop = loopHeaders contains l
-        if (isLoop) {
-          debug("consume", "It is a loop!")
-          handleLoop(l) {
-            evalBody(idomIn, cont + l)
-            if (idomIn.nonEmpty) // continue consuming loop body
-              consume(idomIn.head, idom, cont + l)
-          }
-          } else {
-            debug("consume", "Not a loop!")
-            evalBody(idom, cont)
-          }
-
-          if (idom.nonEmpty)
-            consume(idom.head, stop, cont)
-        }
-
-        time{consume(entryLabel, Set.empty, Set.empty)}
-
-        println(s"Constraints: ${constraints.mkString("\n\t", "\n\t", "\n")}")
-        var store2 = simplify(store)(constraints)
-        var go = true
-        while (go) {
-          val ns = simplify(store2)(constraints)
-          go = ns != store2
-          store2 = ns
-        }
-        println("## term:")
-        val out = IR.termToString(store2)
-        println(out)
-        store2
       }
 
   }

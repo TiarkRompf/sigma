@@ -1,9 +1,6 @@
 package analysis
 
-import CBase._
-import CFrontend2._
-
-class CTest1 extends FileDiffSuite {
+class CTest1 extends FileDiffSuite with CtoCFG with CFGPrinter {
 
   val prefix = "test-out/test-c-1"
 
@@ -14,7 +11,10 @@ class CTest1 extends FileDiffSuite {
     println(readFile(file))
     val parsed = parseCFile(file)
     //evalUnit(parsed)
-    evalCfgUnit(parsed)
+
+    val cfgs = fileToCFG(parsed)
+    val (args, cfg) = cfgs("main")
+    evalCFG(cfg)
 
 
   }}
