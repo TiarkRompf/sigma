@@ -39,4 +39,6 @@
     return 0;
   }
   Final store:
-  { "&j" -> [ if ((0 < r?((&r:0,top)))) { r?((&r:0,top)) } else { 0 } : "int" ],"&i" -> [ if ((0 < r?((&r:0,top)))) { r?((&r:0,top)) } else { 0 } : "int" ],"&c2" -> [ 2000 : "int" ],"&v" -> [ if ((0 < r?((&r:0,top)))) { r?(("&r:1",("top",(r?((&r:0,top)) + -1)))) } else { <error> } : if ((0 < r?((&r:0,top)))) { "int" } else { <error> } ],"valid" -> 1,"&n" -> [ r?((&r:0,top)) : "int" ],"&k" -> [ if ((0 < r?((&r:0,top)))) { (sum(r?((&r:0,top))) { x22?x21_&k_$value? => if ((r?(("&r:1",("top",x22?x21_&k_$value?))) == 0)) { 4000 } else { 2000 } } + (r?((&r:0,top)) * -1)) } else { 0 } : "int" ],"&c1" -> [ 4000 : "int" ],"return" -> [ 0 : "int" ],"&c3" -> [ 10000 : "int" ] }
+  { "&j" -> [ r?((&r:0,top)) : "int" ],"&i" -> [ r?((&r:0,top)) : "int" ],"&c2" -> [ 2000 : "int" ],"&v" -> [ if ((0 < r?((&r:0,top)))) { {
+        if ((r?(("&r:1",("top",(r?((&r:0,top)) + -1)))) == 0)) { 0 } else { 1 }
+    } } else { <error> } : if ((0 < r?((&r:0,top)))) { "int" } else { <error> } ],"valid" -> 1,"&n" -> [ r?((&r:0,top)) : "int" ],"&k" -> [ (sum(r?((&r:0,top))) { x22?x21_&k_$value? => if ((r?(("&r:1",("top",x22?x21_&k_$value?))) == 0)) { 4000 } else { 2000 } } + (r?((&r:0,top)) * -1)) : "int" ],"&c1" -> [ 4000 : "int" ],"return" -> [ 0 : "int" ],"&c3" -> [ 10000 : "int" ] }

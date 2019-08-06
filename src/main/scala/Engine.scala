@@ -1192,12 +1192,11 @@ import java.io.{PrintStream,File,FileInputStream,FileOutputStream,FileNotFoundEx
           case k => (k, lub(select(a,k),select(b0,k),select(b1,k))(mkey(fsym,k),n0))
         }
         (map(m.map(kv=>(kv._1,kv._2._1)).toMap), map(m.map(kv=>(kv._1,kv._2._2)).toMap))
-      case (_: GConst, _, GConst(b)) if subst(b0, n0, const(1)) == b1 =>
+      case (_: GConst, _, GConst(b)) if subst(b0, n0, const(1)) == b1 && subst(b0, n0, const(0)) == a => // special case
         IRD.printTerm(a)
         IRD.printTerm(b0)
         IRD.printTerm(b1)
         (b1, b1)
-        ???
       case (a,b0, Def(DUpdate(bX, `n0`, y))) if bX == b0 || (bX == map(Map()) && b0 == GError) => // array creation
         //use real index var !!
         val nX = mkey(fsym,n0)

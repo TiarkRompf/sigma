@@ -37,7 +37,7 @@
   Final store:
   { "&j" -> [ if ((r?((&r:0,top)) == r?((&r:1,top)))) { {
         if ((0 < r?((&r:1,top)))) { {
-            if ((r?((&r:1,top)) < 2)) { r?((&r:1,top)) } else { ((r?((&r:1,top)) * 2) + -2) }
+            if ((r?((&r:1,top)) < 2)) { 1 } else { ((r?((&r:1,top)) * 2) + -2) }
         } } else { <error> }
     } } else { <error> } : if ((r?((&r:0,top)) == r?((&r:1,top)))) { {
         if ((0 < r?((&r:1,top)))) { "int" } else { <error> }

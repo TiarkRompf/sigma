@@ -27,4 +27,4 @@
     return 0;
   }
   Final store:
-  { "&i" -> [ if ((0 < r?((&r:0,top)))) { r?((&r:0,top)) } else { 0 } : "int" ],"valid" -> 1,"&a" -> [ if ((0 < r?((&r:0,top)))) { sum(r?((&r:0,top))) { x17?x16_&a_$value? => if (r?(("&r:1",("top",x17?x16_&a_$value?)))) { 1 } else { 2 } } } else { 0 } : "int" ],"&n" -> [ r?((&r:0,top)) : "int" ],"&b" -> [ if ((0 < r?((&r:0,top)))) { sum(r?((&r:0,top))) { x17?x16_&b_$value? => if (r?(("&r:1",("top",x17?x16_&b_$value?)))) { 2 } else { 1 } } } else { 0 } : "int" ],"return" -> [ 0 : "int" ] }
+  { "&i" -> [ r?((&r:0,top)) : "int" ],"valid" -> 1,"&a" -> [ sum(r?((&r:0,top))) { x17?x16_&a_$value? => if (r?(("&r:1",("top",x17?x16_&a_$value?)))) { 1 } else { 2 } } : "int" ],"&n" -> [ r?((&r:0,top)) : "int" ],"&b" -> [ sum(r?((&r:0,top))) { x17?x16_&b_$value? => if (r?(("&r:1",("top",x17?x16_&b_$value?)))) { 2 } else { 1 } } : "int" ],"return" -> [ 0 : "int" ] }

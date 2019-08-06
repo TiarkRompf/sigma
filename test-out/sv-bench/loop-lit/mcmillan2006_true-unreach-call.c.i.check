@@ -19,8 +19,8 @@
     return 0;
   }
   Final store:
-  { "&i" -> [ if ((0 < r?((&r:0,top)))) { r?((&r:0,top)) } else { 0 } : "int" ],"valid" -> 1,"&n" -> [ r?((&r:0,top)) : "int" ],"&x" -> [ (&new:0,top) : "int * *" ],"return" -> [ 0 : "int" ],"&new:0" -> { "top" -> [ if ((0 < r?((&r:0,top)))) { collect(r?((&r:0,top))) { x14? =>
+  { "&i" -> [ r?((&r:0,top)) : "int" ],"valid" -> 1,"&n" -> [ r?((&r:0,top)) : "int" ],"&x" -> [ (&new:0,top) : "int * *" ],"return" -> [ 0 : "int" ],"&new:0" -> { "top" -> [ if ((0 < r?((&r:0,top)))) { collect(r?((&r:0,top))) { x14? =>
           0
-      } } else { collect(r?((&r:0,top))) { x14? =>
+      } } else { collect(0) { x14? =>
           <error>
       } } : "int *" ] } }

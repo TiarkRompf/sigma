@@ -671,7 +671,12 @@ trait CFGtoEngine extends CtoCFG with Approx with Omega {
         key -> (if (isBool(key)) simplifyBool(value) else simplify(value))
       }) // FIXME ???
       case IR.Def(DUpdate(x, f, y))  => IR.update(simplify(x), simplify(f), simplify(y))
-      case r@IR.Def(DSelect(`randKey`, f)) => IR.select(randKey, simplify(f))
+      case x@IR.Def(DSelect(`randKey`, f)) =>
+        if (alwaysFalse(IR.not(IR.equal(x, IR.const(0))))) { // FIXME: hack if GRef(x) == 0
+          println(s"Simplifed ${IR.termToString(x)} to 0"); IR.const(0)
+        } else if (alwaysFalse(IR.not(IR.equal(x, IR.const(1))))) {
+          println(s"Simplifed ${IR.termToString(x)} to 1"); IR.const(1)
+        } else IR.select(randKey, simplify(f))
       case IR.Def(DSelect(x, f))     => IR.select(simplify(x), simplify(f))
       // (x26? * rand?((&rand:1,top))) + (x26? * (rand?((&rand:0,top)) * -1))
       case IR.Def(DPlus(IR.Def(DTimes(a, b)), IR.Def(DTimes(a1, IR.Def(DTimes(b1, k: GConst)))))) if a == a1 && alwaysFalse(IR.not(IR.equal(b, b1))) => IR.times(a, IR.times(b, IR.plus(IR.const(1), k)))
@@ -697,6 +702,8 @@ trait CFGtoEngine extends CtoCFG with Approx with Omega {
       case x@GRef(_) =>
         if (alwaysFalse(IR.not(IR.equal(x, IR.const(0))))) { // FIXME: hack if GRef(x) == 0
           println(s"Simplifed $x to 0"); IR.const(0)
+        } else if (alwaysFalse(IR.not(IR.equal(x, IR.const(1))))) {
+          println(s"Simplifed $x to 1"); IR.const(1)
         } else {
           x
         }

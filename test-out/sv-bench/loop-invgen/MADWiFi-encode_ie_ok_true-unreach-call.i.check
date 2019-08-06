@@ -45,7 +45,7 @@
   Final store:
   { "&i" -> [ if ((0 < r?((&r:0,top)))) { {
         if ((0 < r?((&r:2,top)))) { {
-            if (((r?((&r:1,top)) + (r?((&r:0,top)) * -1)) < (r?((&r:2,top)) * 2))) { <error> } else { fixindex { x47? => if ((x47? < r?((&r:2,top)))) { (r?((&r:0,top)) < (r?((&r:1,top)) + -2)) } else { 0 } } }
+            if (((r?((&r:1,top)) + (r?((&r:0,top)) * -1)) < (r?((&r:2,top)) * 2))) { <error> } else { fixindex { x59? => if ((x59? < r?((&r:2,top)))) { (r?((&r:0,top)) < (r?((&r:1,top)) + -2)) } else { 0 } } }
         } } else { <error> }
     } } else { <error> } : if ((0 < r?((&r:0,top)))) { {
         if ((0 < r?((&r:2,top)))) { {
@@ -66,7 +66,7 @@
     } } else { r?((&r:1,top)) } : "int" ],"&leader_len" -> [ r?((&r:0,top)) : "int" ],"&p" -> [ if ((0 < r?((&r:0,top)))) { {
         if ((0 < r?((&r:2,top)))) { {
             if ((r?((&r:1,top)) < r?((&r:0,top)))) { <error> } else { {
-                if (((r?((&r:1,top)) + (r?((&r:0,top)) * -1)) < (r?((&r:2,top)) * 2))) { r?((&r:0,top)) } else { (r?((&r:0,top)) + (fixindex { x47? => if ((x47? < r?((&r:2,top)))) { (r?((&r:0,top)) < (r?((&r:1,top)) + -2)) } else { 0 } } * 2)) }
+                if (((r?((&r:1,top)) + (r?((&r:0,top)) * -1)) < (r?((&r:2,top)) * 2))) { r?((&r:0,top)) } else { (r?((&r:0,top)) + (fixindex { x59? => if ((x59? < r?((&r:2,top)))) { (r?((&r:0,top)) < (r?((&r:1,top)) + -2)) } else { 0 } } * 2)) }
             } }
         } } else { <error> }
     } } else { <error> } : if ((0 < r?((&r:0,top)))) { {

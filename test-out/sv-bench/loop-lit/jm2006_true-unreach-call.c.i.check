@@ -26,4 +26,4 @@
     return 0;
   }
   Final store:
-  { "&j" -> [ r?((&r:1,top)) : "int" ],"&i" -> [ r?((&r:0,top)) : "int" ],"valid" -> 1,"&x" -> [ if ((0 < r?((&r:0,top)))) { 0 } else { r?((&r:0,top)) } : "int" ],"&y" -> [ if ((0 < r?((&r:0,top)))) { (r?((&r:1,top)) + (r?((&r:0,top)) * -1)) } else { r?((&r:1,top)) } : "int" ],"return" -> [ 0 : "int" ] }
+  { "&j" -> [ r?((&r:1,top)) : "int" ],"&i" -> [ r?((&r:0,top)) : "int" ],"valid" -> 1,"&x" -> [ 0 : "int" ],"&y" -> [ (r?((&r:1,top)) + (r?((&r:0,top)) * -1)) : "int" ],"return" -> [ 0 : "int" ] }

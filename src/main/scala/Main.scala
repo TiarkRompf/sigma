@@ -273,13 +273,17 @@ object MyMain extends CFGtoEngine with Omega {
   def constant(it: Int) = s"""
   int main() {
     int k, i;
+    int n = __VERIFIER_nondet_int();
     k = 4;
     i = 0;
-    while (i < $it) {
-      k = 9;
+    while (i < n) {
+      if (k <= 4) {
+        k = 9;
+      } else {
+        k += 1;
+      }
       i = i + 1;
     }
-    __VERIFIER_assert(($it > 0 && k == 9) || ($it == 0 && k == 4));
     return 0;
   }
   """
@@ -469,6 +473,6 @@ int main(void) {
 
 
   def main(arr: Array[String]) = {
-    analyze(sin2) // constant(arr(0).toInt))
+    analyze(constant(arr(0).toInt))
   }
 }

@@ -25,4 +25,4 @@
     return 0;
   }
   Final store:
-  { "&cnt" -> [ if ((0 < r?((&r:1,top)))) { 0 } else { r?((&r:1,top)) } : "int" ],"valid" -> 1,"&a" -> [ r?((&r:0,top)) : "int" ],"&b" -> [ r?((&r:1,top)) : "int" ],"return" -> [ 0 : "int" ],"&res" -> [ if ((0 < r?((&r:1,top)))) { (r?((&r:0,top)) + r?((&r:1,top))) } else { r?((&r:0,top)) } : "int" ] }
+  { "&cnt" -> [ 0 : "int" ],"valid" -> 1,"&a" -> [ r?((&r:0,top)) : "int" ],"&b" -> [ r?((&r:1,top)) : "int" ],"return" -> [ 0 : "int" ],"&res" -> [ (r?((&r:0,top)) + r?((&r:1,top))) : "int" ] }
