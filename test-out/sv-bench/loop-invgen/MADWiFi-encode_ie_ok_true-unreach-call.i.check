@@ -1,0 +1,76 @@
+// # loop-invgen/MADWiFi-encode_ie_ok_true-unreach-call.i
+// # literal source
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond) {
+    if (!(cond)) {
+      ERROR: __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main()
+  {
+    int p;
+    int i;
+    int leader_len;
+    int bufsize;
+    int bufsize_0;
+    int ielen;
+    leader_len = __VERIFIER_nondet_int();
+    bufsize = __VERIFIER_nondet_int();
+    ielen = __VERIFIER_nondet_int();
+    __VERIFIER_assume(leader_len < 1000000);
+    __VERIFIER_assume(bufsize < 1000000);
+    __VERIFIER_assume(ielen < 1000000);
+    if(leader_len >0); else goto END;
+    if(bufsize >0); else goto END;
+    if(ielen >0); else goto END;
+    if (bufsize < leader_len)
+    goto END;
+    p = 0;
+    bufsize_0 = bufsize;
+    bufsize -= leader_len;
+    p += leader_len;
+    if (bufsize < 2*ielen)
+    goto END;
+    for (i = 0; i < ielen && bufsize > 2; i++) {
+      __VERIFIER_assert(0<=p);
+      __VERIFIER_assert(p+1<bufsize_0);
+      p += 2;
+    }
+    END:
+    ;
+  }
+  Final store:
+  { "&i" -> [ if ((0 < r?((&r:0,top)))) { {
+        if ((0 < r?((&r:2,top)))) { {
+            if (((r?((&r:1,top)) + (r?((&r:0,top)) * -1)) < (r?((&r:2,top)) * 2))) { <error> } else { fixindex { x47? => if ((x47? < r?((&r:2,top)))) { (r?((&r:0,top)) < (r?((&r:1,top)) + -2)) } else { 0 } } }
+        } } else { <error> }
+    } } else { <error> } : if ((0 < r?((&r:0,top)))) { {
+        if ((0 < r?((&r:2,top)))) { {
+            if (((r?((&r:1,top)) + (r?((&r:0,top)) * -1)) < (r?((&r:2,top)) * 2))) { <error> } else { "int" }
+        } } else { <error> }
+    } } else { <error> } ],"&ielen" -> [ r?((&r:2,top)) : "int" ],"valid" -> 1,"&bufsize_0" -> [ if ((0 < r?((&r:0,top)))) { {
+        if ((0 < r?((&r:2,top)))) { {
+            if ((r?((&r:1,top)) < r?((&r:0,top)))) { <error> } else { r?((&r:1,top)) }
+        } } else { <error> }
+    } } else { <error> } : if ((0 < r?((&r:0,top)))) { {
+        if ((0 < r?((&r:2,top)))) { {
+            if ((r?((&r:1,top)) < r?((&r:0,top)))) { <error> } else { "int" }
+        } } else { <error> }
+    } } else { <error> } ],"&bufsize" -> [ if ((0 < r?((&r:0,top)))) { {
+        if ((0 < r?((&r:2,top)))) { {
+            if ((r?((&r:1,top)) < r?((&r:0,top)))) { r?((&r:1,top)) } else { (r?((&r:1,top)) + (r?((&r:0,top)) * -1)) }
+        } } else { r?((&r:1,top)) }
+    } } else { r?((&r:1,top)) } : "int" ],"&leader_len" -> [ r?((&r:0,top)) : "int" ],"&p" -> [ if ((0 < r?((&r:0,top)))) { {
+        if ((0 < r?((&r:2,top)))) { {
+            if ((r?((&r:1,top)) < r?((&r:0,top)))) { <error> } else { {
+                if (((r?((&r:1,top)) + (r?((&r:0,top)) * -1)) < (r?((&r:2,top)) * 2))) { r?((&r:0,top)) } else { (r?((&r:0,top)) + (fixindex { x47? => if ((x47? < r?((&r:2,top)))) { (r?((&r:0,top)) < (r?((&r:1,top)) + -2)) } else { 0 } } * 2)) }
+            } }
+        } } else { <error> }
+    } } else { <error> } : if ((0 < r?((&r:0,top)))) { {
+        if ((0 < r?((&r:2,top)))) { {
+            if ((r?((&r:1,top)) < r?((&r:0,top)))) { <error> } else { "int" }
+        } } else { <error> }
+    } } else { <error> } ],"return" -> [ 0 : "int" ] }

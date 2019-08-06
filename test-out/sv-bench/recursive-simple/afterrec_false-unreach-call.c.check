@@ -1,0 +1,14 @@
+// # recursive-simple/afterrec_false-unreach-call.c
+// # literal source
+  extern void __VERIFIER_error();
+  void f(int n) {
+    if (n<3) return;
+    n--;
+    f(n);
+    ERROR: __VERIFIER_error();
+  }
+  int main(void) {
+    f(4);
+  }
+  Final store:
+  { "valid" -> 0,"return" -> [ 0 : "int" ] }

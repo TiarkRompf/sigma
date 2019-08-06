@@ -1,0 +1,39 @@
+// # loop-lit/ddlm2013_true-unreach-call.c.i
+// # literal source
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond) {
+    if (!(cond)) {
+      ERROR: __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main() {
+    unsigned int i,j,a,b;
+    int flag = __VERIFIER_nondet_int();
+    a = 0;
+    b = 0;
+    j = 1;
+    if (flag) {
+      i = 0;
+    } else {
+      i = 1;
+    }
+    while (__VERIFIER_nondet_int()) {
+      a++;
+      b += (j - i);
+      i += 2;
+      if (i%2 == 0) {
+        j += 2;
+      } else {
+        j++;
+      }
+    }
+    if (flag) {
+      __VERIFIER_assert(a == b);
+    }
+    return 0;
+  }
+  Final store:
+  { "&j" -> [ if (r?((&r:0,top))) { ((fixindex { x17? => r?(("&r:1",("top",x17?))) } * 2) + 1) } else { (fixindex { x17? => r?(("&r:1",("top",x17?))) } + 1) } : "int" ],"&i" -> [ if (r?((&r:0,top))) { (fixindex { x17? => r?(("&r:1",("top",x17?))) } * 2) } else { ((fixindex { x17? => r?(("&r:1",("top",x17?))) } * 2) + 1) } : "int" ],"valid" -> 1,"&a" -> [ fixindex { x17? => r?(("&r:1",("top",x17?))) } : "int" ],"&flag" -> [ r?((&r:0,top)) : "int" ],"&b" -> [ if (r?((&r:0,top))) { fixindex { x17? => r?(("&r:1",("top",x17?))) } } else { sum(fixindex { x17? => r?(("&r:1",("top",x17?))) }) { x17?x16_&b_$value? => (x17?x16_&b_$value? * -1) } } : "int" ],"return" -> [ 0 : "int" ] }

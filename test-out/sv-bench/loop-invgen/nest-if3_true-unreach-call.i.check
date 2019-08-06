@@ -1,0 +1,30 @@
+// # loop-invgen/nest-if3_true-unreach-call.i
+// # literal source
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond) {
+    if (!(cond)) {
+      ERROR: __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main() {
+    int i,k,n,l;
+    n = __VERIFIER_nondet_int();
+    l = __VERIFIER_nondet_int();
+    __VERIFIER_assume(l>0);
+    __VERIFIER_assume(l < 1000000);
+    __VERIFIER_assume(n < 1000000);
+    for (k=1;k<n;k++){
+      for (i=l;i<n;i++){
+        __VERIFIER_assert(1<=i);
+      }
+      if(__VERIFIER_nondet_int())
+      l = l + 1;
+    }
+  }
+  Final store:
+  { "&i" -> [ if ((1 < r?((&r:0,top)))) { {
+        if ((0 < (r?((&r:0,top)) + ((r?((&r:1,top)) * -1) + (sum((r?((&r:0,top)) + -2)) { x18?x17_&l_$value? => if (r?(("&r:2",("top",x18?x17_&l_$value?)))) { 1 } else { 0 } } * -1))))) { r?((&r:0,top)) } else { (r?((&r:1,top)) + sum((r?((&r:0,top)) + -2)) { x18?x17_&l_$value? => if (r?(("&r:2",("top",x18?x17_&l_$value?)))) { 1 } else { 0 } }) }
+    } } else { <error> } : if ((1 < r?((&r:0,top)))) { "int" } else { <error> } ],"valid" -> 1,"&n" -> [ r?((&r:0,top)) : "int" ],"&k" -> [ if ((0 < r?((&r:0,top)))) { r?((&r:0,top)) } else { 1 } : "int" ],"return" -> [ 0 : "int" ],"&l" -> [ if ((0 < r?((&r:0,top)))) { (r?((&r:1,top)) + sum((r?((&r:0,top)) + -1)) { x18?x17_&l_$value? => if (r?(("&r:2",("top",x18?x17_&l_$value?)))) { 1 } else { 0 } }) } else { r?((&r:1,top)) } : "int" ] }

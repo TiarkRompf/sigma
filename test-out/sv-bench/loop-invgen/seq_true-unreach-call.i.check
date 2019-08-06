@@ -1,0 +1,45 @@
+// # loop-invgen/seq_true-unreach-call.i
+// # literal source
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond) {
+    if (!(cond)) {
+      ERROR: __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main() {
+    int n0, n1;
+    int i0 = 0;
+    int k = 0;
+    n0 = __VERIFIER_nondet_int();
+    n1 = __VERIFIER_nondet_int();
+    __VERIFIER_assume(-1000000 <= n0 && n0 < 1000000);
+    __VERIFIER_assume(-1000000 <= n1 && n1 < 1000000);
+    while( i0 < n0 ) {
+      i0++;
+      k++;
+    }
+    int i1 = 0;
+    while( i1 < n1 ) {
+      i1++;
+      k++;
+    }
+    int j1 = 0;
+    while( j1 < n0 + n1 ) {
+      __VERIFIER_assert(k > 0);
+      j1++;
+      k--;
+    }
+  }
+  Final store:
+  { "valid" -> 1,"&n1" -> [ r?((&r:1,top)) : "int" ],"&n0" -> [ r?((&r:0,top)) : "int" ],"&k" -> [ if ((0 < (r?((&r:0,top)) + r?((&r:1,top))))) { {
+        if ((0 < r?((&r:1,top)))) { {
+            if ((0 < r?((&r:0,top)))) { 0 } else { (r?((&r:0,top)) * -1) }
+        } } else { (r?((&r:1,top)) * -1) }
+    } } else { {
+        if ((0 < r?((&r:1,top)))) { r?((&r:1,top)) } else { {
+            if ((0 < r?((&r:0,top)))) { r?((&r:0,top)) } else { 0 }
+        } }
+    } } : "int" ],"&i0" -> [ if ((0 < r?((&r:0,top)))) { r?((&r:0,top)) } else { 0 } : "int" ],"&i1" -> [ if ((0 < r?((&r:1,top)))) { r?((&r:1,top)) } else { 0 } : "int" ],"&j1" -> [ if ((0 < (r?((&r:0,top)) + r?((&r:1,top))))) { (r?((&r:0,top)) + r?((&r:1,top))) } else { 0 } : "int" ],"return" -> [ 0 : "int" ] }

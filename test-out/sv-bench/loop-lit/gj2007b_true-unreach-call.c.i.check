@@ -1,0 +1,27 @@
+// # loop-lit/gj2007b_true-unreach-call.c.i
+// # literal source
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond) {
+    if (!(cond)) {
+      ERROR: __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main() {
+    int x = 0;
+    int m = 0;
+    int n = __VERIFIER_nondet_int();
+    while(x < n) {
+      if(__VERIFIER_nondet_int()) {
+        m = x;
+      }
+      x = x + 1;
+    }
+    __VERIFIER_assert((m >= 0 || n <= 0));
+    __VERIFIER_assert((m < n || n <= 0));
+    return 0;
+  }
+  Final store:
+  { "valid" -> 1,"&n" -> [ r?((&r:0,top)) : "int" ],"&x" -> [ if ((0 < r?((&r:0,top)))) { r?((&r:0,top)) } else { 0 } : "int" ],"return" -> [ 0 : "int" ],"&m" -> [ if ((0 < r?((&r:0,top)))) { (r?((&r:0,top)) + ((fixindex { x8?x7_&m_$value? => if ((x8?x7_&m_$value? < (r?((&r:0,top)) + -1))) { r?(("&r:1",("top",(r?((&r:0,top)) + ((x8?x7_&m_$value? * -1) + -1))))) } else { 0 } } * -1) + -1)) } else { 0 } : "int" ] }

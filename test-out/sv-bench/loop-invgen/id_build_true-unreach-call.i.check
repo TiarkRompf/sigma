@@ -1,0 +1,24 @@
+// # loop-invgen/id_build_true-unreach-call.i
+// # literal source
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond) {
+    if (!(cond)) {
+      ERROR: __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main() {
+    int offset, length, nlen = __VERIFIER_nondet_int();
+    int i, j;
+    for (i=0; i<nlen; i++) {
+      for (j=0; j<8; j++) {
+        __VERIFIER_assert(0 <= nlen-1-i);
+        __VERIFIER_assert(nlen-1-i < nlen);
+      }
+    }
+    return 0;
+  }
+  Final store:
+  { "&j" -> [ if ((0 < r?((&r:0,top)))) { 8 } else { <error> } : if ((0 < r?((&r:0,top)))) { "int" } else { <error> } ],"&i" -> [ if ((0 < r?((&r:0,top)))) { r?((&r:0,top)) } else { 0 } : "int" ],"valid" -> 1,"return" -> [ 0 : "int" ],"&nlen" -> [ r?((&r:0,top)) : "int" ] }

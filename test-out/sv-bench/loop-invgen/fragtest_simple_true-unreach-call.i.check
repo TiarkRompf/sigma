@@ -1,0 +1,45 @@
+// # loop-invgen/fragtest_simple_true-unreach-call.i
+// # literal source
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond) {
+    if (!(cond)) {
+      ERROR: __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main(){
+    int i,pvlen ;
+    int tmp___1 ;
+    int k = 0;
+    int n;
+    i = 0;
+    pvlen = __VERIFIER_nondet_int();
+    while ( __VERIFIER_nondet_int() && i <= 1000000) {
+      i = i + 1;
+    }
+    if (i > pvlen) {
+      pvlen = i;
+    }
+    i = 0;
+    while ( __VERIFIER_nondet_int() && i <= 1000000) {
+      tmp___1 = i;
+      i = i + 1;
+      k = k + 1;
+    }
+    int j = 0;
+    n = i;
+    while (1) {
+      __VERIFIER_assert(k >= 0);
+      k = k -1;
+      i = i - 1;
+      j = j + 1;
+      if (j >= n) {
+        break;
+      }
+    }
+    return 0;
+  }
+  Final store:
+  { "&j" -> [ if ((0 < fixindex { x85? => if (r?(("&r:2",("top",x85?)))) { (x85? < 1000001) } else { 0 } })) { (fixindex { x85? => if (r?(("&r:2",("top",x85?)))) { (x85? < 1000001) } else { 0 } } + -1) } else { 0 } : "int" ],"&i" -> [ if ((1 < fixindex { x85? => if (r?(("&r:2",("top",x85?)))) { (x85? < 1000001) } else { 0 } })) { 1 } else { fixindex { x85? => if (r?(("&r:2",("top",x85?)))) { (x85? < 1000001) } else { 0 } } } : "int" ],"valid" -> 1,"&n" -> [ fixindex { x85? => if (r?(("&r:2",("top",x85?)))) { (x85? < 1000001) } else { 0 } } : "int" ],"&tmp___1" -> [ if ((0 < fixindex { x85? => if (r?(("&r:2",("top",x85?)))) { (x85? < 1000001) } else { 0 } })) { (fixindex { x85? => if (r?(("&r:2",("top",x85?)))) { (x85? < 1000001) } else { 0 } } + -1) } else { <error> } : if ((0 < fixindex { x85? => if (r?(("&r:2",("top",x85?)))) { (x85? < 1000001) } else { 0 } })) { "int" } else { <error> } ],"&k" -> [ if ((1 < fixindex { x85? => if (r?(("&r:2",("top",x85?)))) { (x85? < 1000001) } else { 0 } })) { 1 } else { fixindex { x85? => if (r?(("&r:2",("top",x85?)))) { (x85? < 1000001) } else { 0 } } } : "int" ],"return" -> [ 0 : "int" ],"&pvlen" -> [ if ((r?((&r:0,top)) < fixindex { x8? => if (r?(("&r:1",("top",x8?)))) { (x8? < 1000001) } else { 0 } })) { fixindex { x8? => if (r?(("&r:1",("top",x8?)))) { (x8? < 1000001) } else { 0 } } } else { r?((&r:0,top)) } : "int" ] }

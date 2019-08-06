@@ -1,0 +1,42 @@
+// # loop-invgen/large_const_true-unreach-call.i
+// # literal source
+  extern void __VERIFIER_error(void);
+  extern void __VERIFIER_assume(int);
+  void __VERIFIER_assert(int cond) {
+    if (!(cond)) {
+      ERROR: __VERIFIER_error();
+    }
+    return;
+  }
+  int __VERIFIER_nondet_int();
+  int main(int argc, char* argv[]) {
+    int c1 = 4000;
+    int c2 = 2000;
+    int c3 = 10000;
+    int n, v;
+    int i, k, j;
+    n = __VERIFIER_nondet_int();
+    __VERIFIER_assume(0 <= n && n < 10);
+    k = 0;
+    i = 0;
+    while( i < n ) {
+      i++;
+      v = __VERIFIER_nondet_int();
+      __VERIFIER_assume(0 <= v && v < 2);
+      if( v == 0 )
+      k += c1;
+      else if( v == 1 )
+      k += c2;
+      else
+      k += c3;
+    }
+    j = 0;
+    while( j < n ) {
+      __VERIFIER_assert(k > 0);
+      j++;
+      k--;
+    }
+    return 0;
+  }
+  Final store:
+  { "&j" -> [ if ((0 < r?((&r:0,top)))) { r?((&r:0,top)) } else { 0 } : "int" ],"&i" -> [ if ((0 < r?((&r:0,top)))) { r?((&r:0,top)) } else { 0 } : "int" ],"&c2" -> [ 2000 : "int" ],"&v" -> [ if ((0 < r?((&r:0,top)))) { r?(("&r:1",("top",(r?((&r:0,top)) + -1)))) } else { <error> } : if ((0 < r?((&r:0,top)))) { "int" } else { <error> } ],"valid" -> 1,"&n" -> [ r?((&r:0,top)) : "int" ],"&k" -> [ if ((0 < r?((&r:0,top)))) { (sum(r?((&r:0,top))) { x22?x21_&k_$value? => if ((r?(("&r:1",("top",x22?x21_&k_$value?))) == 0)) { 4000 } else { 2000 } } + (r?((&r:0,top)) * -1)) } else { 0 } : "int" ],"&c1" -> [ 4000 : "int" ],"return" -> [ 0 : "int" ],"&c3" -> [ 10000 : "int" ] }
