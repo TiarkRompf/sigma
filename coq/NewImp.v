@@ -472,6 +472,15 @@ Module IMPRel.
     eapply IHn. omega. apply H3.
   Qed.
 
+  Lemma loop_Sn_cond_true : ∀ n e s p σ σ',
+      (σ, p)⊢ (e, s) 1 + n ⇓∞ σ' → σ ⊢ e ⇓ₑ (VBool true).
+  Proof.
+    intro n. induction n; intros.
+    - inversion H. subst. eapply loop0_store_inv in H1. subst. assumption.
+    - inversion H; subst. eapply IHn.
+      assert (S n = 1 + n). omega. rewrite <- H0. eapply H1.
+  Qed.
+      
   Lemma skip_store_inv : ∀ p σ σ',
       (σ, p)⊢ SKIP ⇓ σ' → σ = σ'.
   Proof.
@@ -604,6 +613,13 @@ Module IMPEval.
      end)
       (at level 80, right associativity).
 
+  Definition toSomeBool oob :=
+    match oob with
+    | Some (Some b) => Some b
+    | Some None => Some true
+    | None => None
+    end.
+
   (* IMP Evaluation function *)
 
   Reserved Notation "'〚' e '〛' ( st ) " (at level 90, left associativity).
@@ -649,30 +665,42 @@ Module IMPEval.
     end
   where "'〚' e '〛' ( st ) " := (evalExp e st) : type_scope.
 
-  (* TODO: out-of-fuel or error? *)
 
   Fixpoint idx1 (i : nat) (m : nat) (p : nat -> option bool) : option nat :=
     match m with
-    | O => None
+    | O => None (* out of fuel *)
     | S m' =>
       b ← p i IN
       if b then Some i else idx1 (i + 1) m' p
     end.
 
-  Fixpoint idx (m : nat) (p : nat -> option bool) : option nat :=
-    idx1 0 m p.
+  (* idx finds the least index *)
+  Fixpoint idx (m : nat) (p : nat -> option bool) : option nat := idx1 0 m p.
 
   (* TODO: distinguish divergence and runtime error *)
 
-  Fixpoint evalLoop (b1: exp) (s: stmt) (σ: store) (c: path) (n: nat)
-           (evstmt: store -> path -> option (option store)) : option (option store) :=
+  Fixpoint evalLoop (cnd : exp) (s : stmt) (σ : store) (c : path) (n : nat)
+           (evstmt : store → path → option (option store)) : option (option store) :=
     match n with
     | O => Some (Some σ)
     | S n' =>
-      σ' ↩ evalLoop b1 s σ c n' evstmt IN
-      b  ↩ Some (〚b1〛(σ') >>= toBool) IN
-      if b then evstmt σ' (PWhile c n') else Some None (* error or timeout ??? *)
+      σ' ↩ evalLoop cnd s σ c n' evstmt IN
+      bv ↩ Some (〚cnd〛(σ') >>= toBool) IN
+      if bv
+      then evstmt σ' (PWhile c n') (* continue evaluation *)
+      else Some None (* error, this case should not happen if idx has guessed a correct n ??? *)
     end.
+
+  (*
+  Fixpoint evalLoop (s : stmt) (σ : store) (p : path) (n : nat)
+           (evstmt : store → path → option (option store)) : option (option store) :=
+    match n with
+    | O => Some (Some σ)
+    | S n' =>
+      σ' ↩ evalLoop s σ p n' evstmt IN
+      evstmt σ' (PWhile p n')
+    end.
+   *)
 
   Reserved Notation "'〚' s '〛' ( st , c ) ( m )" (at level 90, left associativity).
 
@@ -693,27 +721,23 @@ Module IMPEval.
       if b
       then 〚s1〛(σ, PThen c)(m)
       else 〚s2〛(σ, PElse c)(m)
-    | WHILE b1 DO s1 END =>
-      n ← idx m (fun i =>
-                   match (σ' ↩ evalLoop b1 s1 σ c i (fun σ'' c1 => 〚s1〛(σ'', c1)(m)) IN
-                          b ↩ Some (〚b1〛(σ') >>= toBool) IN
-                          Some (Some (negb b))) with
-                   | Some (Some b) => Some b
-                   | Some None => Some true
-                   | None => None
-                   end
-                (* TODO: cleanup slightly. inline evalLoop? *)
-                ) IN
-      evalLoop b1 s1 σ c n (fun σ' c1 => 〚s1〛(σ', c1)(m))
+    | WHILE cnd DO s END =>
+      (* TODO: cleanup slightly. inline evalLoop? *)
+      let guess :=
+          idx m (fun i => toSomeBool (σ' ↩ evalLoop cnd s σ c i (fun σ'' c1 => 〚s〛(σ'', c1)(m)) IN
+                                      b ↩ Some (〚cnd〛(σ') >>= toBool) IN
+                                      Some (Some (negb b)))) in
+      n ← guess IN
+      evalLoop cnd s σ c n (fun σ' c1 => 〚s〛(σ', c1)(m))
     | s1 ;; s2 =>
       σ' ↩ 〚s1〛(σ, PFst c)(m) IN
-      〚s2〛(σ', PSnd c)(m)
+     〚s2〛(σ', PSnd c)(m)
     | SKIP => Some (Some σ)
     | SAbort => Some None
     end
   where "'〚' s '〛' ( st , c ) ( m )" := (evalStmt s st c m) : type_scope.
 
-  Definition eval (s: stmt) := 〚s〛(σ0, PRoot)(500).
+  Definition eval (s: stmt) :=〚s〛(σ0, PRoot)(500).
 
 End IMPEval.
 
@@ -723,18 +747,12 @@ Module Adequacy.
   Import IMPEval.
 
   Theorem exp_adequacy : ∀ e σ v,
-    σ ⊢ e ⇓ₑ v <-> 〚 e 〛(σ) = Some v.
+    σ ⊢ e ⇓ₑ v <->〚 e 〛(σ) = Some v.
   Proof.
     intros. split.
-    - intros. induction H; simpl; auto.
-      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
-      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
-      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
-      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
-      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
-      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. reflexivity.
+    - intros. induction H; simpl; auto; try (rewrite IHevalExp1; rewrite IHevalExp2; simpl; reflexivity).
       + rewrite IHevalExp. simpl.  reflexivity.
-      + rewrite IHevalExp1.  rewrite IHevalExp2. simpl. rewrite H1. auto.
+      + rewrite IHevalExp1. rewrite IHevalExp2. simpl. rewrite H1. auto.
     - intros. generalize dependent v.
       induction e; intros; inversion H; inversion H; clear H2.
       + eapply RNum.
@@ -781,31 +799,79 @@ Module Adequacy.
     ¬ (exists v, σ ⊢ e ⇓ₑ v) <-> 〚 e 〛(σ) = None.
   Theorem exp_adequacy_error : ∀ e σ v,
     ¬ (σ ⊢ e ⇓ₑ v) <-> 〚 e 〛(σ) = None.
+  Theorem loop_number_adequacy : ∀ n,
    *)
 
-  Theorem stmt_adequacy : ∀ s σ σ' n,
-      (σ, PRoot) ⊢ s ⇓ σ' <-> 〚s〛(σ, PRoot)(n) = Some (Some σ').
+  Theorem stmt_adequacy : ∀ s σ σ' p,
+      (σ, p) ⊢ s ⇓ σ' <-> ∃ m,〚s〛(σ, p)(m) = Some (Some σ').
   Proof.
-    intros. split.
-    - intros. induction H; simpl.
-      + reflexivity.
-      + assert (〚 e1 〛(σ) = Some (VLoc l)). eapply exp_adequacy. eauto.
-        assert (〚 e2 〛(σ) = Some (VNum idx0)). eapply exp_adequacy. eauto.
-        assert (〚 e3 〛(σ) = Some v). eapply exp_adequacy. eauto.
-        rewrite H3. rewrite H4. rewrite H5. simpl. rewrite H2.
-        reflexivity.
-      + assert (〚 e 〛(σ) = Some (VBool true)). eapply exp_adequacy. eauto.
-        rewrite H1. simpl. auto.
-      + assert (〚 e 〛(σ) = Some (VBool false)). eapply exp_adequacy. eauto.
-        rewrite H1. simpl. auto.
-      + assert (〚 e 〛(σ') = Some (VBool false)). eapply exp_adequacy. eauto.
-        admit.
-      + rewrite IHevalStmt1. rewrite IHevalStmt2. reflexivity.
-      + reflexivity.
-    - intros. generalize dependent σ'. induction s; intros.
-      + simpl in H. inversion H. eapply RAlloc.
-      +
-                
-      
+    intros s σ σ' p. split.
+    - intros. generalize dependent p. generalize dependent σ.
+      generalize dependent σ'. induction s; intros; inversion H; subst; simpl; auto.
+      + exists 1. reflexivity.
+      + exists 1. simpl. eapply exp_adequacy in H3. eapply exp_adequacy in H6.
+        eapply exp_adequacy in H8. rewrite H3. rewrite H6. rewrite H8.
+        simpl. rewrite H9. reflexivity.
+      + eapply exp_adequacy in H6. rewrite H6. simpl.
+        eapply IHs1. apply H7.
+      + eapply exp_adequacy in H6. rewrite H6. simpl.
+        eapply IHs2. apply H7.
+      + exists (S n). induction H4; subst.
+        * simpl. eapply exp_adequacy in H6. rewrite H6. simpl. reflexivity.
+        * simpl. assert (〚e〛(σ) = Some (VBool true)).
+          { eapply exp_adequacy. eapply loop_Sn_cond_true. eapply H4. }
+          rewrite H3. simpl. 
         
+        assert (∀ e s p σ σ' n,
+                   (σ, p) ⊢ (e, s) n ⇓∞ σ' →
+                   evalLoop e s σ p n (fun σ' c1 =>〚s〛(σ', c1)(S n)) = Some (Some σ'))
+          as loop_adaquacy.
+        { intros. induction H0.
+          - simpl. reflexivity.
+          - simpl. 
+
+        exists (S n). induction n eqn:EqSn.
+        * subst. simpl. eapply loop0_store_inv in H4. subst.
+          eapply exp_adequacy in H6. rewrite H6. simpl. reflexivity.
+        * 
+          
+
+        (*
+        induction m.
+        * simpl. specialize IHs with (m := 0). 
+
+        induction n.
+        * simpl. 
+          specialize IHs with (σ := σ'').
+          erewrite IHs.
+          *)
+      + specialize IHs1 with (σ' := σ'0). rewrite IHs1.
+        specialize IHs2 with (σ' := σ'). rewrite IHs2.
+        reflexivity. auto. auto.
+
+    - intros. generalize dependent σ. generalize dependent σ'. generalize dependent p.
+      induction s; intros; simpl in H.
+      + inversion H. eapply RAlloc.
+      + destruct (〚e〛(σ)) eqn:EqE; destruct (〚e0〛(σ)) eqn:EqE0; destruct (〚e1〛(σ)) eqn:EqE1;
+          try (destruct v; destruct v0; simpl in H; inversion H; destruct (σ l) eqn:SomeO; inversion H).
+        * eapply exp_adequacy in EqE. eapply exp_adequacy in EqE0. eapply exp_adequacy in EqE1.
+          eapply RAssign. eauto. eauto. eauto. eauto.
+        * destruct v; simpl in H; inversion H.
+        * inversion H. * inversion H. * inversion H.
+      + destruct (〚e〛(σ)) eqn:EqE; inversion H. destruct v; simpl in H1; inversion H1.
+        clear H2. destruct b; eapply exp_adequacy in EqE.
+        * eapply RIfTrue. eauto. eauto.
+        * eapply RIfFalse. eauto. eauto.
+      + admit.
+
+      + destruct (〚s1〛(σ, PFst p)(n)) eqn:EqS1; destruct (〚s2〛(σ, PSnd p)(n)) eqn:EqS2.
+        * destruct o; inversion H. destruct o1; eapply RSeq; eauto; eauto.
+        * destruct o; inversion H. eapply RSeq. eauto. eauto.
+        * inversion H.
+        * inversion H.
+      + inversion H. eapply RSkip.
+      + inversion H.
+
+   *)
+  
 End Adequacy.
