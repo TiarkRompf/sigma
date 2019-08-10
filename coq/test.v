@@ -64,6 +64,32 @@ Module IMPEvalTest.
       ELoc Z ::= EMinus (σ[Z]) (ENum 1)
     END.
 
+  Definition while_ill : stmt :=
+    ELoc X ::= ENum 4;;
+    ELoc Z ::= σ[X];;
+    ELoc Y ::= ENum 1;;
+    WHILE (ENum 0) DO
+      ELoc Y ::= EMult (σ[Y]) (σ[Z]);;
+      ELoc Z ::= EMinus (σ[Z]) (ENum 1)
+    END.
+
+  Example while_ill_case :
+    (test_eval_stmt σ0 while_ill) = Some None.
+  Proof. reflexivity. Qed.
+
+  Definition if_ill : stmt :=
+    ELoc X ::= ENum 4;;
+    ELoc Z ::= σ[X];;
+    ELoc Y ::= ENum 1;;
+    IF (ENum 0) THEN
+        ELoc Y ::= EMult (σ[Y]) (σ[Z])
+        ELSE ELoc Z ::= EMinus (σ[Z]) (ENum 1)
+    FI.
+
+  Example if_ill_case :
+    (test_eval_stmt σ0 if_ill) = Some None.
+  Proof. reflexivity. Qed.
+
   Example testcase_6:
     (test_eval_stmt σ0 while1) = Some (Some (None, Some (VNum 4), Some (VNum 24), Some (VNum 0))).
   Proof. reflexivity. Qed.
