@@ -333,10 +333,6 @@ Module IMPRel.
   | RSkip : ∀ σ p, (σ, p) ⊢ SKIP ⇓ σ
   where "( st1 , c ) '⊢' s '⇓' st2" := (evalStmt st1 c s st2) : type_scope.
 
-  Lemma t : forall m p q,
-      (forall i, 0 <= i /\ i < m -> p i = q i) ->
-      idx m p = idx m q.
-
   Scheme evalLoopRelMut := Induction for evalLoop Sort Prop
     with evalStmtRelMut := Induction for evalStmt Sort Prop.
 
@@ -974,8 +970,34 @@ Module Adequacy.
   Proof.
   Admitted.
 
-  Definition bool_monotonic (p : nat → option (option bool)) :=
-    ∀ (i : nat), p i = Some (Some true) → p (S i) = Some None.
+  Lemma idx_range : ∀ m f i x, x < m → idx1 x m f = Some (Some i) -> x <= i ∧ i < m.
+  Proof.
+    intros. generalize dependent x. generalize dependent i.
+    induction m; intros.
+    - simpl in H0. inversion H0.
+    - simpl in H0. destruct (f x); inversion H0.
+      destruct o; inversion H2.
+      destruct b; inversion H3. subst. split. auto. auto.
+      Admitted.
+
+  Definition eq_under (m : nat) (p q : nat → option (option bool)) :=
+    forall i, 0 <= i /\ i <= m -> p i = q i.
+  Lemma idx_eq : forall m p q x, eq_under m p q → x <= m → idx1 x m p = idx1 x m q.
+  Proof.
+  Admitted.
+  (*
+    intros. cbv delta in H. simpl in H.
+    generalize dependent p. generalize dependent q.  generalize dependent x.
+    induction m; intros.
+    - cbv. reflexivity.
+    - cbv. subst. assert (p 0 = q 0). eapply H. omega.
+      assert (p x = q x).
+      { eapply H. omega. }
+      rewrite H2. destruct (q x) eqn:Eqqx.
+      + destruct o eqn:Eqo.
+        * destruct b eqn:Eqb. reflexivity.
+          rewrite plus_comm.
+    *)  
 
   Lemma stmt_eval_more_val_Sn : ∀ s n σ c v,
       evalStmt s σ c n = Some (Some v) →
@@ -1035,10 +1057,8 @@ Module Adequacy.
                                    | None => Some None
                                    end) = Some (Some n0)).
           { rewrite <- H0. 
-            { intros.
-
             f_equal. apply functional_extensionality.
-          intro. 
+            intro. 
 
           induction x.
           simpl. reflexivity.
