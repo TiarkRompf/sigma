@@ -7,6 +7,7 @@ Require Import Coq.Arith.EqNat.
 Require Import Coq.omega.Omega.
 Require Import Coq.Lists.List.
 Require Import Coq.omega.Omega.
+Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Utf8.
 Import ListNotations.
 
@@ -222,8 +223,8 @@ Definition o0 : obj := mt_obj.
 Definition obj_update (st : obj) (x : nat) (v : val) :=
   t_update beq_nat st x (Some v).
 
-Notation "x 'obj↦' v ; m" := (obj_update m x v) (at level 60, v at next level, right associativity).
-Notation "x 'obj↦' v" := (obj_update mt_obj x v) (at level 60).
+Notation "x 'obj↦' v ; m" := (obj_update m x v) (at level 15, v at next level, right associativity).
+Notation "x 'obj↦' v" := (obj_update mt_obj x v) (at level 15).
 
 (* Stores *)
 
@@ -240,19 +241,15 @@ Definition store_update (st : store) (x : loc) (v : obj) :=
   t_update beq_loc st x (Some v).
 
 Notation "x 'st↦' v ';' m" := (store_update m x v)
-                                (at level 60, v at next level, right associativity).
-Notation "x 'st↦' v" := (store_update mt_store x v) (at level 60).
-
-Lemma store_dec : ∀ (σ σ' : store), σ = σ' ∨ σ <> σ'.
-Proof.
-Admitted.
+                                (at level 15, v at next level, right associativity).
+Notation "x 'st↦' v" := (store_update mt_store x v) (at level 15).
 
 (* IMP Relational big-step semantics *)
 
 Module IMPRel.
   (* Evaluation relation for expressions *)
 
-  Reserved Notation "st '⊢' e '⇓ₑ' v" (at level 90, left associativity).
+  Reserved Notation "st '⊢' e '⇓ₑ' v" (at level 15).
 
   Inductive evalExp : store → exp → val → Prop :=
   (* | RId x :  ∀ σ, σ ⊢ (EId x) ⇓ₑ (σ (LId x)) 0 *)
@@ -294,8 +291,8 @@ Module IMPRel.
       σ ⊢ (EFieldRead e1 e2) ⇓ₑ v
   where "st '⊢' e '⇓ₑ' v" := (evalExp st e v) : type_scope.
 
-  Reserved Notation "( st1 , c ) '⊢' ( e , s ) n '⇓∞' st2" (at level 90, left associativity).
-  Reserved Notation "( st1 , c ) '⊢' s '⇓' st2" (at level 90, left associativity).
+  Reserved Notation "'(' st1 , c ')' '⊢' '(' e , s ')' n '⇓∞' st2" (at level 15).
+  Reserved Notation "( st1 , c ) '⊢' s '⇓' st2" (at level 15).
 
   Inductive evalLoop : store → path → exp → stmt → nat → store → Prop :=
   | RWhileZero : ∀ σ c e s,
@@ -335,6 +332,10 @@ Module IMPRel.
       (σ, p) ⊢ s1 ;; s2 ⇓ σ''
   | RSkip : ∀ σ p, (σ, p) ⊢ SKIP ⇓ σ
   where "( st1 , c ) '⊢' s '⇓' st2" := (evalStmt st1 c s st2) : type_scope.
+
+  Lemma t : forall m p q,
+      (forall i, 0 <= i /\ i < m -> p i = q i) ->
+      idx m p = idx m q.
 
   Scheme evalLoopRelMut := Induction for evalLoop Sort Prop
     with evalStmtRelMut := Induction for evalStmt Sort Prop.
@@ -679,7 +680,7 @@ Module IMPEval.
       if b then Some i else idx1 (i + 1) m' p
       *)
     end.
-
+    
   Fixpoint idx2 (ub : nat) (m : nat) (p : nat → option (option bool)) : option (option nat) :=
     match m with
     | O => None
@@ -1019,12 +1020,12 @@ Module Adequacy.
                 end)) eqn:Idxn.
       + destruct o.
         * assert (idx (S n)
-           (λ i : nat,
-              σ' ↩ evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n))
-              IN match 〚 e 〛 (σ') >>= toBool with
-                 | Some b => Some (Some (negb b))
-                 | None => Some None
-                 end) = Some (Some n0)).
+                      (λ i : nat,
+                             σ' ↩ evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n))
+                                IN match 〚 e 〛 (σ') >>= toBool with
+                                   | Some b => Some (Some (negb b))
+                                   | None => Some None
+                                   end) = Some (Some n0)).
           { assert (S n >= n) by omega. eapply (@idx_more_val_inv (S n) n _ _ H0 Idxn). }
           assert (idx (S n)
                       (λ i : nat,
@@ -1033,7 +1034,15 @@ Module Adequacy.
                                    | Some b => Some (Some (negb b))
                                    | None => Some None
                                    end) = Some (Some n0)).
-          rewrite <- H0. f_equal.
+          { rewrite <- H0. 
+            { intros.
+
+            f_equal. apply functional_extensionality.
+          intro. 
+
+          induction x.
+          simpl. reflexivity.
+          simpl. 
 
         * inversion H.
       + inversion H.
