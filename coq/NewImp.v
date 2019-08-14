@@ -1314,7 +1314,10 @@ Inductive gxp : Type :=
   | GNot : gxp -> gxp
   | GAnd : gxp -> gxp -> gxp
 
-  | GIf : gxp -> gxp -> gxp -> gxp.
+  | GIf : gxp -> gxp -> gxp -> gxp
+  | GVar : nat -> gxp
+  | GFixIndex : nat -> gxp -> gxp
+  | GFun : nat -> gxp -> gxp.
 
 
 Definition fvalid : gxp := GLoc (LId (Id 0)). (* "$valid" *)
@@ -1411,6 +1414,40 @@ Fixpoint trans_exp (e: exp) (sto: gxp): gxp :=
                   LETG o <-- GVSelect sto s' IN
                   GVSelect o n'
   end.
+
+
+Fixpoint trans_loop (e: exp) (s: stmt) (sto: gxp) (c: path) (n: nat) (* How to use GFixIndex? *)
+    (evstmt : gxp → path → gxp) : gxp:=
+  match n with
+  | O => GSome sto
+  | S n' =>
+    LETG b <-- trans_exp e sto >>g= toBoolG IN
+    LETG sto' <-- trans_loop e s sto c n' evstmt IN 
+    GIf b (evstmt sto' (PWhile c n')) GNone
+  end.
+
+Fixpoint trans_stmts (s: stmt) (sto: gxp) (c: path) { struct s }: gxp :=
+  match s with
+  | x ::= ALLOC =>
+    GPut (GPut sto (GLoc (LNew c)) OEmpty) (GLoc (LId x)) (GPut OEmpty (GLoc (LId (Id 0))) (GLoc (LNew c)))
+  | e1[[e2]] ::= e3 =>
+    LETG l <-- trans_exp e1 sto >>g= toLocG IN
+    LETG n <-- trans_exp e2 sto >>g= toNatG IN
+    LETG v <-- trans_exp e3 sto IN
+    LETG o <-- GVSelect sto l IN
+    GPut sto l (GPut o n v)
+  | IF e THEN s1 ELSE s2 FI =>
+    LETG b <-- trans_exp e sto >>g= toBoolG IN
+    GIf b (trans_stmts s1 sto (PThen c)) (trans_stmts s2 sto (PElse c))
+  | WHILE cnd DO s END =>
+      trans_loop cnd s sto c 3 (fun sto' c' => trans_stmts s sto' c')
+  | s1 ;; s2 =>
+      LETG sto' <-- trans_stmts s1 sto (PFst c) IN
+      trans_stmts s2 sto' (PSnd c)
+  | SKIP => GSome sto
+  | SAbort => GNone
+  end.
+
 
 (* simplification / normalization *)
 
