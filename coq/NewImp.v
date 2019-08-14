@@ -74,7 +74,29 @@ Definition t_empty {A : Type} {B : Type} (v : B) : total_map A B :=
 
 Definition t_update {A B : Type} (beq : A -> A -> bool)
            (m : total_map A B) (x : A) (v : B) :=
-  fun x' => if beq x x' then v else m x'. 
+  fun x' => if beq x x' then v else m x'.
+
+Lemma t_update_eq : forall { A B : Type } beq (m : total_map A B) x v,
+  (t_update beq m x v) x = v.
+Proof. Admitted.
+
+Lemma t_update_neq : forall { A B : Type } beq (m : total_map A B) x y v,
+  x <> y ->
+  (t_update beq m x v) y = m y.
+Proof. Admitted.
+
+Lemma t_update_shadow : forall { A B : Type } beq (m : total_map A B) x v1 v2,
+  (t_update beq (t_update beq m x v1) x v2) = t_update beq m x v2.
+Proof. Admitted.
+
+Lemma t_update_same : forall { A B : Type } beq (m : total_map A B) x,
+  t_update beq m x (m x) = m.
+Proof. Admitted.
+
+Lemma t_update_permute : forall { A B : Type } beq (m : total_map A B) x y v1 v2,
+  x <> y ->
+  (t_update beq (t_update beq m x v1) y v2) = (t_update beq (t_update beq m y v2) x v1).
+Proof. Admitted.
 
 Definition partial_map (A : Type) (B : Type) := total_map A (option B).
 
@@ -182,6 +204,10 @@ Inductive loc : Type :=
 | LNew : path -> loc
 .
 
+Lemma loc_dec : forall (l1 l2 : loc), l1 = l2 \/ l1 <> l2.
+Proof.
+Admitted.
+
 (* Context path equivalence *)
 
 Fixpoint beq_path c1 c2 : bool :=
@@ -204,6 +230,10 @@ Fixpoint beq_loc l1 l2 : bool :=
   | LNew c1, LNew c2 => beq_path c1 c2
   | _, _ => false
   end.
+
+Lemma beq_loc_eq: forall l, beq_loc l l = true.
+Proof.
+Admitted.
 
 (* Values *)
 
@@ -385,14 +415,14 @@ Module IMPRel.
       inversion H1. inversion H2. subst.
       remember (σ l0) as σl. rewrite H6 in H. inversion H. subst.
       remember (o n0) as on. rewrite H0 in H8. inversion H8. reflexivity.
-  Qed.
+Qed.
 
   Lemma loop0_store_inv : ∀ σ σ' p e s,
       (σ, p) ⊢ (e, s) 0 ⇓∞ σ' →
       σ = σ'.
   Proof.
     intros. inversion H. auto.
-  Qed.
+Qed.
 
   Lemma loop_false_store_inv : ∀ σ σ' p e s n,
       σ ⊢ e ⇓ₑ (VBool false) →
@@ -403,7 +433,7 @@ Module IMPRel.
     auto. apply IHevalLoop in H. subst.
     assert (VBool false = VBool true). eapply exp_deterministic. eauto. eauto.
     discriminate H.
-  Qed.
+Qed.
 
   Lemma loop_false_inv : ∀ σ σ' p e s n v,
       (σ, p) ⊢ (e, s) n ⇓∞ σ' →
@@ -414,7 +444,7 @@ Module IMPRel.
     intros. assert (σ = σ'). eapply loop_false_store_inv. eauto. eauto.
     subst. assert (VBool false = VBool v). eapply exp_deterministic.
     eauto. eauto. inversion H2. reflexivity.
-  Qed.
+Qed.
   
   Theorem loop_false_store_inv3 : ∀ σ σ' σ'' p e s n m,
       (σ, p) ⊢ (e, s) n ⇓∞ σ' →
@@ -424,7 +454,7 @@ Module IMPRel.
       (σ', p) ⊢ (e, s) m+1 ⇓∞ σ'' →
       σ' = σ''.
   Proof.
-    Admitted.
+  Admitted.
 
   Theorem loop_false_store_inv4 : ∀ σ σ1 σ2 σ3 p e s n a b,
       (σ, p) ⊢ (e, s) n ⇓∞ σ1 →
@@ -436,7 +466,7 @@ Module IMPRel.
     intros. split. 
     - eapply loop_false_store_inv. eauto. eauto.
     - eapply loop_false_store_inv. eauto. eauto.
-  Qed.
+Qed.
          
   Lemma loop0_deterministic : ∀ σ p e s σ' σ'',
       (σ, p) ⊢ (e, s) 0 ⇓∞ σ'  →
@@ -447,12 +477,12 @@ Module IMPRel.
     assert (σ = σ'). eapply loop0_store_inv. eauto.
     assert (σ = σ''). eapply loop0_store_inv. eauto.
     subst. reflexivity.
-  Qed.
+Qed.
 
   Lemma loop_sigma_exists : ∀ n σ p e s,
       ∃ σ', (σ, p) ⊢ (e, s) n ⇓∞ σ'.
   Proof.
-  Admitted.
+Admitted.
 
   Lemma loop_false_store_contra : ∀ σ σ' p e s n,
       σ ⊢ e ⇓ₑ (VBool false) →
@@ -467,7 +497,7 @@ Module IMPRel.
     assert (VBool false = VBool true).
     eapply exp_deterministic. eauto. eauto. inversion H2.
     eapply IHn. omega. apply H3.
-  Qed.
+Qed.
 
   Lemma loop_Sn_cond_true : ∀ n e s p σ σ',
       (σ, p)⊢ (e, s) 1 + n ⇓∞ σ' → σ ⊢ e ⇓ₑ (VBool true).
@@ -476,13 +506,13 @@ Module IMPRel.
     - inversion H. subst. eapply loop0_store_inv in H1. subst. assumption.
     - inversion H; subst. eapply IHn.
       assert (S n = 1 + n). omega. rewrite <- H0. eapply H1.
-  Qed.
+Qed.
       
   Lemma skip_store_inv : ∀ p σ σ',
       (σ, p)⊢ SKIP ⇓ σ' → σ = σ'.
   Proof.
     intros. inversion H. subst. reflexivity.
-  Qed.
+Qed.
 
   Theorem stmt_deterministic : ∀ s σ σ' σ'' p,
       (σ, p) ⊢ s ⇓ σ'  →
@@ -545,7 +575,7 @@ Module IMPRel.
       assert (σ = σ''). eapply skip_store_inv. eauto.
       subst. reflexivity.
     - inversion H.
-  Qed.
+Qed.
       
 End IMPRel.
 
@@ -690,7 +720,7 @@ Module IMPEval.
 
   Lemma idx1_eq_idx2 : ∀ m p, idx1 0 m p = idx2 m m p.
   Proof.
-  Admitted.
+Admitted.
 
   (* idx finds the least index *)
   Definition idx (m : nat) (p : nat -> option (option bool)) : option (option nat) := idx1 0 m p.
@@ -875,7 +905,7 @@ Module Adequacy.
           eapply H0. eapply H1.
           inversion H1.
         * destruct v0; simpl in H1; inversion H1.
-  Qed.
+Qed.
 
   Lemma idx1_more_val_inv : ∀ m n p i x,
       m >= n →
@@ -890,7 +920,7 @@ Module Adequacy.
         destruct o eqn:Ho. destruct b eqn:Hb.
         apply H0. assert (m >= n). omega. eapply IHm. apply H1.
         apply H0. inversion H0. inversion H0.
-  Qed.
+Qed.
 
   Lemma idx_more_val_inv : ∀ m n p i,
       m >= n →
@@ -902,7 +932,7 @@ Module Adequacy.
     replace (idx m p) with (idx1 0 m p).
     eapply idx1_more_val_inv. apply H. apply H0.
     auto. auto.
-  Qed.
+Qed.
 
   (*
   Lemma idx_more_val_inv : ∀ m n f g i x,
@@ -921,7 +951,7 @@ Module Adequacy.
         destruct o eqn:Ho. destruct b eqn:Hb.
         apply H0. assert (m >= n). omega. eapply IHm. apply H1.
         apply H0. reflexivity. inversion H0.
-  Qed.
+Qed.
 
   Lemma idx_more_inv : ∀ m n p x v,
       m >= n →
@@ -940,7 +970,7 @@ Module Adequacy.
     induction n.
     - simpl in H. inversion H.
     - omega.
-  Qed.
+Qed.
 
   Lemma loop_more_val_none : ∀ i e s σ σ' p f,
       evalLoop e s σ p i f = Some (Some σ') →
@@ -952,7 +982,7 @@ Module Adequacy.
       rewrite H0. simpl. reflexivity.
     - simpl. simpl in H. rewrite H. rewrite H0. simpl.
       reflexivity.
-  Qed.
+Qed.
 
   Lemma loop_more_val_true : ∀ i e s σ σ' p f,
       evalLoop e s σ p i f = Some (Some σ') →
@@ -962,7 +992,7 @@ Module Adequacy.
     intro i. induction i; intros.
     - simpl. simpl in H. inversion H. rewrite H0. simpl. reflexivity.
     - simpl. simpl in H. rewrite H. rewrite H0. simpl. reflexivity.
-  Qed.
+Qed.
 
   Lemma loop_more_some_none: ∀ i e s σ p f,
       evalLoop e s σ p i f = Some None →
@@ -971,13 +1001,13 @@ Module Adequacy.
     intro i. induction i; intros.
     - simpl in H. inversion H.
     - simpl in H. simpl. rewrite H. reflexivity.
-  Qed.
+Qed.
 
   Lemma loop_eval_more_val_Sn : ∀ n e s σ c i v,
       evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n)) = Some (Some v) →
       evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S n)) = Some (Some v).
   Proof.
-  Admitted.
+Admitted.
 
   Lemma idx_range : ∀ m f i x, x < m → idx1 x m f = Some (Some i) -> x <= i ∧ i < m.
   Proof.
@@ -1008,6 +1038,7 @@ Module Adequacy.
           rewrite plus_comm.
     *)  
 
+(*
   Lemma stmt_eval_more_val_Sn : ∀ s n σ c v,
       evalStmt s σ c n = Some v →
       evalStmt s σ c (S n) = Some v.
@@ -1258,5 +1289,783 @@ Module Adequacy.
       (σ, p) ⊢ s ⇓ σ' <-> ∃ m,〚s〛(σ, p)(m) = Some (Some σ').
   Proof.
     Admitted.
-        
+*)
 End Adequacy.
+
+Module Translation.
+  Import IMPEval.
+
+Inductive gxp : Type :=
+  | GNum : nat -> gxp
+  | GLoc: loc -> gxp
+  | GObj: (total_map nat (option gxp)) -> gxp
+  | GMap : (total_map loc (option gxp)) -> gxp
+  | GHasField: gxp -> gxp -> gxp
+  | GGet : gxp -> gxp -> gxp
+  | GPut : gxp -> gxp -> gxp -> gxp
+
+  | GPlus : gxp -> gxp -> gxp
+  | GMinus : gxp -> gxp -> gxp
+  | GMult : gxp -> gxp -> gxp
+
+  | GBool : bool -> gxp
+  | GEq : gxp -> gxp -> gxp
+  | GLt : gxp -> gxp -> gxp
+  | GNot : gxp -> gxp
+  | GAnd : gxp -> gxp -> gxp
+
+  | GIf : gxp -> gxp -> gxp -> gxp.
+
+
+Definition fvalid : gxp := GLoc (LId (Id 0)). (* "$valid" *)
+Definition fdata :  gxp := GLoc (LId (Id 1)). (* "$data"  *)
+Definition ftpe :   gxp := GNum 0. (* "$tpe"   *)
+Definition fval :   gxp := GNum 1. (* "$val"   *)
+
+Definition tnat :   gxp := GNum 0.
+Definition tbool :  gxp := GNum 1.
+Definition tloc :   gxp := GNum 2.
+
+Definition GEmpty : gxp := GMap (fun k =>
+                           match k with
+                           | LId x => Some (GObj (t_empty None))
+                           | LNew p => None
+                           end).
+
+Definition OEmpty : gxp := GObj(t_empty None).
+
+Definition GNone :  gxp := GPut GEmpty fvalid (GBool false).
+Definition GSome a : gxp := GPut (GPut GEmpty fvalid (GBool true)) fdata a.
+
+Definition GMatch (scrutinee: gxp) (none: gxp) (some: gxp -> gxp): gxp :=
+  GIf (GGet scrutinee fvalid) (some (GGet scrutinee fdata)) none.
+
+Definition GVSelect (addr: gxp) (field: gxp): gxp :=
+  GIf (GHasField addr field) (GSome (GGet addr field)) GNone.
+
+Definition GVNum (a: gxp): gxp :=
+  GPut (GPut OEmpty ftpe tnat) fval a.
+
+Definition GVBool (a: gxp): gxp :=
+  GPut (GPut OEmpty ftpe tbool) fval a.
+
+Definition GVLoc (a: gxp): gxp :=
+  GPut (GPut OEmpty ftpe tloc) fval a.
+
+Definition sym_store := total_map (option gxp).
+
+Definition toNatG (v:gxp): gxp :=
+  GIf (GEq (GGet v ftpe) tnat) (GSome (GGet v fval)) GNone.
+
+Definition toBoolG (v:gxp): gxp :=
+  GIf (GEq (GGet v ftpe) tbool) (GSome (GGet v fval)) GNone.
+
+Definition toLocG (v:gxp): gxp :=
+  GIf (GEq (GGet v ftpe) tloc) (GSome (GGet v fval)) GNone.
+
+Notation "'LETG' x <-- e1 'IN' e2"
+   := (GMatch e1 GNone (fun x => e2))
+   (right associativity, at level 60).
+(* Notation "'LETG' x <--- e1 'IN' e2"
+   := (match e1 with
+         | Some (Some x) => e2
+         | Some None => Some None
+         | None => None
+       end)
+   (right associativity, at level 60). *)
+
+Notation "e1 '>>g=' e2"
+   := (GMatch e1 GNone e2)
+   (right associativity, at level 80).
+
+(* ---------- translation (exp only for now) --------- *)
+Fixpoint trans_exp (e: exp) (sto: gxp): gxp :=
+  match e with
+  (* | AId x => GGet sto x (* fixme: check error *) *)
+  | ELoc id => GSome (GVLoc (GLoc (LId id)))
+  | ENum n => GSome (GVNum (GNum n))
+  | EPlus a b =>  LETG a <-- trans_exp a sto >>g= toNatG IN
+                  LETG b <-- trans_exp b sto >>g= toNatG IN
+                  GSome (GVNum (GPlus a b))
+  | EMinus a b => LETG a <-- trans_exp a sto >>g= toNatG IN
+                  LETG b <-- trans_exp b sto >>g= toNatG IN
+                  GSome (GVNum (GMinus a b))
+  | EMult a b =>  LETG a <-- trans_exp a sto >>g= toNatG IN
+                  LETG b <-- trans_exp b sto >>g= toNatG IN
+                  GSome (GVNum (GMult a b))
+  | EBool b =>      GSome (GVBool (GBool b))
+  | EEq a b =>    LETG a <-- trans_exp a sto >>g= toNatG IN
+                  LETG b <-- trans_exp b sto >>g= toNatG IN
+                  GSome (GVBool (GEq a b))
+  | ELt a b =>    LETG a <-- trans_exp a sto >>g= toNatG IN
+                  LETG b <-- trans_exp b sto >>g= toNatG IN
+                  GSome (GVBool (GLt a b))
+  | EAnd a b =>   LETG a <-- trans_exp a sto >>g= toBoolG IN
+                  LETG b <-- trans_exp b sto >>g= toBoolG IN
+                  GSome (GVBool (GAnd a b))
+  | ENeg a =>     LETG a <-- trans_exp a sto >>g= toBoolG IN
+                  GSome (GVBool (GNot a))
+  | EFieldRead s n =>
+                  LETG s' <-- trans_exp s sto >>g= toLocG IN
+                  LETG n' <-- trans_exp n sto >>g= toNatG IN
+                  LETG o <-- GVSelect sto s' IN
+                  GVSelect o n'
+  end.
+
+(* simplification / normalization *)
+
+Definition hasField {X Y : Type} (m: total_map X (option Y)) (x : X): gxp := match m x with
+    | Some _ => GBool true
+    | None => GBool false
+end.
+
+(* Fixpoint simpl_map (e: gxp): gxp := match e with
+  | GGet (GPut m x v1) y => if beq_loc x y
+                            then v1
+                            else *)
+
+(* | GPut m y v => match sms_eval_exp x with
+          | GLoc x' => match sms_eval_exp y with
+                       | GLoc y' => if beq_loc x' y'
+                                      then GBool true
+                                       else GBool false
+                       | y' => GHasField (GPut m y' v) (GLoc x') end
+          | x' => GHasField (GPut m y v) x' end *)
+
+(* Fixpoint beq_gxp (l : gxp) (r : gxp): bool := match l, r with
+  | GNum n, GNum m => beq_nat n m
+  | GBool n, GBool m => eqb n m
+  | GLoc n, GLoc m => beq_nat n m
+  | GMap m =>
+  | GObj n => e
+  | GHasField a x => 
+  | GGet a x => 
+  | GPut a x b => 
+  | GPlus a b =>
+  | GMinus a b => 
+  | GMult a b => 
+  | GEq a b => 
+  | GIf c a b => 
+  | GLt a b => 
+  | GAnd a b => 
+  | GNot a => *)
+
+Fixpoint sms_eval_exp (e: gxp): gxp :=
+  match e with
+  | GNum n => e
+  | GBool n => e
+  | GLoc n => e
+  | GMap m => e (* simpl in Map? *)
+  | GObj n => e
+  | GHasField a x => match sms_eval_exp a, sms_eval_exp x with
+                     | GMap m, GLoc x => hasField m x
+                     | GObj m, GNum x => hasField m x
+                     | GPut m y v, x' => GIf (GEq x' y) (GBool true) (GHasField m x')
+                     | a', x' => GHasField a' x'
+                     end
+  | GGet a x => match sms_eval_exp a, sms_eval_exp x with
+                | GMap m, GLoc x => match m x with Some y => y | None => GNone end
+                | GPut m y v, x' => GIf (GEq x' y) v (GGet m x')
+                | GObj m, GNum x => match m x with Some y => y | None => GNone end
+                | a', x' => GGet a' x'
+                end
+  | GPut a x b => match sms_eval_exp a, sms_eval_exp x, sms_eval_exp b with
+                  | GMap m, GLoc x', b' => GMap (t_update beq_loc m x' (Some b'))
+                  | GObj m, GNum x', b' => GObj (t_update beq_nat m x' (Some b'))
+                  | a', x', b' => GPut a' x' b'
+                  end
+  | GPlus a b => match sms_eval_exp a, sms_eval_exp b with
+                 | GNum a', GNum b' => GNum (a' + b')
+                 | a', b' => GPlus a' b'
+                 end
+  | GMinus a b => match sms_eval_exp a, sms_eval_exp b with
+                 | GNum a', GNum b' => GNum (a' - b')
+                 | a', b' => GMinus a' b'
+                 end
+  | GMult a b => match sms_eval_exp a, sms_eval_exp b with
+                 | GNum a', GNum b' => GNum (a' * b')
+                 | a', b' => GMult a' b'
+                 end
+  | GEq a b => match sms_eval_exp a, sms_eval_exp b with
+                 | GNum a', GNum b' => GBool (Nat.eqb a' b')
+                 | GLoc a', GLoc b' => GBool (beq_loc a' b')
+                 | a', b' => GEq a' b'
+                 end
+  | GIf c a b => match sms_eval_exp c with
+                 | GBool c' => if c' then sms_eval_exp a else sms_eval_exp b
+                 | c' => GIf c' (sms_eval_exp a) (sms_eval_exp b)
+                 end
+  | GLt a b => match sms_eval_exp a, sms_eval_exp b with
+                 | GNum a', GNum b' => GBool (Nat.ltb a' b')
+                 | a', b' => GLt a' b'
+                 end
+  | GAnd a b => match sms_eval_exp a, sms_eval_exp b with
+                 | GBool a', GBool b' => GBool (andb a' b')
+                 | a', b' => GAnd a' b'
+                 end
+  | GNot a => match sms_eval_exp a with
+                 | GBool a' => GBool (negb a')
+                 | a' => GNot a'
+                 end
+  end.
+
+(* examples, sanity checks *)
+
+Definition testprog := (trans_exp (EPlus (ENum 2) (ENum 3)) (GMap (t_empty None))).
+
+Definition testprog2 := fun e1 e2 => (trans_exp (EPlus e1 e2) (GMap (t_empty None))).
+
+Definition testprog1 := (trans_exp (ENum 2)) (GMap (t_empty None)).
+
+(* WARNING: computing of GMao unfolds string comparison (<-- huge term!!!) *)
+Compute testprog.
+Compute testprog1.
+Compute testprog2.
+
+Compute (sms_eval_exp (GPut GEmpty fvalid (GBool true))).
+
+Definition geq a b := sms_eval_exp a = sms_eval_exp b.
+
+Definition fgeq f1 f2 := forall b1 b2, geq b1 b2 -> geq (f1 b1) (f2 b2).
+
+Lemma GEQ_trans: forall a b c, geq a b -> geq b c -> geq a c.
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
+Qed.
+
+Lemma FGEQ_refl: forall f, (forall b1 b2, geq b1 b2 -> geq (f b1) (f b2)) -> fgeq f f.
+Proof. intros. unfold fgeq. intros. eapply H. eauto. Qed. 
+
+(* ----- prove some congruence rules ----- *)
+
+Lemma GEQ_IfC: forall c1 c2 a1 a2 b1 b2,
+    geq c1 c2 -> geq a1 a2 -> geq b1 b2 -> geq (GIf c1 a1 b1) (GIf c2 a2 b2).
+Proof. intros. unfold geq in *. simpl. rewrite H. rewrite H0. rewrite H1. simpl. auto. Qed.
+
+Lemma GEQ_GetC: forall a1 a2 x1 x2,
+    geq a1 a2 -> geq x1 x2 -> geq (GGet a1 x1) (GGet a2 x2).
+Proof. intros. unfold geq in *. simpl. rewrite H. rewrite H0. reflexivity.  Qed.
+
+Lemma GEQ_PlusC: forall a1 a2 b1 b2,
+    geq a1 a2 -> geq b1 b2 -> geq (GPlus a1 b1) (GPlus a2 b2).
+Proof. intros. unfold geq in *. simpl. rewrite H. rewrite H0. simpl. auto. Qed.
+
+Lemma GEQ_MinusC : forall a1 a2 b1 b2,
+    geq a1 a2 -> geq b1 b2 -> geq (GMinus a1 b1) (GMinus a2 b2).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
+Qed.
+
+Lemma GEQ_MultC : forall a1 a2 b1 b2,
+    geq a1 a2 -> geq b1 b2 -> geq (GMult a1 b1) (GMult a2 b2).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
+Qed.
+
+Lemma GEQ_LtC : forall a1 a2 b1 b2,
+    geq a1 a2 -> geq b1 b2 -> geq (GLt a1 b1) (GLt a2 b2).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
+Qed.
+
+Lemma GEQ_EqC : forall a1 a2 b1 b2,
+    geq a1 a2 -> geq b1 b2 -> geq (GEq a1 b1) (GEq a2 b2).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
+Qed.
+
+Lemma GEQ_AndC : forall a1 a2 b1 b2,
+    geq a1 a2 -> geq b1 b2 -> geq (GAnd a1 b1) (GAnd a2 b2).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
+Qed.
+
+Lemma GEQ_NotC : forall a1 a2,
+    geq a1 a2 -> geq (GNot a1) (GNot a2).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. auto.
+Qed.
+
+Lemma GEQ_HasFieldC : forall a1 a2 b1 b2,
+    geq a1 a2 -> geq b1 b2 -> geq (GHasField a1 b1) (GHasField a2 b2).
+Proof.
+  intros. unfold geq in *. simpl. rewrite H. rewrite H0. reflexivity.
+Qed.
+
+Lemma GEQ_SomeC: forall a b, geq a b -> geq (GSome a) (GSome b).
+Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
+
+Lemma GEQ_VNumC: forall a b, geq a b -> geq (GVNum a) (GVNum b).
+Proof.  intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
+
+Lemma GEQ_VBoolC: forall a b, geq a b -> geq (GVBool a) (GVBool b).
+Proof.  intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
+
+Lemma GEQ_toNatC: forall a b, geq a b -> geq (toNatG a) (toNatG b).
+Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
+
+Lemma GEQ_toBoolC: forall a b, geq a b -> geq (toBoolG a) (toBoolG b).
+Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
+
+Lemma GEQ_toLocC: forall a b, geq a b -> geq (toLocG a) (toLocG b).
+Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
+
+Lemma GEQ_BindC: forall a1 a2 f1 f2,
+    geq a1 a2 -> fgeq f1 f2 ->
+    geq (a1 >>g= f1) (a2 >>g= f2).
+Proof.
+  intros.
+  unfold GMatch. eapply GEQ_IfC. eapply GEQ_GetC. eauto. reflexivity. eapply H0. eapply GEQ_GetC. eauto. reflexivity. reflexivity.
+Qed.
+
+Lemma GEQ_GVSelectC : forall a1 a2 b1 b2,
+    geq a1 a2 -> geq b1 b2 -> geq (GVSelect a1 b1) (GVSelect a2 b2).
+Proof.
+  intros. unfold GVSelect. eapply GEQ_IfC; eauto; try reflexivity. apply GEQ_HasFieldC; auto.
+  apply GEQ_SomeC. apply GEQ_GetC; eauto; try reflexivity.
+Qed.
+
+(* ----- and reduction rules ----- *)
+
+
+Lemma GEQ_PlusR: forall a1 a2 n1 n2,
+    geq a1 (GNum n1) ->
+    geq a2 (GNum n2) ->
+    geq (GPlus a1 a2) (GNum (n1 + n2)).
+Proof.
+  intros. eapply GEQ_trans. eapply GEQ_PlusC; eauto.  unfold geq in *. simpl. reflexivity.
+Qed.
+
+Lemma GEQ_MinusR : forall a1 a2 n1 n2,
+    geq a1 (GNum n1) ->
+    geq a2 (GNum n2) ->
+    geq (GMinus a1 a2) (GNum (n1 - n2)).
+Proof.
+  intros. eapply GEQ_trans.
+  - eapply GEQ_MinusC; eauto.
+  - unfold geq in *. simpl. reflexivity.
+Qed.
+
+
+Lemma GEQ_MultR : forall a1 a2 n1 n2,
+    geq a1 (GNum n1) ->
+    geq a2 (GNum n2) ->
+    geq (GMult a1 a2) (GNum (n1 * n2)).
+Proof.
+  intros. eapply GEQ_trans.
+  - eapply GEQ_MultC; eauto.
+  - unfold geq in *. simpl. reflexivity.
+Qed.
+
+Lemma GEQ_LtR : forall a1 a2 n1 n2,
+    geq a1 (GNum n1) ->
+    geq a2 (GNum n2) ->
+    geq (GLt a1 a2) (GBool (n1 <? n2)).
+Proof.
+  intros. eapply GEQ_trans.
+  - eapply GEQ_LtC; eauto.
+  - unfold geq in *. simpl. reflexivity.
+Qed.
+
+Lemma GEQ_EqR : forall a1 a2 n1 n2,
+    geq a1 (GNum n1) ->
+    geq a2 (GNum n2) ->
+    geq (GEq a1 a2) (GBool (n1 =? n2)).
+Proof.
+  intros. eapply GEQ_trans.
+  - eapply GEQ_EqC; eauto.
+  - unfold geq in *. simpl. reflexivity.
+Qed.
+
+Lemma GEQ_AndR : forall a1 a2 n1 n2,
+    geq a1 (GBool n1) ->
+    geq a2 (GBool n2) ->
+    geq (GAnd a1 a2) (GBool (andb n1 n2)).
+Proof.
+  intros. eapply GEQ_trans.
+  - eapply GEQ_AndC; eauto.
+  - unfold geq in *. simpl. reflexivity.
+Qed.
+
+Lemma GEQ_NotR : forall a1 n1,
+    geq a1 (GBool n1) ->
+    geq (GNot a1) (GBool (negb n1)).
+Proof.
+  intros. eapply GEQ_trans.
+  - eapply GEQ_NotC; eauto.
+  - unfold geq in *. simpl. reflexivity.
+Qed.
+
+(* Lemma GEQ_GetSomeR: forall s1 l1 m v x,
+   geq s1 (GMap m) ->
+   geq l1 (GLoc v) ->
+   m v = Some x -> 
+   geq (GGet s1 l1) x.
+Proof.
+  Admitted. *)
+  (* intros. unfold geq. simpl. rewrite H. simpl. rewrite H0. simpl. rewrite H1.
+  destruct x. *)
+
+
+Lemma GEQ_PutObjR: forall s1 l1 m n x y,
+   geq s1 (GObj m) ->
+   geq l1 (GNum n) ->
+   y = sms_eval_exp x ->
+   geq (GPut s1 l1 x) (GObj (t_update beq_nat m n (Some y))).
+Proof.
+ intros.
+ unfold geq. simpl. rewrite H. rewrite H0. simpl. subst. reflexivity.
+Qed.
+
+(* Lemma GEQ_GetNoneR: forall s1 l1 m v,
+   geq s1 (GMap m) ->
+   geq l1 (GLoc v) ->
+   m v = None -> 
+   geq (GGet s1 l1) GNone.
+Proof.
+intros. unfold geq. simpl. rewrite H. simpl. rewrite H0. simpl. rewrite H1.
+unfold GNone.  reflexivity.
+Qed. *)
+
+(* Lemma GEQ_GetSomeObjR: forall s1 l1 m n x,
+   geq s1 (GObj m) ->
+   geq l1 (GNum n) ->
+   m n = Some x -> 
+   geq (GGet s1 l1) x.
+Proof.
+  Admitted. *)
+
+
+Lemma GEQ_SomeR: forall a b,
+    geq a (GSome b) -> geq (GGet a fdata) b.
+Proof.
+  intros. eapply GEQ_trans. eapply GEQ_GetC; eauto. reflexivity. unfold GSome.
+  unfold geq in *. simpl. reflexivity.
+Qed. 
+
+Lemma GEQ_BindSomeR: forall a b c f,
+    geq a (GSome b) ->
+    geq (f b) c ->
+    fgeq f f ->
+    geq (a >>g= f) c.
+Proof. intros. eapply GEQ_trans. eapply GEQ_BindC; eauto.
+       unfold GMatch. unfold fgeq in *. unfold geq in *. simpl. rewrite <-H0. 
+       eapply H1. eapply GEQ_SomeR. reflexivity. Qed.
+
+Lemma GEQ_BindNoneR: forall a f,
+    geq a GNone -> geq (a >>g= f) GNone.
+Proof.
+  intros. unfold GMatch. unfold geq in *. simpl. rewrite H. simpl. reflexivity. 
+Qed.
+
+Lemma GEQ_toNatR: forall a b,
+    geq a (GVNum b) -> geq (toNatG a) (GSome b).
+Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed.
+
+Lemma GEQ_toNatBoolR: forall a b,
+    geq a (GVBool b) -> geq (toNatG a) GNone.
+Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed.
+
+Lemma GEQ_toNatLocR: forall a b,
+    geq a (GVLoc b) -> geq (toNatG a) GNone.
+Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed.
+
+Lemma GEQ_toBoolR: forall a b,
+    geq a (GVBool b) -> geq (toBoolG a) (GSome b).
+Proof. intros. eapply GEQ_trans. eapply GEQ_toBoolC. eauto. unfold geq in *. simpl. reflexivity. Qed.
+
+Lemma GEQ_toBoolNatR: forall a b,
+    geq a (GVNum b) -> geq (toBoolG a) GNone.
+Proof. intros. eapply GEQ_trans. eapply GEQ_toBoolC. eauto. unfold geq in *. simpl. reflexivity. Qed.
+
+Lemma GEQ_toBoolLocR: forall a b,
+    geq a (GVLoc b) -> geq (toBoolG a) GNone.
+Proof. intros. eapply GEQ_trans. eapply GEQ_toBoolC. eauto. unfold geq in *. simpl. reflexivity. Qed.
+
+Lemma GEQ_toLocR: forall a b,
+    geq a (GVLoc b) -> geq (toLocG a) (GSome b).
+Proof. intros. eapply GEQ_trans. eapply GEQ_toLocC. eauto. unfold geq in *. simpl. reflexivity. Qed.
+
+Lemma GEQ_toLocNatR: forall a b,
+    geq a (GVNum b) -> geq (toLocG a) GNone.
+Proof. intros. eapply GEQ_trans. eapply GEQ_toLocC. eauto. unfold geq in *. simpl. reflexivity. Qed.
+
+Lemma GEQ_toLocBoolR: forall a b,
+    geq a (GVBool b) -> geq (toLocG a) GNone.
+Proof. intros. eapply GEQ_trans. eapply GEQ_toLocC. eauto. unfold geq in *. simpl. reflexivity. Qed.
+
+(* ----- equivalence between IMP and FUN ----- *)
+
+Inductive veq : val -> gxp -> Prop :=
+| VEQ_Num : forall n r,
+    geq r (GVNum (GNum n)) ->
+    veq (VNum n) r
+| VEQ_Bool : forall n r,
+    geq  r (GVBool (GBool n)) ->
+    veq (VBool n) r
+| VEQ_Loc : forall l r,
+    geq  r (GVLoc (GLoc l)) ->
+    veq (VLoc l) r.
+
+Inductive oeq {X:Type} (peq: X -> gxp -> Prop): option X -> gxp -> Prop :=
+| REQ_Some : forall v g r,
+    peq v g ->
+    geq r (GSome g) ->
+    oeq peq (Some v) r
+| REQ_None : forall r,
+    geq r GNone ->
+    oeq peq None r.
+
+Definition req := oeq veq.
+
+Definition neq (n1: nat) (n2: gxp) := n2 = (GNum n1).
+Definition beq (n1: bool) (n2: gxp) := n2 = (GBool n1).
+Definition leq (n1: loc) (n2: gxp) := n2 = (GLoc n1).
+
+Inductive objeq : obj -> gxp -> Prop :=
+| OBJEQ_Init : forall o1 o2,
+        (forall n1 n2, neq n1 n2 -> oeq veq (o1 n1) (GVSelect o2 n2)) -> objeq o1 o2.
+
+Inductive seq : store -> gxp -> Prop := 
+  | SEQ_Init : forall s1 s2,
+        (forall l1 l2, leq l1 l2 -> oeq objeq (s1 l1) (GVSelect s2 l2)) -> seq s1 s2.
+
+Lemma REQ_BindC: forall X Y (peq: X -> gxp -> Prop)  (qeq: Y -> gxp -> Prop) a1 a2 f1 f2,
+    oeq peq a1 a2 ->
+    (forall b1 b2, peq b1 b2 -> oeq qeq (f1 b1) (f2 b2)) ->
+    (forall b c, geq b c -> geq (f2 b) (f2 c)) ->
+    oeq qeq (a1 >>= f1) (a2 >>g= f2).
+Proof.
+  intros. inversion H; subst a1 r.
+  - specialize (H0 _ _ H2). inversion H0; subst r.
+    + eapply REQ_Some. eauto. eapply GEQ_BindSomeR; eauto.
+    + eapply REQ_None. eapply GEQ_BindSomeR; eauto. 
+  - eapply REQ_None. eapply GEQ_BindNoneR; eauto.
+Qed.
+
+
+Lemma REQ_toNatC: forall (b0 : val) (b3 : gxp), veq b0 b3 -> oeq neq (toNat b0) (toNatG b3).
+Proof.
+  intros. inversion H; subst b0 r.
+  - eapply REQ_Some. reflexivity. eapply GEQ_toNatR. eauto. 
+  - eapply REQ_None. eapply GEQ_toNatBoolR. eauto.
+  - eapply REQ_None. eapply GEQ_toNatLocR. eauto.
+Qed.
+
+Lemma REQ_toBoolC: forall (b0 : val) (b3 : gxp), veq b0 b3 -> oeq beq (toBool b0) (toBoolG b3).
+Proof.
+  intros. inversion H; subst b0 r.
+  - eapply REQ_None. eapply GEQ_toBoolNatR. eauto.
+  - eapply REQ_Some. reflexivity. eapply GEQ_toBoolR. eauto. 
+  - eapply REQ_None. eapply GEQ_toBoolLocR. eauto.
+Qed.
+
+Lemma REQ_toLocC: forall (b0 : val) (b3 : gxp), veq b0 b3 -> oeq leq (toLoc b0) (toLocG b3).
+Proof.
+  intros. inversion H; subst b0 r.
+  - eapply REQ_None. eapply GEQ_toLocNatR. eauto.
+  - eapply REQ_None. eapply GEQ_toLocBoolR. eauto.
+  - eapply REQ_Some. reflexivity. eapply GEQ_toLocR. eauto. 
+Qed.
+
+Lemma OEQ_toNatC: forall (a1 : option val) (b1: gxp),
+    oeq veq a1 b1 -> oeq neq (a1 >>= toNat) (b1 >>g= toNatG).
+Proof.
+  intros.
+  eapply REQ_BindC with (peq := veq). try assumption.
+  intros.
+  - eapply REQ_toNatC. assumption.
+  - intros. eapply GEQ_toNatC. assumption.
+Qed.
+
+Definition test22 := sms_eval_exp (GGet (GMap (t_empty None)) fvalid >>g= (λ o : gxp, GGet o ftpe)).
+Compute test22.
+
+Definition empty_store : store :=
+  t_empty None.
+
+Theorem soundness_exp: forall e s1 s2,
+    seq s1 s2 ->
+    req (evalExp e s1) (trans_exp e s2).
+Proof.
+  intros. induction e.
+  (*- (* var *) simpl. unfold req. eapply REQ_None. unfold geq.
+    admit. (* fixme *) *)
+  - (* num *) simpl. eapply REQ_Some. eapply VEQ_Num. reflexivity. reflexivity. 
+  - (* bool *) simpl. eapply REQ_Some. eapply VEQ_Bool. reflexivity. reflexivity.
+  - (* loc *) simpl. eapply REQ_Some. eapply VEQ_Loc. reflexivity. reflexivity.
+  - (* plus *)
+    (* eapply REQ_BindC. eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC.
+    intros. eapply REQ_BindC. eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC.
+    intros. eapply REQ_Some. eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_PlusR. reflexivity. reflexivity. rewrite H. rewrite H0. reflexivity.
+    intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. reflexivity. eauto.
+    intros. eapply GEQ_BindC. eapply GEQ_BindC. reflexivity. intros ? ? ?. eapply GEQ_toNatC. eauto. intros ? ? ?.
+    eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. eauto. eauto. 
+    simpl eval_exp. simpl trans_exp. *)
+    simpl.
+    remember (evalExp e1 s1) as a1.
+    remember (evalExp e2 s1) as a2.
+    remember (trans_exp e1 s2) as b1.
+    remember (trans_exp e2 s2) as b2.
+    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    eapply REQ_BindC.
+    + eauto.
+    + intros. eapply REQ_BindC.
+      * eauto.
+      * intros. eapply REQ_Some.
+        ** eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_PlusR. reflexivity. reflexivity.
+        ** rewrite H2. rewrite H3. reflexivity.
+      * intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. reflexivity. apply H3. 
+    + intros. eapply GEQ_BindC.
+      * reflexivity.
+      * intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC.
+        eapply GEQ_PlusC. eauto. eauto.
+  - (* minus *) simpl.
+    remember (evalExp e1 s1) as a1.
+    remember (evalExp e2 s1) as a2.
+    remember (trans_exp e1 s2) as b1.
+    remember (trans_exp e2 s2) as b2.
+    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    eapply REQ_BindC.
+    + eauto.
+    + intros. eapply REQ_BindC.
+      * eauto.
+      * intros. eapply REQ_Some.
+        ** eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_MinusR. reflexivity. reflexivity.
+           ** rewrite H2. rewrite H3. reflexivity.
+      * intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_MinusC. reflexivity. apply H3.
+    + intros. eapply GEQ_BindC.
+      ** reflexivity.
+      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC.
+         eapply GEQ_MinusC. eauto. eauto.
+  - (* mult *) simpl.
+    remember (evalExp e1 s1) as a1.
+    remember (evalExp e2 s1) as a2.
+    remember (trans_exp e1 s2) as b1.
+    remember (trans_exp e2 s2) as b2.
+    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    eapply REQ_BindC.
+    + eauto.
+    + intros. eapply REQ_BindC.
+      * eauto.
+      * intros. eapply REQ_Some.
+        ** eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_MultR. reflexivity. reflexivity.
+           ** rewrite H2. rewrite H3. reflexivity.
+      * intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_MultC. reflexivity. apply H3.
+    + intros. eapply GEQ_BindC.
+      ** reflexivity.
+      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC.
+         eapply  GEQ_MultC. eauto. eauto.
+  - (* lt *) simpl.
+    remember (evalExp e1 s1) as a1.
+    remember (evalExp e2 s1) as a2.
+    remember (trans_exp e1 s2) as b1.
+    remember (trans_exp e2 s2) as b2.
+    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    eapply REQ_BindC.
+    + eauto.
+    + intros. eapply REQ_BindC.
+      * eauto.
+      * intros. eapply REQ_Some.
+        ** eapply VEQ_Bool. eapply GEQ_VBoolC. eapply GEQ_LtR. reflexivity. reflexivity.
+           ** rewrite H2. rewrite H3. reflexivity.
+      * intros. eapply GEQ_SomeC. eapply GEQ_VBoolC. eapply GEQ_LtC. reflexivity. apply H3.
+    + intros. eapply GEQ_BindC.
+      ** reflexivity.
+      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VBoolC.
+         eapply  GEQ_LtC. eauto. eauto.
+  - (* eq *) simpl.
+    remember (evalExp e1 s1) as a1.
+    remember (evalExp e2 s1) as a2.
+    remember (trans_exp e1 s2) as b1.
+    remember (trans_exp e2 s2) as b2.
+    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    eapply REQ_BindC.
+    + eauto.
+    + intros. eapply REQ_BindC.
+      * eauto.
+      * intros. eapply REQ_Some.
+        ** eapply VEQ_Bool. eapply GEQ_VBoolC. eapply GEQ_EqR. reflexivity. reflexivity.
+           ** rewrite H2. rewrite H3. reflexivity.
+      * intros. eapply GEQ_SomeC. eapply GEQ_VBoolC. eapply GEQ_EqC. reflexivity. eauto.
+    + intros. eapply GEQ_BindC.
+      ** reflexivity.
+      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VBoolC.
+         eapply  GEQ_EqC. eauto. eauto.
+  - (* and *) simpl.
+    remember (evalExp e1 s1) as a1.
+    remember (evalExp e2 s1) as a2.
+    remember (trans_exp e1 s2) as b1.
+    remember (trans_exp e2 s2) as b2.
+    assert (oeq beq (a1 >>= toBool) (b1 >>g= toBoolG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toBoolC. eapply GEQ_toBoolC. }
+    assert (oeq beq (a2 >>= toBool) (b2 >>g= toBoolG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toBoolC. eapply GEQ_toBoolC. }
+    eapply REQ_BindC.
+    + eauto.
+    + intros. eapply REQ_BindC.
+      * eauto.
+      * intros. eapply REQ_Some.
+        ** eapply VEQ_Bool. eapply GEQ_VBoolC. eapply GEQ_AndR. reflexivity. reflexivity.
+          ** rewrite H2. rewrite H3. reflexivity.
+      * intros. eapply GEQ_SomeC. eapply GEQ_VBoolC. eapply GEQ_AndC. reflexivity. eauto.
+    + intros. eapply GEQ_BindC.
+      ** reflexivity.
+      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VBoolC.
+         eapply  GEQ_AndC. eauto. eauto.
+  - (* not *) simpl.
+    remember (evalExp e s1) as a1.
+    remember (trans_exp e s2) as b1.
+    assert (oeq beq (a1 >>= toBool) (b1 >>g= toBoolG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toBoolC. eapply GEQ_toBoolC. }
+    eapply REQ_BindC.
+    + eauto.
+    + intros. eapply REQ_Some.
+       ** eapply VEQ_Bool. eapply GEQ_VBoolC. eapply GEQ_NotR. reflexivity.
+       ** eapply GEQ_SomeC. eapply GEQ_VBoolC. rewrite H1. reflexivity.
+    + intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VBoolC.
+         eapply  GEQ_NotC. eauto.
+  - (* field read *) simpl.
+    remember (evalExp e1 s1) as a1.
+    remember (evalExp e2 s1) as a2.
+    remember (trans_exp e1 s2) as b1.
+    remember (trans_exp e2 s2) as b2.
+    assert (oeq leq (a1 >>= toLoc) (b1 >>g= toLocG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toLocC. eapply GEQ_toLocC. }
+    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
+    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
+    eapply REQ_BindC.
+    + eauto.
+    + intros. eapply REQ_BindC.
+      * eauto.
+      * intros. eapply REQ_BindC.
+        ++ inversion H; subst. eapply H4. assumption.
+        ++ intros. inversion H4; subst. eapply H5. assumption.
+        ++ intros. eapply GEQ_GVSelectC; eauto; try reflexivity.
+      * intros. eapply GEQ_BindC.
+        ++ eapply GEQ_GVSelectC; eauto; try reflexivity.
+        ++ intros ? ? ?. eapply GEQ_GVSelectC; eauto; try reflexivity.
+    + intros. eapply GEQ_BindC; eauto; try reflexivity.
+      intros ? ? ?. eapply GEQ_BindC; eauto; try reflexivity.
+      * eapply GEQ_GVSelectC; eauto; try reflexivity.
+      * intros ? ? ?. eapply GEQ_GVSelectC; eauto; try reflexivity.
+Qed.
+
+
+
+End Translation.
