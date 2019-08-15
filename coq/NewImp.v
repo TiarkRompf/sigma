@@ -1314,10 +1314,7 @@ Inductive gxp : Type :=
   | GNot : gxp -> gxp
   | GAnd : gxp -> gxp -> gxp
 
-  | GIf : gxp -> gxp -> gxp -> gxp
-  | GVar : nat -> gxp
-  | GFixIndex : nat -> gxp -> gxp
-  | GFun : nat -> gxp -> gxp.
+  | GIf : gxp -> gxp -> gxp -> gxp.
 
 
 Definition fvalid : gxp := GLoc (LId (Id 0)). (* "$valid" *)
@@ -1497,12 +1494,12 @@ Fixpoint sms_eval_exp (e: gxp): gxp :=
   | GHasField a x => match sms_eval_exp a, sms_eval_exp x with
                      | GMap m, GLoc x => hasField m x
                      | GObj m, GNum x => hasField m x
-                     | GPut m y v, x' => GIf (GEq x' y) (GBool true) (GHasField m x')
+(*                      | GPut m y v, x' => GIf (GEq x' y) (GBool true) (GHasField m x') *)
                      | a', x' => GHasField a' x'
                      end
   | GGet a x => match sms_eval_exp a, sms_eval_exp x with
                 | GMap m, GLoc x => match m x with Some y => y | None => GNone end
-                | GPut m y v, x' => GIf (GEq x' y) v (GGet m x')
+(*                 | GPut m y v, x' => GIf (GEq x' y) v (GGet m x') *)
                 | GObj m, GNum x => match m x with Some y => y | None => GNone end
                 | a', x' => GGet a' x'
                 end
