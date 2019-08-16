@@ -1011,12 +1011,13 @@ Admitted.
 
   Lemma idx_range : ∀ m f i x, x < m → idx1 x m f = Some (Some i) -> x <= i ∧ i < m.
   Proof.
-    intros. generalize dependent x. generalize dependent i.
+    (*
+    generalize dependent x. generalize dependent i.
     induction m; intros.
     - simpl in H0. inversion H0.
     - simpl in H0. destruct (f x); inversion H0.
       destruct o; inversion H2.
-      destruct b; inversion H3. subst. split. auto. auto.
+      destruct b; inversion H3. subst. split. auto. auto.*)
       Admitted.
 
   Definition eq_under (m : nat) (p q : nat → option (option bool)) :=
@@ -1137,49 +1138,32 @@ Admitted.
   (* Lemma stmt_eval_more_val_Sn : ∀ n m s σ c v, *)
   Lemma stmt_eval_more_val_nm : ∀ s n m σ c v,
       n <= m →
-      evalStmt s σ c n = Some (Some v) →
-      evalStmt s σ c m = Some (Some v).
+      evalStmt s σ c n = Some v →
+      evalStmt s σ c m = Some v.
   Proof.
-    intro s. induction s; intros; simpl in H0; simpl; auto.
-    - destruct (〚 e 〛 (σ) >>= toBool).
+    intro s.
+    induction s; intros.
+    - simpl in H0. simpl. auto.
+    - simpl in H0. simpl. auto.
+    - simpl in H0. simpl.
+      destruct (〚 e 〛 (σ) >>= toBool).
       destruct b. eapply IHs1. apply H. apply H0.
-      eapply IHs2. apply H. apply H0. inversion H0.
-    - (* assert (idx n
-                  (λ i : nat,
-                         σ' ↩ evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n))
-                            IN match 〚 e 〛 (σ') >>= toBool with
-                               | Some b => Some (Some (negb b))
-                               | None => Some None
-                               end) <> None).
-      { unfold not. intros. rewrite H1 in H0. inversion H0. }
-      assert (idx n
-           (λ i : nat,
-              σ' ↩ evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n))
-              IN match 〚 e 〛 (σ') >>= toBool with
-                 | Some b => Some (Some (negb b))
-                 | None => Some None
-                 end) <> Some None).
-      { unfold not. intros. rewrite H2 in H0. inversion H0. }
-      *)
-      assert (∃ i, i < n ∧ idx n
-           (λ i : nat,
-              σ' ↩ evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n))
-              IN match 〚 e 〛 (σ') >>= toBool with
-                 | Some b => Some (Some (negb b))
-                 | None => Some None
-                 end) = Some (Some i)).
-      { admit. } 
-      admit.
-    - destruct (〚 s1 〛 (σ, PFst c)(n)) eqn:Eqs1n.
-      destruct o eqn:Eqo.
-      + assert (〚 s1 〛 (σ, PFst c)(m) = Some (Some s)). eapply IHs1. apply H. apply Eqs1n.
-        rewrite H1. eapply IHs2. apply H. apply H0.
+      eapply IHs2. apply H. apply H0. apply H0.
+    - induction m.
+      + inversion H. subst. apply H0.
+      + bdestruct (n =? S m).
+        * subst. apply H0.
+        * assert (n <= m). omega.
+          eapply stmt_eval_more_val_Sn. apply IHm. apply H2.
+    - simpl in H0. simpl.
+      destruct (〚 s1 〛 (σ, PFst c)(n)) eqn:Eqs1n.
+      + eapply (@IHs1 _ _ _ _ _ H) in Eqs1n. rewrite Eqs1n.
+        destruct o. eapply IHs2. apply H. apply H0. apply H0.
       + inversion H0.
-      + inversion H0.
-   Admitted.
-
-  Definition make_stmt_eval (s : stmt) (n : nat) := fun σ c => 〚s〛(σ, c)(n).
-
+    - simpl in H0. simpl. apply H0.
+    - simpl in H0. simpl. apply H0.
+  Qed.
+  
   (*
 
   Lemma idx_start_Sn_val_inv : ∀ n i j p,
@@ -1218,18 +1202,39 @@ Admitted.
   Theorem stmt_adequacy_1 : ∀ s σ σ' p,
       (σ, p) ⊢ s ⇓ σ' -> ∃ m,〚s〛(σ, p)(m) = Some (Some σ').
   Proof.
-    intros. generalize dependent p. generalize dependent σ.
-    generalize dependent σ'.
-    induction s; intros; inversion H; subst; simpl; auto.
-    - exists 1. reflexivity.
-    - exists 1. simpl. eapply exp_adequacy in H3. eapply exp_adequacy in H6.
+    intros. generalize dependent p. generalize dependent σ. generalize dependent σ'.
+    induction s; intros; inversion H; subst.
+    - simpl. exists 1. reflexivity.
+    - simpl. exists 1. simpl. eapply exp_adequacy in H3. eapply exp_adequacy in H6.
       eapply exp_adequacy in H8. rewrite H3. rewrite H6. rewrite H8.
       simpl. rewrite H9. reflexivity.
-    - eapply exp_adequacy in H6. rewrite H6. simpl.
+    - simpl. eapply exp_adequacy in H6. rewrite H6. simpl.
       eapply IHs1. apply H7.
-    - eapply exp_adequacy in H6. rewrite H6. simpl.
+    - simpl. eapply exp_adequacy in H6. rewrite H6. simpl.
       eapply IHs2. apply H7.
-    - exists (S n). admit.
+    - (*
+      assert (∀ σ n σ',
+                 (σ, p)⊢ (e, s) n ⇓∞ σ' →
+                 σ' ⊢ e ⇓ₑ VBool false →
+                 ∃ (m : nat), idx m (λ i : nat,
+                    σ'0 ↩ evalLoop e s σ p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m))
+                    IN match 〚 e 〛 (σ'0) >>= toBool with
+                        | Some b => Some (Some (negb b))
+                        | None => Some None
+                       end) = Some (Some n)).
+      { intros.
+        induction n0.
+        - exists 1. inversion H0. subst. eapply exp_adequacy in H1. unfold idx. simpl. rewrite H1. simpl.
+          reflexivity.
+        - 
+          
+
+      + inversion H4; subst.
+        simpl. reflexivity.
+      + assert (σ ⊢ e ⇓ₑ (VBool true)). eapply loop_Sn_cond_true. eapply H4.
+        inversion H4; subst. 
+        *)
+      
   Admitted.
   (*
       simpl. induction n.
@@ -1261,20 +1266,49 @@ Admitted.
       eapply RIfTrue. eauto. eauto.
       eapply RIfFalse. eauto. eauto. inversion H0.
     - simpl in H0.
+      remember (idx x
+           (λ i : nat,
+              σ' ↩ evalLoop e s σ p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(x))
+              IN match 〚 e 〛 (σ') >>= toBool with
+                 | Some b => Some (Some (negb b))
+                 | None => Some None
+                 end) ) as idxx.
+      destruct idxx; inversion H0. destruct o; inversion H0.
+      assert (〚e〛(σ') = Some (VBool false)). admit.
+      eapply exp_adequacy in H1.
+      eapply RWhile with (n := n). 2: apply H1.
+      clear H2. clear H3.
+      assert (∀ n σ p x σ',
+                 evalLoop e s σ p n (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(x)) = Some (Some σ') →
+                 σ' ⊢ e ⇓ₑ VBool false →
+                 (σ, p)⊢ (e, s) n ⇓∞ σ').
+      { intro n0. induction n0; intros.
+        - admit.
+        - eapply RWhileMore. eapply IHn0.
+
+      
+
+      generalize dependent σ.
+      generalize dependent σ'.
+      generalize dependent p.
+      induction n; intros.
+      + simpl in H0. inversion H0. eapply RWhileZero.
+      + 
+        eapply RWhileMore. eapply IHn. apply H. eapply H0.
+
+
+
+      simpl in H0.
       eapply RWhile.
-      admit.
       destruct x eqn:IHx.
       + simpl in H0. inversion H0.
       + simpl in H0. destruct (〚 e 〛 (σ) >>= toBool).
-        * subst.
-        
-        destruct x eqn:EqX.
+        * subst. admit.
         * simpl in H0.
           destruct (〚 e 〛 (σ) >>= toBool).
           inversion IHx.
           inversion IHx.
         * inversion IHx. subst. 
-              
     - simpl in H0. destruct (〚s1〛(σ, PFst p)(x)) eqn:EqS1; destruct (〚s2〛(σ, PSnd p)(x)) eqn:EqS2.
       * destruct o; inversion H0. destruct o1; eapply RSeq; eauto; eauto.
       * destruct o; inversion H0. eapply RSeq. eauto. eauto.
