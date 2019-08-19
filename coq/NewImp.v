@@ -8,6 +8,7 @@ Require Import Coq.omega.Omega.
 Require Import Coq.Lists.List.
 Require Import Coq.omega.Omega.
 Require Import Coq.Logic.FunctionalExtensionality.
+
 Require Import Utf8.
 Import ListNotations.
 
@@ -972,6 +973,7 @@ Qed.
     - omega.
 Qed.
 
+
   Lemma loop_more_val_none : ∀ i e s σ σ' p f,
       evalLoop e s σ p i f = Some (Some σ') →
       〚e〛(σ') = Some (VBool false) →
@@ -1039,7 +1041,6 @@ Admitted.
           rewrite plus_comm.
     *)  
 
-(*
   Lemma stmt_eval_more_val_Sn : ∀ s n σ c v,
       evalStmt s σ c n = Some v →
       evalStmt s σ c (S n) = Some v.
@@ -1164,6 +1165,12 @@ Admitted.
     - simpl in H0. simpl. apply H0.
   Qed.
   
+  Lemma loop_eval_more_val_nm : ∀ e s n m σ c v i,
+      n <= m →
+      evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n)) = Some v →
+      evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some v.
+  Proof. Admitted.
+
   (*
 
   Lemma idx_start_Sn_val_inv : ∀ n i j p,
@@ -1212,39 +1219,87 @@ Admitted.
       eapply IHs1. apply H7.
     - simpl. eapply exp_adequacy in H6. rewrite H6. simpl.
       eapply IHs2. apply H7.
-    - (*
-      assert (∀ σ n σ',
-                 (σ, p)⊢ (e, s) n ⇓∞ σ' →
-                 σ' ⊢ e ⇓ₑ VBool false →
-                 ∃ (m : nat), idx m (λ i : nat,
-                    σ'0 ↩ evalLoop e s σ p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m))
-                    IN match 〚 e 〛 (σ'0) >>= toBool with
-                        | Some b => Some (Some (negb b))
-                        | None => Some None
-                       end) = Some (Some n)).
-      { intros.
-        induction n0.
-        - exists 1. inversion H0. subst. eapply exp_adequacy in H1. unfold idx. simpl. rewrite H1. simpl.
-          reflexivity.
-        - 
-          
+    - assert (forall k sigma, (σ, p)⊢ (e, s) k ⇓∞ sigma ->
+        exists m, evalLoop e s σ p k (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma)). {
+      intro k. induction k.
+      + intros sigma Hlo. inversion Hlo; subst. exists 1. reflexivity.
+      + intros. simpl. inversion H0; subst.
+        eapply IHk in H2. destruct H2 as [w2 H2].
+        eapply IHs in H10. destruct H10 as [w10 H10].
+        exists (w2 + w10).
+        eapply loop_eval_more_val_nm with (m := w2 + w10) in H2; try omega. rewrite H2.
+        apply exp_adequacy in H3. rewrite H3. simpl.
+        eapply stmt_eval_more_val_nm with (n := w10); try omega.
+        apply H10.
+      }
+      simpl.
+      apply H0 in H4. destruct H4 as [w H4].
+      exists w.
+      admit.
+    - apply IHs1 in H4. apply IHs2 in H6.
+      destruct H4 as [ms1 Hs1].
+      destruct H6 as [ms2 Hs2].
+      exists (ms1 + ms2).
+      simpl.
+      apply stmt_eval_more_val_nm with (m:= ms1 + ms2) in Hs1; try omega.
+      rewrite Hs1. eapply stmt_eval_more_val_nm with (n := ms2).
+      omega.
+      assumption.
+    - exists 1. inversion H; subst. reflexivity.
+Admitted.
 
-      + inversion H4; subst.
-        simpl. reflexivity.
-      + assert (σ ⊢ e ⇓ₑ (VBool true)). eapply loop_Sn_cond_true. eapply H4.
-        inversion H4; subst. 
-        *)
-      
-  Admitted.
-  (*
-      simpl. induction n.
-      * simpl. inversion H4. subst. eapply exp_adequacy in H6. rewrite H6.
-        simpl. reflexivity.
-      * assert (σ ⊢ e ⇓ₑ (VBool true)). eapply loop_Sn_cond_true. eapply H4.
-        eapply exp_adequacy in H0. rewrite H0. simpl. rewrite H0. simpl.
-        rewrite H0 in IHn. simpl in IHn.
-    *)    
-    
+(*Definition idx_range_h (m : nat) (f : nat -> option (option bool)) (i : nat): Prop :=
+  forall k, 0 <= k /\ k <= i -> idx1 k m f = Some (Some i).
+Lemma idx_min : forall m f i,
+  idx1 0 m f = Some (Some i) -> idx_range_h m f i.
+Proof. Admitted. *)
+
+Definition evalLoop_monotone_true (e : exp) (s : stmt) (sigma: store) (p : path) (m : nat) (n : nat): Prop := forall k sigma', 0 <= k /\ k < n ->
+     evalLoop e s sigma p n (fun (σ' : store) (c1 : path) => evalStmt s σ' c1 m) = Some (Some sigma') ->
+     evalExp e sigma' = Some (VBool true).
+
+Lemma idx_some_cond_false : forall n e s p x sigma sigma',
+  Some (Some n) =
+          idx x
+            (λ i : nat,
+               σ' ↩ evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(x))
+               IN match evalExp e σ' >>= toBool with
+                  | Some b => Some (Some (negb b))
+                  | None => Some None
+                  end) ->
+  evalLoop e s sigma p n (fun (σ' : store) (c1 : path) => evalStmt s σ' c1 x) = Some (Some sigma') ->
+  evalExp e sigma' = Some (VBool false) /\ evalLoop_monotone_true e s sigma p x n.
+Proof.
+  intro n.
+  induction n.
+  - intros. destruct x; unfold idx in H; simpl in H. inversion H.
+    inversion H0; subst.
+    split.
+    + admit.
+    + unfold evalLoop_monotone_true. intros. apply False_rect. omega.
+  - (* this case can't be proven, at least not by induction. The induction hypothesis is
+       useless, it gives us information if idx = n but in our case it is (S n) and it is not
+       a recursive definition... *)
+Admitted.
+
+Lemma idx_some_cond_false2 : forall x n e s p sigma sigma',
+  Some (Some n) =
+          idx x
+            (λ i : nat,
+               σ' ↩ evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(x))
+               IN match evalExp e σ' >>= toBool with
+                  | Some b => Some (Some (negb b))
+                  | None => Some None
+                  end) ->
+  evalLoop e s sigma p n (fun (σ' : store) (c1 : path) => evalStmt s σ' c1 x) = Some (Some sigma') ->
+  evalExp e sigma' = Some (VBool false) /\ evalLoop_monotone_true e s sigma p x n.
+Proof.
+  intro x.
+  induction x.
+  - admit.
+  - intros.
+Admitted.
+
   Theorem stmt_adequacy_2 : ∀ s σ σ' p,
       ex (fun m =>〚s〛(σ, p)(m) = Some (Some σ')) -> (σ, p) ⊢ s ⇓ σ'.
   Proof.
@@ -1273,42 +1328,21 @@ Admitted.
                  | Some b => Some (Some (negb b))
                  | None => Some None
                  end) ) as idxx.
-      destruct idxx; inversion H0. destruct o; inversion H0.
-      assert (〚e〛(σ') = Some (VBool false)). admit.
-      eapply exp_adequacy in H1.
-      eapply RWhile with (n := n). 2: apply H1.
-      clear H2. clear H3.
-      assert (∀ n σ p x σ',
-                 evalLoop e s σ p n (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(x)) = Some (Some σ') →
+      destruct idxx; inversion H0; clear H0. destruct o; inversion H2; clear H2.
+      assert (〚e〛(σ') = Some (VBool false)). {
+        eapply idx_some_cond_false.
+        eapply Heqidxx.
+        eapply H1.
+      }
+      eapply exp_adequacy in H0.
+      eapply RWhile with (n := n). 2: apply H0.
+      assert (∀ n σ p m σ',
+                 evalLoop e s σ p n (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(m)) = Some (Some σ') →
                  σ' ⊢ e ⇓ₑ VBool false →
-                 (σ, p)⊢ (e, s) n ⇓∞ σ').
-      { intro n0. induction n0; intros.
-        - admit.
-        - eapply RWhileMore. eapply IHn0.
-
-      
-
-      generalize dependent σ.
-      generalize dependent σ'.
-      generalize dependent p.
-      induction n; intros.
-      + simpl in H0. inversion H0. eapply RWhileZero.
-      + 
-        eapply RWhileMore. eapply IHn. apply H. eapply H0.
-
-
-
-      simpl in H0.
-      eapply RWhile.
-      destruct x eqn:IHx.
-      + simpl in H0. inversion H0.
-      + simpl in H0. destruct (〚 e 〛 (σ) >>= toBool).
-        * subst. admit.
-        * simpl in H0.
-          destruct (〚 e 〛 (σ) >>= toBool).
-          inversion IHx.
-          inversion IHx.
-        * inversion IHx. subst. 
+                 (σ, p)⊢ (e, s) n ⇓∞ σ'). {
+        admit.
+      }
+      eapply H2; eauto.
     - simpl in H0. destruct (〚s1〛(σ, PFst p)(x)) eqn:EqS1; destruct (〚s2〛(σ, PSnd p)(x)) eqn:EqS2.
       * destruct o; inversion H0. destruct o1; eapply RSeq; eauto; eauto.
       * destruct o; inversion H0. eapply RSeq. eauto. eauto.
@@ -1316,14 +1350,14 @@ Admitted.
       * inversion H0.
     - inversion H0. eapply RSkip.
     - inversion H0.
-  Qed.
+  Admitted.
 
 
   Theorem stmt_adequacy : ∀ s σ σ' p,
       (σ, p) ⊢ s ⇓ σ' <-> ∃ m,〚s〛(σ, p)(m) = Some (Some σ').
   Proof.
     Admitted.
-*)
+
 End Adequacy.
 
 Module Translation.
