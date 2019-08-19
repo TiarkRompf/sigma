@@ -1005,12 +1005,6 @@ Qed.
     - simpl in H. simpl. rewrite H. reflexivity.
 Qed.
 
-  Lemma loop_eval_more_val_Sn : ∀ n e s σ c i v,
-      evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n)) = Some (Some v) →
-      evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S n)) = Some (Some v).
-  Proof.
-Admitted.
-
   Lemma idx_range : ∀ m f i x, x < m → idx1 x m f = Some (Some i) -> x <= i ∧ i < m.
   Proof.
     (*
@@ -1165,46 +1159,22 @@ Admitted.
     - simpl in H0. simpl. apply H0.
   Qed.
   
-  Lemma loop_eval_more_val_nm : ∀ e s n m σ c v i,
+  Lemma loop_eval_more_val_nm : ∀ i e s n m σ c v,
       n <= m →
       evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n)) = Some v →
       evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some v.
-  Proof. Admitted.
-
-  (*
-
-  Lemma idx_start_Sn_val_inv : ∀ n i j p,
-      bool_monotonic p →
-      idx1 i n p = Some (Some j) →
-      idx1 (S i) n p = Some (Some j).
   Proof.
-    intro n. induction n; intros i j p Mp H.
-    - simpl in H. inversion H.
-    - simpl in H. simpl. unfold bool_monotonic in Mp.
-      destruct (p i) eqn:Eqpi.
-      + destruct o.
-        * destruct b. inversion H. rewrite <- H1. rewrite Mp.
-          ++ 
-  
-  Lemma stmt_eval_more_val_Sn : ∀ s n σ c v,
-      evalStmt s σ c n = Some (Some v) →
-      evalStmt s σ c (S n) = Some (Some v).
-  Proof.
-    intro s. induction s; intros.
-    - simpl in H; auto.
-    - simpl in H; auto.
-    - simpl in H. simpl. destruct (〚e〛(σ) >>= toBool). destruct b.
-      eapply IHs1. auto. eapply IHs2. auto. inversion H.
-    - simpl. simpl in H. 
-      simpl. destruct (〚e〛(σ) >>= toBool).
-      + destruct b.
-        * simpl. simpl in H.
-          
-      induction n.
-      + simpl in H. inversion H.
-      + simpl in H. simpl.
-        destruct (〚e〛(σ) >>= toBool). destruct b. simpl. simpl in H.
-   *)
+    intro i. induction i.
+    - intros. simpl. inversion H0; subst. reflexivity.
+    - intros.
+      remember (evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n))) as hyp.
+      destruct hyp.
+      + simpl. symmetry in Heqhyp. simpl in H0. rewrite Heqhyp in H0; simpl in H0.
+        eapply IHi in Heqhyp; eauto. rewrite Heqhyp.
+        destruct o; eauto. destruct (〚 e 〛 (s0)); eauto. destruct v0; eauto. destruct b; eauto.
+        simpl. simpl in H0. eapply stmt_eval_more_val_nm; eauto.
+      + simpl. simpl in H0. rewrite <- Heqhyp in H0; simpl in H0. inversion H0.
+Qed.
 
   Theorem stmt_adequacy_1 : ∀ s σ σ' p,
       (σ, p) ⊢ s ⇓ σ' -> ∃ m,〚s〛(σ, p)(m) = Some (Some σ').
@@ -1356,7 +1326,8 @@ Admitted.
   Theorem stmt_adequacy : ∀ s σ σ' p,
       (σ, p) ⊢ s ⇓ σ' <-> ∃ m,〚s〛(σ, p)(m) = Some (Some σ').
   Proof.
-    Admitted.
+    split. apply stmt_adequacy_1. apply stmt_adequacy_2.
+  Qed.
 
 End Adequacy.
 
