@@ -447,7 +447,7 @@ Qed.
     eauto. eauto. inversion H2. reflexivity.
 Qed.
   
-  Theorem loop_false_store_inv3 : ∀ σ σ' σ'' p e s n m,
+(*   Theorem loop_false_store_inv3 : ∀ σ σ' σ'' p e s n m,
       (σ, p) ⊢ (e, s) n ⇓∞ σ' →
       σ' ⊢ e ⇓ₑ (VBool false) →
       m >= n →
@@ -455,7 +455,7 @@ Qed.
       (σ', p) ⊢ (e, s) m+1 ⇓∞ σ'' →
       σ' = σ''.
   Proof.
-  Admitted.
+  Admitted. *)
 
   Theorem loop_false_store_inv4 : ∀ σ σ1 σ2 σ3 p e s n a b,
       (σ, p) ⊢ (e, s) n ⇓∞ σ1 →
@@ -480,10 +480,10 @@ Qed.
     subst. reflexivity.
 Qed.
 
-  Lemma loop_sigma_exists : ∀ n σ p e s,
+(*   Lemma loop_sigma_exists : ∀ n σ p e s,
       ∃ σ', (σ, p) ⊢ (e, s) n ⇓∞ σ'.
   Proof.
-Admitted.
+Admitted. *)
 
   Lemma loop_false_store_contra : ∀ σ σ' p e s n,
       σ ⊢ e ⇓ₑ (VBool false) →
@@ -719,9 +719,6 @@ Module IMPEval.
       end
     end.
 
-  Lemma idx1_eq_idx2 : ∀ m p, idx1 0 m p = idx2 m m p.
-  Proof.
-Admitted.
 
   (* idx finds the least index *)
   Definition idx (m : nat) (p : nat -> option (option bool)) : option (option nat) := idx1 0 m p.
@@ -1005,7 +1002,7 @@ Qed.
     - simpl in H. simpl. rewrite H. reflexivity.
 Qed.
 
-  Lemma idx_range : ∀ m f i x, x < m → idx1 x m f = Some (Some i) -> x <= i ∧ i < m.
+(*   Lemma idx_range : ∀ m f i x, x < m → idx1 x m f = Some (Some i) -> x <= i ∧ i < m.
   Proof.
     (*
     generalize dependent x. generalize dependent i.
@@ -1033,7 +1030,7 @@ Qed.
       + destruct o eqn:Eqo.
         * destruct b eqn:Eqb. reflexivity.
           rewrite plus_comm.
-    *)  
+    *)   *)
 
   Lemma stmt_eval_more_val_Sn : ∀ s n σ c v,
       evalStmt s σ c n = Some v →
@@ -1176,6 +1173,88 @@ Qed.
       + simpl. simpl in H0. rewrite <- Heqhyp in H0; simpl in H0. inversion H0.
 Qed.
 
+  Definition evalLoop_monotone (e : exp) (s : stmt) (sigma : store) (p: path) (k : nat) (m : nat): Prop :=
+    forall i, i < k ->
+      exists sigma', evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) =
+      Some (Some sigma') /\ evalExp e sigma' = Some (VBool true).
+  
+  Lemma evalLoop_monotone_Sk : forall e s sigma p k m sigma',
+    evalLoop_monotone e s sigma p k m ->
+    evalLoop e s sigma p k (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\ evalExp e sigma' = Some (VBool true) ->
+    evalLoop_monotone e s sigma p (S k) m.
+  Proof.
+    unfold evalLoop_monotone.
+    intros.
+    bdestruct (i =? k).
+    + subst i. exists sigma'. eauto.
+    + eapply H. omega.
+  Qed.
+  
+  Lemma evalLoop_monotone_nm : forall e s sigma p k n m,
+    n <= m ->
+    evalLoop_monotone e s sigma p k n ->
+    evalLoop_monotone e s sigma p k m.
+  Proof.
+    unfold evalLoop_monotone.
+    intros.
+    destruct (H0 i) as [sigma' H0i]; eauto.
+    destruct H0i as [H0il H0ic].
+    exists sigma'. split; eauto.
+    eapply loop_eval_more_val_nm; eauto.
+  Qed.
+
+  Definition idx1_monotone (n m : nat) (p : nat -> option (option bool)): Prop :=
+    forall k, k <= n -> idx1 (n - k) (m + k) p = Some (Some n).
+
+  Lemma idx1_evalLoop_end : forall e s sigma sigma' p n m,
+    evalLoop_monotone e s sigma p n (S m) ->
+    evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S m)) = Some (Some sigma') ->
+    evalExp e sigma' = Some(VBool false) ->
+    idx1_monotone n (S m) (λ i : nat,
+       sigma'' ↩ evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S m + n))
+       IN match evalExp e sigma'' >>= toBool with
+          | Some b => Some (Some (negb b))
+          | None => Some None
+          end).    
+  Proof.
+   intros. unfold idx1_monotone.
+   intro k. induction k.
+   - intros. replace (n - 0) with n; try omega. simpl.
+     assert (evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S (m + n))) = Some (Some sigma')). {
+       eapply loop_eval_more_val_nm with (n := S m); eauto. omega.
+     }
+     rewrite H3. rewrite H1. reflexivity.
+   - intros. simpl.
+     destruct (H (n - S k)). omega.
+     destruct H3 as [Hs Hc].
+     assert (evalLoop e s sigma p (n - S k) (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S (m + n))) = Some (Some x)). {
+       eapply loop_eval_more_val_nm with (n := S m); eauto. omega.
+     }
+     rewrite H3. rewrite Hc. simpl.
+     replace (n - S k + 1) with (n - k); try omega.
+     replace (m + S k) with (S m + k); try omega.
+     apply IHk. omega.
+Qed.
+
+  Lemma idx_evalLoop_end : forall e s sigma sigma' p n m,
+    evalLoop_monotone e s sigma p n m ->
+    evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') ->
+    evalExp e sigma' = Some(VBool false) ->
+    idx (S m + n) (λ i : nat,
+       sigma'' ↩ evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S m + n))
+       IN match evalExp e sigma'' >>= toBool with
+          | Some b => Some (Some (negb b))
+          | None => Some None
+          end) = Some (Some n).    
+  Proof.
+   intros. unfold idx.
+   assert (n - n = 0) as Hz. omega.
+   rewrite <- Hz.
+   eapply idx1_evalLoop_end; eauto.
+   eapply evalLoop_monotone_nm with (n := m); eauto.
+   eapply loop_eval_more_val_nm with (n := m); eauto.
+  Qed.
+
   Theorem stmt_adequacy_1 : ∀ s σ σ' p,
       (σ, p) ⊢ s ⇓ σ' -> ∃ m,〚s〛(σ, p)(m) = Some (Some σ').
   Proof.
@@ -1190,22 +1269,41 @@ Qed.
     - simpl. eapply exp_adequacy in H6. rewrite H6. simpl.
       eapply IHs2. apply H7.
     - assert (forall k sigma, (σ, p)⊢ (e, s) k ⇓∞ sigma ->
-        exists m, evalLoop e s σ p k (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma)). {
+        exists m, evalLoop_monotone e s σ p k m
+          /\ evalLoop e s σ p k (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m))
+          = Some (Some sigma)). {
       intro k. induction k.
-      + intros sigma Hlo. inversion Hlo; subst. exists 1. reflexivity.
+      + intros sigma Hlo. inversion Hlo; subst. exists 1. split. unfold evalLoop_monotone. intros. apply False_rec. omega.  reflexivity.
       + intros. simpl. inversion H0; subst.
         eapply IHk in H2. destruct H2 as [w2 H2].
         eapply IHs in H10. destruct H10 as [w10 H10].
         exists (w2 + w10).
-        eapply loop_eval_more_val_nm with (m := w2 + w10) in H2; try omega. rewrite H2.
-        apply exp_adequacy in H3. rewrite H3. simpl.
-        eapply stmt_eval_more_val_nm with (n := w10); try omega.
-        apply H10.
+        destruct H2 as [H2mon H2].
+        split.
+        * eapply evalLoop_monotone_Sk. eapply evalLoop_monotone_nm with (n := w2); eauto; try omega.
+          split. eapply loop_eval_more_val_nm with (n := w2); eauto; try omega.
+          apply exp_adequacy in H3. rewrite H3. reflexivity.
+        * eapply loop_eval_more_val_nm with (m := w2 + w10) in H2; try omega. rewrite H2.
+          apply exp_adequacy in H3. rewrite H3. simpl.
+          eapply stmt_eval_more_val_nm with (n := w10); try omega.
+          apply H10.
       }
       simpl.
       apply H0 in H4. destruct H4 as [w H4].
-      exists w.
-      admit.
+      destruct H4 as [H4mon H4].
+      clear H0.
+      exists (S w + n). (* max 1, w, n *)
+      assert (idx (S w + n)
+        (λ i : nat,
+         σ'0 ↩ evalLoop e s σ p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S w + n))
+         IN match 〚 e 〛 (σ'0) >>= toBool with
+          | Some b => Some (Some (negb b))
+          | None => Some None
+          end) = Some (Some n)) as idxVal. { 
+            eapply idx_evalLoop_end; eauto.
+            apply exp_adequacy; eauto. } 
+      rewrite idxVal. eapply loop_eval_more_val_nm with (n := w); eauto.
+      omega.
     - apply IHs1 in H4. apply IHs2 in H6.
       destruct H4 as [ms1 Hs1].
       destruct H6 as [ms2 Hs2].
@@ -1216,7 +1314,7 @@ Qed.
       omega.
       assumption.
     - exists 1. inversion H; subst. reflexivity.
-Admitted.
+   Qed.
 
 (*Definition idx_range_h (m : nat) (f : nat -> option (option bool)) (i : nat): Prop :=
   forall k, 0 <= k /\ k <= i -> idx1 k m f = Some (Some i).
@@ -1224,7 +1322,7 @@ Lemma idx_min : forall m f i,
   idx1 0 m f = Some (Some i) -> idx_range_h m f i.
 Proof. Admitted. *)
 
-Definition evalLoop_monotone_true (e : exp) (s : stmt) (sigma: store) (p : path) (m : nat) (n : nat): Prop := forall k sigma', 0 <= k /\ k < n ->
+Definition evalLoop_monotone_true (e : exp) (s : stmt) (sigma: store) (p : path) (m : nat) (n : nat): Prop := forall k sigma', k < n ->
      evalLoop e s sigma p n (fun (σ' : store) (c1 : path) => evalStmt s σ' c1 m) = Some (Some sigma') ->
      evalExp e sigma' = Some (VBool true).
 
