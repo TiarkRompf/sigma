@@ -740,18 +740,6 @@ Qed.
         apply H0. inversion H0. inversion H0.
 Qed.
 
-  Lemma idx_more_val_inv : ∀ m n p i,
-      m >= n →
-      idx n p = Some (Some i) →
-      idx m p = Some (Some i).
-  Proof.
-    intros.
-    replace (idx n p) with (idx1 0 n p) in H0.
-    replace (idx m p) with (idx1 0 m p).
-    eapply idx1_more_val_inv. apply H. apply H0.
-    auto. auto.
-Qed.
-
   Lemma idx1_more_err_inv : ∀ m n p x, m >= n → idx1 x n p = Some None → idx1 x m p = Some None.
   Proof.
     intro m. induction m; intros.
@@ -773,47 +761,6 @@ Qed.
     eapply idx1_more_val_inv. apply H. apply H0.
     eapply idx1_more_err_inv. apply H. apply H0.
   Qed.
-
-  Lemma idx_not_zero {A : Type} : ∀ n p e (v : A),
-      n0 ↩ idx n p IN e = Some (Some v) -> n > 0.
-  Proof.
-    intros.
-    induction n.
-    - simpl in H. inversion H.
-    - omega.
-Qed.
-
-
-  Lemma loop_more_val_none : ∀ i e s σ σ' p f,
-      evalLoop e s σ p i f = Some (Some σ') →
-      〚e〛(σ') = Some (VBool false) →
-      evalLoop e s σ p (S i) f = Some None.
-  Proof.
-    intro i. induction i; intros.
-    - simpl. simpl in H. inversion H. subst.
-      rewrite H0. simpl. reflexivity.
-    - simpl. simpl in H. rewrite H. rewrite H0. simpl.
-      reflexivity.
-Qed.
-
-  Lemma loop_more_val_true : ∀ i e s σ σ' p f,
-      evalLoop e s σ p i f = Some (Some σ') →
-      〚e〛(σ') = Some (VBool true) →
-      evalLoop e s σ p (S i) f = f σ' (PWhile p i).
-  Proof.
-    intro i. induction i; intros.
-    - simpl. simpl in H. inversion H. rewrite H0. simpl. reflexivity.
-    - simpl. simpl in H. rewrite H. rewrite H0. simpl. reflexivity.
-Qed.
-
-  Lemma loop_more_some_none: ∀ i e s σ p f,
-      evalLoop e s σ p i f = Some None →
-      evalLoop e s σ p (S i) f = Some None.
-  Proof.
-    intro i. induction i; intros.
-    - simpl in H. inversion H.
-    - simpl in H. simpl. rewrite H. reflexivity.
-Qed.
 
   Lemma stmt_eval_more_val_Sn : ∀ s n σ c v,
       evalStmt s σ c n = Some v →
@@ -909,8 +856,7 @@ Qed.
     - simpl in H. simpl. apply H.
     - simpl in H. simpl. apply H.
   Qed.
-      
-  (* Lemma stmt_eval_more_val_Sn : ∀ n m s σ c v, *)
+
   Lemma stmt_eval_more_val_nm : ∀ s n m σ c v,
       n <= m →
       evalStmt s σ c n = Some v →
@@ -973,7 +919,7 @@ Qed.
     + eapply H. omega.
   Qed.
   
-  Lemma evalLoop_monotone_nm : forall e s sigma p k n m,
+  Lemma evalLoop_monotone_more_val_nm : forall e s sigma p k n m,
     n <= m ->
     evalLoop_monotone e s sigma p k n ->
     evalLoop_monotone e s sigma p k m.
@@ -986,21 +932,21 @@ Qed.
     eapply loop_eval_more_val_nm; eauto.
   Qed.
 
-  Definition idx1_monotone (n m : nat) (p : nat -> option (option bool)): Prop :=
+  Definition idx1_constant (n m : nat) (p : nat -> option (option bool)): Prop :=
     forall k, k <= n -> idx1 (n - k) (m + k) p = Some (Some n).
 
-  Lemma idx1_evalLoop_end : forall e s sigma sigma' p n m,
+  Lemma idx1_evalLoop_terminate : forall e s sigma sigma' p n m,
     evalLoop_monotone e s sigma p n (S m) ->
     evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S m)) = Some (Some sigma') ->
     evalExp e sigma' = Some(VBool false) ->
-    idx1_monotone n (S m) (λ i : nat,
+    idx1_constant n (S m) (λ i : nat,
        sigma'' ↩ evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S m + n))
        IN match evalExp e sigma'' >>= toBool with
           | Some b => Some (Some (negb b))
           | None => Some None
           end).    
   Proof.
-   intros. unfold idx1_monotone.
+   intros. unfold idx1_constant.
    intro k. induction k.
    - intros. replace (n - 0) with n; try omega. simpl.
      assert (evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S (m + n))) = Some (Some sigma')). {
@@ -1019,7 +965,7 @@ Qed.
      apply IHk. omega.
 Qed.
 
-  Lemma idx_evalLoop_end : forall e s sigma sigma' p n m,
+  Lemma idx_evalLoop_terminate : forall e s sigma sigma' p n m,
     evalLoop_monotone e s sigma p n m ->
     evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') ->
     evalExp e sigma' = Some(VBool false) ->
@@ -1033,8 +979,8 @@ Qed.
    intros. unfold idx.
    assert (n - n = 0) as Hz. omega.
    rewrite <- Hz.
-   eapply idx1_evalLoop_end; eauto.
-   eapply evalLoop_monotone_nm with (n := m); eauto.
+   eapply idx1_evalLoop_terminate; eauto.
+   eapply evalLoop_monotone_more_val_nm with (n := m); eauto.
    eapply loop_eval_more_val_nm with (n := m); eauto.
   Qed.
 
@@ -1063,7 +1009,7 @@ Qed.
         exists (w2 + w10).
         destruct H2 as [H2mon H2].
         split.
-        * eapply evalLoop_monotone_Sk. eapply evalLoop_monotone_nm with (n := w2); eauto; try omega.
+        * eapply evalLoop_monotone_Sk. eapply evalLoop_monotone_more_val_nm with (n := w2); eauto; try omega.
           split. eapply loop_eval_more_val_nm with (n := w2); eauto; try omega.
           apply exp_adequacy in H3. rewrite H3. reflexivity.
         * eapply loop_eval_more_val_nm with (m := w2 + w10) in H2; try omega. rewrite H2.
@@ -1083,7 +1029,7 @@ Qed.
           | Some b => Some (Some (negb b))
           | None => Some None
           end) = Some (Some n)) as idxVal. { 
-            eapply idx_evalLoop_end; eauto.
+            eapply idx_evalLoop_terminate; eauto.
             apply exp_adequacy; eauto. } 
       rewrite idxVal. eapply loop_eval_more_val_nm with (n := w); eauto.
       omega.
@@ -1099,7 +1045,7 @@ Qed.
     - exists 1. inversion H; subst. reflexivity.
    Qed.
 
-Lemma idx1_min : forall m i p n,
+Lemma idx1_val_min : forall m i p n,
   idx1 i m p = Some (Some n) -> n >= i.
 Proof.
   intro m.
@@ -1132,7 +1078,7 @@ Proof.
     destruct (〚 e 〛 (sigma')); try inversion H0; clear H3.
     destruct v; try inversion H0; clear H0.
     destruct b; try inversion H3; clear H3.
-    assert (n >= n + 1). eapply idx1_min; eauto. apply False_rec. omega.
+    assert (n >= n + 1). eapply idx1_val_min; eauto. apply False_rec. omega.
     reflexivity.
   - intros. replace (m + S k) with (S m + k) in H0; try omega.
     simpl in H0.
