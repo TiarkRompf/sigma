@@ -1086,10 +1086,10 @@ Proof.
     destruct o; try inversion H3; clear H3.
     destruct (〚 e 〛 (s0)); try inversion H2; clear H2.
     destruct v; try inversion H3; clear H3.
-    destruct b; try inversion H2; clear H2.
-    + replace (n - S k + 1) with (n - k) in H3; try omega.
+    destruct b; simpl in H2.
+    + replace (n - S k + 1) with (n - k) in H2; try omega.
       eapply IHk with (n := n); eauto; try omega.
-    + apply False_rec. omega.
+    + inversion H2; clear H2. apply False_rec. omega.
 Qed.
 
 Lemma idx_evalLoop_some : forall e s sigma sigma' p n m,
@@ -1127,24 +1127,15 @@ Qed.
       destruct b; eapply exp_adequacy in EqE.
       eapply RIfTrue. eauto. eauto.
       eapply RIfFalse. eauto. eauto. inversion H0.
-    - simpl in H0.
-      remember (idx x
-           (λ i : nat,
-              σ' ↩ evalLoop e s σ p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(x))
-              IN match 〚 e 〛 (σ') >>= toBool with
-                 | Some b => Some (Some (negb b))
-                 | None => Some None
-                 end) ) as idxx.
-      destruct idxx; inversion H0; clear H0. destruct o; inversion H2; clear H2.
-      assert (forall k sigma,
+    - assert (forall k sigma,
         evalLoop e s σ p k (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(x)) = Some (Some sigma) ->
         (σ, p)⊢ (e, s) k ⇓∞ sigma). {
          intro k. induction k.
-         + intros. inversion H0; subst. constructor.
+         + intros. inversion H1; subst. constructor.
          + intros.
-           simpl in H0.
+           simpl in H1.
            remember (evalLoop e s σ p k (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(x))) as loop.
-           destruct loop; try inversion H0; clear H0.
+           destruct loop; try inversion H1; clear H1.
            destruct o; try inversion H3; clear H3.
            remember (〚 e 〛 (s0)) as cond.
            destruct cond; try inversion H2; clear H2.
@@ -1155,6 +1146,15 @@ Qed.
            - eapply exp_adequacy. rewrite Heqcond. reflexivity.
            - eapply IHs. exists x. apply H3. apply H3.
       }
+      simpl in H0.
+      remember (idx x
+           (λ i : nat,
+              σ' ↩ evalLoop e s σ p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(x))
+              IN match 〚 e 〛 (σ') >>= toBool with
+                 | Some b => Some (Some (negb b))
+                 | None => Some None
+                 end) ) as idxx.
+      destruct idxx; inversion H0; clear H0. destruct o; inversion H3; clear H3.
       eapply RWhile with (n := n).
       + eauto.
       + symmetry in Heqidxx. eapply idx_evalLoop_some in Heqidxx; eauto.
