@@ -1177,6 +1177,7 @@ Qed.
 
 End Adequacy.
 
+(*
 Module Translation.
   Import IMPEval.
 
@@ -1199,8 +1200,8 @@ Inductive gxp : Type :=
   | GNot : gxp -> gxp
   | GAnd : gxp -> gxp -> gxp
 
-  | GIf : gxp -> gxp -> gxp -> gxp.
-
+  | GIf : gxp -> gxp -> gxp -> gxp
+  | GFixIndex : nat -> gxp -> gxp.
 
 Definition fvalid : gxp := GLoc (LId (Id 0)). (* "$valid" *)
 Definition fdata :  gxp := GLoc (LId (Id 1)). (* "$data"  *)
@@ -1711,13 +1712,11 @@ Definition neq (n1: nat) (n2: gxp) := n2 = (GNum n1).
 Definition beq (n1: bool) (n2: gxp) := n2 = (GBool n1).
 Definition leq (n1: loc) (n2: gxp) := n2 = (GLoc n1).
 
-Inductive objeq : obj -> gxp -> Prop :=
-| OBJEQ_Init : forall o1 o2,
-        (forall n1 n2, neq n1 n2 -> oeq veq (o1 n1) (GVSelect o2 n2)) -> objeq o1 o2.
+Definition objeq (o1 : obj) (o2 : gxp): Prop :=
+  forall n1 n2, neq n1 n2 -> oeq veq (o1 n1) (GVSelect o2 n2).
 
-Inductive seq : store -> gxp -> Prop := 
-  | SEQ_Init : forall s1 s2,
-        (forall l1 l2, leq l1 l2 -> oeq objeq (s1 l1) (GVSelect s2 l2)) -> seq s1 s2.
+Definition seq (s1 : store) (s2 : gxp): Prop := 
+  forall l1 l2, leq l1 l2 -> oeq objeq (s1 l1) (GVSelect s2 l2).
 
 Lemma REQ_BindC: forall X Y (peq: X -> gxp -> Prop)  (qeq: Y -> gxp -> Prop) a1 a2 f1 f2,
     oeq peq a1 a2 ->
@@ -1933,8 +1932,8 @@ Proof.
     + intros. eapply REQ_BindC.
       * eauto.
       * intros. eapply REQ_BindC.
-        ++ inversion H; subst. eapply H4. assumption.
-        ++ intros. inversion H4; subst. eapply H5. assumption.
+        ++ unfold seq in H. eapply H. assumption.
+        ++ intros. unfold objeq in H4. eapply H4. assumption.
         ++ intros. eapply GEQ_GVSelectC; eauto; try reflexivity.
       * intros. eapply GEQ_BindC.
         ++ eapply GEQ_GVSelectC; eauto; try reflexivity.
@@ -1948,3 +1947,4 @@ Qed.
 
 
 End Translation.
+*)
