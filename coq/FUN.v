@@ -51,8 +51,15 @@ Definition GEmpty : gxp := GMap (fun k =>
 
 Definition OEmpty : gxp := GObj(t_empty None).
 
-Definition GNone :  gxp := GPut GEmpty fvalid (GBool false).
-Definition GSome a : gxp := GPut (GPut GEmpty fvalid (GBool true)) fdata a.
+Definition GNone :  gxp := (* GPut GEmpty fvalid (GBool false). *)
+ GMap (t_update beq_loc (t_empty None)
+   (LId (Id 0)) (Some (GBool false))).
+
+Definition GSome a : gxp := (* GPut (GPut GEmpty fvalid (GBool true)) fdata a. *)
+  GMap (t_update beq_loc
+    (t_update beq_loc (t_empty None)
+       (LId (Id 0)) (Some (GBool true)))
+       (LId (Id 1)) (Some a)).
 
 Definition GMatch (scrutinee: gxp) (none: gxp) (some: gxp -> gxp): gxp :=
   GIf (GGet scrutinee fvalid) (some (GGet scrutinee fdata)) none.
@@ -61,13 +68,16 @@ Definition GVSelect (addr: gxp) (field: gxp): gxp :=
   GIf (GHasField addr field) (GSome (GGet addr field)) GNone.
 
 Definition GVNum (a: gxp): gxp :=
-  GPut (GPut OEmpty ftpe tnat) fval a.
+(*   GPut (GPut OEmpty ftpe tnat) fval a. *)
+  GObj (t_update Nat.eqb (t_update Nat.eqb (t_empty None) 0 (Some tnat)) 1 (Some a)).
 
 Definition GVBool (a: gxp): gxp :=
-  GPut (GPut OEmpty ftpe tbool) fval a.
+(*   GPut (GPut OEmpty ftpe tbool) fval a. *)
+  GObj (t_update Nat.eqb (t_update Nat.eqb (t_empty None) 0 (Some tbool)) 1 (Some a)).
 
 Definition GVLoc (a: gxp): gxp :=
-  GPut (GPut OEmpty ftpe tloc) fval a.
+(*   GPut (GPut OEmpty ftpe tloc) fval a. *)
+  GObj (t_update Nat.eqb (t_update Nat.eqb (t_empty None) 0 (Some tloc)) 1 (Some a)).
 
 Definition sym_store := total_map (option gxp).
 
@@ -297,7 +307,7 @@ Inductive step : gxp -> gxp -> Prop :=
   | ST_HasFieldKey : forall t1 t2 t2',
        t2 ==> t2' ->
        GHasField t1 t2 ==> GHasField t1 t2'
-  | ST_HasFieldValue : forall t1 t1' v2,
+  | ST_HasFieldMap : forall t1 t1' v2,
        value v2 ->
        t1 ==> t1' ->
        GHasField t1 v2 ==> GHasField t1' v2
@@ -311,22 +321,29 @@ Inductive step : gxp -> gxp -> Prop :=
   | ST_GetKey : forall t1 t2 t2',
        t2 ==> t2' ->
        GGet t1 t2 ==> GGet t1 t2'
-  | ST_GetValue : forall t1 t1' v2,
+  | ST_GetMap : forall t1 t1' v2,
        value v2 -> 
        t1 ==> t1' ->
        GGet t1 v2 ==> GGet t1' v2
   (* GPut *)
-  | ST_ObjPut : forall n m t3,
-       GPut (GObj m) (GNum n) t3 ==> GObj (t_update beq_nat m n (Some t3))
-  | ST_StorePut : forall l m t3,
-       GPut (GMap m) (GLoc l) t3 ==> GMap (t_update beq_loc m l (Some t3))
+  | ST_ObjPut : forall n m v3,
+       value v3 ->
+       GPut (GObj m) (GNum n) v3 ==> GObj (t_update beq_nat m n (Some v3))
+  | ST_StorePut : forall l m v3,
+       value v3 ->
+       GPut (GMap m) (GLoc l) v3 ==> GMap (t_update beq_loc m l (Some v3))
   | ST_PutKey : forall t1 t2 t2' t3,
        t2 ==> t2' ->
        GPut t1 t2 t3 ==> GPut t1 t2' t3
-  | ST_PutValue : forall t1 t1' v2 t3,
+  | ST_PutMap : forall t1 t1' v2 t3,
        value v2 ->
        t1 ==> t1' ->
        GPut t1 v2 t3 ==> GPut t1' v2 t3
+  | ST_PutValue : forall v1 v2 t3 t3',
+       value v1 ->
+       value v2 ->
+       t3 ==> t3' ->
+       GPut v1 v2 t3 ==> GPut v1 v2 t3'
   where " t '==>' t' " := (step t t').
 
 Definition relation (X: Type) := X->X->Prop.
@@ -343,30 +360,112 @@ Notation " t '==>*' t' " := (multi step t t') (at level 40).
 (* ----- equivalence between IMP and FUN ----- *)
 
 Inductive veq : val -> gxp -> Prop :=
-| VEQ_Num : forall n r,
-    r ==>* (GVNum (GNum n)) ->
-    veq (VNum n) r
-| VEQ_Bool : forall n r,
-    r ==>* (GVBool (GBool n)) ->
-    veq (VBool n) r
-| VEQ_Loc : forall l r,
-    r ==>* (GVLoc (GLoc l)) ->
-    veq (VLoc l) r.
+| VEQ_Num : forall n,
+    veq (VNum n) (GVNum (GNum n))
+| VEQ_Bool : forall n,
+    veq (VBool n) (GVBool (GBool n))
+| VEQ_Loc : forall l,
+    veq (VLoc l) (GVLoc (GLoc l)).
 
 Inductive oeq {X:Type} (peq: X -> gxp -> Prop): option X -> gxp -> Prop :=
-| REQ_Some : forall v g r,
+| REQ_Some : forall v g,
     peq v g ->
-    r ==>* (GSome g) ->
-    oeq peq (Some v) r
-| REQ_None : forall r,
-    r ==>* GNone ->
-    oeq peq None r.
+    oeq peq (Some v) (GSome g)
+| REQ_None :
+    oeq peq None GNone.
+
+Lemma OEmpty_value : value OEmpty.
+Proof.
+  apply v_obj.
+  intros x y Hsome.
+  inversion Hsome.
+Qed.
+
+Lemma GEmpty_value : value GEmpty.
+Proof.
+  apply v_sto.
+  intros x y Hsome.
+  destruct x; inversion Hsome.
+  apply OEmpty_value.
+Qed.
+
+Lemma GSome_value : forall v,
+  value v ->
+  value (GSome v).
+Proof.
+  intros v Hv.
+  constructor.
+  intros.
+  destruct x.
+  - (* LId i *) destruct i.
+    (* Id n *) destruct n.
+    * (* n = 0 *)
+      rewrite t_update_neq in H; try (intro L; inversion L).
+      rewrite t_update_eq in H.
+      inversion H; subst; constructor.
+    * (* n > 0 *) destruct n.
+    ** (* n = 1 *) rewrite t_update_eq in H. inversion H; subst; assumption.
+    ** repeat (rewrite t_update_neq in H; try (intro L; inversion L)); inversion H.
+  - repeat (rewrite t_update_neq in H; try (intro L; inversion L)); inversion H.
+Qed.
+
+Lemma GVNum_value : forall n, value (GVNum (GNum n)).
+Proof.
+  intro n.
+  constructor.
+  intros.
+  destruct x.
+  - (* x = 0 *)
+    rewrite t_update_neq in H; try (intro L; inversion L).
+    rewrite t_update_eq in H.
+    inversion H; subst; constructor.
+  - (* x > 0 *) destruct x.
+  * (* x = 1 *) rewrite t_update_eq in H. inversion H; subst; constructor.
+  * repeat (rewrite t_update_neq in H; try (intro L; inversion L)); inversion H.
+Qed.
+
+Lemma GVBool_value : forall n, value (GVBool (GBool n)).
+Proof.
+  intro n.
+  constructor.
+  intros.
+  destruct x.
+  - (* x = 0 *)
+    rewrite t_update_neq in H; try (intro L; inversion L).
+    rewrite t_update_eq in H.
+    inversion H; subst; constructor.
+  - (* x > 0 *) destruct x.
+  * (* x = 1 *) rewrite t_update_eq in H. inversion H; subst; constructor.
+  * repeat (rewrite t_update_neq in H; try (intro L; inversion L)); inversion H.
+Qed.
+
+Lemma GVLoc_value : forall n, value (GVLoc (GLoc n)).
+Proof.
+  intro n.
+  constructor.
+  intros.
+  destruct x.
+  - (* x = 0 *)
+    rewrite t_update_neq in H; try (intro L; inversion L).
+    rewrite t_update_eq in H.
+    inversion H; subst; constructor.
+  - (* x > 0 *) destruct x.
+  * (* x = 1 *) rewrite t_update_eq in H. inversion H; subst; constructor.
+  * repeat (rewrite t_update_neq in H; try (intro L; inversion L)); inversion H.
+Qed.
+
+Hint Immediate GVNum_value GVBool_value GVLoc_value : test.
 
 Definition req := oeq veq.
-
 (* small-step: not currently used *)
 Theorem soundness1: forall e,
     exists g, (trans_exp e (GEmpty)) ==> g \/ (value g /\ req (evalExp e (σ0)) g).
 Proof.
+  intro e.
+  induction e.
+  - try (eexists; right; split; [ apply GSome_value; apply GVNum_value | constructor; constructor ]).
+  - try (eexists; right; split; [ apply GSome_value; apply GVBool_value | constructor; constructor ]).
+  - try (eexists; right; split; [ apply GSome_value; apply GVLoc_value | constructor; constructor ]).
+Admitted.
 
 End Translation.
