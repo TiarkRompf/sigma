@@ -55,8 +55,6 @@ Definition GEmpty : gxp := GMap empty_store.
 Definition OEmpty : gxp := GObj(t_empty None).
 
 Definition GNone :  gxp := GPut GEmpty fvalid (GBool false).
- (* GMap (t_update beq_loc (t_empty None)
-   (LId (Id 0)) (Some (GBool false))). *)
 
 Definition GSome a : gxp := GPut (GPut GEmpty fvalid (GBool true)) fdata a.
 
@@ -388,12 +386,16 @@ Definition GSomeR a : gxp := GMap (t_update beq_loc
       (LId (Id 0)) (Some (GBool true)))
       (LId (Id 1)) (Some a)).
 
+Definition GNoneR :=
+ GMap (t_update beq_loc empty_store
+   (LId (Id 0)) (Some (GBool false))).
+
 Inductive oeq {X:Type} (peq: X -> gxp -> Prop): option X -> gxp -> Prop :=
 | REQ_Some : forall v g,
     peq v g ->
     oeq peq (Some v) (GSomeR g)
 | REQ_None :
-    oeq peq None GNone.
+    oeq peq None GNoneR.
 
 Hint Constructors veq.
 Hint Constructors oeq.
@@ -408,9 +410,10 @@ Lemma fdata_value : value fdata. Proof. constructor. Qed.
 Lemma fval_value : value fval. Proof. constructor. Qed.
 Lemma ftpe_value : value ftpe. Proof. constructor. Qed.
 Lemma fvalid_value : value fvalid. Proof. constructor. Qed.
+Lemma tloc_value : value tloc. Proof. constructor. Qed.
 
 (* not sure why this is needed... auto do not prove value fdata otherwise *)
-Hint Resolve fval_value fdata_value ftpe_value fvalid_value. 
+Hint Resolve fval_value fdata_value ftpe_value fvalid_value tloc_value. 
 
 Lemma OEmpty_value : value OEmpty.
 Proof.
@@ -452,93 +455,39 @@ Proof.
   - erewrite t_update_neq in H1; auto. inversion H0; subst. eapply H4. eassumption.
 Qed.
 
-Hint Resolve value_conservation obj_value_conservation.
+Hint Resolve value_conservation obj_value_conservation OEmpty_value GEmpty_value.
 
 Lemma GVNumR_value : forall n, value (GVNumR (GNum n)).
 Proof.
   intro n.
-  constructor.
-  intros.
-  destruct x.
-  - (* x = 0 *)
-    rewrite t_update_neq in H; auto.
-    rewrite t_update_eq in H.
-    inversion H; subst; constructor.
-  - (* x > 0 *) destruct x.
-  * (* x = 1 *) rewrite t_update_eq in H. inversion H; subst; constructor.
-  * repeat (rewrite t_update_neq in H; auto); inversion H.
+  repeat (apply obj_value_conservation; auto).
 Qed.
 
 Lemma GVBoolR_value : forall n, value (GVBoolR (GBool n)).
 Proof.
   intro n.
-  constructor.
-  intros.
-  destruct x.
-  - (* x = 0 *)
-    rewrite t_update_neq in H; auto.
-    rewrite t_update_eq in H.
-    inversion H; subst; constructor.
-  - (* x > 0 *) destruct x.
-  * (* x = 1 *) rewrite t_update_eq in H. inversion H; subst; constructor.
-  * repeat (rewrite t_update_neq in H; auto); inversion H.
+  repeat (apply obj_value_conservation; auto).
 Qed.
 
 Lemma GVLocR_value : forall n, value (GVLocR (GLoc n)).
 Proof.
   intro n.
-  constructor.
-  intros.
-  destruct x.
-  - (* x = 0 *)
-    rewrite t_update_neq in H; auto.
-    rewrite t_update_eq in H.
-    inversion H; subst; constructor.
-  - (* x > 0 *) destruct x.
-  * (* x = 1 *) rewrite t_update_eq in H. inversion H; subst; constructor.
-  * repeat (rewrite t_update_neq in H; auto); inversion H.
+  repeat (apply obj_value_conservation; auto).
 Qed.
 
-Hint Resolve GVNumR_value GVBoolR_value GVLocR_value GEmpty_value OEmpty_value.
-
-(* Lemma about None values *)
-Lemma LetG_val_None : forall e1 e2,
-  e1 ==>* GNone ->
-  (LETG a <-- e1 IN e2) ==>* GNone.
-Proof. Admitted.
-
-Lemma LetG_body_None : forall e1 e2,
-  e2 ==>* GNone ->
-  (LETG a <-- e1 IN e2) ==>* GNone.
-Proof. Admitted.
-
-Lemma GMatch_left_None : forall e1 e2,
-  e1 ==>* GNone ->
-  (e1 >>g= e2) ==>* GNone.
-Proof. Admitted.
-
-Lemma toNatG_GVBool_None : forall e1 b, (* more generic? *)
-  e1 ==>* GSomeR (GVBool b) ->
-  (e1 >>g= toNatG) ==>* GNone.
-Proof. Admitted.
-
-Lemma toNatG_GVLoc_None : forall e1 b, (* more generic? *)
-  e1 ==>* GSomeR (GVLoc b) ->
-  (e1 >>g= toNatG) ==>* GNone.
-Proof. Admitted.
-
-Lemma LetImp_body_None : forall T U (e1 : option T),
-  x ← e1 IN @None U = @None U.
-Proof. Admitted.
+Hint Resolve GVNumR_value GVBoolR_value GVLocR_value.
 
 (* Reduction *)
-Lemma GGet_fdata_SomeR : forall v, 
+Lemma GGet_fdata_GSomeR : forall v,
   GGet (GSomeR v) fdata ==>* v.
 Proof. econstructor. constructor. apply t_update_eq. constructor. Qed.
 
-Lemma GGet_fvalid_SomeR : forall v, 
-  GGet (GSomeR v) fvalid ==> GBool true.
-Proof. constructor. rewrite t_update_neq; auto. Qed.
+Lemma GGet_fvalid_GSomeR : forall v, 
+  GGet (GSomeR v) fvalid ==>* GBool true.
+Proof. econstructor; constructor. rewrite t_update_neq; auto. Qed.
+
+Lemma GGet_fvalid_GNoneR : GGet GNoneR fvalid ==>* GBool false.
+Proof. econstructor; constructor. apply t_update_eq; auto. Qed.
 
 Lemma GGet_fval_GVNumR : forall n,
   value n ->
@@ -551,67 +500,45 @@ Qed.
 Lemma GSomeR_value : forall v,
   value v ->
   value (GSomeR v).
-Proof.
-  intros v Hv.
-  constructor.
-  intros.
-  destruct x.
-  - (* LId i *) destruct i.
-    (* Id n *) destruct n.
-    * (* n = 0 *)
-      rewrite t_update_neq in H; auto.
-      rewrite t_update_eq in H.
-      inversion H; subst; constructor.
-    * (* n > 0 *) destruct n.
-    ** (* n = 1 *) rewrite t_update_eq in H. inversion H; subst; assumption.
-    ** repeat (rewrite t_update_neq in H; auto); inversion H; auto.
-  - repeat (rewrite t_update_neq in H; try (intro L; inversion L)); inversion H.
-Qed.
+Proof. intros. apply value_conservation; auto. Qed.
 
-Hint Resolve GSomeR_value.
+Lemma GNoneR_value : value GNoneR.
+Proof. apply value_conservation; auto. Qed.
 
+Hint Resolve GSomeR_value GNoneR_value.
 
-(* Congruences *)
-Lemma LetG_val_C : forall e1 e1' e2 v,
-  e1 ==>* e1' ->
-  value v ->
-  (LETG a <-- e1' IN e2) ==>* v ->
-  (LETG a <-- e1 IN e2) ==>* v.
+Lemma toNatG_GVBoolR_None : forall e1 b, (* more generic? *)
+  e1 ==>* GSomeR (GVBoolR b) ->
+  (e1 >>g= toNatG) ==>* GNoneR.
 Proof. Admitted.
 
-Lemma LetG_body_C : forall e1 e2 e2' v,
-  e2 ==>* e2' ->
-  value v ->
-  (LETG a <-- e1 IN e2') ==>* v ->
-  (LETG a <-- e1 IN e2) ==>* v.
+Lemma toNatG_GVLocR_None : forall e1 b, (* more generic? *)
+  e1 ==>* GSomeR (GVLocR b) ->
+  (e1 >>g= toNatG) ==>* GNoneR.
 Proof. Admitted.
 
-Lemma GMatch_C : forall e1 e1' some v,
-  e1 ==>* e1' ->
-  value v ->
-  (e1' >>g= some) ==>* v ->
-  (e1 >>g= some) ==>* v.
+Hint Resolve toNatG_GVBoolR_None toNatG_GVLocR_None.
+
+Lemma LetImp_body_None : forall T U (e1 : option T),
+  x ← e1 IN @None U = @None U.
 Proof. Admitted.
 
 Lemma GIf_Cond_R : forall e1 e1' e2 e3,
   e1 ==>* e1' ->
   GIf e1 e2 e3 ==>* GIf e1' e2 e3.
-Proof. Admitted.
+Proof.
+  intros.
+  induction H.
+  - constructor.
+  - econstructor. constructor. eassumption. assumption.
+Qed.
 
-Lemma GIf_Then_C : forall e1 e2 e2' e3 v,
-  e2 ==>* e2' ->
-  value v ->
-  GIf e1 e2' e3 ==>* v ->
-  GIf e1 e2 e3 ==>* v. 
-Proof. Admitted.
+Lemma GNone_R : GNone ==>* GNoneR.
+Proof.
+  econstructor; [ apply ST_StorePut; auto | constructor].
+Qed.
 
-Lemma GGet_Map_C : forall e1 e1' e2 v,
-  e1 ==>* e1' ->
-  value v ->
-  GGet e1' e2 ==>* v ->
-  GGet e1 e2 ==>* v. 
-Proof. Admitted.
-
+Hint Resolve GNone_R.
 
 Lemma GSome_value_R : forall e1 v,
   e1 ==>* v ->
@@ -631,13 +558,124 @@ Lemma GVNum_value_R : forall e1 v,
   GVNum e1 ==>* GVNumR v.
 Proof.
   intros e1 v He1 Hv.
-  econstructor. unfold GVNum. apply ST_PutMap; auto; apply ST_ObjPut; auto.
+  econstructor. apply ST_PutMap; auto; apply ST_ObjPut; auto.
   induction He1.
   - econstructor; [ apply ST_ObjPut; auto | constructor]. 
   - econstructor; try apply ST_PutValue; eauto.
 Qed.
 
-Hint Resolve GVNum_value_R.
+Lemma GVBool_value_R : forall e1 v,
+  e1 ==>* v ->
+  value v ->
+  GVBool e1 ==>* GVBoolR v.
+Proof.
+  intros e1 v He1 Hv.
+  econstructor. apply ST_PutMap; auto; apply ST_ObjPut; auto.
+  induction He1.
+  - econstructor; [ apply ST_ObjPut; auto | constructor]. 
+  - econstructor; try apply ST_PutValue; eauto.
+Qed.
+
+Lemma GVLoc_value_R : forall e1 v,
+  e1 ==>* v ->
+  value v ->
+  GVLoc e1 ==>* GVLocR v.
+Proof.
+  intros e1 v He1 Hv.
+  econstructor. apply ST_PutMap; auto; apply ST_ObjPut; auto.
+  induction He1.
+  - econstructor; [ apply ST_ObjPut; auto | constructor]. 
+  - econstructor; try apply ST_PutValue; eauto.
+Qed.
+
+(* Congruences *)
+
+Lemma GMatch_C : forall e1 e1' some v,
+  e1 ==>* e1' ->
+  value v ->
+  (e1' >>g= some) ==>* v ->
+  (e1 >>g= some) ==>* v.
+Proof. Admitted.
+
+
+(* Lemma GMatch_GSome_C : forall e1 e1' v f,
+  value v ->
+  e1 ==>* e1' ->
+  (f e1') ==>* v ->
+  (GSome e1 >>g= f) ==>* v.
+Proof.
+  intros e1 e1' v f Hv He1 Hfv.
+Admitted. *)
+
+Lemma GMatch_GSomeR_C : forall v v1 f,
+  value v ->
+  value v1 ->
+  (f (GGet (GSomeR v1) fdata)) ==>* v ->
+  (GSomeR v1 >>g= f) ==>* v.
+Proof.
+  intros v v1 f Hv He1 Hfv.
+  eapply multi_trans. apply GIf_Cond_R. apply GGet_fvalid_GSomeR.
+  econstructor; try constructor; auto.
+Admitted.
+
+Lemma GGet_Map_C : forall e1 e1' e2 v,
+  e1 ==>* e1' ->
+  value v ->
+  GGet e1' e2 ==>* v ->
+  GGet e1 e2 ==>* v. 
+Proof. Admitted.
+
+Lemma GMatch_GNoneR_R : forall f,
+  (GNoneR >>g= f) ==>* GNoneR.
+Proof.
+  intro. unfold GMatch.
+  eapply multi_trans. apply GIf_Cond_R.
+  apply GGet_fvalid_GNoneR.
+  econstructor; eauto. constructor.
+Qed.
+
+Hint Resolve GMatch_GNoneR_R.
+
+Lemma GMatch_GNoneR_C : forall e1 e2,
+  e1 ==>* GNoneR ->
+  (e1 >>g= e2) ==>* GNoneR.
+Proof.
+  intros. eapply GMatch_C; auto. eassumption.
+Qed.
+
+(* Lemma about None values *)
+
+Lemma LetG_body_GNoneR : forall e1 e2 v,
+  e1 ==>* GNoneR \/ ( value v /\ e1 ==>* GSomeR v) -> 
+  e2 ==>* GNoneR ->
+  (LETG a <-- e1 IN e2) ==>* GNoneR.
+Proof.
+  intros.
+  destruct H as [ Hn | [Hv Hs] ].
+  - apply GMatch_GNoneR_C; auto.
+  - eapply GMatch_C; eauto. apply GMatch_GSomeR_C; auto.
+Qed.
+
+Lemma GIf_Then_C : forall e1 e2 e2' e3 v,
+  e2 ==>* e2' ->
+  value v ->
+  GIf e1 e2' e3 ==>* v ->
+  GIf e1 e2 e3 ==>* v. 
+Proof. Admitted.
+
+Lemma GPlus_R : forall e1 e1' e2,
+  e1 ==>* e1' ->
+  GPlus e1 e2 ==>* GPlus e1' e2.
+Proof. Admitted.
+
+Lemma GPlus_C : forall e1 e2' e2 v,
+  value v ->
+  e2 ==>* e2' ->
+  GPlus e1 e2' ==>* v ->
+  GPlus e1 e2 ==>* v.
+Proof. Admitted.
+
+(* Hint Resolve GVNum_value_R. *)
 
 Lemma tpe_GVNum_nat : forall n e1,
   e1 ==>* GSomeR (GVNumR (GNum n)) ->
@@ -662,13 +700,15 @@ Proof.
   intros.
   eapply multi_trans. apply GIf_Cond_R.
   - (* cond reduce to true*) eapply GGet_Map_C with (e1' := GSomeR (GVNumR (GNum n))) (v := GBool true); eauto.
-    econstructor. apply GGet_fvalid_SomeR. constructor.
-  - econstructor. constructor. unfold toNatG.
+    apply GGet_fvalid_GSomeR.
+  - econstructor. constructor.
     eapply multi_trans. apply GIf_Cond_R. eapply tpe_GVNum_nat; eauto.
     econstructor. constructor. apply GSome_value_R; auto.
     eapply GGet_Map_C. eapply GGet_Map_C with (v := GVNumR (GNum n)); eauto.
-    apply GGet_fdata_SomeR. auto. apply GGet_fval_GVNumR; auto.
+    apply GGet_fdata_GSomeR. auto. apply GGet_fval_GVNumR; auto.
 Qed.
+
+  
 
 Hint Resolve toNatG_GVNum_C.
 
@@ -696,38 +736,45 @@ Theorem soundness1: forall e,
 Proof with eauto.
   intro e.
   induction e; try (eexists; split; [ apply GSome_value_R; [ constructor; auto | auto ] | constructor; constructor]).
-  eexists. split. simpl.
-    apply GSome_value_R. apply GVNum_value_R; auto. constructor. auto. auto. [ constructor; auto | auto ]; auto.
+  - eexists; split. apply GSome_value_R. apply GVNum_value_R. constructor. constructor. auto. constructor. constructor.
+  - eexists; split. apply GSome_value_R. apply GVBool_value_R. constructor. constructor. auto. constructor. constructor.
+  - eexists; split. apply GSome_value_R. apply GVLoc_value_R. constructor. constructor. auto. constructor. constructor.
   - inversion IHe1 as [te1 [Hs1 Heq1] ]; clear IHe1.
     inversion IHe2 as [te2 [Hs2 Heq2] ]; clear IHe2.
     inversion Heq1 as [ e1imp e1fun Hveq1 Hval1 | Hval ]; subst.
     + (* e1 is Some *) inversion Hveq1; subst.
       * (* e1 is Nat *) inversion Heq2 as [ e2imp e2fun Hveq2 Hval2 | Hval ]; subst.
         -- (* e2 is Some *) inversion Hveq2; subst.
-         ++ (* e2 is Nat *) exists (GSomeR (GVNum (GNum (n + n0)))). split.
-          ** simpl. eapply LetG_val_C...
-             apply GMatch_GSomeR_R...
-             eapply GMatch_C... apply GMatch_GSomeR_R...
-             eapply GSome_value_R...
-              unfold GSome. admit.
+         ++ (* e2 is Nat *) exists (GSomeR (GVNumR (GNum (n + n0)))). split.
+          ** simpl.
+             eapply GMatch_C... eapply GMatch_GSomeR_C...
+             eapply GMatch_C... eapply GMatch_GSomeR_C...
+             eapply GSome_value_R... apply GVNum_value_R...
+             eapply multi_trans. eapply GPlus_R. eapply GGet_Map_C with (v := GNum n)... constructor.
+             apply GGet_fdata_GSomeR.
+             eapply GPlus_C... apply GGet_fdata_GSomeR.
+             econstructor; constructor.
           ** simpl. rewrite <- Hval1. rewrite <- Hval2. simpl. constructor. constructor.
-         ++ (* e2 is Bool *) exists GNone; split; [ apply LetG_body_None; apply LetG_val_None; eapply toNatG_GVBool_None; eassumption | simpl; rewrite <- Hval2; rewrite LetImp_body_None; constructor ]. 
-         ++ (* e2 is Loc *) exists GNone; split; [ apply LetG_body_None; apply LetG_val_None; eapply toNatG_GVLoc_None; eassumption | simpl; rewrite <- Hval2; rewrite LetImp_body_None; constructor ].
-        -- (* e2 is None *) exists GNone; split; [ apply LetG_body_None; apply LetG_val_None; apply GMatch_left_None; assumption | simpl; rewrite <- Hval; rewrite LetImp_body_None; constructor ].
-      * (* e1 is Bool *) exists GNone; split; [ apply LetG_val_None; eapply toNatG_GVBool_None; eassumption | simpl; rewrite <- Hval1; constructor].
-      * (* e1 is Loc *) exists GNone; split; [ apply LetG_val_None; eapply toNatG_GVLoc_None; eassumption | simpl; rewrite <- Hval1; constructor].
-    + (* e1 is None *) exists GNone; split; [ apply LetG_val_None; apply GMatch_left_None; assumption | simpl; rewrite <- Hval; constructor].
-  -
-
-
-
-
-
-inversion IHe1 as [ e1' IHe1' ]. inversion IHe1'; clear IHe1'.
-    + (* step *) simpl.
-      exists (((e1' >>g= toNatG) >>g=
-         (fun a : gxp => (trans_exp e2 GEmpty >>g= toNatG) >>g= (fun b : gxp => GSome (GVNum (GPlus a b)))))).
-      left. unfold GMatch. eapply LetG_C.
-    + (* value *)
+         ++ (* e2 is Bool *)
+            exists GNoneR; split; [
+               eapply GMatch_C; eauto; eapply LetG_body_GNoneR with (v := GNum n); [
+                  right; split; constructor |
+                  apply GMatch_GNoneR_C; eapply toNatG_GVBoolR_None; eassumption
+               ] |
+            simpl; rewrite <- Hval2; rewrite LetImp_body_None; constructor ].
+         ++ (* e2 is Loc *)
+            exists GNoneR; split; [
+               eapply GMatch_C; eauto; eapply LetG_body_GNoneR with (v := GNum n); [
+                  right; split; constructor |
+                  apply GMatch_GNoneR_C; eapply toNatG_GVLocR_None; eassumption
+               ] |
+            simpl; rewrite <- Hval2; rewrite LetImp_body_None; constructor ].
+        -- (* e2 is None *) exists GNoneR; split; [
+                eapply LetG_body_GNoneR with (v := GNum n); [ right; split; auto | repeat apply GMatch_GNoneR_C; assumption]
+             | simpl; rewrite <- Hval; rewrite LetImp_body_None; constructor ].
+      * (* e1 is Bool *) exists GNoneR; split; [ eapply GMatch_C; eauto | simpl; rewrite <- Hval1; constructor].
+      * (* e1 is Loc *) exists GNoneR; split; [ eapply GMatch_C; eauto | simpl; rewrite <- Hval1; constructor].
+    + (* e1 is None *) exists GNoneR; split;[ repeat (eapply GMatch_C; eauto) | simpl; rewrite <- Hval; constructor].
+Admitted.
 
 End Translation.
