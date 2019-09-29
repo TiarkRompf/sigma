@@ -206,8 +206,7 @@ Inductive loc : Type :=
 .
 
 Lemma loc_dec : forall (l1 l2 : loc), l1 = l2 \/ l1 <> l2.
-Proof.
-Admitted.
+Proof. Admitted.
 
 (* Context path equivalence *)
 
