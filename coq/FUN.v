@@ -1358,9 +1358,21 @@ Proof.
   intros v H. inversion H; auto.
 Qed.
 
+Lemma func_eq_value_eq : forall { X Y : Type } (f g : X -> Y) (v : X),
+  f = g -> (f v) = (g v).
+Proof.
+  intros. rewrite H. reflexivity.
+Qed.
+
 Lemma obj_value_obj : forall v,
   obj_value (GSomeR v) -> exists m, v = GObj m.
-Proof. Admitted.
+Proof.
+  intros v Hov.
+  inversion Hov; subst.
+  - apply func_eq_value_eq with (v0 := LId (Id 0)) in H0. inversion H0.
+  - apply func_eq_value_eq with (v0 := LId (Id 1)) in H. inversion H; subst.
+    exists m; auto.
+Qed.
 
 Lemma oeq_seq_seq : forall s1 s2,
   oeq seq (Some s1) (GSomeR s2) -> seq s1 s2.
@@ -1408,7 +1420,9 @@ Hint Resolve store_value_value.
 
 Lemma store_value_map : forall v,
   store_value (GSomeR v) -> exists m, v = GMap m.
-Proof. Admitted.
+Proof.
+  intros v Hsv.
+  inversion Hsv; subst.
 
 Lemma alloc_R : forall st2 m2 c i,
   st2 ==>* (GMap m2) ->
@@ -1555,7 +1569,7 @@ Proof.
         eapply GMatch_GSomeR_R; eauto.
       * (* first statement returns None *)
         exists GNoneR. split; [ eapply GMatch_GNoneR_R; eauto | split; auto; simpl in HsImp; rewrite <- Heqstep1 in HsImp; inversion HsImp; constructor ].
-    + simpl in HsImp. rewrite <- Heqstep1 in HsImp. inversion HsImp.
+    + (* timeout case *) simpl in HsImp. rewrite <- Heqstep1 in HsImp. inversion HsImp.
   - inversion HsImp; subst.
     exists (GSomeR (GMap m2)); split; auto. apply GSome_R; auto.
   - inversion HsImp; subst. exists GNoneR; auto.
