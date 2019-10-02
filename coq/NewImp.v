@@ -206,7 +206,8 @@ Inductive loc : Type :=
 .
 
 Lemma loc_dec : forall (l1 l2 : loc), l1 = l2 \/ l1 <> l2.
-Proof. Admitted.
+Proof.
+Admitted.
 
 (* Context path equivalence *)
 
@@ -335,8 +336,8 @@ Module IMPRel.
   where "( st1 , c ) ⊢ ( e , s ) n '⇓∞' st2" := (evalLoopRel st1 c e s n st2) : type_scope
   with evalStmt : store → path → stmt → store → Prop :=
   | RAlloc x : ∀ σ p,
-      (σ, p) ⊢ x ::= ALLOC ⇓ (LNew p st↦ mt_obj ;
-                              LId x  st↦ (0 obj↦ VLoc (LNew p)) ;
+      (σ, p) ⊢ x ::= ALLOC ⇓ (LId x  st↦ (0 obj↦ VLoc (LNew p)) ; 
+                              LNew p st↦ mt_obj ;
                               σ)
   | RAssign e1 e2 e3 : ∀ σ p l idx v o,
       σ ⊢ e1 ⇓ₑ (VLoc l) →
@@ -638,15 +639,18 @@ Module IMPEval.
   Fixpoint evalStmt (s: stmt) (σ: store) (c: path) (m: nat) : option (option store) :=
     match s with
     | x ::= ALLOC =>
-      Some (Some (LNew c st↦ mt_obj ;
-            LId x st↦ (0 obj↦ (VLoc (LNew c))) ;
+      Some (Some (LId x st↦ (0 obj↦ (VLoc (LNew c))) ;
+            LNew c st↦ mt_obj ;
             σ))
     | e1[[e2]] ::= e3 =>
       l ↩ Some (〚e1〛(σ) >>= toLoc) IN
       n ↩ Some (〚e2〛(σ) >>= toNat) IN
       v ↩ Some (〚e3〛(σ)) IN
-      o ← σ l IN
-      Some (Some (l st↦ (n obj↦ v ; o) ; σ))
+   (*    o ← σ l IN *)
+      match (σ l) with
+      | Some o => Some (Some (l st↦ (n obj↦ v ; o) ; σ))
+      | None => Some None
+      end
     | IF b THEN s1 ELSE s2 FI =>
       b ↩ Some (〚b〛(σ) >>= toBool) IN
       if b
@@ -1176,8 +1180,7 @@ Qed.
 
 End Adequacy.
 
-(*
-Module Translation.
+(* Module Translation.
   Import IMPEval.
 
 Inductive gxp : Type :=
@@ -1199,8 +1202,7 @@ Inductive gxp : Type :=
   | GNot : gxp -> gxp
   | GAnd : gxp -> gxp -> gxp
 
-  | GIf : gxp -> gxp -> gxp -> gxp
-  | GFixIndex : nat -> gxp -> gxp.
+  | GIf : gxp -> gxp -> gxp -> gxp.
 
 Definition fvalid : gxp := GLoc (LId (Id 0)). (* "$valid" *)
 Definition fdata :  gxp := GLoc (LId (Id 1)). (* "$data"  *)
@@ -1945,5 +1947,4 @@ Qed.
 
 
 
-End Translation.
-*)
+End Translation. *)
