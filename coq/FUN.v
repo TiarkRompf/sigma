@@ -175,10 +175,10 @@ Fixpoint trans_stmts (s: stmt) (sto: gxp) (c: path) { struct s }: gxp :=
                                           (GNum nstep)
                                           c
                                           (fun (it: nat) =>
-                                             LETG sto' <-- trans_stmts s (GSLoc (PWhile c it)) (PWhile c it) IN sto')
+                                             LETG sto' <-- trans_stmts s (GSLoc c) (PWhile c it) IN sto')
                                           sto)
                             sto) >>g= toNatG IN
-      GSome (GRepeat 0 n c (fun (it: nat) => LETG sto' <-- trans_stmts s (GSLoc (PWhile c it)) (PWhile c it) IN sto') sto)
+      GSome (GRepeat 0 n c (fun (it: nat) => LETG sto' <-- trans_stmts s (GSLoc c) (PWhile c it) IN sto') sto)
   | s1 ;; s2 =>
       LETG sto' <-- trans_stmts s1 sto (PFst c) IN
       trans_stmts s2 sto' (PSnd c)
@@ -217,6 +217,15 @@ Hint Constructors value store_value obj_value.
 
 Reserved Notation " t '==>' t' " (at level 40).
 
+Fixpoint bsub_path (p1 p2 : path) := match p2 with
+  | PRoot => false
+  | PFst p2' => beq_path p1 p2' || bsub_path p1 p2'
+  | PSnd p2' => beq_path p1 p2' || bsub_path p1 p2'
+  | PThen p2' => beq_path p1 p2' || bsub_path p1 p2'
+  | PElse p2' => beq_path p1 p2' || bsub_path p1 p2'
+  | PWhile p2' _ => beq_path p1 p2' || bsub_path p1 p2'
+end.
+
 Fixpoint subst (x : path) (s : gxp) (t : gxp) : gxp :=
   match t with
   | GSLoc i => if beq_path i x then s else t
@@ -239,8 +248,16 @@ Fixpoint subst (x : path) (s : gxp) (t : gxp) : gxp :=
   | GNot a => GNot (subst x s a)
 
   | GIf c a b => GIf (subst x s c) (subst x s a) (subst x s b)
-  | GFixIndex i l c b sto => GFixIndex i l (subst x s c) (fun n => (subst x s (b n))) (subst x s sto)
-  | GRepeat n i l b sto => GRepeat n (subst x s i) l (fun n => (subst x s (b n))) (subst x s sto)
+  | GFixIndex i l c b sto =>
+      if beq_path l x then
+        GFixIndex i l c b (subst x s sto)
+      else
+        GFixIndex i l (subst x s c) (fun n => (subst x s (b n))) (subst x s sto)
+  | GRepeat n i l b sto =>
+      if beq_path l x then
+        GRepeat n (subst x s i) l b (subst x s sto)
+      else
+        GRepeat n (subst x s i) l (fun n => subst x s (b n)) (subst x s sto)
   end.
 
 Inductive step : gxp -> gxp -> Prop :=
@@ -351,7 +368,7 @@ Inductive step : gxp -> gxp -> Prop :=
        GRepeat n (GNum 0) l ob sto ==> sto
   | ST_RepeatStep : forall n i l ob sto,
        value sto ->
-       GRepeat n (GNum (S i)) l ob sto ==> GRepeat (n + 1) (GNum i) l ob (subst (PWhile l n) sto (ob n))
+       GRepeat n (GNum (S i)) l ob sto ==> GRepeat (n + 1) (GNum i) l ob (subst l sto (ob n))
 
   (* GHasField *)
   | ST_ObjHasFieldTrue : forall n m,
@@ -1720,7 +1737,7 @@ Lemma idx_soundness_GSomeR : forall e s st1 st2 m2 p m n,
    st2 ==>* (GMap m2) ->
    seq st1 (GMap m2) ->
    ((GFixIndex 0 p (trans_exp e (GSLoc p))
-     (fun nstep : nat => GRepeat 0 (GNum nstep) p (fun it : nat => LETG sto <-- trans_stmts s (GSLoc (PWhile p it)) (PWhile p it) IN sto) st2) st2) >>g= toNatG)
+     (fun nstep : nat => GRepeat 0 (GNum nstep) p (fun it : nat => LETG sto <-- trans_stmts s (GSLoc p) (PWhile p it) IN sto) st2) st2) >>g= toNatG)
         ==>* GSomeR (GNum n).
 Proof. Admitted. 
 
@@ -1734,7 +1751,7 @@ Lemma idx_soundness_GNoneR : forall e s st1 st2 m2 p m,
    st2 ==>* (GMap m2) ->
    seq st1 (GMap m2) ->
    ((GFixIndex 0 p (trans_exp e (GSLoc p))
-     (fun nstep : nat => GRepeat 0 (GNum nstep) p (fun it : nat => LETG sto <-- trans_stmts s (GSLoc (PWhile p it)) (PWhile p it) IN sto) st2) st2) >>g= toNatG)
+     (fun nstep : nat => GRepeat 0 (GNum nstep) p (fun it : nat => LETG sto <-- trans_stmts s (GSLoc p) (PWhile p it) IN sto) st2) st2) >>g= toNatG)
         ==>* GNoneR.
 Proof. Admitted. 
 
@@ -1781,47 +1798,111 @@ Proof.
   simpl. rewrite <- IHc. simpl. apply beq_nat_refl.
 Qed.
 
-Lemma subst_trans_exp_commute : forall e c sto,
-  subst c sto (trans_exp e (GSLoc c)) = trans_exp e sto.
+Lemma subst_trans_exp_commute : forall e c sto sto',
+  subst c sto (trans_exp e sto') = trans_exp e (subst c sto sto').
 Proof.
   intro e.
   induction e; intros;
      try reflexivity;
      try (simpl; rewrite IHe1; rewrite IHe2; reflexivity);
      try (simpl; rewrite IHe; reflexivity).
-  simpl. replace (beq_path c c) with true; try apply beq_path_eq.
-  rewrite IHe1; rewrite IHe2; reflexivity.
 Qed.
 
-Lemma subst_trans_exp_void : forall e c c' sto,
-  beq_path c c' = false ->
-  subst c' sto (trans_exp e (GSLoc c)) = trans_exp e (GSLoc c).
+Inductive sub_rel : path -> path -> Prop :=
+ | s_PThen : forall c, sub_rel c (PThen c)
+ | s_PElse : forall c, sub_rel c (PElse c)
+ | s_PFst : forall c, sub_rel c (PFst c)
+ | s_PSnd : forall c, sub_rel c (PSnd c)
+ | s_PWhile : forall c n, sub_rel c (PWhile c n).
+
+Lemma bsub_path_sub_rel : forall c c' c'',
+  sub_rel c c'' ->
+  bsub_path c' c = true -> bsub_path c' c'' = true.
+Proof. intros. inversion H; subst; simpl; rewrite H0; apply orb_true_r. Qed.
+
+Hint Constructors sub_rel.
+Hint Resolve bsub_path_sub_rel.
+
+Lemma bsub_trans : forall c' c c'',
+  sub_rel c c'' ->
+  bsub_path c'' c' = true -> bsub_path c c' = true.
 Proof.
-  intro e.
-  induction e; intros;
-     try reflexivity;
-     try (simpl; rewrite IHe1; auto; rewrite IHe2; auto; reflexivity);
-     try (simpl; rewrite IHe; auto; reflexivity).
-  simpl. rewrite H.
-  rewrite IHe1; auto; rewrite IHe2; auto; reflexivity.
+  intro c'.
+  induction c'; intros;
+    try (simpl; simpl in H0; apply orb_prop in H0;
+    apply orb_true_intro; right;
+    try apply andb_false_intro1;
+    destruct H0; [
+      inversion H; subst; destruct c'; inversion H0; simpl; rewrite H2; try reflexivity;
+      apply andb_prop in H2; destruct H2 as [ He _]; rewrite He; reflexivity |
+      eauto ]);
+    try (inversion H0).
 Qed.
 
+Lemma bsub_true_beq_false_path : forall c c',
+  bsub_path c' c = true -> beq_path c c' = false.
+Proof.
+  intro c.
+  induction c; intros c' H; destruct c'; auto;
+    try (simpl; simpl in H; apply orb_prop in H;
+    try apply andb_false_intro1;
+    destruct H; [
+      apply IHc; destruct c; inversion H; simpl;
+      try rewrite H; try (apply andb_prop in H; destruct H as [ Ht _ ]; rewrite Ht); reflexivity | 
+      apply IHc; eapply bsub_trans; try eassumption; auto ]).
+Qed.
 
-Lemma subst_trans_stmts_commute : forall s c c' sto,
-   subst c' sto (trans_stmts s (GSLoc c') c) = trans_stmts s sto c.
+Axiom functional_extensionality : forall {X Y: Type} {f g : X -> Y},
+  (forall (x:X), f x = g x) -> f = g.
+
+Lemma subst_trans_stmts_commute : forall s c c' sto sto',
+   bsub_path c' c = true ->
+   subst c' sto (trans_stmts s sto' c) = trans_stmts s (subst c' sto sto') c.
 Proof.
   intro s. 
   induction s; intros;
-     try (simpl; replace (beq_path c' c') with true; try apply beq_path_eq; repeat (rewrite subst_trans_exp_commute); try reflexivity).
-     rewrite IHs1; rewrite IHs2; reflexivity.
-Admitted. (* tough part remind *)
+     try (simpl; repeat (rewrite subst_trans_exp_commute); try reflexivity);
+     try (rewrite IHs1; eauto; rewrite IHs2; eauto; simpl; try (rewrite IHs1; eauto); reflexivity).
+  assert (H' := H).
+  apply bsub_true_beq_false_path in H. repeat rewrite H.
+  assert (
+    (fun n0 : nat =>
+      GIf (GGet (subst c' sto (trans_stmts s (GSLoc c) (PWhile c n0))) (GLoc (LId (Id 0))))
+        (GGet (subst c' sto (trans_stmts s (GSLoc c) (PWhile c n0))) (GLoc (LId (Id 1))))
+        (GPut (GMap empty_store) (GLoc (LId (Id 0))) (GBool false))) =
+    (fun n0 : nat =>
+      GIf (GGet (trans_stmts s (subst c' sto (GSLoc c)) (PWhile c n0)) (GLoc (LId (Id 0))))
+        (GGet (trans_stmts s (subst c' sto (GSLoc c)) (PWhile c n0)) (GLoc (LId (Id 1))))
+        (GPut (GMap empty_store) (GLoc (LId (Id 0))) (GBool false)))). {
+    apply functional_extensionality.
+    intro x. rewrite IHs; auto.
+  }
+  assert (
+    (fun n : nat =>
+      GRepeat 0 (GNum n) c
+        (fun n0 : nat =>
+          GIf (GGet (subst c' sto (trans_stmts s (GSLoc c) (PWhile c n0))) (GLoc (LId (Id 0))))
+            (GGet (subst c' sto (trans_stmts s (GSLoc c) (PWhile c n0))) (GLoc (LId (Id 1))))
+            (GPut (GMap empty_store) (GLoc (LId (Id 0))) (GBool false))) (subst c' sto sto')) =
+    (fun n : nat =>
+      GRepeat 0 (GNum n) c
+        (fun n0 : nat =>
+          GIf (GGet (trans_stmts s (subst c' sto (GSLoc c)) (PWhile c n0)) (GLoc (LId (Id 0))))
+            (GGet (trans_stmts s (subst c' sto (GSLoc c)) (PWhile c n0)) (GLoc (LId (Id 1))))
+            (GPut (GMap empty_store) (GLoc (LId (Id 0))) (GBool false))) (subst c' sto sto'))). {
+      apply functional_extensionality.
+      intro x. rewrite H0. reflexivity.
+  }
+  repeat rewrite H1. rewrite H0. simpl. repeat rewrite H. reflexivity.
+Qed.
 
 Lemma subst_comm : forall s c c' sto,
+  bsub_path c' c = true ->
   subst c' sto (LETG sto <-- trans_stmts s (GSLoc c') c IN sto) = LETG sto <--trans_stmts s sto c IN sto.
 Proof.
   intros.
   simpl.
-  rewrite subst_trans_stmts_commute. reflexivity.
+  rewrite subst_trans_stmts_commute; auto. simpl. rewrite <- beq_path_eq. reflexivity.
 Qed.
 
 Theorem soundness: forall s c st1 st1' st2 m2 n,
@@ -1946,7 +2027,7 @@ Proof.
     destruct Hidx.
     + destruct o.
       * assert (forall k st1'', evalLoop e s st1 c k (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(fuel)) = Some (Some st1'') ->
-                 exists g, GRepeat 0 (GNum k) c (fun it : nat => LETG ns <-- trans_stmts s (GSLoc (PWhile c it)) (PWhile c it) IN ns) st2 ==>* g
+                 exists g, GRepeat 0 (GNum k) c (fun it : nat => LETG ns <-- trans_stmts s (GSLoc c) (PWhile c it) IN ns) st2 ==>* g
                  /\ store_value (GSomeR g) /\ oeq seq (Some st1'') (GSomeR g)). {
           intro k.
           induction k.
@@ -1974,6 +2055,7 @@ Proof.
               eapply multi_trans. apply GRepeat_Body_R with (sto' := (GMap mfstore)).
               rewrite subst_comm. eapply GMatch_GSomeR_R; eauto.
               eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R.
+              simpl; rewrite <- beq_path_eq. reflexivity.
               econstructor. apply ST_RepeatStop; eauto. constructor.
         }
         destruct st1'.
