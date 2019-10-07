@@ -461,6 +461,8 @@ Proof.
   inversion H; subst; inversion H0.
 Qed.
 
+Hint Resolve value_stuck.
+
 Theorem multi_deterministic : forall t t1 t2,
   t ==>* t1 -> stuck t1 -> t ==>* t2 -> stuck t2 ->
   t1 = t2.
@@ -472,9 +474,13 @@ Proof.
   induction H; [ eauto | intros; econstructor; eauto].
 Qed.
 
-Lemma multi_split : forall a b c,
+Lemma multi_split_stuck : forall a b c,
   stuck c ->
   a ==>* b -> a ==>* c -> b ==>* c.
+Proof. Admitted.
+
+Lemma multi_split : forall a b c,
+  a ==>* b -> a ==>* c -> (b ==>* c \/ c ==>* b).
 Proof. Admitted.
 
 (* ----- equivalence between IMP and FUN ----- *)
@@ -500,9 +506,6 @@ Definition leq (n1: loc) (n2: gxp) := n2 ==>* GLoc n1.
 
 Definition objeq (o1 : obj) (o2 : gxp): Prop :=
   forall n1 n2, neq n1 n2 -> exists v, (GVSelect o2 n2) ==>* v /\ value v /\ oeq veq (o1 n1) v.
-
-
-
 
 Definition seq (s1 : store) (s2 : gxp): Prop := 
   forall l1 l2, leq l1 l2 -> exists v, (GVSelect s2 l2) ==>* v /\ obj_value v /\ oeq objeq (s1 l1) v.
@@ -1347,6 +1350,19 @@ Proof.
 
 Admitted.
 
+Lemma GMatch_C : forall e1 e1' f v,
+  e1 ==>* e1' ->
+  (e1' >>g= f) ==>* v ->
+  (e1 >>g= f) ==>* v.
+Proof. Admitted.
+
+Lemma trans_stmts_C : forall s c sto sto' v,
+  store_value v ->
+  sto ==>* sto' ->
+  trans_stmts s sto' c ==>* v ->
+  trans_stmts s sto' c ==>* v.
+Proof. Admitted.
+
 Lemma GNoneR_R : forall a,
   GNoneR ==>* a -> a = GNoneR.
 Proof.
@@ -1354,10 +1370,10 @@ Proof.
 Qed.
 
 Lemma value_deterministic : forall a b,
-  store_value a -> a ==>* b -> a = b.
+  a ==>* b -> store_value a -> a = b.
 Proof.
-  intros. inversion H0; subst; auto. 
-  inversion H; subst. inversion H1. inversion H1.
+  intros. inversion H; subst; auto. 
+  inversion H0; subst. inversion H1. inversion H1.
 Qed.
 
 Lemma GRepeat_GNoneR_R : forall n i b c,
@@ -1798,7 +1814,7 @@ Lemma idx_soundness_GSomeR : forall e s st1 st2 m2 p m n,
           | Some b => Some (Some (negb b))
           | None => Some None
           end) = Some (Some n) ->
-   st2 ==>* (GMap m2) ->
+   st2 ==>* (GSomeR (GMap m2)) ->
    seq st1 (GMap m2) ->
    (GFixIndex 0 (fun nstep : nat =>
      GRepeat 0 (GNum nstep) p (fun it : nat => trans_stmts s (GSLoc p) (PWhile p it)) st2 >>g= (fun nsto : gxp => trans_exp e nsto)) >>g= toNatG)
@@ -1978,36 +1994,42 @@ Proof.
     apply  
 Admitted. *)
 
-Lemma GRepeat_split_loop : forall i n c s sto0 sto1 sto2 sto3,
+(* Lemma GRepeat_split_loop : forall i n c s sto1 sto1' sto2 sto2' sto3,
   i <= n ->
-  sto0 ==>* sto1 ->
-  store_value sto1 -> store_value sto2 -> store_value sto3 ->
-  (exists sto2', trans_stmts s (GGet sto1 fdata) (PWhile c (n - i)) ==>* GSomeR sto2') ->
-  GRepeat (n - i) (GNum i) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it)) sto0 ==>* sto2 ->
-  GRepeat n (GNum 1) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it)) sto2 ==>* sto3 ->
-  GRepeat (n - i) (GNum (S i)) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it)) sto0 ==>* sto3.
-Proof.
- (*  induction i; intros.
+  sto1 ==>* sto1' -> sto2 ==>* sto2' ->
+  store_value sto1' -> store_value sto2' -> store_value sto3 ->
+  (exists sto, trans_stmts s (GGet sto1 fdata) (PWhile c (n - i)) ==>* GSomeR sto) ->
+  GRepeat (n - i) (GNum i) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it)) sto1 ==>* sto2 ->
+  trans_stmts s (GGet sto2 fdata) (PWhile c (n - i)) sto2 ==>* sto3 ->
+  GRepeat (n - i) (GNum (S i)) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it)) sto1 ==>* sto3.
+Proof. *)
+(*   induction i; intros.
   - replace (n - 0) with n; try omega.
-    apply multi_split with (b := sto1) (c := sto2) in H5.
-    destruct H5.
-    + eapply value_deterministic in H1; eauto; subst. auto.
-    + eapply value_deterministic in H2; eauto; subst. auto.
-    + econstructor. constructor. assumption.
+    apply multi_split_stuck with (c := sto1) in H4; auto.
+    apply multi_split_stuck with (b := sto1) (c := sto3) in H5; auto.
+    eapply value_deterministic in H4; eauto; subst. auto.
+    
+    econstructor. constructor. assumption.
   - econstructor. constructor. inversion H1; subst.
     + eapply multi_trans. eapply GMatch_GNoneR_R; eauto. constructor.
       apply multi_split with (b := GNoneR) (c := sto2) in H5; auto.
-      destruct H5.
-      * apply GNoneR_R in H5; subst.
-        apply multi_split with (b := GNoneR) (c := sto3) in H6; auto.
-        destruct H6; auto. replace GNoneR with sto3; auto. constructor.
-      * eapply value_deterministic in H2; eauto; subst.
-        apply multi_split with (b := GNoneR) (c := sto3) in H6; auto.
-        destruct H6; auto. replace GNoneR with sto3; auto. constructor.
-      * econstructor. constructor. eapply GMatch_GNoneR_R. auto.
+      apply GNoneR_R in H5; subst.
+      apply multi_split with (b := GNoneR) in H6; auto.
+      econstructor. constructor. eapply GMatch_GNoneR_R. auto.
     + destruct H4.
-      eapply multi_trans. eapply GMatch_GSomeR_R; eauto. constructor.
+      eapply GMatch_GSomeR_R; eauto. constructor.
+      rewrite subst_trans_stmts_commute; simpl; rewrite <- beq_path_eq; try reflexivity.
+      eapply GMatch_C. try eassumption.
+      eapply GMatch_GSomeR_R; eauto. constructor.
+      replace (n - S i + 1) with (n - i); try omega.
+      eapply IHi.
+
+
+
+
+
       eapply multi_split in H5; auto; try eassumption.
+      eapply multi_trans. eassumption.
       eapply GMatch_GSomeR_R.
       rewrite subst_trans_stmts_commute; simpl; rewrite <- beq_path_eq; try reflexivity.
       eassumption.
@@ -2029,20 +2051,41 @@ Proof.
     assert (sto2 = GSomeR sto1). admit.
     rewrite <- H8.
   -  *)
-Admitted.
+(* Admitted. *)
 
-Lemma idx1_some_eval_some : forall k n i e s st1 p fuel,
+Lemma idx1_some_eval_some : forall k n i m e s st1 p,
   k <= n ->
-  idx1 (n - k) fuel (fun (i : nat) =>
-    sigma'' ↩ evalLoop e s st1 p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(fuel))
+  idx1 (n - k) (m + k) (fun (i : nat) =>
+    sigma'' ↩ evalLoop e s st1 p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m))
        IN match evalExp e sigma'' >>= toBool with
           | Some b => Some (Some (negb b))
           | None => Some None
           end) = Some (Some n) ->
-   n > i -> i >= (n - k) -> exists st0,
-     evalLoop e s st1 p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(fuel)) = Some (Some st0)
-     /\ evalExp e st0 = Some(VBool true).
-Proof. Admitted.
+   n >= i -> i >= (n - k) -> exists st0,
+     evalLoop e s st1 p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some st0).
+Proof.
+  induction k; intros.
+  - destruct m. inversion H0. simpl in H0.
+    replace (n - 0) with n in H0; try omega.
+    remember (evalLoop e s st1 p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S m))) as loop.
+    destruct loop; try inversion H0; clear H0.
+    destruct o; try inversion H4; clear H4.
+    replace i with n; try omega.
+    exists s0. rewrite <- Heqloop. reflexivity.
+  - replace (m + S k) with (S m + k) in H0; try omega.
+    simpl in H0.
+    remember (evalLoop e s st1 p (n - S k) (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m))) as loop.
+    destruct loop; try inversion H0; clear H0.
+    destruct o; try inversion H4; clear H4.
+    destruct (〚 e 〛 (s0)); try inversion H3; clear H3.
+    destruct v; try inversion H4; clear H4.
+    destruct b; simpl in H3.
+    + replace (n - S k + 1) with (n - k) in H3; try omega.
+      inversion H2; subst.
+      * exists s0. rewrite <- Heqloop. reflexivity.
+      * eapply IHk with (n := n); eauto; try omega.
+    + inversion H3; clear H3. apply False_rec. omega.
+Qed.  
 
 Lemma idx_some_eval_some : forall n i e s st1 p fuel,
   idx fuel (fun (i : nat) =>
@@ -2051,21 +2094,21 @@ Lemma idx_some_eval_some : forall n i e s st1 p fuel,
           | Some b => Some (Some (negb b))
           | None => Some None
           end) = Some (Some n) ->
-   n > i -> exists st0,
-      evalLoop e s st1 p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(fuel)) = Some (Some st0)
-      /\ evalExp e st0 = Some(VBool true).
+   n >= i -> exists st0,
+      evalLoop e s st1 p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(fuel)) = Some (Some st0).
 Proof.
   intros.
-  edestruct (idx1_some_eval_some n n i); try omega.
-  replace (n - n) with 0; eauto; omega.
+  edestruct (idx1_some_eval_some n n i fuel); try omega.
+  eapply idx1_more_val_inv with (n := fuel); try omega.
+  replace (n - n) with 0; eauto; try omega.
   exists x; auto.
 Qed.
 
-Theorem soundness_stmts: forall s c st1 st1' st2 m2 n,
+Theorem soundness_stmts: forall s c st1 st1' st2 m2 fuel,
   st2 ==>* (GMap m2) ->
   seq st1 (GMap m2) ->
   value (GMap m2) ->
-  evalStmt s st1 c n = Some st1' ->
+  evalStmt s st1 c (S fuel) = Some st1' ->
   exists g, (trans_stmts s st2 c) ==>* g /\ store_value g /\ oeq seq st1' g.
 Proof.
   intros s.
@@ -2173,9 +2216,9 @@ Proof.
     + (* e is None *) exists GNoneR; split; [ repeat (eapply GMatch_GNoneR_R; eauto) |
          split; auto; simpl in HsImp; rewrite <- Hnone in HsImp; inversion HsImp; subst; constructor ].
   - simpl in HsImp. simpl.
-    remember (idx fuel
+    remember (idx (S fuel)
             (fun i : nat =>
-             σ' ↩ evalLoop e s st1 c i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(fuel))
+             σ' ↩ evalLoop e s st1 c i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S fuel))
              IN match (〚 e 〛 (σ')) >>= toBool with
                 | Some b => Some (Some (negb b))
                 | None => Some None
@@ -2184,10 +2227,10 @@ Proof.
     + destruct o.
       * destruct st1'.
         -- (* assert (Heval_some := HeqHidx). symmetry in Heval_some. apply idx_some_eval_some in Heval_some with (i := ). *)
-          assert (forall k st1'' i, i <= k -> k <= n -> evalLoop e s st1 c i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(fuel)) = Some st1'' ->
+          assert (forall k st1'' i, i <= k -> k <= n -> evalLoop e s st1 c i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S fuel)) = Some st1'' ->
                  exists g, GRepeat 0 (GNum i) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it)) (GSome st2) ==>* g
                 /\ store_value g /\ oeq seq st1'' g). {
-            intro k.
+(*             intro k.
             induction k.
             - intros st1'' i Hik Hkn H. inversion Hik; subst; inversion H; subst. exists (GSomeR (GMap m2)); split; auto.
               eapply multi_trans. eapply multi_step. apply ST_RepeatStop.
@@ -2204,7 +2247,7 @@ Proof.
               inversion Hg_seq as [ A kstore |  ]; subst.
               assert (exists m, kstore = GMap m) as Hmap. { apply store_value_map; auto. }
               destruct Hmap as [ mkstore ]; subst.
-              destruct (IHs (PWhile c k) stk st1'' (GMap mkstore) mkstore fuel) as [ fstore [ Hbloop [ Hfsv Hfeq ] ] ]; eauto. constructor.
+              destruct (IHs (PWhile c k) stk st1'' (GMap mkstore) mkstore fuel) as [ fstore [ Hbloop [ Hfsv Hfeq ] ] ]; eauto. constructor. *)
               admit.
                 (* inversion Hfsv; subst.
               + exists GNoneR; split; auto.
@@ -2242,24 +2285,26 @@ Proof.
               eapply multi_trans. eapply GRepeat_Body_R; eauto.
               rewrite subst_trans_stmts_commute; simpl; rewrite <- beq_path_eq; try reflexivity. *)
          }
-         admit.
-       (*  -- apply (H n s0 n) in HsImp; try omega.
-           destruct HsImp as [ gstore [Hloop [ Hsv Hg_seq ] ] ].
-           symmetry in HeqHidx. eapply idx_soundness_GSomeR in HeqHidx; eauto.
-           exists (GSomeR gstore). split; auto.
-           eapply GMatch_GSomeR_R; eauto.
-           eapply multi_trans. eapply GRepeat_NumIt_R; eauto.
-           eapply multi_trans. eapply GGet_Map_R; eauto.
-           eapply GGet_fdata_GSomeR_R; eauto.
-           eassumption. auto. constructor. *)
-        -- admit. (* contradiction with idx = n *)
+         apply (H n (Some s0) n) in HsImp; try omega.
+         destruct HsImp as [ gstore [Hloop [ Hsv Hg_seq ] ] ].
+         inversion Hg_seq; subst.
+         symmetry in HeqHidx. eapply idx_soundness_GSomeR in HeqHidx; eauto.
+         
+         exists (GSomeR g). split; auto.
+         eapply GMatch_GSomeR_R; eauto.
+         eapply multi_trans. eapply GRepeat_NumIt_R; eauto.
+         eapply multi_trans. eapply GGet_Map_R; eauto.
+         eapply GGet_fdata_GSomeR_R; eauto.
+         assumption. apply GSome_R; auto.
+        -- assert (Heval_some := HeqHidx). symmetry in Heval_some. apply idx_some_eval_some with (i := n) in Heval_some; try omega.
+           rewrite HsImp in Heval_some. inversion Heval_some. inversion H.
       * inversion HsImp; subst.
         exists GNoneR. split; eauto.
         eapply GMatch_GNoneR_R; eauto. 
         eapply idx_soundness_GNoneR; eauto.
         eapply GSome_R; auto.
     + inversion HsImp.
-  - remember (〚s1〛(st1, PFst c)(fuel)) as step1.
+  - remember (〚s1〛(st1, PFst c)(S fuel)) as step1.
     destruct step1.
     + destruct (IHs1 (PFst c) st1 o st2 m2 fuel) as [ res1 [ Hres1s [ Hres1sv Hres1eq ] ] ]; auto; clear IHs1.
       inversion Hres1eq as [st1'' st2''| B]; subst.
