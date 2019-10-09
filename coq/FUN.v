@@ -1895,7 +1895,47 @@ Proof.
   apply toNatG_GVNum_R. assumption.
 Qed.
 
-Lemma idx_None : forall e s sigma p m,
+Lemma idx1_None : forall k m e s sigma p,
+  k <= m ->
+  idx1 (m - k) k (fun (i : nat) =>
+    sigma'' ↩ evalLoop e s sigma p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m))
+       IN match evalExp e sigma'' >>= toBool with
+          | Some b => Some (Some (negb b))
+          | None => Some None
+          end) = Some None ->
+  exists n,
+    evalLoop_monotone_lower e s sigma p (m - k) n m /\ (
+    evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some None \/
+    exists sigma', evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
+    (evalExp e sigma' >>= toBool) = None).
+Proof.
+  intros.
+  induction k.
+  - inversion H0.
+  - assert (Hidx := H0).
+    simpl in H0.
+    remember (evalLoop e s sigma p (m - S k) (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m))) as loop.
+    symmetry in Heqloop.
+    destruct loop; inversion H0; subst; clear H0.
+    destruct o; inversion H2; clear H2.
+    + remember (〚 e 〛 (s0) >>= toBool) as cond. symmetry in Heqcond.
+      destruct cond; inversion H1; clear H1.
+      * destruct b; inversion H2; clear H2.
+        replace (m - S k + 1) with (m - k) in H1; try omega.
+        destruct IHk as [ n [ Hmon Hlast ] ]; auto; try omega.
+        exists n; split.
+        --  intros j Hlow Hup. inversion Hlow; subst.
+         ++ exists s0; split; auto. destruct ((〚 e 〛 (s0))); inversion Heqcond; destruct v; inversion Heqcond; auto.
+         ++ apply (Hmon (S m0)); auto; omega.
+        -- auto.
+      * exists (m - S k); split.
+        intros j Hnj Hjn. apply False_rec. omega.
+        right; exists s0; auto.
+    + exists (m - S k); split; auto.
+      intros j Hnj Hjn. apply False_rec. omega.
+Qed.
+    
+Lemma idx_None : forall m e s sigma p,
   idx m (fun (i : nat) =>
     sigma'' ↩ evalLoop e s sigma p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m))
        IN match evalExp e sigma'' >>= toBool with
@@ -1906,19 +1946,21 @@ Lemma idx_None : forall e s sigma p m,
     evalLoop_monotone e s sigma p n m /\ (
     evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some None \/
     exists sigma', evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
-    evalExp e sigma' = None).
+    (evalExp e sigma' >>= toBool) = None).
 Proof.
-  intros. induction m.
-  - inversion H.
-  - remember (idx (S m)
-      (fun i : nat =>
-       sigma'' ↩ evalLoop e s sigma p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S m))
-       IN match (〚 e 〛 (sigma'')) >>= toBool with
-          | Some b => Some (Some (negb b))
-          | None => Some None
-          end)) as Hidx.
-Admitted.
-    
+  intros.
+  assert (exists n,
+    evalLoop_monotone_lower e s sigma p (m - m) n m /\ (
+    evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some None \/
+    exists sigma', evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
+    (evalExp e sigma' >>= toBool) = None)). {
+     apply idx1_None. constructor. replace (m - m) with 0; auto; omega.
+  }
+  replace (m - m) with 0 in H0; try omega.
+  destruct H0 as [n [ Hmon Hlast ] ].
+  exists n; split; auto.
+  intros j Hup; apply (Hmon j); omega.
+Qed.
 
 Lemma idx1_soundness_GNoneR : forall k n e s sigma sigma' st2 p m,
   k <= n ->
@@ -1926,7 +1968,7 @@ Lemma idx1_soundness_GNoneR : forall k n e s sigma sigma' st2 p m,
   evalLoop_monotone e s sigma p n m ->
   evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some None \/ 
   (evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
-  evalExp e sigma' = None) ->
+  (evalExp e sigma' >>= toBool) = None) ->
   GFixIndex (n - k) (fun nstep : nat =>
      GRepeat (GNum nstep) p (fun it : nat => trans_stmts s (GSLoc p) (PWhile p it)) (GSome st2) >>g= (fun nsto : gxp => trans_exp e nsto))
         ==>* GNoneR.
@@ -1941,11 +1983,21 @@ Proof.
     + destruct (H0 n (Some sigma')) as [ gstore [ Hloop [ Hv Heq ] ] ]; auto; try omega.
       inversion Heq; subst.
       destruct (soundness_exp e sigma' g) as [ ge [ Hcond Hceq ] ]; auto.
-      rewrite Hcnone in Hceq. inversion Hceq; subst.
-      eapply GMatch_GNoneR_R. eapply GMatch_GNoneR_R.
-      eapply GMatch_GSomeR_R; replace (n - 0) with n; eauto; try omega.
-      eapply trans_exp_C; eauto. eapply multi_trans. eapply GGet_Map_R; eauto.
-      apply GGet_fdata_GSomeR_R.
+      destruct (〚 e 〛 (sigma')).
+      * inversion Hceq; subst. inversion H4; subst; inversion Hcnone.
+        -- apply GMatch_GNoneR_R. eapply toBoolG_GVNumR_None.
+           eapply GMatch_GSomeR_R; replace (n - 0) with n; eauto; try omega.
+           eapply trans_exp_C; eauto. eapply multi_trans. eapply GGet_Map_R; eauto.
+           apply GGet_fdata_GSomeR_R.
+        -- apply GMatch_GNoneR_R. eapply toBoolG_GVLocR_None.
+           eapply GMatch_GSomeR_R; replace (n - 0) with n; eauto; try omega.
+           eapply trans_exp_C; eauto. eapply multi_trans. eapply GGet_Map_R; eauto.
+           apply GGet_fdata_GSomeR_R.
+      * inversion Hceq; subst.
+        eapply GMatch_GNoneR_R. eapply GMatch_GNoneR_R.
+        eapply GMatch_GSomeR_R; replace (n - 0) with n; eauto; try omega.
+        eapply trans_exp_C; eauto. eapply multi_trans. eapply GGet_Map_R; eauto.
+        apply GGet_fdata_GSomeR_R.
   - destruct (H1 (n - S k)) as [ sigma'' [ Hiloop Hicond ] ]; try omega.
     destruct (H0 (n - S k) (Some sigma'')) as [ g [ Giloop [ Giv Gieq ] ] ]; auto; try omega.
     inversion Gieq; subst.
@@ -1973,7 +2025,7 @@ Lemma idx_soundness_GNoneR : forall e s sigma sigma' st2 p n m,
   evalLoop_monotone e s sigma p n m ->
   evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some None \/ 
   (evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
-  evalExp e sigma' = None) ->
+  (evalExp e sigma' >>= toBool) = None) ->
   GFixIndex 0 (fun nstep : nat =>
      GRepeat (GNum nstep) p (fun it : nat => trans_stmts s (GSLoc p) (PWhile p it)) (GSome st2) >>g= (fun nsto : gxp => trans_exp e nsto))
         ==>* GNoneR.
@@ -2158,7 +2210,9 @@ Theorem soundness_stmts: forall s, soundness_stmts_def s .
 Proof.
   intro s.
   induction s; unfold soundness_stmts_def; intros c st1 st1' st2 m2 fuel Hstep Hseq Hvs2 HsImp.
-  - eexists. split.
+  - exists (GSomeR (GMap
+     (t_update beq_loc (t_update beq_loc m2 (LNew c) (Some OEmpty)) (LId i)
+        (Some (GObj (t_update Nat.eqb (t_empty None) 0 (Some (GVLocR (GLoc (LNew c)))))))))). split.
     + simpl.  apply alloc_R; eauto.
     + split; auto.
       inversion HsImp; subst. constructor.
@@ -2236,7 +2290,7 @@ Proof.
     destruct (soundness_exp e st1 st2) as [ ew [ Hes Heeq ] ]; auto.
     inversion Heeq as [ ev1 ev2 Heveq Hesome | Hnone ]; subst.
     + (* e is Some *) inversion Heveq; subst;
-      try (eexists GNoneR; split; [
+      try (exists GNoneR; split; [
          eapply GMatch_GNoneR_R; eauto |
          split; auto; simpl in HsImp; rewrite <- Hesome in HsImp; inversion HsImp; subst; constructor]).
       (* e is Bool *)
@@ -2245,7 +2299,7 @@ Proof.
       * (* e is True *) destruct (IHs1 (PThen c) st1 st1' st2 m2 fuel) as [ res1 [ Hres1s [ Hres1sv Hres1eq ] ] ]; auto. {
           simpl in HsImp. rewrite <- Hesome in HsImp. apply HsImp.
         }
-        eexists res1. split; auto.
+        exists res1. split; auto.
         eapply GMatch_GSomeR_R; eauto.
         eapply multi_trans. eapply GIf_CondTrue_R.
         eapply multi_trans. eapply GGet_Map_R; eauto. eapply GGet_fdata_GSomeR_R.
@@ -2253,7 +2307,7 @@ Proof.
       * (* e is False *) destruct (IHs2 (PElse c) st1 st1' st2 m2 fuel) as [ res2 [ Hres2s [ Hres2sv Hres2eq ] ] ]; auto. {
           simpl in HsImp. rewrite <- Hesome in HsImp. apply HsImp.
         }
-        eexists res2. split; auto.
+        exists res2. split; auto.
         eapply GMatch_GSomeR_R; eauto.
         eapply multi_trans. eapply GIf_CondFalse_R.
         eapply multi_trans. eapply GGet_Map_R; eauto. eapply GGet_fdata_GSomeR_R.
