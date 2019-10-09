@@ -1062,52 +1062,80 @@ Proof.
     assert (n >= i + 1). eapply IHm; eauto. omega.
 Qed. 
 
-Lemma idx1_evalLoop_some : forall k e s sigma sigma' p n m,
-    k <= n ->
-    idx1 (n - k) (m + k) (λ i : nat,
+Definition evalLoop_monotone_lower (e : exp) (s : stmt) (sigma : store) (p: path) (k n m : nat): Prop :=
+ forall i, k <= i -> i < n ->
+  exists sigma', evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) =
+  Some (Some sigma') /\ evalExp e sigma' = Some (VBool true).
+
+Lemma idx1_evalLoop_some : forall k e s sigma p n m,
+  k <= n ->
+  idx1 (n - k) (m + k) (λ i : nat,
        sigma'' ↩ evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m))
        IN match evalExp e sigma'' >>= toBool with
           | Some b => Some (Some (negb b))
           | None => Some None
           end) = Some (Some n) ->
-    evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') ->
-  evalExp e sigma' = Some(VBool false).
+  evalLoop_monotone_lower e s sigma p (n - k) n m /\
+  exists sigma', evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\ evalExp e sigma' = Some(VBool false).
 Proof.
   intro k.
   induction k.
-  - intros. destruct m. inversion H0. simpl in H0.
-    replace (n - 0) with n in H0; try omega.
-    rewrite H1 in H0.
-    destruct (〚 e 〛 (sigma')); try inversion H0; clear H3.
-    destruct v; try inversion H0; clear H0.
-    destruct b; try inversion H3; clear H3.
-    assert (n >= n + 1). eapply idx1_val_min; eauto. apply False_rec. omega.
-    reflexivity.
+  - intros.
+    split.
+    + intros k Hk Hn. apply False_rec. omega.
+    + destruct m. inversion H0. simpl in H0.
+      replace (n - 0) with n in H0; try omega.
+      remember (evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S m))) as loop.
+      destruct loop; try inversion H0; clear H0.
+      destruct o; try inversion H2; clear H2.
+      exists s0. 
+      remember (〚 e 〛 (s0)) as cond.
+      destruct cond; try inversion H1; clear H1.
+      destruct v; try inversion H2; clear H2.
+      destruct b; try inversion H1; clear H1.
+      assert (n >= n + 1). eapply idx1_val_min; eauto. apply False_rec. omega.
+      auto.
   - intros. replace (m + S k) with (S m + k) in H0; try omega.
     simpl in H0.
-    destruct (evalLoop e s sigma p (n - S k) (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m))); try inversion H0; clear H0.
-    destruct o; try inversion H3; clear H3.
-    destruct (〚 e 〛 (s0)); try inversion H2; clear H2.
-    destruct v; try inversion H3; clear H3.
-    destruct b; simpl in H2.
-    + replace (n - S k + 1) with (n - k) in H2; try omega.
-      eapply IHk with (n := n); eauto; try omega.
-    + inversion H2; clear H2. apply False_rec. omega.
+    remember (evalLoop e s sigma p (n - S k) (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m))) as loop.
+    destruct loop; try inversion H0; clear H0.
+    destruct o; try inversion H2; clear H2.
+    remember (〚 e 〛 (s0)) as cond.
+    destruct cond; try inversion H1; clear H1.
+    destruct v; try inversion H2; clear H2.
+    destruct b; simpl in H1.
+    + replace (n - S k + 1) with (n - k) in H1; try omega.
+      apply IHk in H1; try omega.
+      destruct H1 as [ Hmon Hlast ].
+      split; auto.
+      intros j Hj Hn.
+      inversion Hj; subst.
+      * exists s0. split; auto.
+      * unfold evalLoop_monotone_lower in Hmon.
+        destruct (Hmon (S m0)); try omega.
+        destruct H1.
+        exists x; split; auto.
+   + inversion H1; clear H1. apply False_rec. omega.
 Qed.
 
-Lemma idx_evalLoop_some : forall e s sigma sigma' p n m,
+Lemma idx_evalLoop_some : forall e s sigma p n m,
     idx m (λ i : nat,
        sigma'' ↩ evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m))
        IN match evalExp e sigma'' >>= toBool with
           | Some b => Some (Some (negb b))
           | None => Some None
           end) = Some (Some n) ->
-    evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') ->
+    evalLoop_monotone e s sigma p n m /\
+    exists sigma', evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
     evalExp e sigma' = Some(VBool false).
 Proof.
   intros.
-  eapply idx1_evalLoop_some; eauto. replace (n - n) with 0; eauto; try omega.
+  destruct (idx1_evalLoop_some n e s sigma p n m); eauto.
+  replace (n - n) with 0; eauto; try omega.
   eapply idx_more_inv with (n := m); eauto; try omega.
+  split; auto.
+  unfold evalLoop_monotone_lower in H0.
+  intros k Hkn. apply H0; omega.
 Qed.
 
   Theorem stmt_adequacy_2 : ∀ s σ σ' p,
@@ -1161,6 +1189,8 @@ Qed.
       eapply RWhile with (n := n).
       + eauto.
       + symmetry in Heqidxx. eapply idx_evalLoop_some in Heqidxx; eauto.
+        destruct Heqidxx as [ _ [ sigma [ Hloop Hcond ] ] ].
+        rewrite Hloop in H2. inversion H2; subst.
         eapply exp_adequacy. assumption.
     - simpl in H0. destruct (〚s1〛(σ, PFst p)(x)) eqn:EqS1; destruct (〚s2〛(σ, PSnd p)(x)) eqn:EqS2.
       * destruct o; inversion H0. destruct o1; eapply RSeq; eauto; eauto.
