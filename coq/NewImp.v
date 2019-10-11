@@ -625,11 +625,7 @@ Module IMPEval.
   Fixpoint evalLoop (cnd : exp) (s : stmt) (σ : store) (c : path) (n : nat)
            (evstmt : store → path → option (option store)) : option (option store) :=
     match n with
-    | O => 
-      bv ↩ Some (〚cnd〛(σ) >>= toBool) IN
-      if (negb bv) 
-      then Some (Some σ)
-      else Some None
+    | O => Some (Some σ)
     | S n' =>
       σ' ↩ evalLoop cnd s σ c n' evstmt IN
       bv ↩ Some (〚cnd〛(σ') >>= toBool) IN
@@ -661,16 +657,14 @@ Module IMPEval.
       then 〚s1〛(σ, PThen c)(m)
       else 〚s2〛(σ, PElse c)(m)
     | WHILE cnd DO s END =>
-      let guess :=
-          idx m (fun i => match (σ' ↩ evalLoop cnd s σ c i (fun σ'' c1 => 〚s〛(σ'', c1)(m)) IN
+      b1 ← 〚cnd〛(σ) >>= toBool IN
+      n  ← idx m (fun i => match (σ' ↩ evalLoop cnd s σ c i (fun σ'' c1 => 〚s〛(σ'', c1)(m)) IN
                                  b  ← 〚cnd〛(σ') >>= toBool IN
                                  Some (Some (negb b))) with
                           | Some (Some b) => Some b
                           | Some None => Some true
                           | None => None
-                          end) in
-      n ← guess IN
-      b1 ← 〚cnd〛(σ) >>= toBool IN
+                          end) IN
       σ' ↩ evalLoop cnd s σ c n (fun σ' c1 => 〚s〛(σ', c1)(m)) IN
       b2 ← 〚cnd〛(σ') >>= toBool IN
       Some (Some σ')
