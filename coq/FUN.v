@@ -1,5 +1,3 @@
-Add LoadPath "/home/greg/Research/closedforms/coq".
-
 Require Import Coq.Bool.Bool.
 Require Import Coq.Arith.Arith.
 Require Import Coq.Arith.EqNat.
@@ -63,6 +61,9 @@ Definition GMatch (scrutinee: gxp) (none: gxp) (some: gxp -> gxp): gxp :=
 
 Definition GVSelect (addr: gxp) (field: gxp): gxp :=
   GIf (GHasField addr field) (GSome (GGet addr field)) GNone.
+
+Definition GGetOrElse (scrutinee: gxp) (default: gxp): gxp :=
+  GIf (GGet scrutinee fvalid) (GGet scrutinee fdata) default.
 
 Definition GVNum (a: gxp): gxp :=
   GPut (GPut OEmpty ftpe tnat) fval a.
@@ -176,12 +177,13 @@ Fixpoint trans_stmts (s: stmt) (sto: gxp) (c: path) { struct s }: gxp :=
     LETG b <-- trans_exp e sto >>g= toBoolG IN
     GIf b (trans_stmts s1 sto (PThen c)) (trans_stmts s2 sto (PElse c))
   | WHILE cnd DO s END =>
-      LETG n <-- (GFixIndex 0
+      let n:= GFixIndex 0
                    (fun (nstep : nat) =>
                      LETG nsto <-- GRepeat (GNum nstep)
                        c (fun (it: nat) => trans_stmts s (GSLoc c) (PWhile c it)) (GSome sto) IN
-                         trans_exp cnd nsto
-                   )) >>g= toNatG IN
+                         LETG b <-- trans_exp cnd nsto >>g= toBoolG IN
+                           GGetOrElse b (GBool true)
+                   ) in
       GRepeat n c (fun (it: nat) => trans_stmts s (GSLoc c) (PWhile c it)) (GSome sto)
   | s1 ;; s2 =>
       LETG sto' <-- trans_stmts s1 sto (PFst c) IN
@@ -330,10 +332,9 @@ Inductive step : gxp -> gxp -> Prop :=
   (* GFixIndex*)
   | ST_FixIndexStep : forall i ob,
        GFixIndex i ob ==>
-         LETG cnd <-- (ob i) >>g= toBoolG IN
-           GIf cnd
-             (GFixIndex (i + 1) ob)
-             (GSomeR (GVNumR (GNum i)))
+         GIf (ob i)
+           (GFixIndex (i + 1) ob)
+           (GNum i)
   
   (* GRepeat *)
   | ST_RepeatNumIt : forall n n' l ob sto,
@@ -1843,20 +1844,33 @@ Proof.
   eapply multi_step. apply ST_StorePut; auto. constructor.
 Qed.
 
+Lemma idx1_val_min : forall m i p n,
+  idx1 i m p = Some n -> n >= i.
+Proof.
+  intro m.
+  induction m.
+  - intros. inversion H.
+  - intros. simpl in H.
+    destruct (p i); inversion H; clear H; auto.
+    destruct b; try inversion H1; clear H1.
+    auto.
+    assert (n >= i + 1). eapply IHm; eauto. omega.
+Qed. 
+
 Definition soundness_evalLoop (e : exp) (s : stmt) (st1 : store) (st2 : gxp) (c: path) (n fuel : nat): Prop :=  
   forall k st1'', k <= n ->
   evalLoop e s st1 c k (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(fuel)) = Some st1'' ->
   exists g, GRepeat (GNum k) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it)) (GSome st2) ==>* g
   /\ store_value g /\ oeq seq st1'' g.
 
-Lemma idx1_soundness_GSomeR : forall k m n e s st1 st2 p,
+(* Lemma idx1_soundness_GSomeR : forall k m n e s st1 st2 p,
   k <= n ->
   soundness_evalLoop e s st1 st2 p n m ->
   idx1 (n - k) (m + k) (fun (i : nat) =>
     sigma'' ↩ evalLoop e s st1 p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m))
        IN match evalExp e sigma'' >>= toBool with
-          | Some b => Some (Some (negb b))
-          | None => Some None
+          | Some b => Some (negb b)
+          | None => Some false
           end) = Some (Some n) ->
   GFixIndex (n - k) (fun nstep : nat =>
      GRepeat (GNum nstep) p (fun it : nat => trans_stmts s (GSLoc p) (PWhile p it)) (GSome st2) >>g= (fun nsto : gxp => trans_exp e nsto))
@@ -1948,9 +1962,9 @@ Proof.
   }
   replace (n - n) with 0 in H1; try omega.
   apply toNatG_GVNum_R. assumption.
-Qed.
+Qed. *)
 
-Lemma idx1_None : forall k m e s sigma p,
+(* Lemma idx1_None : forall k m e s sigma p,
   k <= m ->
   idx1 (m - k) k (fun (i : nat) =>
     sigma'' ↩ evalLoop e s sigma p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m))
@@ -2104,7 +2118,7 @@ Proof.
      GRepeat (GNum nstep) p (fun it : nat => trans_stmts s (GSLoc p) (PWhile p it)) (GSome st2) >>g= (fun nsto : gxp => trans_exp e nsto))
         ==>* GNoneR). eapply idx1_soundness_GNoneR; eauto.
   replace (n - n) with 0 in H2; auto; omega.
-Qed.
+Qed. *)
   
 Lemma beq_path_eq: forall c, true = beq_path c c.
 Proof.
@@ -2170,14 +2184,18 @@ Qed.
 Axiom functional_extensionality : forall {X Y: Type} {f g : X -> Y},
   (forall (x:X), f x = g x) -> f = g.
 
+Lemma help_commute : forall n ob ob',
+  ob = ob' -> GFixIndex n ob = GFixIndex n ob'.
+Proof. intros; subst; auto. Qed.
+
 Lemma subst_trans_stmts_commute : forall s c c' sto sto',
    bsub_path c' c = true ->
    subst c' sto (trans_stmts s sto' c) = trans_stmts s (subst c' sto sto') c.
 Proof.
   intro s. 
   induction s; intros;
-     try (simpl; repeat (rewrite subst_trans_exp_commute); try reflexivity);
-     try (rewrite IHs1; eauto; rewrite IHs2; eauto; simpl; try (rewrite IHs1; eauto); reflexivity).
+    try (simpl; repeat (rewrite subst_trans_exp_commute); try reflexivity);
+    try (rewrite IHs1; eauto; rewrite IHs2; eauto; simpl; try (rewrite IHs1; eauto); reflexivity).
   assert (H' := H).
   apply bsub_true_beq_false_path in H. repeat rewrite H.
   assert (
@@ -2186,34 +2204,14 @@ Proof.
     apply functional_extensionality.
     intro x. rewrite IHs; eauto. simpl. rewrite H; auto.
   }
-  assert (
-    (fun n : nat =>
-       GIf (GGet
-          (GRepeat (GNum n) c (fun n0 : nat => subst c' sto (trans_stmts s (GSLoc c) (PWhile c n0)))
-             (GPut (GPut (GMap empty_store) (GLoc (LId (Id 0))) (GBool true)) (GLoc (LId (Id 1))) (subst c' sto sto')))
-                (GLoc (LId (Id 0))))
-        (subst c' sto
-           (trans_exp e (GGet (GRepeat (GNum n) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it)) (GSome sto')) fdata)))
-        (GPut (GMap empty_store) (GLoc (LId (Id 0))) (GBool false))) =
-    (fun n : nat =>
-       GIf (GGet (GRepeat (GNum n) c (fun n0 : nat => trans_stmts s (GSLoc c) (PWhile c n0))
-             (GSome (subst c' sto sto'))) (GLoc (LId (Id 0))))
-          (trans_exp e (GGet (GRepeat (GNum n) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it))
-                      (GSome (subst c' sto sto'))) fdata))
-         (GPut (GMap empty_store) (GLoc (LId (Id 0))) (GBool false)))). {
-      apply functional_extensionality.
-      intro x. rewrite subst_trans_exp_commute. simpl. rewrite H. rewrite H0. reflexivity.
+  erewrite help_commute.
+  2: { apply functional_extensionality.
+       intro x. repeat rewrite H. repeat rewrite H0.
+       rewrite subst_trans_exp_commute.
+       simpl. repeat rewrite H. simpl. repeat rewrite H0.
+       reflexivity.
   }
-  repeat rewrite H1. repeat rewrite H0. reflexivity.
-Qed.
-
-Lemma subst_comm : forall s c c' sto,
-  bsub_path c' c = true ->
-  subst c' sto (LETG sto <-- trans_stmts s (GSLoc c') c IN sto) = LETG sto <--trans_stmts s sto c IN sto.
-Proof.
-  intros.
-  simpl.
-  rewrite subst_trans_stmts_commute; auto. simpl. rewrite <- beq_path_eq. reflexivity.
+  rewrite H0. reflexivity.
 Qed.
 
 Definition soundness_stmts_def (s : stmt): Prop :=  
@@ -2390,38 +2388,40 @@ Proof.
          split; auto; simpl in HsImp; rewrite <- Hnone in HsImp; inversion HsImp; subst; constructor ].
   - simpl in HsImp. simpl.
     remember (idx (S fuel)
-            (fun i : nat =>
-             σ' ↩ evalLoop e s st1 c i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S fuel))
-             IN match (〚 e 〛 (σ')) >>= toBool with
-                | Some b => Some (Some (negb b))
-                | None => Some None
+               (fun i : nat =>
+                match
+                  σ' ↩ evalLoop e s st1 c i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S fuel))
+                  IN b ← (〚 e 〛 (σ')) >>= toBool IN Some (Some (negb b))
+                with
+                | Some (Some b) => Some b
+                | Some None => Some true
+                | None => None
                 end)) as Hidx.
     destruct Hidx.
-    + destruct o.
-      * assert (Heval_some := HeqHidx). symmetry in Heval_some.
-        apply idx_evalLoop_some in Heval_some; try omega.
-        destruct Heval_some as [ Hmon [ st0 [ Hloop Hcond ] ] ].
-        destruct st1'.
-        -- assert (forall k st1'',
-                 k <= n ->
-                 evalLoop e s st1 c k (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S fuel)) = Some st1'' ->
-                 exists g, GRepeat (GNum k) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it)) (GSome st2) ==>* g
-                /\ store_value g /\ oeq seq st1'' g). { intros.
-             eapply soundness_evaloop_partial with (n := n); eauto.
-           }
-         apply (H n (Some s0)) in HsImp; try omega.
-         destruct HsImp as [ gstore [ Hgloop [ Hsv Hg_seq ] ] ].
-         inversion Hg_seq; subst.
-         symmetry in HeqHidx.
-         eapply idx_soundness_GSomeR in HeqHidx.
-         2 : { unfold soundness_evalLoop. intros; auto. }
-         exists (GSomeR g). split; auto.
-         eapply GMatch_GSomeR_R; eauto.
-         eapply multi_trans. eapply GRepeat_NumIt_R; eauto.
-         eapply multi_trans. eapply GGet_Map_R; eauto.
-         eapply GGet_fdata_GSomeR_R; eauto.
-         assumption.
-        -- rewrite HsImp in Hloop. inversion Hloop.
+    + assert (Heval_some := HeqHidx). symmetry in Heval_some.
+      apply idx_evalLoop_some in Heval_some; try omega.
+      destruct Heval_some as [ Hmon [ st0 [ Hloop Hcond ] ] ].
+      destruct st1'.
+      * assert (forall k st1'',
+               k <= n ->
+               evalLoop e s st1 c k (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S fuel)) = Some st1'' ->
+               exists g, GRepeat (GNum k) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it)) (GSome st2) ==>* g
+              /\ store_value g /\ oeq seq st1'' g). { intros.
+           eapply soundness_evaloop_partial with (n := n); eauto.
+        }
+        apply (H n (Some s0)) in HsImp; try omega.
+        destruct HsImp as [ gstore [ Hgloop [ Hsv Hg_seq ] ] ].
+        inversion Hg_seq; subst.
+        symmetry in HeqHidx.
+        eapply idx_soundness_GSomeR in HeqHidx.
+        2 : { unfold soundness_evalLoop. intros; auto. }
+        exists (GSomeR g). split; auto.
+        eapply GMatch_GSomeR_R; eauto.
+        eapply multi_trans. eapply GRepeat_NumIt_R; eauto.
+        eapply multi_trans. eapply GGet_Map_R; eauto.
+        eapply GGet_fdata_GSomeR_R; eauto.
+        assumption.
+        * rewrite HsImp in Hloop. inversion Hloop.
       * symmetry in HeqHidx. apply idx_None with (sigma := st1) in HeqHidx.
         destruct HeqHidx as [ n [ Hmon Hlast ] ].
         inversion HsImp; subst; clear HsImp.

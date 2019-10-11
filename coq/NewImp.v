@@ -22,7 +22,7 @@ Qed.
 Fixpoint ble_nat (n m : nat) : bool :=
   match n with
   | O => true
-  | S n' => 
+  | S n' =>
     match m with
     | O => false
     | S m' => ble_nat n' m'
@@ -61,7 +61,7 @@ Ltac bdestruct X :=
 (* Maps *)
 
 Inductive id : Type :=
-  | Id : nat -> id. 
+  | Id : nat -> id.
 
 Definition beq_id x y :=
   match x,y with
@@ -71,7 +71,7 @@ Definition beq_id x y :=
 Definition total_map (A : Type) (B : Type) := A -> B.
 
 Definition t_empty {A : Type} {B : Type} (v : B) : total_map A B :=
-  (fun _ => v). 
+  (fun _ => v).
 
 Definition t_update {A B : Type} (beq : A -> A -> bool)
            (m : total_map A B) (x : A) (v : B) :=
@@ -336,7 +336,7 @@ Module IMPRel.
   where "( st1 , c ) ⊢ ( e , s ) n '⇓∞' st2" := (evalLoopRel st1 c e s n st2) : type_scope
   with evalStmt : store → path → stmt → store → Prop :=
   | RAlloc x : ∀ σ p,
-      (σ, p) ⊢ x ::= ALLOC ⇓ (LId x  st↦ (0 obj↦ VLoc (LNew p)) ; 
+      (σ, p) ⊢ x ::= ALLOC ⇓ (LId x  st↦ (0 obj↦ VLoc (LNew p)) ;
                               LNew p st↦ mt_obj ;
                               σ)
   | RAssign e1 e2 e3 : ∀ σ p l idx v o,
@@ -493,7 +493,7 @@ Qed.
       subst. reflexivity.
     - inversion H.
 Qed.
-      
+
 End IMPRel.
 
 (* IMP Standard semantics, without context path *)
@@ -658,7 +658,7 @@ Module IMPEval.
       else 〚s2〛(σ, PElse c)(m)
     | WHILE cnd DO s END =>
       b1 ← 〚cnd〛(σ) >>= toBool IN
-      n  ← idx m (fun i => match (σ' ↩ evalLoop cnd s σ c i (fun σ'' c1 => 〚s〛(σ'', c1)(m)) IN
+      n ← idx m (fun i => match (σ' ↩ evalLoop cnd s σ c i (fun σ'' c1 => 〚s〛(σ'', c1)(m)) IN
                                  b  ← 〚cnd〛(σ') >>= toBool IN
                                  Some (Some (negb b))) with
                           | Some (Some b) => Some b
@@ -760,7 +760,7 @@ Qed.
         apply H0. assert (m >= n). omega. eapply IHm. apply H1.
         apply H0. reflexivity. inversion H0.
   Qed.
-  
+
   Lemma idx_more_inv : ∀ m n p x v,
       m >= n →
       idx1 x n p = Some v →
@@ -909,7 +909,7 @@ Qed.
     - simpl in H0. simpl. apply H0.
     - simpl in H0. simpl. apply H0.
   Qed.
-  
+
   Lemma loop_eval_more_val_nm : ∀ i e s n m σ c v,
       n <= m →
       evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n)) = Some v →
@@ -927,38 +927,40 @@ Qed.
       + simpl. simpl in H0. rewrite <- Heqhyp in H0; simpl in H0. inversion H0.
 Qed.
 
-  Definition evalLoop_monotone (e : exp) (s : stmt) (sigma : store) (p: path) (k : nat) (m : nat): Prop :=
-    forall i, i < k ->
-      exists sigma', evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) =
-      Some (Some sigma') /\ evalExp e sigma' = Some (VBool true).
-  
+
+Definition evalLoop_monotone_lower (e : exp) (s : stmt) (sigma : store) (p: path) (k n m : nat): Prop :=
+ forall i, k <= i -> i < n ->
+  exists sigma', evalLoop e s sigma p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) =
+  Some (Some sigma') /\ evalExp e sigma' = Some (VBool true).
+
+Definition evalLoop_monotone (e : exp) (s : stmt) (sigma : store) (p: path) (k : nat) (m : nat): Prop :=
+  evalLoop_monotone_lower e s sigma p 0 k m.
+
   Lemma evalLoop_monotone_Sk : forall e s sigma p k m sigma',
     evalLoop_monotone e s sigma p k m ->
     evalLoop e s sigma p k (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\ evalExp e sigma' = Some (VBool true) ->
     evalLoop_monotone e s sigma p (S k) m.
   Proof.
-    unfold evalLoop_monotone.
-    intros.
+    intro e. intros. intro i. intros.
     bdestruct (i =? k).
     + subst i. exists sigma'. eauto.
-    + eapply H. omega.
+    + eapply H; omega.
   Qed.
-  
+
   Lemma evalLoop_monotone_more_val_nm : forall e s sigma p k n m,
     n <= m ->
     evalLoop_monotone e s sigma p k n ->
     evalLoop_monotone e s sigma p k m.
   Proof.
-    unfold evalLoop_monotone.
-    intros.
+    intro e. intros. intro i. intros.
     destruct (H0 i) as [sigma' H0i]; eauto.
     destruct H0i as [H0il H0ic].
     exists sigma'. split; eauto.
     eapply loop_eval_more_val_nm; eauto.
   Qed.
 
-  Definition idx1_constant (n m : nat) (p : nat -> option (option bool)): Prop :=
-    forall k, k <= n -> idx1 (n - k) (m + k) p = Some (Some n).
+  Definition idx1_constant (n m : nat) (p : nat -> option bool): Prop :=
+    forall k, k <= n -> idx1 (n - k) (m + k) p = Some n.
 
   Lemma idx1_evalLoop_terminate : forall e s sigma sigma' p n m,
     evalLoop_monotone e s sigma p n (S m) ->
@@ -969,7 +971,7 @@ Qed.
        IN match evalExp e sigma'' >>= toBool with
           | Some b => Some (Some (negb b))
           | None => Some None
-          end).    
+          end).
   Proof.
    intros. unfold idx1_constant.
    intro k. induction k.
@@ -999,7 +1001,7 @@ Qed.
        IN match evalExp e sigma'' >>= toBool with
           | Some b => Some (Some (negb b))
           | None => Some None
-          end) = Some (Some n).    
+          end) = Some (Some n).
   Proof.
    intros. unfold idx.
    assert (n - n = 0) as Hz. omega.
@@ -1053,9 +1055,9 @@ Qed.
          IN match 〚 e 〛 (σ'0) >>= toBool with
           | Some b => Some (Some (negb b))
           | None => Some None
-          end) = Some (Some n)) as idxVal. { 
+          end) = Some (Some n)) as idxVal. {
             eapply idx_evalLoop_terminate; eauto.
-            apply exp_adequacy; eauto. } 
+            apply exp_adequacy; eauto. }
       rewrite idxVal. eapply loop_eval_more_val_nm with (n := w); eauto.
       omega.
     - apply IHs1 in H4. apply IHs2 in H6.
@@ -1071,7 +1073,7 @@ Qed.
    Qed.
 
 Lemma idx1_val_min : forall m i p n,
-  idx1 i m p = Some (Some n) -> n >= i.
+  idx1 i m p = Some n -> n >= i.
 Proof.
   intro m.
   induction m.
@@ -1082,23 +1084,23 @@ Proof.
     destruct b; try inversion H0; clear H0.
     auto.
     assert (n >= i + 1). eapply IHm; eauto. omega.
-Qed. 
-
-Definition evalLoop_monotone_lower (e : exp) (s : stmt) (sigma : store) (p: path) (k n m : nat): Prop :=
- forall i, k <= i -> i < n ->
-  exists sigma', evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) =
-  Some (Some sigma') /\ evalExp e sigma' = Some (VBool true).
+Qed.
 
 Lemma idx1_evalLoop_some : forall k e s sigma p n m,
   k <= n ->
-  idx1 (n - k) (m + k) (λ i : nat,
-       sigma'' ↩ evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m))
-       IN match evalExp e sigma'' >>= toBool with
-          | Some b => Some (Some (negb b))
-          | None => Some None
-          end) = Some (Some n) ->
-  evalLoop_monotone_lower e s sigma p (n - k) n m /\
-  exists sigma', evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\ evalExp e sigma' = Some(VBool false).
+  idx1 (n - k) (m + k) (fun i =>
+                          match sigma' ↩ evalLoop e s sigma p i (fun σ'' c1 => evalStmt s σ'' c1 m) IN
+                                 b  ← evalExp e sigma' >>= toBool IN
+                                 Some (Some (negb b)) with
+                            | Some (Some b) => Some b
+                            | Some None => Some true
+                            | None => None
+                            end) = Some n ->
+  and (evalLoop_monotone_lower e s sigma p (n - k) n m)
+      (or (or (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = None)
+              (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some None))
+          (exists sigma', and (or (evalExp e sigma' = Some (VBool false)) ((evalExp e sigma' >>= toBool) = None))
+                              (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some (Some sigma')))).
 Proof.
   intro k.
   induction k.
@@ -1108,56 +1110,73 @@ Proof.
     + destruct m. inversion H0. simpl in H0.
       replace (n - 0) with n in H0; try omega.
       remember (evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S m))) as loop.
-      destruct loop; try inversion H0; clear H0.
-      destruct o; try inversion H2; clear H2.
-      exists s0. 
+      destruct loop; auto.
+      destruct o; auto.
+      right. exists s0; split; auto.
       remember (〚 e 〛 (s0)) as cond.
-      destruct cond; try inversion H1; clear H1.
-      destruct v; try inversion H2; clear H2.
-      destruct b; try inversion H1; clear H1.
+      destruct cond; auto.
+      destruct v; try (right; reflexivity).
+      destruct b; inversion H0.
       assert (n >= n + 1). eapply idx1_val_min; eauto. apply False_rec. omega.
       auto.
   - intros. replace (m + S k) with (S m + k) in H0; try omega.
     simpl in H0.
     remember (evalLoop e s sigma p (n - S k) (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m))) as loop.
-    destruct loop; try inversion H0; clear H0.
-    destruct o; try inversion H2; clear H2.
+    destruct loop; inversion H0; clear H0; try (apply False_rec; omega).
+    destruct o; inversion H2; clear H2; try (apply False_rec; omega).
     remember (〚 e 〛 (s0)) as cond.
-    destruct cond; try inversion H1; clear H1.
-    destruct v; try inversion H2; clear H2.
-    destruct b; simpl in H1.
-    + replace (n - S k + 1) with (n - k) in H1; try omega.
-      apply IHk in H1; try omega.
-      destruct H1 as [ Hmon Hlast ].
-      split; auto.
-      intros j Hj Hn.
-      inversion Hj; subst.
-      * exists s0. split; auto.
-      * unfold evalLoop_monotone_lower in Hmon.
-        destruct (Hmon (S m0)); try omega.
-        destruct H1.
-        exists x; split; auto.
-   + inversion H1; clear H1. apply False_rec. omega.
+    destruct cond; inversion H1; clear H1; try (apply False_rec; omega).
+    destruct v; inversion H2; clear H2; try (apply False_rec; omega).
+    destruct b; simpl in H1; inversion H1; clear H1; try (apply False_rec; omega).
+    replace (n - S k + 1) with (n - k) in H2; try omega.
+    apply IHk in H2; try omega.
+    destruct H2 as [ Hmon Hlast ].
+    split; auto.
+    intros j Hj Hn.
+    inversion Hj; subst.
+    + exists s0. split; auto.
+    + unfold evalLoop_monotone_lower in Hmon.
+      destruct (Hmon (S m0)); try omega.
+      destruct H1.
+      exists x; split; auto.
 Qed.
 
+ Lemma idx_more_val_inv : forall m n p i x,
+      m >= n ->
+      idx1 x n p = Some i ->
+      idx1 x m p = Some i.
+  Proof.
+    intro m. induction m; intros.
+    - inversion H. subst. simpl in H0. inversion H0.
+    - simpl. destruct n.
+      + simpl in H0. inversion H0.
+      + simpl in H0. destruct (p x) eqn:Hpx.
+        destruct b eqn:Hb.
+        apply H0. assert (m >= n). omega. eapply IHm. apply H1.
+        apply H0. apply H0.
+  Qed.
+
 Lemma idx_evalLoop_some : forall e s sigma p n m,
-    idx m (λ i : nat,
-       sigma'' ↩ evalLoop e s sigma p i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m))
-       IN match evalExp e sigma'' >>= toBool with
-          | Some b => Some (Some (negb b))
-          | None => Some None
-          end) = Some (Some n) ->
-    evalLoop_monotone e s sigma p n m /\
-    exists sigma', evalLoop e s sigma p n (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
-    evalExp e sigma' = Some(VBool false).
+  idx m (fun i =>
+                match sigma' ↩ evalLoop e s sigma p i (fun σ'' c1 => evalStmt s σ'' c1 m) IN
+                       b  ← evalExp e sigma' >>= toBool IN
+                       Some (Some (negb b)) with
+                  | Some (Some b) => Some b
+                  | Some None => Some true
+                  | None => None
+                  end) = Some n ->
+  and (evalLoop_monotone e s sigma p n m)
+      (or (or (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = None)
+              (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some None))
+          (exists sigma', and (or (evalExp e sigma' = Some (VBool false)) ((evalExp e sigma' >>= toBool) = None))
+                              (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some (Some sigma')))).
 Proof.
   intros.
   destruct (idx1_evalLoop_some n e s sigma p n m); eauto.
   replace (n - n) with 0; eauto; try omega.
-  eapply idx_more_inv with (n := m); eauto; try omega.
+  eapply idx_more_val_inv with (n := m); eauto; try omega.
   split; auto.
-  unfold evalLoop_monotone_lower in H0.
-  intros k Hkn. apply H0; omega.
+  replace (n - n) with 0 in H0; auto; omega.
 Qed.
 
   Theorem stmt_adequacy_2 : ∀ s σ σ' p,
@@ -1167,7 +1186,7 @@ Qed.
     generalize dependent σ. generalize dependent σ'. generalize dependent p.
     induction s; intros.
     - simpl in H0. inversion H0. eapply RAlloc.
-    - simpl in H0. 
+    - simpl in H0.
       destruct (〚e〛(σ)) eqn:EqE; destruct (〚e0〛(σ)) eqn:EqE0; destruct (〚e1〛(σ)) eqn:EqE1;
         try (destruct v; simpl in H0; inversion H0).
       * eapply exp_adequacy in EqE. eapply exp_adequacy in EqE0. eapply exp_adequacy in EqE1.
@@ -1358,7 +1377,7 @@ Fixpoint trans_loop (e: exp) (s: stmt) (sto: gxp) (c: path) (n: nat) (* How to u
   | O => GSome sto
   | S n' =>
     LETG b <-- trans_exp e sto >>g= toBoolG IN
-    LETG sto' <-- trans_loop e s sto c n' evstmt IN 
+    LETG sto' <-- trans_loop e s sto c n' evstmt IN
     GIf b (evstmt sto' (PWhile c n')) GNone
   end.
 
@@ -1411,16 +1430,16 @@ end.
   | GLoc n, GLoc m => beq_nat n m
   | GMap m =>
   | GObj n => e
-  | GHasField a x => 
-  | GGet a x => 
-  | GPut a x b => 
+  | GHasField a x =>
+  | GGet a x =>
+  | GPut a x b =>
   | GPlus a b =>
-  | GMinus a b => 
-  | GMult a b => 
-  | GEq a b => 
-  | GIf c a b => 
-  | GLt a b => 
-  | GAnd a b => 
+  | GMinus a b =>
+  | GMult a b =>
+  | GEq a b =>
+  | GIf c a b =>
+  | GLt a b =>
+  | GAnd a b =>
   | GNot a => *)
 
 Fixpoint sms_eval_exp (e: gxp): gxp :=
@@ -1507,7 +1526,7 @@ Proof.
 Qed.
 
 Lemma FGEQ_refl: forall f, (forall b1 b2, geq b1 b2 -> geq (f b1) (f b2)) -> fgeq f f.
-Proof. intros. unfold fgeq. intros. eapply H. eauto. Qed. 
+Proof. intros. unfold fgeq. intros. eapply H. eauto. Qed.
 
 (* ----- prove some congruence rules ----- *)
 
@@ -1684,7 +1703,7 @@ Lemma GEQ_SomeR: forall a b,
 Proof.
   intros. eapply GEQ_trans. eapply GEQ_GetC; eauto. reflexivity. unfold GSome.
   unfold geq in *. simpl. reflexivity.
-Qed. 
+Qed.
 
 Lemma GEQ_BindSomeR: forall a b c f,
     geq a (GSome b) ->
@@ -1692,13 +1711,13 @@ Lemma GEQ_BindSomeR: forall a b c f,
     fgeq f f ->
     geq (a >>g= f) c.
 Proof. intros. eapply GEQ_trans. eapply GEQ_BindC; eauto.
-       unfold GMatch. unfold fgeq in *. unfold geq in *. simpl. rewrite <-H0. 
+       unfold GMatch. unfold fgeq in *. unfold geq in *. simpl. rewrite <-H0.
        eapply H1. eapply GEQ_SomeR. reflexivity. Qed.
 
 Lemma GEQ_BindNoneR: forall a f,
     geq a GNone -> geq (a >>g= f) GNone.
 Proof.
-  intros. unfold GMatch. unfold geq in *. simpl. rewrite H. simpl. reflexivity. 
+  intros. unfold GMatch. unfold geq in *. simpl. rewrite H. simpl. reflexivity.
 Qed.
 
 Lemma GEQ_toNatR: forall a b,
@@ -1768,7 +1787,7 @@ Definition leq (n1: loc) (n2: gxp) := n2 = (GLoc n1).
 Definition objeq (o1 : obj) (o2 : gxp): Prop :=
   forall n1 n2, neq n1 n2 -> oeq veq (o1 n1) (GVSelect o2 n2).
 
-Definition seq (s1 : store) (s2 : gxp): Prop := 
+Definition seq (s1 : store) (s2 : gxp): Prop :=
   forall l1 l2, leq l1 l2 -> oeq objeq (s1 l1) (GVSelect s2 l2).
 
 Lemma REQ_BindC: forall X Y (peq: X -> gxp -> Prop)  (qeq: Y -> gxp -> Prop) a1 a2 f1 f2,
@@ -1780,7 +1799,7 @@ Proof.
   intros. inversion H; subst a1 r.
   - specialize (H0 _ _ H2). inversion H0; subst r.
     + eapply REQ_Some. eauto. eapply GEQ_BindSomeR; eauto.
-    + eapply REQ_None. eapply GEQ_BindSomeR; eauto. 
+    + eapply REQ_None. eapply GEQ_BindSomeR; eauto.
   - eapply REQ_None. eapply GEQ_BindNoneR; eauto.
 Qed.
 
@@ -1788,7 +1807,7 @@ Qed.
 Lemma REQ_toNatC: forall (b0 : val) (b3 : gxp), veq b0 b3 -> oeq neq (toNat b0) (toNatG b3).
 Proof.
   intros. inversion H; subst b0 r.
-  - eapply REQ_Some. reflexivity. eapply GEQ_toNatR. eauto. 
+  - eapply REQ_Some. reflexivity. eapply GEQ_toNatR. eauto.
   - eapply REQ_None. eapply GEQ_toNatBoolR. eauto.
   - eapply REQ_None. eapply GEQ_toNatLocR. eauto.
 Qed.
@@ -1797,7 +1816,7 @@ Lemma REQ_toBoolC: forall (b0 : val) (b3 : gxp), veq b0 b3 -> oeq beq (toBool b0
 Proof.
   intros. inversion H; subst b0 r.
   - eapply REQ_None. eapply GEQ_toBoolNatR. eauto.
-  - eapply REQ_Some. reflexivity. eapply GEQ_toBoolR. eauto. 
+  - eapply REQ_Some. reflexivity. eapply GEQ_toBoolR. eauto.
   - eapply REQ_None. eapply GEQ_toBoolLocR. eauto.
 Qed.
 
@@ -1806,7 +1825,7 @@ Proof.
   intros. inversion H; subst b0 r.
   - eapply REQ_None. eapply GEQ_toLocNatR. eauto.
   - eapply REQ_None. eapply GEQ_toLocBoolR. eauto.
-  - eapply REQ_Some. reflexivity. eapply GEQ_toLocR. eauto. 
+  - eapply REQ_Some. reflexivity. eapply GEQ_toLocR. eauto.
 Qed.
 
 Lemma OEQ_toNatC: forall (a1 : option val) (b1: gxp),
@@ -1830,7 +1849,7 @@ Theorem soundness_exp: forall e s1 s2,
     req (evalExp e s1) (trans_exp e s2).
 Proof.
   intros. induction e.
-  - (* num *) simpl. eapply REQ_Some. eapply VEQ_Num. reflexivity. reflexivity. 
+  - (* num *) simpl. eapply REQ_Some. eapply VEQ_Num. reflexivity. reflexivity.
   - (* bool *) simpl. eapply REQ_Some. eapply VEQ_Bool. reflexivity. reflexivity.
   - (* loc *) simpl. eapply REQ_Some. eapply VEQ_Loc. reflexivity. reflexivity.
   - (* plus *) simpl.
@@ -1849,7 +1868,7 @@ Proof.
       * intros. eapply REQ_Some.
         ** eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_PlusR. reflexivity. reflexivity.
         ** rewrite H2. rewrite H3. reflexivity.
-      * intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. reflexivity. apply H3. 
+      * intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. reflexivity. apply H3.
     + intros. eapply GEQ_BindC.
       * reflexivity.
       * intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC.
