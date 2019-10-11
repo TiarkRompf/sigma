@@ -353,7 +353,7 @@ Inductive step : gxp -> gxp -> Prop :=
   | ST_ObjHasFieldFalse : forall n m,
        m n = None ->
        GHasField (GObj m)(GNum n)  ==> GBool false
-  | ST_StHasFieldTrue : forall l m,
+  | ST_StoHasFieldTrue : forall l m,
        m l <> None ->
        GHasField (GMap m) (GLoc l) ==> GBool true
   | ST_StoHasFieldFalse : forall l m,
@@ -466,10 +466,10 @@ Proof.
   induction H; [ eauto | intros; econstructor; eauto].
 Qed.
 
-(* Lemma multi_split_stuck : forall a b c,
+(* (* Lemma multi_split_stuck : forall a b c,
   stuck c ->
   a ==>* b -> a ==>* c -> b ==>* c.
-Proof. Admitted.
+Proof. Admitted. *)
 
 Lemma multi_split : forall a b c,
   a ==>* b -> a ==>* c -> (b ==>* c \/ c ==>* b).
@@ -497,10 +497,12 @@ Definition leq (n1: loc) (n2: gxp) := n2 ==>* GLoc n1.
 
 
 Definition objeq (o1 : obj) (o2 : gxp): Prop :=
-  forall n1 n2, neq n1 n2 -> exists v, (GVSelect o2 n2) ==>* v /\ value v /\ oeq veq (o1 n1) v.
+  forall n1 n2, neq n1 n2 -> ((GHasField o2 (GNum n1)) ==>* GBool true /\ exists v1 v2, (GGet o2 (GNum n1)) ==>* v2 /\ o1 n1 = Some v1 /\ veq v1 v2)
+                             \/ ((GHasField o2 (GNum n1)) ==>* GBool false /\ o1 n1 = None).
 
 Definition seq (s1 : store) (s2 : gxp): Prop := 
-  forall l1 l2, leq l1 l2 -> exists v, (GVSelect s2 l2) ==>* v /\ obj_value v /\ oeq objeq (s1 l1) v.
+  forall l1 l2, leq l1 l2 -> ((GHasField s2 (GLoc l1)) ==>* GBool true /\ exists o1 o2, (GGet s2 (GLoc l1)) ==>* (GObj o2) /\ value (GObj o2) /\ s1 l1 = Some o1 /\ objeq o1 (GObj o2))
+                             \/ ((GHasField s2 (GLoc l1)) ==>* GBool false /\ s1 l1 = None).
 
 Hint Constructors veq.
 Hint Constructors oeq.
@@ -1211,11 +1213,9 @@ Qed.
 
 Lemma empty_objeq : objeq mt_obj OEmpty.
 Proof.
-  unfold objeq. intros.
-  exists GNoneR.
-  split. eapply GVSelect_OEmpty_R; eauto.
-  split; auto.
-  constructor.
+  unfold objeq. intros. right. split.
+  - econstructor. apply ST_ObjHasFieldFalse. reflexivity. constructor.
+  - reflexivity.
 Qed.
 
 Hint Resolve empty_objeq.
@@ -1273,105 +1273,11 @@ Proof.
   - econstructor. apply ST_RepeatNumIt; eauto. assumption.
 Qed.
 
-Lemma GIf_value : forall e1 e2 e3 v,
-  value v ->
-  GIf e1 e2 e3 ==>* v ->
-  (e1 ==>* GBool true /\ e2 ==>* v) \/ (e1 ==>* GBool false /\ e3 ==>* v).
-Proof.
-  intros.
-  inversion H0; subst. inversion H.
-  inversion H1; subst.
-  - admit.
-  - admit.
-  - admit.
-Admitted.
-
-Lemma GIf_C : forall e1 e1' e2 e2' e3 e3' v,
-  e1 ==>* e1' ->
-  e2 ==>* e2' ->
-  e3 ==>* e3' ->
-  value v ->
-  GIf e1' e2' e3' ==>* v ->
-  GIf e1 e2 e3 ==>* v.
-Proof.
-  intros.
-  assert ((e1' ==>* GBool true /\ e2' ==>* v) \/ (e1' ==>* GBool false /\ e3' ==>* v)) as Hcond. apply GIf_value; auto.
-  destruct Hcond as [ [ Ht Hthen] | [ Hf Helse ] ].
-  - eapply multi_trans. eapply GIf_Cond_R. eapply multi_trans; eauto.
-    econstructor. constructor. eapply multi_trans; eauto.
-  - eapply multi_trans. eapply GIf_Cond_R. eapply multi_trans; eauto.
-    econstructor. constructor. eapply multi_trans; eauto.
-Qed.
-
-Lemma GHasField_C : forall e1 e1' e2 e2' v,
-  e1 ==>* e1' ->
-  e2 ==>* e2' ->
-  value v ->
-  GHasField e1' e2' ==>* v ->
-  GHasField e1 e2 ==>* v.
-Proof. Admitted.
-
-Lemma GGet_C : forall e1 e1' e2 e2' v,
-  e1 ==>* e1' ->
-  e2 ==>* e2' ->
-  value v ->
-  GGet e1' e2' ==>* v ->
-  GGet e1 e2 ==>* v.
-Proof. Admitted.
-
 Lemma func_eq_value_eq : forall { X Y : Type } (f g : X -> Y) (v : X),
   f = g -> (f v) = (g v).
 Proof.
   intros. rewrite H. reflexivity.
 Qed.
-
-Lemma GSome_GNoneR_contra : forall e1,
-  GSome e1 ==>* GNoneR -> False.
-Proof. Admitted.
-
-Lemma GVSelect_C_GNoneR : forall e1 e1' e2 e2',
-   e1 ==>* e1' ->
-   e2 ==>* e2' ->
-   GVSelect e1' e2' ==>* GNoneR ->
-   GVSelect e1 e2 ==>* GNoneR.
-Proof.
-  intros.
-  assert (((GHasField e1' e2') ==>* GBool true /\ (GSome (GGet e1' e2')) ==>* GNoneR) \/
-          ((GHasField e1' e2') ==>* GBool false /\ GNone ==>* GNoneR)) as Hcond.
-  apply GIf_value; auto.
-  destruct Hcond as [ [ Ht Hthen] | [ Hf Helse ] ].
-  - apply False_rec. eapply  GSome_GNoneR_contra. eassumption.
-  - eapply GIf_C; eauto. eapply GHasField_C with (v := GBool false); eauto. constructor.
-    econstructor. constructor. constructor.
-Qed.
-
-Lemma GSome_C_GSomeR : forall e1 e1' v,
-  e1 ==>* e1' ->
-  GSome e1' ==>* GSomeR v->
-  GSome e1 ==>* GSomeR v.
-Proof.
-  unfold GSome.
-  intros e1 e1' v Hse1 Hs.
-Admitted.
-
-Lemma GVSelect_C_GSomeR : forall e1 e1' e2 e2' v,
-   e1 ==>* e1' ->
-   e2 ==>* e2' ->
-   value v ->
-   GVSelect e1' e2' ==>* GSomeR v ->
-   GVSelect e1 e2 ==>* GSomeR v.
-Proof.
-  (* intros.
-  assert (((GHasField e1' e2') ==>* GBool true /\ (GSome (GGet e1' e2')) ==>* GSomeR v) \/
-          ((GHasField e1' e2') ==>* GBool false /\ GNone ==>* GSomeR v)) as Hcond.
-  apply GIf_value; auto.
-  destruct Hcond as [ [ Ht Hthen] | [ Hf Helse ] ].
-  - apply False_rec. eapply  GSome_GNoneR_contra. eassumption.
-  - eapply GIf_C; eauto. eapply GHasField_C with (v := GBool false); eauto. constructor.
-    econstructor. constructor. constructor. *)
-
-
-Admitted.
 
 Lemma trans_exp_C : forall e sto sto' v,
   value v ->
@@ -1442,16 +1348,29 @@ Lemma seq_C : forall st1 st2 st2',
 Proof.
   intros st1 st2 st2' Hstep Hseq.
   intros l1 l2 Hleq.
-  destruct (Hseq l1 l2) as [ obj [ Hsel [ Hv Hoeq ] ] ]; auto.
-  exists obj.
-  inversion Hoeq as [ no ng Hobjeq Hgsome | Hnone ]; subst; clear Hoeq.
-  - split; auto.
-    eapply GVSelect_C_GSomeR; auto. eauto. econstructor. auto.
-  - split; auto.
-    eapply GVSelect_C_GNoneR. eauto. econstructor. auto.
+  destruct (Hseq l1 (GLoc l1)) as [ [ Hhf [ obj1 [ obj2 [ Hsel [ Hsome Hoeq ] ] ] ] ] | [ Hhf Heq ] ]; auto. constructor.
+  - left. split.
+    + eapply multi_trans. eapply GHasField_Key_R. econstructor.
+      eapply multi_trans. eapply GHasField_Map_R; eauto. auto.
+    + exists obj1. exists obj2. split; auto.
+      eapply multi_trans. eapply GGet_Key_R. econstructor.
+      eapply multi_trans. eapply GGet_Map_R; eauto. auto.
+  - right. split; auto.
+    eapply multi_trans. eapply GHasField_Map_R; eauto. auto.
 Qed.
 
 Definition req := oeq veq.
+
+Lemma GNoneR_GSomeR_neq : forall v,
+  t_update beq_loc empty_store (LId (Id 0)) (Some (GBool false)) =
+    t_update beq_loc (t_update beq_loc empty_store (LId (Id 0)) (Some (GBool true)))
+      (LId (Id 1)) (Some v) -> False.
+Proof.
+  intros.
+  apply func_eq_value_eq with (v0 := LId (Id 0)) in H. inversion H.
+Qed.
+
+Hint Resolve GNoneR_GSomeR_neq.
 
 Theorem soundness_exp: forall e s1 s2,
     (* store_value (GSomeR s2) ->  *)
@@ -1624,29 +1543,49 @@ Proof.
          (* e2 is Nat *) simpl.
          assert ((trans_exp e2 s2 >>g= toNatG) ==>* GSomeR (GNum n)) as Hre2. { apply toNatG_GVNum_R; eauto. }
          (* extract object witness from store *)
-         destruct (Hseq l (GGet (trans_exp e1 s2 >>g= toLocG) fdata)) as [ obj_w [Hs_store [ Hv_obj Hveq ] ] ]; auto. {
-           eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R.
-         } 
          (* obj_w is some or none *)
-         inversion Hveq as [ no ng Hobjeq Hoeq Hgsome | Hnone ]; subst; clear Hveq.
+         destruct (Hseq l (GLoc l)) as [ [ Hhft [ obj1 [ obj2 [Hs_store [ Hvo [ Hsome Hobjeq ] ] ] ] ] ] | [ Hff Hnone ] ]; auto. constructor.
+       (*     eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R.
+         } *)
          -- (* object exists *)
-           destruct (Hobjeq n (GGet (trans_exp e2 s2 >>g= toNatG) fdata)) as [ val_v [ Hs_obj [ Hv_v Hveq ] ] ]; subst; auto.  {
-             eapply multi_trans. eapply GGet_Map_R. eassumption. constructor. apply GGet_fdata_GSomeR_R.
+(*            inversion Hveq as [ obj gobj Hobjeq Hsome H | ]; subst; [ auto | apply False_rec; eauto ]. *)
+           assert (GVSelect s2 (GGet (trans_exp e1 s2 >>g= toLocG) fdata) ==>* GSomeR (GObj obj2)). {
+             eapply GIf_CondTrue_R. eapply multi_trans. eapply GHasField_Key_R; eauto.
+             eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R. auto.
+             eapply GSome_R; auto. eapply multi_trans. eapply GGet_Key_R; eauto.
+             eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R; auto. auto.
            }
-           exists val_v. split.
-           ** eapply GMatch_GSomeR_R. eassumption. eapply GMatch_GSomeR_R. eassumption.
-              eapply GMatch_GSomeR_R. eassumption.
-              inversion Hveq; subst.
-              eapply GVSelect_C_GSomeR; eauto.
-              eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R. constructor.
-              eapply GVSelect_C_GNoneR; eauto.
-              eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R. constructor.
-           ** simpl. rewrite <- Hval1. rewrite <- Hval2. simpl. rewrite <- Hoeq. auto.
+           assert (GGet (trans_exp e2 s2 >>g= toNatG) fdata ==>* GNum n). {
+             eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R.
+           }
+           destruct (Hobjeq n (GNum n)) as [ [ Hhfto [ v1  [ v2 [ Hv_v [ Hsomev Hveq ] ] ] ] ] | [ Hhffo Hnone ] ]; subst; auto.  { constructor. }
+         (*     eapply multi_trans. eapply GGet_Map_R. eassumption. constructor. apply GGet_fdata_GSomeR_R.
+           } *)
+           ++ exists (GSomeR v2). split.
+             ** eapply GMatch_GSomeR_R. eassumption. eapply GMatch_GSomeR_R. eassumption.
+                eapply GMatch_GSomeR_R. eauto.
+                eapply GIf_CondTrue_R. eapply multi_trans. eapply GHasField_Key_R; eauto.
+                eapply multi_trans. eapply GHasField_Map_R; eauto.
+                eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R. auto.
+                eapply GSome_R. eapply multi_trans. eapply GGet_Key_R; eauto.
+                eapply multi_trans. eapply GGet_Map_R; auto.
+                eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R. auto. 
+                inversion Hveq; subst; auto.
+             ** simpl. rewrite <- Hval1. rewrite <- Hval2. simpl. rewrite Hsome. rewrite Hsomev. constructor. auto.
+           ++ exists GNoneR. split.
+             ** eapply GMatch_GSomeR_R. eassumption. eapply GMatch_GSomeR_R. eassumption.
+                eapply GMatch_GSomeR_R. eauto.
+                eapply GIf_CondFalse_R; auto. eapply multi_trans. eapply GHasField_Key_R; eauto.
+                eapply multi_trans. eapply GHasField_Map_R; eauto.
+                eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R. auto.
+             ** simpl. rewrite <- Hval1. rewrite <- Hval2. simpl. rewrite Hsome. rewrite Hnone. constructor.
          -- (* object does NOT exists *) 
            exists GNoneR. split.
            ** eapply GMatch_GSomeR_R; eauto. eapply GMatch_GSomeR_R; eauto.
-              eapply GMatch_GNoneR_R; eauto.
-           ** simpl. rewrite <- Hval1. rewrite <- Hval2. simpl. rewrite <- Hnone. constructor.
+              eapply GMatch_GNoneR_R; eauto. eapply GIf_CondFalse_R; auto.
+              eapply multi_trans. eapply GHasField_Key_R; eauto.
+              eapply multi_trans. apply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R; auto. auto.
+           ** simpl. rewrite <- Hval1. rewrite <- Hval2. simpl. rewrite Hnone. constructor.
       * (* e2 is None *) exists GNoneR; split; [ eapply GMatch_GSomeR_R; eauto; repeat(eapply GMatch_GNoneR_R; eauto) 
         | simpl; rewrite <- Hval; rewrite LetImp_body_None; constructor ].
     + (* e1 is None *) exists GNoneR; split; [ repeat (apply GMatch_GNoneR_R; auto) | simpl; rewrite <- Hval; constructor].
@@ -1691,7 +1630,7 @@ Proof.
     constructor.
 Qed.
 
-Lemma GGet_eq : forall e1 o n1 n v,
+Lemma GGet_Obj_eq : forall e1 o n1 n v,
   n1 ==>* GNum n ->
   e1 ==>* GObj (gobj_update o n v) ->
   GGet e1 n1 ==>* v.
@@ -1700,6 +1639,18 @@ Proof.
   eapply multi_trans. eapply GGet_Key_R; eauto.
   eapply multi_trans. eapply GGet_Map_R; eauto.
   econstructor. constructor. unfold gobj_update. apply t_update_eq.
+  constructor.
+Qed.
+
+Lemma GGet_Sto_eq : forall e1 o n1 n v,
+  n1 ==>* GLoc n ->
+  e1 ==>* GMap (gstore_update o n v) ->
+  GGet e1 n1 ==>* v.
+Proof.
+  intros e1 o n1 n v Hnr Her.
+  eapply multi_trans. eapply GGet_Key_R; eauto.
+  eapply multi_trans. eapply GGet_Map_R; eauto.
+  econstructor. constructor. unfold gstore_update. apply t_update_eq.
   constructor.
 Qed.
 
@@ -1715,109 +1666,118 @@ Proof.
   constructor; auto.
 Qed.
 
-(* Lemma GVSelect_R_NoneR_I : forall o n n',
-  n ==>* (GNum n') ->
-  GVSelect (GObj o) n ==>* GNoneR ->
-  o n' = None.
+Lemma GHasField_True_Obj_I : forall o2 n1,
+  GHasField (GObj o2) (GNum n1) ==>* GBool true -> o2 n1 <> None.
 Proof.
   intros.
-  unfold GVSelect in H0.
+  inversion H; subst. inversion H0; subst; try solve_by_inverts 2.
+  assumption.
+Qed.
+
+Lemma GHasField_False_Obj_I : forall o2 n1,
+  GHasField (GObj o2) (GNum n1) ==>* GBool false -> o2 n1 = None.
+Proof.
+  intros.
+  inversion H; subst. inversion H0; subst; try solve_by_inverts 2.
+  assumption.
+Qed.
+
+Lemma GHasField_True_Sto_I : forall o2 n1,
+  GHasField (GMap o2) (GLoc n1) ==>* GBool true -> o2 n1 <> None.
+Proof.
+  intros.
+  inversion H; subst. inversion H0; subst; try solve_by_inverts 2.
+  assumption.
+Qed.
+
+Lemma GHasField_False_Sto_I : forall o2 n1,
+  GHasField (GMap o2) (GLoc n1) ==>* GBool false -> o2 n1 = None.
+Proof.
+  intros.
+  inversion H; subst. inversion H0; subst; try solve_by_inverts 2.
+  assumption.
+Qed.
+
+Lemma GGet_Value_Obj_I : forall o2 n1 v2,
+  value v2 -> value (GObj o2) ->
+  GGet (GObj o2) (GNum n1) ==>* v2 -> o2 n1 = Some v2.
+Proof.
+  intros.
+  inversion H1; subst. inversion H.
   inversion H0; subst.
-  induction y; try solve_by_inverts 2.
-  apply
-  inversion H2; subst.
-  induction y; try solve_by_inverts 2. *)
+  inversion H2; subst; try solve_by_inverts 2.
+  inversion H3; subst; auto.
+  apply (H5 n1 y) in H8. inversion H8; subst; inversion H4.
+Qed.
 
-(* Lemma GVSelect_GSomeR_GHasField_True : forall e1 e2 v,
-  GVSelect e1 e2 ==>* GSomeR v ->
-  GHasField e1 e2 ==>* GBool true /\ (
-    (exists o, exists n, e1 ==>* GObj o /\ e2 ==>* GNum n /\ o n = Some v) \/
-    (exists m, exists l, e1 ==>* GMap m /\ e2 ==>* GLoc l /\ m l = Some v)
-  ).
-Proof. Admitted. *)
+Lemma GGet_Value_Sto_I : forall s2 l1 o2,
+  value (GMap s2) -> value (GObj o2) ->
+  GGet (GMap s2) (GLoc l1) ==>* (GObj o2) -> s2 l1 = Some (GObj o2).
+Proof.
+  intros.
+  inversion H1; subst.
+  inversion H; subst.
+  inversion H2; subst; try solve_by_inverts 2.
+  inversion H3; subst; auto.
+  apply (H5 l1 y) in H8. inversion H8; subst; inversion H4.
+Qed.
 
-Lemma GVSelect_GNoneR_GHasField_False : forall e2 m n,
-  e2 ==>* (GNum n) ->
-  GVSelect (GObj m) e2 ==>* GNoneR ->
-  GHasField (GObj m) e2 ==>* GBool false /\ m n = None.
-Proof. Admitted.
+Hint Resolve GHasField_True_Obj_I GHasField_False_Obj_I GHasField_True_Sto_I GHasField_False_Sto_I.
 
 Lemma objeq_preservation : forall n o1 o2 v1 v2,
   objeq o1 (GObj o2) ->
   veq v1 v2 ->
+  value (GObj o2) ->
   objeq (obj_update o1 n v1) (GObj (gobj_update o2 n v2)).
 Proof.
   intros.
   intros n1 n2 Hneq.
   destruct (nat_dec n n1); subst.
-  - (* n = n1 *) exists (GSomeR v2); split.
-    eapply multi_trans. apply GIf_CondTrue_R.
-    eapply multi_trans. eapply GHasField_Key_R; eauto.
-    eapply multi_trans.
-    eapply GHasField_True_preservation with (n2 := n1) (n1 := n1); auto; try constructor.
-    constructor.
-    eapply GSome_R with (v := v2); eauto.
-    eapply GGet_eq; eauto. constructor. constructor.
-    split. apply GSomeR_value; eauto.
-    unfold obj_update. rewrite t_update_eq. constructor. auto.
-  - (* n <> n1 *) destruct (H n1 n2) as [ obj [ Hstep [ Hobjv Hoeq ] ] ]; auto.
-    inversion Hoeq; subst; clear Hoeq.
-    unfold neq in Hneq.
-    + admit.
-    + exists GNoneR; split.
-      * eapply GVSelect_NoneR_R; eauto.
-        unfold gobj_update. rewrite t_update_neq; auto.
-        admit.
-      * split; auto.
-        unfold obj_update. rewrite t_update_neq; auto. rewrite <- H3. auto.
-Admitted.
-
-Lemma objeq_obj_value : forall o1 o2,
-  value o2 ->
-  objeq o1 o2 -> obj_value (GSomeR o2).
-Proof.
-  intros o1 o2 Hv Heq.
-  inversion Hv; subst.
-  - destruct (Heq 0 (GNum 0)) as [ w [ Hstep [ Hvx _ ] ] ]. constructor.
-    inversion Hstep; subst. inversion Hvx.
-    inversion H; subst. inversion H5; subst; [ inversion H4 | inversion H6].
-  - destruct (Heq 0 (GNum 0)) as [ w [ Hstep [ Hvx _ ] ] ]. constructor.
-    inversion Hstep; subst. inversion Hvx.
-    inversion H; subst. inversion H5; subst; [ inversion H4 | inversion H6].
-  - destruct (Heq 0 (GNum 0)) as [ w [ Hstep [ Hvx _ ] ] ]. constructor.
-    inversion Hstep; subst. inversion Hvx.
-    inversion H; subst. inversion H5; subst; [ inversion H4 | inversion H6].
-  - constructor. auto.
-  - destruct (Heq 0 (GNum 0)) as [ w [ Hstep [ Hvx _ ] ] ]. constructor.
-    inversion Hstep; subst. inversion Hvx.
-    inversion H0; subst. inversion H6; subst; [ inversion H5 | inversion H7].
+  - (* n = n1 *) left. split.
+    econstructor. apply ST_ObjHasFieldTrue. unfold gobj_update.
+    rewrite t_update_eq. intro. discriminate. constructor.
+    exists v1; exists v2; split; auto. eapply GGet_Obj_eq; constructor.
+    split; auto. unfold obj_update. rewrite t_update_eq; auto.
+  - (* n <> n1 *) destruct (H n1 n2) as [ [ Hhft [ v1' [ v2' [ Hget [ Hsome Heq ] ] ] ] ] | [ Hhff Hnone ] ]; auto.
+    + left. split. econstructor; econstructor. unfold gobj_update.
+      rewrite t_update_neq; auto.
+      exists v1'; exists v2'; split.
+      econstructor; try econstructor. unfold gobj_update.
+      rewrite t_update_neq; auto.
+      apply GGet_Value_Obj_I; auto. inversion Heq; subst; auto.
+      split; auto. unfold obj_update. rewrite t_update_neq; auto.
+    + right. split. econstructor. apply ST_ObjHasFieldFalse. unfold gobj_update.
+      rewrite t_update_neq; auto. constructor.
+      unfold obj_update. rewrite t_update_neq; auto.
 Qed.
 
 Lemma seq_preservation : forall l o1 o2 s1 s2,
   seq s1 (GMap s2) ->
-  value o2 ->
-  objeq o1 o2 ->
-  seq (store_update s1 l o1) (GMap (gstore_update s2 l o2)).
+  value (GObj o2) ->
+  objeq o1 (GObj o2) ->
+  value (GMap s2) ->
+  seq (store_update s1 l o1) (GMap (gstore_update s2 l (GObj o2))).
 Proof.
   intros.
   intros l1 l2 Hleq.
   destruct (loc_dec l l1); subst.
-  - (* l = l1 *)
-    assert (obj_value (GSomeR o2)). { eapply objeq_obj_value; eauto. }
-    exists (GSomeR o2). split.
-    eapply multi_trans. apply GIf_CondTrue_R.
-    eapply multi_trans. eapply GHasField_Key_R; eauto.
-    econstructor. constructor. unfold gstore_update. rewrite t_update_eq.
-    intro contra; inversion contra.
-    constructor.
-    eapply GSome_R.
-    eapply multi_trans. eapply GGet_Key_R; eauto.
-    eapply multi_step. constructor. unfold gstore_update. apply t_update_eq.
-    constructor. auto. constructor.
-    split; auto.
-    unfold store_update. rewrite t_update_eq. constructor; auto.
-  - (* l != l1 *) admit.
-Admitted.
+  - (* l = l1 *) left. split.
+    econstructor. apply ST_StoHasFieldTrue. unfold gstore_update.
+    rewrite t_update_eq. intro. discriminate. constructor.
+    exists o1; exists o2; split; auto. eapply GGet_Sto_eq; constructor.
+    split; auto. split; auto. unfold store_update. rewrite t_update_eq; auto.
+  - (* l <> l1 *) destruct (H l1 l2) as [ [ Hhft [ o1' [ o2' [ Hget [ Hv [ Hsome Heq ] ] ] ] ] ] | [ Hhff Hnone ] ]; auto.
+    + left. split. econstructor; econstructor. unfold gstore_update.
+      rewrite t_update_neq; auto.
+      exists o1'; exists o2'; split.
+      econstructor; try econstructor. unfold gstore_update.
+      rewrite t_update_neq; auto.
+      apply GGet_Value_Sto_I; auto.
+      split; auto. split; auto. unfold store_update. rewrite t_update_neq; auto.
+    + right. split. econstructor. apply ST_StoHasFieldFalse. unfold gstore_update.
+      rewrite t_update_neq; auto. constructor.
+      unfold store_update. rewrite t_update_neq; auto.
+Qed.
 
 Hint Resolve seq_preservation objeq_preservation.
 
@@ -2291,8 +2251,7 @@ Proof.
     + simpl.  apply alloc_R; eauto.
     + split; auto.
       inversion HsImp; subst. constructor.
-      apply seq_preservation. apply seq_preservation; auto.
-      apply obj_value_preservation; auto.
+      apply seq_preservation; auto. apply seq_preservation; eauto.
       apply objeq_preservation; auto.
   - assert (seq st1 st2) as HseqNR. { eapply seq_C; eauto. }
     destruct (soundness_exp e st1 st2) as [ ew [ Hes Heeq ] ]; auto.
@@ -2303,7 +2262,11 @@ Proof.
        try (eexists GNoneR; split; [
          eapply GMatch_GNoneR_R; eauto |
          split; auto; simpl in HsImp; rewrite <- Hesome in HsImp; inversion HsImp; subst; constructor]).
-      (* e is Loc *) assert ((trans_exp e st2 >>g= toLocG) ==>* GSomeR (GLoc l)) as Hre. { apply toLocG_GVLoc_R; eauto. }
+      (* e is Loc *)
+      assert ((trans_exp e st2 >>g= toLocG) ==>* GSomeR (GLoc l)) as Hre. { apply toLocG_GVLoc_R; eauto. }
+      assert (GGet (trans_exp e st2 >>g= toLocG) fdata ==>* GLoc l). {
+        eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R.
+      }
       inversion He0eq as [ e0v1 e0v2 He0veq He0some | Hnone ]; subst.
       * (* e0 is Some *) inversion He0veq; subst;
          try (eexists GNoneR; split; [
@@ -2314,34 +2277,35 @@ Proof.
         inversion He1eq as [ e1v1 e1v2 He1veq He1some | Hnone ]; subst.
         -- (* e1 is Some *)
          (* extract object witness from store *)
-         destruct (HseqNR l (GGet (trans_exp e st2 >>g= toLocG) fdata)) as [ obj_w [Hs_store [ Hv_obj Hveq ] ] ]. {
-          eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R.
-         }
-         (* obj_w is some or none *)
-         inversion Hveq as [ no ng Hobjeq Hoeq Hgsome | Hnone ]; subst; clear Hveq.
-         ++ (* object exists *)
+         destruct (HseqNR l (GLoc l)) as [ [ Hhft [ obj1 [ obj2 [Hs_store [ Hvo [ Hsome Hobjeq ] ] ] ] ] ] | [ Hff Hnone ] ]; auto. constructor.
+         ++ assert (GVSelect st2 (GGet (trans_exp e st2 >>g= toLocG) fdata) ==>* GSomeR (GObj obj2)). {
+              eapply GIf_CondTrue_R. eapply multi_trans. eapply GHasField_Key_R; eauto. eauto.
+              eapply GSome_R; auto. eapply multi_trans. eapply GGet_Key_R; eauto. eauto.
+            }
+            assert (GGet (trans_exp e0 st2 >>g= toNatG) fdata ==>* GNum n). {
+             eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R.
+            }
+        (*  inversion Hveq as [ no ng Hobjeq Hoeq Hgsome | Hnone ]; subst; clear Hveq. *)
+     (*     ++ (* object exists *)
            assert (exists m, ng = GObj m) as Hobj. { apply obj_value_obj; auto. }
-           inversion Hobj; subst.
+           inversion Hobj; subst. *)
            eexists. split.
            ** eapply GMatch_GSomeR_R; eauto. eapply GMatch_GSomeR_R; eauto. eapply GMatch_GSomeR_R; eauto.
-            eapply GMatch_GSomeR_R; eauto.
-            apply GSome_R.
-            eapply multi_trans. eapply GPut_Key_R.
-            eapply multi_trans. eapply GGet_Map_R. eassumption. constructor. eapply GGet_fdata_GSomeR_R.
-            eapply multi_trans. eapply GPut_Map_R; eauto.
-            eapply multi_trans. eapply GPut_Value_R; auto.
-            eapply multi_trans. eapply GPut_Key_R.
-            eapply multi_trans. eapply GGet_Map_R; eauto. eapply GGet_fdata_GSomeR_R.
-            eapply multi_trans. eapply GPut_Map_R; eauto.
-            eapply multi_trans. eapply GGet_Map_R; eauto. eapply GGet_fdata_GSomeR_R.
-            eapply multi_trans. eapply GPut_Value_R; auto.
-            eapply multi_trans. eapply GGet_Map_R; eauto. eapply GGet_fdata_GSomeR_R.
-            eapply multi_step. constructor; eauto. apply multi_refl.
-            eapply multi_step. constructor; eauto. apply multi_refl.
-            eauto 8.
+              eapply GMatch_GSomeR_R; eauto.
+              apply GSome_R. eapply multi_trans. eapply GPut_Key_R; eauto.
+              eapply multi_trans. eapply GPut_Map_R; eauto.
+              eapply multi_trans. eapply GPut_Value_R; auto.
+              eapply multi_trans. eapply GPut_Key_R; eauto.
+              eapply multi_trans. eapply GPut_Map_R; eauto.
+              eapply multi_trans. eapply GGet_Map_R; eauto. eapply GGet_fdata_GSomeR_R.
+              eapply multi_trans. eapply GPut_Value_R; auto.
+              eapply multi_trans. eapply GGet_Map_R; eauto. eapply GGet_fdata_GSomeR_R.
+              eapply multi_step. constructor; eauto. apply multi_refl.
+              eapply multi_step. constructor; eauto. apply multi_refl.
+              eauto 8.
            ** split; eauto 8.
             simpl in HsImp. rewrite <- Hesome in HsImp. rewrite <- He0some in HsImp.
-            rewrite <- He1some in HsImp. simpl in HsImp. rewrite <- Hoeq in HsImp.
+            rewrite <- He1some in HsImp. simpl in HsImp. rewrite Hsome in HsImp.
             inversion HsImp; subst.
             constructor.
             apply seq_preservation; eauto.
@@ -2350,9 +2314,10 @@ Proof.
            exists GNoneR; split.
            ** eapply GMatch_GSomeR_R; eauto. eapply GMatch_GSomeR_R; eauto. eapply GMatch_GSomeR_R; eauto.
               eapply GMatch_GNoneR_R; eauto.
+              eapply GIf_CondFalse_R. eapply multi_trans. eapply GHasField_Key_R; eauto. eauto. auto.
            ** split; auto.
               simpl in HsImp. rewrite <- Hesome in HsImp. rewrite <- He0some in HsImp.
-              rewrite <- He1some in HsImp. simpl in HsImp. rewrite <- Hnone in HsImp. inversion HsImp; subst. constructor.
+              rewrite <- He1some in HsImp. simpl in HsImp. rewrite Hnone in HsImp. inversion HsImp; subst. constructor.
         -- (* e1 is None *) exists GNoneR; split; [
          eapply GMatch_GSomeR_R; eauto; eapply GMatch_GSomeR_R; eauto; eapply GMatch_GNoneR_R; eauto |
          split; auto; simpl in HsImp; rewrite <- Hesome in HsImp; rewrite <- He0some in HsImp; rewrite <- Hnone in HsImp; inversion HsImp; subst; constructor ].
