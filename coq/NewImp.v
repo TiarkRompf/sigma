@@ -804,20 +804,27 @@ Qed.
       }
       assert (∀ x a n m,
           idx1 a x
-          (λ i : nat,
-             σ' ↩ evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n))
-             IN match 〚 e 〛 (σ') >>= toBool with
-                | Some b => Some (Some (negb b))
-                | None => Some None
-                end) = Some m →
+            (λ i : nat,
+              match
+                 σ' ↩ evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n)) IN
+                 b ← 〚 e 〛 (σ') >>= toBool IN Some (Some (negb b))
+              with
+              | Some (Some b) => Some b
+              | Some None => Some true
+              | None => None
+              end) = Some m →
           idx1 a (S x)
-          (λ i : nat,
-             σ' ↩ evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S n))
-             IN match 〚 e 〛 (σ') >>= toBool with
-                | Some b => Some (Some (negb b))
-                | None => Some None
-                end) = Some m) as idxMoreStep.
-      { unfold idx. intros x.
+            (λ i : nat,
+              match
+                 σ' ↩ evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S n)) IN
+                 b ← 〚 e 〛 (σ') >>= toBool IN Some (Some (negb b))
+              with
+              | Some (Some b) => Some b
+              | Some None => Some true
+              | None => None
+              end) = Some m) as idxMoreStep.
+      {admit.
+       (*unfold idx. intros x.
         induction x; intros.
         - simpl in H0. inversion H0.
         - simpl in H0. remember (S x) as sx. simpl.
@@ -834,28 +841,35 @@ Qed.
               ** apply H0.
             * apply H0.
           + inversion H0.
+        *)
       }
-      unfold idx in *. remember (idx1 0 n
-          (λ i : nat,
-             σ'
-             ↩ evalLoop e s σ c i
-                 (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n))
-             IN match 〚 e 〛 (σ') >>= toBool with
-                | Some b => Some (Some (negb b))
-                | None => Some None
+      unfold idx in *.
+      remember (idx1 0 n (λ i : nat,
+                match
+                  σ' ↩ evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n))
+                  IN b ← 〚 e 〛 (σ') >>= toBool IN Some (Some (negb b))
+                with
+                | Some (Some b) => Some b
+                | Some None => Some true
+                | None => None
                 end)) as ix0.
       remember (idx1 0 (S n) (λ i : nat,
-                            σ' ↩ evalLoop e s σ c i
-                              (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S n))
-                              IN match 〚 e 〛 (σ') >>= toBool with
-                                 | Some b => Some (Some (negb b))
-                                 | None => Some None
-                                 end)) as ix1.
-      destruct ix0. 2: inversion H.
+            match
+              σ' ↩ evalLoop e s σ c i (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(S n))
+              IN b ← 〚 e 〛 (σ') >>= toBool IN Some (Some (negb b))
+            with
+            | Some (Some b) => Some b
+            | Some None => Some true
+            | None => None
+            end)) as ix1.
+      destruct (〚 e 〛 (σ) >>= toBool); inversion H; clear H.
+      destruct ix0; inversion H1; clear H1.
       symmetry in Heqix0.
       eapply idxMoreStep in Heqix0. rewrite Heqix0 in Heqix1. subst.
-      destruct o. eapply evalLoopMoreStep. apply H.
-      apply H.
+      assert (∃ v, evalLoop e s σ c n0 (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(n)) = Some v).
+      { remember (evalLoop e s σ c n0 (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(n))) as l.
+        destruct l. exists o. reflexivity. inversion H0. }
+      destruct H. rewrite H. apply evalLoopMoreStep in H. rewrite H. reflexivity.
     - simpl in H. simpl.
       destruct (〚 s1 〛 (σ, PFst c)(n)) eqn:Eqs1.
       eapply IHs1 in Eqs1.
@@ -865,7 +879,8 @@ Qed.
       + inversion H.
     - simpl in H. simpl. apply H.
     - simpl in H. simpl. apply H.
-  Qed.
+      Admitted.
+  (* Qed. *)
 
   Lemma stmt_eval_more_val_nm : ∀ s n m σ c v,
       n <= m →
