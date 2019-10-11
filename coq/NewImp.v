@@ -607,25 +607,29 @@ Module IMPEval.
     | None => None
     end.
 
-  Fixpoint idx1 (i : nat) (m : nat) (p : nat -> option (option bool)) : option (option nat) :=
+  (* Fixpoint idx1 (i : nat) (m : nat) (p : nat -> option (option bool)) : option (option nat) := *)
+  Fixpoint idx1 (i : nat) (m : nat) (p : nat -> option bool) : option nat :=
     match m with
     | O => None (* out of fuel *)
     | S m' =>
       match p i with
-      | Some (Some true) => Some (Some i)
-      | Some (Some false) => idx1 (i + 1) m' p
-      | Some None => Some None
-      | None => None
+      | Some true => Some i
+      | Some false => idx1 (i + 1) m' p
+      | None => Some i
       end
     end.
 
   (* idx finds the least index *)
-  Definition idx (m : nat) (p : nat -> option (option bool)) : option (option nat) := idx1 0 m p.
+  Definition idx (m : nat) (p : nat -> option bool) : option nat := idx1 0 m p.
 
   Fixpoint evalLoop (cnd : exp) (s : stmt) (σ : store) (c : path) (n : nat)
            (evstmt : store → path → option (option store)) : option (option store) :=
     match n with
-    | O => Some (Some σ)
+    | O => 
+      bv ↩ Some (〚cnd〛(σ) >>= toBool) IN
+      if (negb bv) 
+      then Some (Some σ)
+      else Some None
     | S n' =>
       σ' ↩ evalLoop cnd s σ c n' evstmt IN
       bv ↩ Some (〚cnd〛(σ') >>= toBool) IN
@@ -658,11 +662,18 @@ Module IMPEval.
       else 〚s2〛(σ, PElse c)(m)
     | WHILE cnd DO s END =>
       let guess :=
-          idx m (fun i => σ' ↩ evalLoop cnd s σ c i (fun σ'' c1 => 〚s〛(σ'', c1)(m)) IN
-                          b ↩ Some (〚cnd〛(σ') >>= toBool) IN
-                          Some (Some (negb b))) in
-      n ↩ guess IN
-      evalLoop cnd s σ c n (fun σ' c1 => 〚s〛(σ', c1)(m))
+          idx m (fun i => match (σ' ↩ evalLoop cnd s σ c i (fun σ'' c1 => 〚s〛(σ'', c1)(m)) IN
+                                 b  ← 〚cnd〛(σ') >>= toBool IN
+                                 Some (Some (negb b))) with
+                          | Some (Some b) => Some b
+                          | Some None => Some true
+                          | None => None
+                          end) in
+      n ← guess IN
+      b1 ← 〚cnd〛(σ) >>= toBool IN
+      σ' ↩ evalLoop cnd s σ c n (fun σ' c1 => 〚s〛(σ', c1)(m)) IN
+      b2 ← 〚cnd〛(σ') >>= toBool IN
+      Some (Some σ')
     | s1 ;; s2 =>
       σ' ↩ 〚s1〛(σ, PFst c)(m) IN
      〚s2〛(σ', PSnd c)(m)
@@ -730,31 +741,32 @@ Qed.
 
   Lemma idx1_more_val_inv : ∀ m n p i x,
       m >= n →
-      idx1 x n p = Some (Some i) →
-      idx1 x m p = Some (Some i).
+      idx1 x n p = Some i →
+      idx1 x m p = Some i.
   Proof.
     intro m. induction m; intros.
     - inversion H. subst. simpl in H0. inversion H0.
     - simpl. destruct n.
       + simpl in H0. inversion H0.
       + simpl in H0. destruct (p x) eqn:Hpx.
-        destruct o eqn:Ho. destruct b eqn:Hb.
+        destruct b eqn:Hb.
         apply H0. assert (m >= n). omega. eapply IHm. apply H1.
-        apply H0. inversion H0. inversion H0.
-Qed.
+        apply H0. apply H0.
+  Qed.
 
-  Lemma idx1_more_err_inv : ∀ m n p x, m >= n → idx1 x n p = Some None → idx1 x m p = Some None.
+  (*
+  Lemma idx1_more_err_inv : ∀ m n p x, m >= n → idx1 x n p = None → idx1 x m p = None.
   Proof.
     intro m. induction m; intros.
-    - inversion H. subst. simpl in H0. inversion H0.
+    - inversion H. subst. assumption.
     - simpl. destruct n.
       + simpl in H0. inversion H0.
       + simpl in H0. destruct (p x) eqn:Hpx.
-        destruct o eqn:Ho. destruct b eqn:Hb.
+        destruct b eqn:Hb.
         apply H0. assert (m >= n). omega. eapply IHm. apply H1.
         apply H0. reflexivity. inversion H0.
-Qed.
-
+  Qed.
+  
   Lemma idx_more_inv : ∀ m n p x v,
       m >= n →
       idx1 x n p = Some v →
@@ -764,6 +776,7 @@ Qed.
     eapply idx1_more_val_inv. apply H. apply H0.
     eapply idx1_more_err_inv. apply H. apply H0.
   Qed.
+   *)
 
   Lemma stmt_eval_more_val_Sn : ∀ s n σ c v,
       evalStmt s σ c n = Some v →
