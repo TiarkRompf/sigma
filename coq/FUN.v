@@ -1279,13 +1279,6 @@ Proof.
   intros. rewrite H. reflexivity.
 Qed.
 
-Lemma trans_exp_C : forall e sto sto' v,
-  value v ->
-  sto ==>* sto' ->
-  trans_exp e sto' ==>* v ->
-  trans_exp e sto ==>* v.
-Proof. Admitted.
-
 Lemma GNoneR_R : forall a,
   GNoneR ==>* a -> a = GNoneR.
 Proof.
@@ -1591,6 +1584,30 @@ Proof.
     + (* e1 is None *) exists GNoneR; split; [ repeat (apply GMatch_GNoneR_R; auto) | simpl; rewrite <- Hval; constructor].
 Qed.
 
+Lemma req_eq : forall e s0 v1 v2,
+  req (evalExp e s0) v1 ->
+  req (evalExp e s0) v2 ->
+  v1 = v2.
+Proof.
+  intros.
+  inversion H; subst.
+  rewrite <- H1 in H0. inversion H0; subst.
+  inversion H2; subst; inversion H4; subst; auto.
+  rewrite <- H2 in H0. inversion H0; subst. reflexivity.
+Qed.
+
+Lemma trans_exp_C : forall e sigma sto m v,
+  seq sigma sto ->
+  trans_exp e (GMap m) ==>* v ->
+  req (evalExp e sigma) v ->
+  trans_exp e sto ==>* v.
+Proof.
+  intros.
+  destruct (soundness_exp e sigma sto) as [eg [ Hestep Heeq'] ]; auto.
+  replace v with eg. auto.
+  eapply req_eq; eassumption.
+Qed.
+
 Definition gstore_update (st : loc -> option gxp) (x : loc) (v : gxp) :=
   t_update beq_loc st x (Some v).
 
@@ -1860,8 +1877,10 @@ Proof.
         apply toBoolG_GVBool_R.
         eapply GMatch_GSomeR_R. replace (n - 0) with n; eauto; omega.
         eapply trans_exp_C; eauto.
-        eapply multi_trans. eapply GGet_Map_R; auto. replace (n - 0) with n; eauto; omega.
-        apply GGet_fdata_GSomeR_R.
+        eapply seq_C.
+        eapply multi_trans. eapply GGet_Map_R; eauto. 
+        replace (n - 0) with n; eauto; omega.
+        apply GGet_fdata_GSomeR_R. auto.
       }
       eapply multi_step. constructor.
       eapply GMatch_GSomeR_R. eassumption.
@@ -1891,8 +1910,9 @@ Proof.
           apply toBoolG_GVBool_R.
           eapply GMatch_GSomeR_R. eassumption.
           eapply trans_exp_C; eauto.
+          eapply seq_C.
           eapply multi_trans. eapply GGet_Map_R; eauto. 
-          apply GGet_fdata_GSomeR_R.
+          apply GGet_fdata_GSomeR_R. auto.
         }
         eapply multi_step. constructor.
         eapply GMatch_GSomeR_R. eassumption.
@@ -2018,25 +2038,37 @@ Proof.
     + destruct (H0 n (Some sigma')) as [ gstore [ Hloop [ Hv Heq ] ] ]; auto; try omega.
       inversion Heq; subst.
       destruct (soundness_exp e sigma' g) as [ ge [ Hcond Hceq ] ]; auto.
-      destruct (〚 e 〛 (sigma')).
+      destruct (store_value_map g Hv) as [ gm ]; subst.
+      remember (〚 e 〛 (sigma')) as eImp.
+      destruct eImp.
       * inversion Hceq; subst. inversion H4; subst; inversion Hcnone.
         -- apply GMatch_GNoneR_R. eapply toBoolG_GVNumR_None.
            eapply GMatch_GSomeR_R; replace (n - 0) with n; eauto; try omega.
-           eapply trans_exp_C; eauto. eapply multi_trans. eapply GGet_Map_R; eauto.
-           apply GGet_fdata_GSomeR_R.
+           eapply trans_exp_C. eauto.
+           eapply seq_C; eauto.
+           eapply multi_trans. eapply GGet_Map_R; eauto.
+           apply GGet_fdata_GSomeR_R. eassumption.
+           rewrite <- HeqeImp. auto.
         -- apply GMatch_GNoneR_R. eapply toBoolG_GVLocR_None.
            eapply GMatch_GSomeR_R; replace (n - 0) with n; eauto; try omega.
-           eapply trans_exp_C; eauto. eapply multi_trans. eapply GGet_Map_R; eauto.
+           eapply trans_exp_C; eauto.
+           eapply seq_C; eauto.
+           eapply multi_trans. eapply GGet_Map_R; eauto.
            apply GGet_fdata_GSomeR_R.
+           rewrite <- HeqeImp. auto.
       * inversion Hceq; subst.
         eapply GMatch_GNoneR_R. eapply GMatch_GNoneR_R.
         eapply GMatch_GSomeR_R; replace (n - 0) with n; eauto; try omega.
-        eapply trans_exp_C; eauto. eapply multi_trans. eapply GGet_Map_R; eauto.
+        eapply trans_exp_C; eauto.
+        eapply seq_C; eauto.
+        eapply multi_trans. eapply GGet_Map_R; eauto.
         apply GGet_fdata_GSomeR_R.
+        rewrite <- HeqeImp. auto.
   - destruct (H1 (n - S k)) as [ sigma'' [ Hiloop Hicond ] ]; try omega.
     destruct (H0 (n - S k) (Some sigma'')) as [ g [ Giloop [ Giv Gieq ] ] ]; auto; try omega.
     inversion Gieq; subst.
     destruct (soundness_exp e sigma'' g0) as [ ge [ Hcond Hceq ] ]; auto.
+    destruct (store_value_map g0 Giv) as [ gm ]; subst.
     rewrite Hicond in Hceq. inversion Hceq; subst.
     inversion H5; subst.
     assert (((GRepeat (GNum (n - S k)) p (fun it : nat => trans_stmts s (GSLoc p) (PWhile p it)) (GSome st2) >>g=
@@ -2044,8 +2076,10 @@ Proof.
       apply toBoolG_GVBool_R.
       eapply GMatch_GSomeR_R. eassumption.
       eapply trans_exp_C; eauto.
-      eapply multi_trans. eapply GGet_Map_R; eauto. 
+      eapply seq_C; eauto.
+      eapply multi_trans. eapply GGet_Map_R; eauto.
       apply GGet_fdata_GSomeR_R.
+      rewrite Hicond. auto.
     }
     econstructor. constructor.
     eapply GMatch_GSomeR_R; eauto.
