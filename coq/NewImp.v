@@ -657,7 +657,7 @@ Module IMPEval.
       then 〚s1〛(σ, PThen c)(m)
       else 〚s2〛(σ, PElse c)(m)
     | WHILE cnd DO s END =>
-      b1 ← 〚cnd〛(σ) >>= toBool IN
+      b1 ↩ Some (〚cnd〛(σ) >>= toBool) IN
       n ← idx m (fun i => match (σ' ↩ evalLoop cnd s σ c i (fun σ'' c1 => 〚s〛(σ'', c1)(m)) IN
                                  b  ← 〚cnd〛(σ') >>= toBool IN
                                  Some (Some (negb b))) with
@@ -666,7 +666,7 @@ Module IMPEval.
                           | None => None
                           end) IN
       σ' ↩ evalLoop cnd s σ c n (fun σ' c1 => 〚s〛(σ', c1)(m)) IN
-      b2 ← 〚cnd〛(σ') >>= toBool IN
+      b2 ↩ Some (〚cnd〛(σ') >>= toBool) IN
       Some (Some σ')
     | s1 ;; s2 =>
       σ' ↩ 〚s1〛(σ, PFst c)(m) IN
@@ -869,7 +869,7 @@ Qed.
       assert (∃ v, evalLoop e s σ c n0 (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(n)) = Some v).
       { remember (evalLoop e s σ c n0 (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(n))) as l.
         destruct l. exists o. reflexivity. inversion H0. }
-      destruct H. rewrite H. apply evalLoopMoreStep in H. rewrite H. reflexivity.
+      destruct H. rewrite H. apply evalLoopMoreStep in H. rewrite H. reflexivity. reflexivity.
     - simpl in H. simpl.
       destruct (〚 s1 〛 (σ, PFst c)(n)) eqn:Eqs1.
       eapply IHs1 in Eqs1.
