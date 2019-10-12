@@ -646,11 +646,9 @@ Module IMPEval.
       l ↩ Some (〚e1〛(σ) >>= toLoc) IN
       n ↩ Some (〚e2〛(σ) >>= toNat) IN
       v ↩ Some (〚e3〛(σ)) IN
-   (*    o ← σ l IN *)
-      match (σ l) with
-      | Some o => Some (Some (l st↦ (n obj↦ v ; o) ; σ))
-      | None => Some None
-      end
+      o ↩ Some( σ l )  IN
+      Some (Some (l st↦ (n obj↦ v ; o) ; σ))
+
     | IF b THEN s1 ELSE s2 FI =>
       b ↩ Some (〚b〛(σ) >>= toBool) IN
       if b
