@@ -657,7 +657,6 @@ Module IMPEval.
       then 〚s1〛(σ, PThen c)(m)
       else 〚s2〛(σ, PElse c)(m)
     | WHILE cnd DO s END =>
-      b1 ↩ Some (〚cnd〛(σ) >>= toBool) IN
       n ← idx m (fun i => match (σ' ↩ evalLoop cnd s σ c i (fun σ'' c1 => 〚s〛(σ'', c1)(m)) IN
                                  b  ← 〚cnd〛(σ') >>= toBool IN
                                  Some (Some (negb b))) with
@@ -776,13 +775,9 @@ Qed.
       evalStmt s σ c n = Some v →
       evalStmt s σ c (S n) = Some v.
   Proof.
-    intro s. induction s; intros.
-    - simpl in H; simpl; auto.
-    - simpl in H; simpl; auto.
-    - simpl in H; simpl; auto.
-      destruct (〚 e 〛 (σ) >>= toBool). destruct b.
-      eapply IHs1. apply H. eapply IHs2. apply H. apply H.
-    - simpl in H. simpl. unfold idx.
+    intro s. induction s; intros; simpl; simpl in H; auto.
+    - destruct (〚 e 〛 (σ) >>= toBool); auto. destruct b; eauto.
+    - unfold idx.
       assert (∀ i n σ v c ,
                  evalLoop e s σ c i (fun σ' c1 => 〚s〛(σ', c1)(n)) = Some v →
                  evalLoop e s σ c i (fun σ' c1 => 〚s〛(σ', c1)(S n)) = Some v)
@@ -795,14 +790,12 @@ Qed.
           destruct loopn.
           + symmetry in Heqloopn. eapply IHi in Heqloopn.
             rewrite Heqloopn in Heqloopsn. rewrite Heqloopsn.
-            destruct o.
-            * destruct (〚 e 〛 (s0) >>= toBool).
-              ** destruct b. eapply IHs. apply H0. apply H0.
-              ** apply H0.
-            * apply H0.
+            destruct o; auto.
+            destruct (〚 e 〛 (s0) >>= toBool); auto.
+            destruct b; eauto.
           + inversion H0.
       }
-      assert (∀ x a n m,
+     assert (∀ x a n m o,
           idx1 a x
             (λ i : nat,
               match
@@ -813,6 +806,7 @@ Qed.
               | Some None => Some true
               | None => None
               end) = Some m →
+          evalLoop e s σ c m (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(n)) = Some o ->
           idx1 a (S x)
             (λ i : nat,
               match
@@ -823,8 +817,7 @@ Qed.
               | Some None => Some true
               | None => None
               end) = Some m) as idxMoreStep.
-      {admit.
-       (*unfold idx. intros x.
+      { unfold idx. intros x.
         induction x; intros.
         - simpl in H0. inversion H0.
         - simpl in H0. remember (S x) as sx. simpl.
@@ -833,15 +826,11 @@ Qed.
           destruct loopn.
           + symmetry in Heqloopn. eapply evalLoopMoreStep in Heqloopn.
             rewrite Heqloopn in Heqloopsn. rewrite Heqloopsn.
-            destruct o.
-            * destruct (〚 e 〛 (s0) >>= toBool).
-              ** destruct b.
-                ++ simpl. simpl in H0. eapply IHx. apply H0.
-                ++ simpl in H0. simpl. apply H0.
-              ** apply H0.
-            * apply H0.
-          + inversion H0.
-        *)
+            destruct o1; auto.
+            destruct (〚 e 〛 (s0) >>= toBool); auto.
+            destruct b; auto.
+            eapply IHx. apply H0. eassumption.
+          + inversion H0; subst. rewrite <- Heqloopn in H1. inversion H1.
       }
       unfold idx in *.
       remember (idx1 0 n (λ i : nat,
@@ -862,14 +851,14 @@ Qed.
             | Some None => Some true
             | None => None
             end)) as ix1.
-      destruct (〚 e 〛 (σ) >>= toBool); inversion H; clear H.
-      destruct ix0; inversion H1; clear H1.
-      symmetry in Heqix0.
-      eapply idxMoreStep in Heqix0. rewrite Heqix0 in Heqix1. subst.
+      destruct ix0; inversion H; clear H.
       assert (∃ v, evalLoop e s σ c n0 (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(n)) = Some v).
       { remember (evalLoop e s σ c n0 (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(n))) as l.
-        destruct l. exists o. reflexivity. inversion H0. }
-      destruct H. rewrite H. apply evalLoopMoreStep in H. rewrite H. reflexivity. reflexivity.
+        destruct l. exists o. reflexivity. inversion H1. }
+      destruct H. rewrite H.
+      symmetry in Heqix0.
+      eapply idxMoreStep in Heqix0; try eassumption. rewrite Heqix0 in Heqix1. subst.
+      apply evalLoopMoreStep in H. rewrite H. reflexivity.
     - simpl in H. simpl.
       destruct (〚 s1 〛 (σ, PFst c)(n)) eqn:Eqs1.
       eapply IHs1 in Eqs1.
@@ -877,10 +866,7 @@ Qed.
         * eapply IHs2 in H. rewrite Eqs1. apply H.
         * rewrite Eqs1. apply H.
       + inversion H.
-    - simpl in H. simpl. apply H.
-    - simpl in H. simpl. apply H.
-      Admitted.
-  (* Qed. *)
+  Qed.
 
   Lemma stmt_eval_more_val_nm : ∀ s n m σ c v,
       n <= m →
@@ -1078,11 +1064,8 @@ Qed.
             eapply idx_evalLoop_terminate; eauto.
             apply exp_adequacy; eauto. }
       rewrite idxVal.
-      destruct n.
-      + inversion Hloop; subst. apply exp_adequacy in H6. rewrite H6. simpl. rewrite H6. reflexivity.
-      + apply loop_run_cond_true in Hloop. apply exp_adequacy in Hloop. rewrite Hloop.
-        eapply loop_eval_more_val_nm with (m := S w + S n) in H4; try omega. rewrite H4.
-        apply exp_adequacy in H6. rewrite H6. reflexivity.
+      eapply loop_eval_more_val_nm with (m := S w + n) in H4; try omega. rewrite H4.
+      apply exp_adequacy in H6. rewrite H6. reflexivity.
     - apply IHs1 in H4. apply IHs2 in H6.
       destruct H4 as [ms1 Hs1].
       destruct H6 as [ms2 Hs2].
@@ -1251,18 +1234,17 @@ Qed.
                | Some None => Some true
                | None => None
                end) ) as idxx.
-      destruct (〚 e 〛 (σ) >>= toBool); inversion H0; clear H0.
-      destruct idxx; inversion H3; clear H3.
+      destruct idxx; inversion H0; clear H0.
       eapply RWhile with (n := n).
       + assert (evalLoop e s σ p n (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(x)) = Some (Some σ')). {
-          destruct (evalLoop e s σ p n (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(x))); inversion H2; clear H2.
-          destruct o; inversion H3; clear H3.
-          destruct (〚 e 〛 (s0) >>= toBool); inversion H2; clear H2.
+          destruct (evalLoop e s σ p n (λ (σ' : store) (c1 : path), 〚 s 〛 (σ', c1)(x))); inversion H3; clear H3.
+          destruct o; inversion H2; clear H2.
+          destruct (〚 e 〛 (s0) >>= toBool); inversion H3; clear H3.
           reflexivity.
         }
         auto.
       + symmetry in Heqidxx. eapply idx_evalLoop_some in Heqidxx; eauto.
-        destruct Heqidxx as [ _ [ [ Hloop | Hloop ] | [ sigma [ [ Hcsome | Hcnone ] Hloop ] ] ] ]; rewrite Hloop in H2; inversion H2; subst.
+        destruct Heqidxx as [ _ [ [ Hloop | Hloop ] | [ sigma [ [ Hcsome | Hcnone ] Hloop ] ] ] ]; rewrite Hloop in H3; inversion H3; subst.
         * eapply exp_adequacy. rewrite Hcsome in H3; inversion H3; subst. auto.
         * rewrite Hcnone in H3; inversion H3.
     - simpl in H0. destruct (〚s1〛(σ, PFst p)(x)) eqn:EqS1; destruct (〚s2〛(σ, PSnd p)(x)) eqn:EqS2.

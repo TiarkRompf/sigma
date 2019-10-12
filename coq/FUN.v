@@ -183,9 +183,8 @@ Fixpoint trans_stmts (s: stmt) (sto: gxp) (c: path) { struct s }: gxp :=
                        c (fun (it: nat) => trans_stmts s (GSLoc c) (PWhile c it)) (GSome sto) IN
                          (trans_exp cnd nsto >>g= toBoolG)) (GBool false)
                    ) in
-      LETG _ <-- trans_exp cnd sto >>g= toBoolG IN
-        LETG sto' <-- GRepeat n c (fun (it: nat) => trans_stmts s (GSLoc c) (PWhile c it)) (GSome sto) IN
-          LETG _ <-- trans_exp cnd sto' >>g= toBoolG IN GSome sto'
+      LETG sto' <-- GRepeat n c (fun (it: nat) => trans_stmts s (GSLoc c) (PWhile c it)) (GSome sto) IN
+        LETG _ <-- trans_exp cnd sto' >>g= toBoolG IN GSome sto'
   | s1 ;; s2 =>
       LETG sto' <-- trans_stmts s1 sto (PFst c) IN
       trans_stmts s2 sto' (PSnd c)
@@ -2308,14 +2307,9 @@ Proof.
                 | Some None => Some true
                 | None => None
                 end)) as Hidx.
-    remember (〚 e 〛 (st1) >>= toBool) as fcond.
-    destruct fcond; inversion HsImp; clear H0.
-    + destruct Hidx.
-      assert (Heval_some := HeqHidx). symmetry in Heval_some.
+    destruct Hidx.
+    + assert (Heval_some := HeqHidx). symmetry in Heval_some.
       apply idx_evalLoop_some in Heval_some; try omega.
-      destruct (soundness_exp e st1 st2) as [ ew [ Hes Heeq ] ]; auto.
-      destruct (〚 e 〛 (st1)); inversion Heqfcond; subst; inversion Heeq; subst.
-      destruct v; inversion H0; subst; inversion H1; subst.
       destruct Heval_some as [ Hmon [ [ Hloop | Hloop ] | [ sigma [ [ Hcsome | Hcnone ] Hloop ] ] ] ]; rewrite Hloop in HsImp; inversion HsImp; clear H0.
       * assert (forall k st1'',
              k <= n ->
@@ -2325,7 +2319,6 @@ Proof.
            eapply soundness_evaloop_partial with (n := n); eauto.
         }
         exists GNoneR. split; auto.
-        eapply GMatch_GSomeR_R. eapply toBoolG_GVBool_R; eauto.
         eapply GMatch_GNoneR_R.
         eapply multi_trans. eapply GRepeat_NumIt_R. eapply idx_soundness; eauto.
         destruct (H n None) as [ gNone [ Hnone [ Hsv Heq ] ] ]; auto. inversion Heq; subst. auto.
@@ -2354,9 +2347,8 @@ Proof.
         destruct (soundness_exp e sigma (GMap gm)) as [ ew [ Hes' Heeq' ] ]; auto.
         rewrite Hcsome in Heeq'.
         inversion Heeq'; subst; clear Heeq'.
-        inversion H5; subst; clear H5.
+        inversion H3; subst; clear H3.
         exists (GSomeR (GMap gm)). split; auto.
-        eapply GMatch_GSomeR_R. eapply toBoolG_GVBool_R; eauto.
         eapply GMatch_GSomeR_R; eauto.
         eapply GMatch_GSomeR_R. eapply toBoolG_GVBool_R. eapply trans_exp_C; eauto.
         eapply seq_C; eauto.
@@ -2387,11 +2379,10 @@ Proof.
         }
         destruct (soundness_exp e sigma (GMap gm)) as [ ew [ Hes' Heeq' ] ]; auto.
         remember (〚 e 〛 (sigma)) as cond.
-        destruct  cond; inversion H2; inversion Heeq'; subst; clear Heeq'.
+        destruct  cond; inversion Heeq'; subst; clear Heeq'.
         ++ exists GNoneR. split; auto.
-           eapply GMatch_GSomeR_R. eapply toBoolG_GVBool_R; eauto.
            eapply GMatch_GSomeR_R; eauto.
-           destruct v; inversion H5; subst; clear H5; inversion H6; subst; clear H6.
+           destruct v; inversion H3; subst; clear H3; inversion Hcnone; subst; clear Hcnone.
            ** eapply GMatch_GNoneR_R. eapply toBoolG_GVNumR_None.
               eapply trans_exp_C; eauto. eapply seq_C; eauto.
               eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R.
@@ -2401,20 +2392,12 @@ Proof.
               eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R.
               rewrite <- Heqcond. constructor. auto.
         ++ exists GNoneR. split; auto.
-           eapply GMatch_GSomeR_R. eapply toBoolG_GVBool_R; eauto.
            eapply GMatch_GSomeR_R; eauto.
            eapply GMatch_GNoneR_R. eapply GMatch_GNoneR_R.
            eapply trans_exp_C; eauto. eapply seq_C; eauto.
            eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R.
            rewrite <- Heqcond. constructor.
-      * inversion HsImp.
-    + exists GNoneR. split; auto.
-      eapply GMatch_GNoneR_R.
-      destruct (soundness_exp e st1 st2) as [ ew [ Hes Heeq ] ]; auto.
-      destruct (〚 e 〛 (st1)); inversion HsImp; subst; inversion Heeq; subst.
-      -- destruct v; inversion H0; subst; inversion Heqfcond; subst.
-         eapply toBoolG_GVNumR_None; eauto. eapply toBoolG_GVLocR_None; eauto.
-      -- apply GMatch_GNoneR_R. auto.
+    + inversion HsImp.
   - remember (〚s1〛(st1, PFst c)(S fuel)) as step1.
     destruct step1.
     + destruct (IHs1 (PFst c) st1 o st2 m2 fuel) as [ res1 [ Hres1s [ Hres1sv Hres1eq ] ] ]; auto; clear IHs1.
