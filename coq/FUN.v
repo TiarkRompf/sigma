@@ -5,11 +5,13 @@ Require Import Coq.omega.Omega.
 Require Import Coq.Lists.List.
 Require Import Coq.omega.Omega.
 
-Require Import NewImp.
+Require Import IMP.
 
 Module Translation.
 Import IMPEval.
 Import Adequacy.
+
+(* FUN Language (Figure 6) *)
 
 Inductive gxp : Type :=
   | GSLoc : path -> gxp
@@ -34,6 +36,8 @@ Inductive gxp : Type :=
   | GFixIndex : nat -> (nat -> gxp) -> gxp
   | GRepeat : gxp -> path -> (nat -> gxp) -> gxp -> gxp.
 
+(* Value representation for the Option Monad (Figure 7) *)
+
 Definition fvalid : gxp := GLoc (LId (Id 0)). (* "$valid" *)
 Definition fdata :  gxp := GLoc (LId (Id 1)). (* "$data"  *)
 Definition ftpe :   gxp := GNum 0. (* "$tpe"   *)
@@ -43,59 +47,58 @@ Definition tnat :   gxp := GNum 0.
 Definition tbool :  gxp := GNum 1.
 Definition tloc :   gxp := GNum 2.
 
-Definition empty_store := fun k =>
+Definition OEmpty : gxp := GObj(t_empty None).
+Definition g0 := fun k =>
                            match k with
-                           | LId x => Some (GObj (t_empty None))
+                           | LId x => Some OEmpty
                            | LNew p => None
                            end.
-Definition GEmpty : gxp := GMap empty_store.
+Definition GEmpty : gxp := GMap g0.
 
-Definition OEmpty : gxp := GObj(t_empty None).
-
+(* None *)
 Definition GNone :  gxp := GPut GEmpty fvalid (GBool false).
 
+(* Some *)
 Definition GSome a : gxp := GPut (GPut GEmpty fvalid (GBool true)) fdata a.
 
-Definition GMatch (scrutinee: gxp) (none: gxp) (some: gxp -> gxp): gxp :=
-  GIf (GGet scrutinee fvalid) (some (GGet scrutinee fdata)) none.
+(* scrutinee >>= f *)
+Definition GMatch (scrutinee: gxp) (f: gxp -> gxp): gxp :=
+  GIf (GGet scrutinee fvalid) (f (GGet scrutinee fdata)) GNone.
 
-Definition GVSelect (addr: gxp) (field: gxp): gxp :=
-  GIf (GHasField addr field) (GSome (GGet addr field)) GNone.
-
+(* scrutinee getOrElse default *)
 Definition GGetOrElse (scrutinee: gxp) (default: gxp): gxp :=
   GIf (GGet scrutinee fvalid) (GGet scrutinee fdata) default.
 
+(* Val n *)
 Definition GVNum (a: gxp): gxp :=
   GPut (GPut OEmpty ftpe tnat) fval a.
 
-Definition GVNumR (a: gxp): gxp :=
-  GObj (t_update Nat.eqb (t_update Nat.eqb (t_empty None) 0 (Some tnat)) 1 (Some a)).
-
+(* Val b *)
 Definition GVBool (a: gxp): gxp :=
   GPut (GPut OEmpty ftpe tbool) fval a.
 
-Definition GVBoolR (a: gxp): gxp :=
-  GObj (t_update Nat.eqb (t_update Nat.eqb (t_empty None) 0 (Some tbool)) 1 (Some a)).
-
+(* Val l *)
 Definition GVLoc (a: gxp): gxp :=
   GPut (GPut OEmpty ftpe tloc) fval a.
 
-Definition GVLocR (a: gxp): gxp :=
-  GObj (t_update Nat.eqb (t_update Nat.eqb (t_empty None) 0 (Some tloc)) 1 (Some a)).
-
-Definition sym_store := total_map (option gxp).
-
+(* toNat g *)
 Definition toNatG (v:gxp): gxp :=
   GIf (GEq (GGet v ftpe) tnat) (GSome (GGet v fval)) GNone.
 
+(* toBool g *)
 Definition toBoolG (v:gxp): gxp :=
   GIf (GEq (GGet v ftpe) tbool) (GSome (GGet v fval)) GNone.
 
+(* toLoc g *)
 Definition toLocG (v:gxp): gxp :=
   GIf (GEq (GGet v ftpe) tloc) (GSome (GGet v fval)) GNone.
 
+(* safe lookup *)
+Definition GVSelect (addr: gxp) (field: gxp): gxp :=
+  GIf (GHasField addr field) (GSome (GGet addr field)) GNone.
+
 Notation "'LETG' x <-- e1 'IN' e2"
-   := (GMatch e1 GNone (fun x => e2))
+   := (GMatch e1 (fun x => e2))
    (right associativity, at level 60).
 (* Notation "'LETG' x <--- e1 'IN' e2"
    := (match e1 with
@@ -106,13 +109,33 @@ Notation "'LETG' x <-- e1 'IN' e2"
    (right associativity, at level 60). *)
 
 Notation "e1 '>>g=' e2"
-   := (GMatch e1 GNone e2)
+   := (GMatch e1 e2)
    (right associativity, at level 80).
 
-(* ---------- translation (exp only for now) --------- *)
+(* Some reduce values *)
+
+Definition GSomeR a : gxp := GMap (t_update beq_loc
+   (t_update beq_loc g0
+     (* valid *) (LId (Id 0)) (Some (GBool true)))
+     (* data *)  (LId (Id 1)) (Some a)).
+
+Definition GNoneR :=
+ GMap (t_update beq_loc g0
+   (* valid *) (LId (Id 0)) (Some (GBool false))).
+
+Definition GVNumR (a: gxp): gxp :=
+  GObj (t_update Nat.eqb (t_update Nat.eqb (t_empty None) 0 (Some tnat)) 1 (Some a)).
+
+Definition GVBoolR (a: gxp): gxp :=
+  GObj (t_update Nat.eqb (t_update Nat.eqb (t_empty None) 0 (Some tbool)) 1 (Some a)).
+
+Definition GVLocR (a: gxp): gxp :=
+  GObj (t_update Nat.eqb (t_update Nat.eqb (t_empty None) 0 (Some tloc)) 1 (Some a)).
+
+(* ---------- translation IMP to FUN --------- *)
+
 Fixpoint trans_exp (e: exp) (sto: gxp): gxp :=
   match e with
-  (* | AId x => GGet sto x (* fixme: check error *) *)
   | ELoc id => GSome (GVLoc (GLoc (LId id)))
   | ENum n => GSome (GVNum (GNum n))
   | EPlus a b =>  LETG a <-- trans_exp a sto >>g= toNatG IN
@@ -142,26 +165,6 @@ Fixpoint trans_exp (e: exp) (sto: gxp): gxp :=
                   LETG o <-- GVSelect sto s' IN
                   GVSelect o n'
   end.
-
-
-Fixpoint trans_loop (e: exp) (s: stmt) (sto: gxp) (c: path) (n: nat) (* How to use GFixIndex? *)
-    (evstmt : gxp -> path -> gxp) : gxp:=
-  match n with
-  | O => GSome sto
-  | S n' =>
-    LETG b <-- trans_exp e sto >>g= toBoolG IN
-    LETG sto' <-- trans_loop e s sto c n' evstmt IN 
-    GIf b (evstmt sto' (PWhile c n')) GNone
-  end.
-
-Definition GSomeR a : gxp := GMap (t_update beq_loc
-   (t_update beq_loc empty_store
-      (LId (Id 0)) (Some (GBool true)))
-      (LId (Id 1)) (Some a)).
-
-Definition GNoneR :=
- GMap (t_update beq_loc empty_store
-   (LId (Id 0)) (Some (GBool false))).
 
 Fixpoint trans_stmts (s: stmt) (sto: gxp) (c: path) { struct s }: gxp :=
   match s with
@@ -422,44 +425,6 @@ Ltac solve_by_inverts n :=
       inversion H;
       match n with S (S (?n')) => subst; solve_by_inverts (S n') end ]
   end end.
-
-(* Theorem step_deterministic : forall t t1 t2,
-  t ==> t1 -> t ==> t2 -> t1 = t2.
-Proof.
-  (* intros t t1 t2 Ht1 Ht2.
-  generalize dependent t2.
-  induction Ht1; intros; inversion Ht2; subst;
-     try (reflexivity); try (solve_by_inverts 2). *)
-    
-
-
-
-
-(* try (try(inversion Ht2; [ reflexivity | inversion H2 | inversion H3 ]) ;
-                              try(inversion Ht2; subst; [inversion Ht1 | apply IHHt1 in H2; subst; reflexivity | inversion H1; subst; inversion Ht1]);
-                              try(inversion Ht2; subst; [inversion Ht1 | inversion H; subst; inversion H3 | apply IHHt1 in H4; subst; reflexivity])).
-  - inversion Ht2; subst. reflexivity. apply False_rec; auto. inversion H; subst; inversion H5. inversion H4; subst; inversion H6.
-  - inversion Ht2; subst. apply False_rec; auto. reflexivity. inversion H; subst; inversion H5. inversion H0; subst; inversion H6.
-  - inversion Ht2; subst; try(inversion H1; subst; inversion Ht1). apply IHHt1 in H2; subst; reflexivity. *)
-Admitted. *)
-
-Definition stuck (g : gxp): Prop :=
-  (exists g', g ==> g') -> False.
-
-Lemma value_stuck : forall v,
-  value v -> stuck v.
-Proof.
-  intros. intro.
-  destruct H0.
-  inversion H; subst; inversion H0.
-Qed.
-
-Hint Resolve value_stuck.
-
-(* Theorem multi_deterministic : forall t t1 t2,
-  t ==>* t1 -> stuck t1 -> t ==>* t2 -> stuck t2 ->
-  t1 = t2.
-Proof. Admitted. *)
  
 Lemma multi_trans : forall e1 e2 e3, e1 ==>* e2 -> e2 ==>* e3 -> e1 ==>* e3.
 Proof.
@@ -467,17 +432,9 @@ Proof.
   induction H; [ eauto | intros; econstructor; eauto].
 Qed.
 
-(* (* Lemma multi_split_stuck : forall a b c,
-  stuck c ->
-  a ==>* b -> a ==>* c -> b ==>* c.
-Proof. Admitted. *)
-
-Lemma multi_split : forall a b c,
-  a ==>* b -> a ==>* c -> (b ==>* c \/ c ==>* b).
-Proof. Admitted. *)
-
 (* ----- equivalence between IMP and FUN ----- *)
 
+(* value equivalence *)
 Inductive veq : val -> gxp -> Prop :=
 | VEQ_Num : forall n,
     veq (VNum n) (GVNumR (GNum n))
@@ -486,6 +443,7 @@ Inductive veq : val -> gxp -> Prop :=
 | VEQ_Loc : forall l,
     veq (VLoc l) (GVLocR (GLoc l)).
 
+(* option equivalance *)
 Inductive oeq {X:Type} (peq: X -> gxp -> Prop): option X -> gxp -> Prop :=
 | REQ_Some : forall v g,
     peq v g ->
@@ -493,20 +451,22 @@ Inductive oeq {X:Type} (peq: X -> gxp -> Prop): option X -> gxp -> Prop :=
 | REQ_None :
     oeq peq None GNoneR.
 
+Hint Constructors veq oeq.
+
 Definition neq (n1: nat) (n2: gxp) := n2 ==>* GNum n1.
 Definition leq (n1: loc) (n2: gxp) := n2 ==>* GLoc n1.
 
-
+(* object equivalence *)
 Definition objeq (o1 : obj) (o2 : gxp): Prop :=
   forall n1 n2, neq n1 n2 -> ((GHasField o2 (GNum n1)) ==>* GBool true /\ exists v1 v2, (GGet o2 (GNum n1)) ==>* v2 /\ o1 n1 = Some v1 /\ veq v1 v2)
                              \/ ((GHasField o2 (GNum n1)) ==>* GBool false /\ o1 n1 = None).
 
+(* store equivalence equivalence *)
 Definition seq (s1 : store) (s2 : gxp): Prop := 
   forall l1 l2, leq l1 l2 -> ((GHasField s2 (GLoc l1)) ==>* GBool true /\ exists o1 o2, (GGet s2 (GLoc l1)) ==>* (GObj o2) /\ value (GObj o2) /\ s1 l1 = Some o1 /\ objeq o1 (GObj o2))
                              \/ ((GHasField s2 (GLoc l1)) ==>* GBool false /\ s1 l1 = None).
 
-Hint Constructors veq.
-Hint Constructors oeq.
+(* Useful lemmas *)
 
 Lemma LId_neq : forall (n m : nat), 
   n <> m -> LId (Id n) <> LId (Id m).
@@ -514,29 +474,22 @@ Proof. intros. intro contra. inversion contra. omega. Qed.
 
 Hint Resolve LId_neq.
 
-Lemma fdata_value : value fdata. Proof. constructor. Qed.
-Lemma fval_value : value fval. Proof. constructor. Qed.
-Lemma ftpe_value : value ftpe. Proof. constructor. Qed.
-Lemma fvalid_value : value fvalid. Proof. constructor. Qed.
-Lemma tloc_value : value tloc. Proof. constructor. Qed.
-
-(* not sure why this is needed... auto do not prove value fdata otherwise *)
-Hint Resolve fval_value fdata_value ftpe_value fvalid_value tloc_value.
+Hint Extern 4 (value _) => constructor : core.
 
 Lemma OEmpty_value : value OEmpty.
-Proof.
-  apply v_obj.
-  intros x y Hsome.
-  inversion Hsome.
-Qed.
+Proof. apply v_obj. intros x y Hsome. inversion Hsome. Qed.
 
 Lemma GEmpty_value : value GEmpty.
+Proof. apply v_sto. intros x y Hsome. destruct x; inversion Hsome. apply OEmpty_value. Qed.
+
+Lemma empty_objeq : objeq mt_obj OEmpty.
 Proof.
-  apply v_sto.
-  intros x y Hsome.
-  destruct x; inversion Hsome.
-  apply OEmpty_value.
+  unfold objeq. intros. right. split.
+  - econstructor. apply ST_ObjHasFieldFalse. reflexivity. constructor.
+  - reflexivity.
 Qed.
+
+Hint Resolve  OEmpty_value GEmpty_value empty_objeq.
 
 Lemma value_preservation : forall m x y,
   value y ->
@@ -545,12 +498,21 @@ Lemma value_preservation : forall m x y,
 Proof.
   intros. constructor.
   intros. destruct (loc_dec x x0); subst.
-  - erewrite t_update_eq in H1. inversion H1; subst. assumption.
-  - erewrite t_update_neq in H1; auto. inversion H0; subst. eapply H4. eassumption.
+  - erewrite update_eq_loc in H1. inversion H1; subst. assumption.
+  - erewrite update_neq_loc in H1; auto. inversion H0; subst. eapply H4. eassumption.
 Qed.
 
-Lemma nat_dec : forall (n1 n2 : nat), n1 = n2 \/ n1 <> n2.
-Proof. intros. omega. Qed.
+Lemma seq_empty : seq σ0 (GMap g0).
+Proof.
+  intros l1 l2 Heq.
+  destruct l1.
+  - left. split.
+    + econstructor. constructor. intro contra. inversion contra. constructor.
+    + exists mt_obj. exists (t_empty None).
+      split; auto. econstructor. constructor. reflexivity. constructor.
+  - right. split; auto.
+    econstructor. apply ST_StoHasFieldFalse; auto. constructor.
+Qed.
 
 Lemma obj_value_preservation : forall m x y,
   value y ->
@@ -559,11 +521,11 @@ Lemma obj_value_preservation : forall m x y,
 Proof.
   intros. constructor.
   intros. destruct (nat_dec x x0); subst.
-  - erewrite t_update_eq in H1. inversion H1; subst. assumption.
-  - erewrite t_update_neq in H1; auto. inversion H0; subst. eapply H4. eassumption.
+  - erewrite update_eq_nat in H1. inversion H1; subst. assumption.
+  - erewrite update_neq_nat in H1; auto. inversion H0; subst. eapply H4. eassumption.
 Qed.
 
-Hint Resolve value_preservation obj_value_preservation OEmpty_value GEmpty_value.
+Hint Resolve value_preservation obj_value_preservation.
 
 Lemma GVNumR_value : forall n, value (GVNumR (GNum n)).
 Proof.
@@ -592,7 +554,7 @@ Lemma value_GSomeR : forall v,
 Proof.
   intros v H.
   inversion H; subst. apply (H1 (LId (Id 1)) v).
-  apply t_update_eq; auto.
+  apply update_eq_loc; auto.
 Qed.
 
 Lemma GNoneR_value : value GNoneR.
@@ -624,7 +586,7 @@ Qed.
 
 Lemma GGet_fdata_GSomeR_R : forall v,
   GGet (GSomeR v) fdata ==>* v.
-Proof. econstructor. constructor. apply t_update_eq. constructor. Qed.
+Proof. econstructor. constructor. apply update_eq_loc. constructor. Qed.
 
 Lemma GGet_fdata_GSomeR_RR : forall e1 v,
   e1 ==>* GSomeR v ->
@@ -636,7 +598,7 @@ Qed.
 
 Lemma GGet_fvalid_GSomeR_R : forall v, 
   GGet (GSomeR v) fvalid ==>* GBool true.
-Proof. econstructor; constructor. rewrite t_update_neq; auto. Qed.
+Proof. econstructor; constructor. rewrite update_neq_loc; auto. Qed.
 
 Lemma GGet_fvalid_GSomeR_RR : forall e1 v,
   e1 ==>* GSomeR v ->
@@ -647,7 +609,7 @@ Proof.
 Qed.
 
 Lemma GGet_fvalid_GNoneR_R : GGet GNoneR fvalid ==>* GBool false.
-Proof. econstructor; constructor. apply t_update_eq; auto. Qed.
+Proof. econstructor; constructor. apply update_eq_loc; auto. Qed.
 
 Lemma GGet_fvalid_GNoneR_RR : forall e1,
   e1 ==>* GNoneR ->
@@ -661,7 +623,7 @@ Lemma GGet_fval_GVNumR_R : forall n,
   GGet (GVNumR n) fval ==>* n.
 Proof.
   intros.
-  econstructor. apply ST_ObjGet; auto. apply t_update_eq. constructor.
+  econstructor. apply ST_ObjGet; auto. apply update_eq_nat. constructor.
 Qed.
 
 Lemma GGet_fval_GVNumR_RR : forall n e1,
@@ -676,7 +638,7 @@ Lemma GGet_fval_GVBoolR_R : forall n,
   GGet (GVBoolR n) fval ==>* n.
 Proof.
   intros.
-  econstructor. apply ST_ObjGet; auto. apply t_update_eq. constructor.
+  econstructor. apply ST_ObjGet; auto. apply update_eq_nat. constructor.
 Qed.
 
 Lemma GGet_fval_GVBoolR_RR : forall n e1,
@@ -691,7 +653,7 @@ Lemma GGet_fval_GVLocR_R : forall n,
   GGet (GVLocR n) fval ==>* n.
 Proof.
   intros.
-  econstructor. apply ST_ObjGet; auto. apply t_update_eq. constructor.
+  econstructor. apply ST_ObjGet; auto. apply update_eq_nat. constructor.
 Qed.
 
 Lemma GGet_fval_GVLocR_RR : forall n e1,
@@ -706,7 +668,7 @@ Lemma GGet_ftpe_GVNumR_R : forall n,
   GGet (GVNumR n) ftpe ==>* tnat.
 Proof.
   intros.
-  econstructor. apply ST_ObjGet; auto. rewrite t_update_neq; auto. apply t_update_eq. constructor.
+  econstructor. apply ST_ObjGet; auto. rewrite update_neq_nat; auto. apply update_eq_nat. constructor.
 Qed.
 
 Lemma GGet_ftpe_GVNumR_RR : forall n e1,
@@ -721,7 +683,7 @@ Lemma GGet_ftpe_GVBoolR_R : forall b,
   GGet (GVBoolR b) ftpe ==>* tbool.
 Proof.
   intros.
-  econstructor. apply ST_ObjGet; auto. rewrite t_update_neq; auto. apply t_update_eq. constructor.
+  econstructor. apply ST_ObjGet; auto. rewrite update_neq_nat; auto. apply update_eq_nat. constructor.
 Qed.
 
 Lemma GGet_ftpe_GVBoolR_RR : forall n e1,
@@ -736,7 +698,7 @@ Lemma GGet_ftpe_GVLocR_R : forall b,
   GGet (GVLocR b) ftpe ==>* tloc.
 Proof.
   intros.
-  econstructor. apply ST_ObjGet; auto. rewrite t_update_neq; auto. apply t_update_eq. constructor.
+  econstructor. apply ST_ObjGet; auto. rewrite update_neq_nat; auto. apply update_eq_nat. constructor.
 Qed.
 
 Lemma GGet_ftpe_GVLocR_RR : forall n e1,
@@ -757,21 +719,13 @@ Proof.
   - econstructor. constructor. eassumption. assumption.
 Qed.
 
-Lemma GIf_Cond_C : forall e1 e1' e2 e3 v,
-  e1 ==>* e1' ->
-  GIf e1' e2 e3 ==>* v ->
-  GIf e1 e2 e3 ==>* v.
-Proof.
-  intros. eapply multi_trans; eauto. apply GIf_Cond_R; auto. 
-Qed.
-
 Lemma GIf_CondTrue_R : forall e1 e2 e2' e3,
   e1 ==>* GBool true ->
   e2 ==>* e2' ->
   GIf e1 e2 e3 ==>* e2'.
 Proof.
   intros.
-  eapply GIf_Cond_C; eauto.
+  eapply multi_trans. eapply GIf_Cond_R; try eassumption.
   econstructor. constructor. assumption.
 Qed.
 
@@ -781,7 +735,7 @@ Lemma GIf_CondFalse_R : forall e1 e2 e3 e3',
   GIf e1 e2 e3 ==>* e3'.
 Proof.
   intros.
-  eapply GIf_Cond_C; eauto.
+  eapply multi_trans. eapply GIf_Cond_R; try eassumption.
   econstructor. constructor. assumption.
 Qed.
 
@@ -1212,15 +1166,6 @@ Proof.
   auto.
 Qed.
 
-Lemma empty_objeq : objeq mt_obj OEmpty.
-Proof.
-  unfold objeq. intros. right. split.
-  - econstructor. apply ST_ObjHasFieldFalse. reflexivity. constructor.
-  - reflexivity.
-Qed.
-
-Hint Resolve empty_objeq.
-
 Lemma GGet_Key_R : forall e1 e2 e2',
   e2 ==>* e2' ->
   GGet e1 e2 ==>* GGet e1 e2'.
@@ -1356,8 +1301,8 @@ Qed.
 Definition req := oeq veq.
 
 Lemma GNoneR_GSomeR_neq : forall v,
-  t_update beq_loc empty_store (LId (Id 0)) (Some (GBool false)) =
-    t_update beq_loc (t_update beq_loc empty_store (LId (Id 0)) (Some (GBool true)))
+  t_update beq_loc g0 (LId (Id 0)) (Some (GBool false)) =
+    t_update beq_loc (t_update beq_loc g0 (LId (Id 0)) (Some (GBool true)))
       (LId (Id 1)) (Some v) -> False.
 Proof.
   intros.
@@ -1366,8 +1311,9 @@ Qed.
 
 Hint Resolve GNoneR_GSomeR_neq.
 
+(* Soundness Theorem *)
+
 Theorem soundness_exp: forall e s1 s2,
-    (* store_value (GSomeR s2) ->  *)
     seq s1 s2 ->
     exists g, (trans_exp e s2) ==>* g /\ req (evalExp e s1) g.
 Proof.
@@ -1615,39 +1561,6 @@ Definition gstore_update (st : loc -> option gxp) (x : loc) (v : gxp) :=
 Definition gobj_update (st : nat -> option gxp) (x : nat) (v : gxp) :=
   t_update beq_nat st x (Some v).
 
-Lemma GHasField_True_Some : forall o n,
-  GHasField (GObj o) (GNum n) ==>* GBool true -> exists v, (o n) = Some v.
-Proof.
-  intros o n H.
-  inversion H; subst. inversion H0; subst.
-  - destruct (o n) as [ o' | ]. exists o'; auto. apply False_rec; auto.
-  - inversion H1; subst. inversion H2.
-  - inversion H5.
-  - inversion H6.
-Qed.
-
-Lemma GHasField_True_preservation : forall e1 o n n1 n2 v,
-  e1 ==>* GObj (gobj_update o n1 v) ->
-  n ==>* (GNum n2) ->
-  (GHasField (GObj o) (GNum n2) ==>* GBool true \/ n1 = n2) ->
-  GHasField e1 n ==>* GBool true.
-Proof.
-  intros e1 o n n1 n2 v He1 Hn H.
-  eapply multi_trans. eapply GHasField_Key_R; eauto.
-  eapply multi_trans. eapply GHasField_Map_R; eauto.
-  destruct H as [ Hstep | Heq ]; subst.
-  - apply GHasField_True_Some in Hstep.
-    econstructor. constructor. unfold gobj_update.
-    destruct (nat_dec n1 n2); subst.
-    rewrite t_update_eq. intro contra; inversion contra.
-    rewrite t_update_neq; auto. inversion Hstep as [ w Hsome ].
-    rewrite Hsome. intro contra; inversion contra.
-    constructor.
-  - econstructor. constructor. unfold gobj_update.
-    rewrite t_update_eq. intro contra; inversion contra.
-    constructor.
-Qed.
-
 Lemma GGet_Obj_eq : forall e1 o n1 n v,
   n1 ==>* GNum n ->
   e1 ==>* GObj (gobj_update o n v) ->
@@ -1656,7 +1569,7 @@ Proof.
   intros e1 o n1 n v Hnr Her.
   eapply multi_trans. eapply GGet_Key_R; eauto.
   eapply multi_trans. eapply GGet_Map_R; eauto.
-  econstructor. constructor. unfold gobj_update. apply t_update_eq.
+  econstructor. constructor. unfold gobj_update. apply update_eq_nat.
   constructor.
 Qed.
 
@@ -1668,20 +1581,8 @@ Proof.
   intros e1 o n1 n v Hnr Her.
   eapply multi_trans. eapply GGet_Key_R; eauto.
   eapply multi_trans. eapply GGet_Map_R; eauto.
-  econstructor. constructor. unfold gstore_update. apply t_update_eq.
+  econstructor. constructor. unfold gstore_update. apply update_eq_loc.
   constructor.
-Qed.
-
-Lemma GVSelect_NoneR_R : forall o n n',
-  o n' = None ->
-  n ==>* (GNum n') ->
-  GVSelect (GObj o) n ==>* GNoneR.
-Proof.
-  intros.
-  eapply GIf_CondFalse_R; auto.
-  eapply multi_trans. eapply GHasField_Key_R; eauto.
-  econstructor; try apply multi_refl.
-  constructor; auto.
 Qed.
 
 Lemma GHasField_True_Obj_I : forall o2 n1,
@@ -1753,20 +1654,20 @@ Proof.
   destruct (nat_dec n n1); subst.
   - (* n = n1 *) left. split.
     econstructor. apply ST_ObjHasFieldTrue. unfold gobj_update.
-    rewrite t_update_eq. intro. discriminate. constructor.
+    rewrite update_eq_nat. intro. discriminate. constructor.
     exists v1; exists v2; split; auto. eapply GGet_Obj_eq; constructor.
-    split; auto. unfold obj_update. rewrite t_update_eq; auto.
+    split; auto. unfold obj_update. rewrite update_eq_nat; auto.
   - (* n <> n1 *) destruct (H n1 n2) as [ [ Hhft [ v1' [ v2' [ Hget [ Hsome Heq ] ] ] ] ] | [ Hhff Hnone ] ]; auto.
     + left. split. econstructor; econstructor. unfold gobj_update.
-      rewrite t_update_neq; auto.
+      rewrite update_neq_nat; auto.
       exists v1'; exists v2'; split.
       econstructor; try econstructor. unfold gobj_update.
-      rewrite t_update_neq; auto.
+      rewrite update_neq_nat; auto.
       apply GGet_Value_Obj_I; auto. inversion Heq; subst; auto.
-      split; auto. unfold obj_update. rewrite t_update_neq; auto.
+      split; auto. unfold obj_update. rewrite update_neq_nat; auto.
     + right. split. econstructor. apply ST_ObjHasFieldFalse. unfold gobj_update.
-      rewrite t_update_neq; auto. constructor.
-      unfold obj_update. rewrite t_update_neq; auto.
+      rewrite update_neq_nat; auto. constructor.
+      unfold obj_update. rewrite update_neq_nat; auto.
 Qed.
 
 Lemma seq_preservation : forall l o1 o2 s1 s2,
@@ -1781,20 +1682,20 @@ Proof.
   destruct (loc_dec l l1); subst.
   - (* l = l1 *) left. split.
     econstructor. apply ST_StoHasFieldTrue. unfold gstore_update.
-    rewrite t_update_eq. intro. discriminate. constructor.
+    rewrite update_eq_loc. intro. discriminate. constructor.
     exists o1; exists o2; split; auto. eapply GGet_Sto_eq; constructor.
-    split; auto. split; auto. unfold store_update. rewrite t_update_eq; auto.
+    split; auto. split; auto. unfold store_update. rewrite update_eq_loc; auto.
   - (* l <> l1 *) destruct (H l1 l2) as [ [ Hhft [ o1' [ o2' [ Hget [ Hv [ Hsome Heq ] ] ] ] ] ] | [ Hhff Hnone ] ]; auto.
     + left. split. econstructor; econstructor. unfold gstore_update.
-      rewrite t_update_neq; auto.
+      rewrite update_neq_loc; auto.
       exists o1'; exists o2'; split.
       econstructor; try econstructor. unfold gstore_update.
-      rewrite t_update_neq; auto.
+      rewrite update_neq_loc; auto.
       apply GGet_Value_Sto_I; auto.
-      split; auto. split; auto. unfold store_update. rewrite t_update_neq; auto.
+      split; auto. split; auto. unfold store_update. rewrite update_neq_loc; auto.
     + right. split. econstructor. apply ST_StoHasFieldFalse. unfold gstore_update.
-      rewrite t_update_neq; auto. constructor.
-      unfold store_update. rewrite t_update_neq; auto.
+      rewrite update_neq_loc; auto. constructor.
+      unfold store_update. rewrite update_neq_loc; auto.
 Qed.
 
 Hint Resolve seq_preservation objeq_preservation.
@@ -1817,13 +1718,6 @@ Proof.
     exists m; auto.
 Qed.
 
-Lemma oeq_falso : forall e,
-  oeq seq (Some e) GNoneR -> False.
-Proof.
-  intros e contra. inversion contra; subst.
-  apply func_eq_value_eq with (v := LId (Id 0)) in H0. inversion H0.
-Qed.
-
 Lemma alloc_R : forall st2 m2 c i,
   st2 ==>* (GMap m2) ->
   value (GMap m2) ->
@@ -1843,19 +1737,6 @@ Proof.
   eapply multi_step. apply ST_ObjPut; auto. constructor.
   eapply multi_step. apply ST_StorePut; auto. constructor.
 Qed.
-
-Lemma idx1_val_min : forall m i p n,
-  idx1 i m p = Some n -> n >= i.
-Proof.
-  intro m.
-  induction m.
-  - intros. inversion H.
-  - intros. simpl in H.
-    destruct (p i); inversion H; clear H; auto.
-    destruct b; try inversion H1; clear H1.
-    auto.
-    assert (n >= i + 1). eapply IHm; eauto. omega.
-Qed. 
 
 Definition soundness_evalLoop (e : exp) (s : stmt) (st1 : store) (st2 : gxp) (c: path) (n fuel : nat): Prop :=  
   forall k st1'', k <= n ->
@@ -1882,14 +1763,14 @@ Proof.
   constructor.
 Qed.
 
-Lemma idx1_soundness_error : forall k n e s sigma sigma' st2 p m,
+Lemma idx1_soundness : forall k n e s sigma st2 p m,
   k <= n ->
   soundness_evalLoop e s sigma st2 p n m ->
   evalLoop_monotone e s sigma p n m ->
   evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some None \/ 
-  (evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
+  (exists sigma', evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
   (evalExp e sigma' >>= toBool) = None) \/
-  (evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
+  (exists sigma', evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
   (evalExp e sigma' = Some (VBool false))) ->
   GFixIndex (n - k) (fun nstep : nat =>
      GGetOrElse (GRepeat (GNum nstep) p (fun it : nat => trans_stmts s (GSLoc p) (PWhile p it)) (GSome st2) >>g= (fun nsto : gxp =>
@@ -1898,7 +1779,7 @@ Proof.
   induction k; intros.
   - econstructor. constructor.
     replace (n - 0) with n; try omega.
-    destruct H2 as [ Hnone | [ [ Hsome Hnone ] | [ Hsome Hcsome ] ] ].
+    destruct H2 as [ Hnone | [ [ sigma' [ Hsome Hnone ] ] | [ sigma' [ Hsome Hcsome ] ] ] ].
     + destruct (H0 n None) as [ gstore [ Hloop [ Hv Heq ] ] ]; auto; try omega.
       inversion Heq; subst.
       apply GIf_CondFalse_R. apply GGetOrElse_GNoneR_R.
@@ -1943,8 +1824,8 @@ Proof.
   - destruct (H1 (n - S k)) as [ sigma'' [ Hiloop Hicond ] ]; try omega.
     destruct (H0 (n - S k) (Some sigma'')) as [ g [ Giloop [ Giv Gieq ] ] ]; auto; try omega.
     inversion Gieq; subst.
-    destruct (soundness_exp e sigma'' g0) as [ ge [ Hcond Hceq ] ]; auto.
-    destruct (store_value_map g0 Giv) as [ gm ]; subst.
+    destruct (soundness_exp e sigma'' g1) as [ ge [ Hcond Hceq ] ]; auto.
+    destruct (store_value_map g1 Giv) as [ gm ]; subst.
     rewrite Hicond in Hceq. inversion Hceq; subst.
     inversion H5; subst.
     assert ((GRepeat (GNum (n - S k)) p (fun it : nat => trans_stmts s (GSLoc p) (PWhile p it)) (GSome st2) >>g=
@@ -1963,13 +1844,13 @@ Proof.
     eapply IHk; eauto; omega.
 Qed.
 
-Lemma idx_soundness : forall e s sigma sigma' st2 p n m,
+Lemma idx_soundness : forall e s sigma st2 p n m,
   soundness_evalLoop e s sigma st2 p n m ->
   evalLoop_monotone e s sigma p n m ->
   evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some None \/ 
-  (evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
+  (exists sigma', evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
   (evalExp e sigma' >>= toBool) = None)  \/
-  (evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
+  (exists sigma', evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) = Some (Some sigma') /\
   (evalExp e sigma' = Some (VBool false))) ->
   GFixIndex 0 (fun nstep : nat =>
      GGetOrElse (GRepeat (GNum nstep) p (fun it : nat => trans_stmts s (GSLoc p) (PWhile p it)) (GSome st2) >>g= (fun nsto : gxp =>
@@ -1978,7 +1859,7 @@ Proof.
   intros.
   assert (GFixIndex (n - n) (fun nstep : nat =>
      GGetOrElse (GRepeat (GNum nstep) p (fun it : nat => trans_stmts s (GSLoc p) (PWhile p it)) (GSome st2) >>g= (fun nsto : gxp =>
-       (trans_exp e nsto >>g= toBoolG))) (GBool false)) ==>* GNum n). eapply idx1_soundness_error; eauto.
+       (trans_exp e nsto >>g= toBoolG))) (GBool false)) ==>* GNum n). eapply idx1_soundness; eauto.
   replace (n - n) with 0 in H2; auto; omega.
 Qed.
   
@@ -2182,7 +2063,7 @@ Proof.
       auto.
 Qed.
 
-Theorem soundness_stmts: forall s, soundness_stmts_def s .
+Lemma soundness_stmts: forall s, soundness_stmts_def s .
 Proof.
   intro s.
   induction s; unfold soundness_stmts_def; intros c st1 st1' st2 m2 fuel Hstep Hseq Hvs2 HsImp.
@@ -2226,10 +2107,6 @@ Proof.
             assert (GGet (trans_exp e0 st2 >>g= toNatG) fdata ==>* GNum n). {
              eapply multi_trans. eapply GGet_Map_R; eauto. apply GGet_fdata_GSomeR_R.
             }
-        (*  inversion Hveq as [ no ng Hobjeq Hoeq Hgsome | Hnone ]; subst; clear Hveq. *)
-     (*     ++ (* object exists *)
-           assert (exists m, ng = GObj m) as Hobj. { apply obj_value_obj; auto. }
-           inversion Hobj; subst. *)
            eexists. split.
            ** eapply GMatch_GSomeR_R; eauto. eapply GMatch_GSomeR_R; eauto. eapply GMatch_GSomeR_R; eauto.
               eapply GMatch_GSomeR_R; eauto.
@@ -2310,17 +2187,17 @@ Proof.
     destruct Hidx.
     + assert (Heval_some := HeqHidx). symmetry in Heval_some.
       apply idx_evalLoop_some in Heval_some; try omega.
-      destruct Heval_some as [ Hmon [ [ Hloop | Hloop ] | [ sigma [ [ Hcsome | Hcnone ] Hloop ] ] ] ]; rewrite Hloop in HsImp; inversion HsImp; clear H0.
+      destruct Heval_some as [ Hmon [ [ Hloop | Hloop ] | [ sigma [ [ Hcsome | Hcnone ] Hloop ] ] ] ]; rewrite Hloop in HsImp; inversion HsImp; subst; try clear H0.
       * assert (forall k st1'',
              k <= n ->
              evalLoop e s st1 c k (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S fuel)) = Some st1'' ->
              exists g, GRepeat (GNum k) c (fun it : nat => trans_stmts s (GSLoc c) (PWhile c it)) (GSome st2) ==>* g
             /\ store_value g /\ oeq seq st1'' g). { intros.
-           eapply soundness_evaloop_partial with (n := n); eauto.
+           eapply soundness_evaloop_partial with (n := n); try eassumption.
         }
         exists GNoneR. split; auto.
-        eapply GMatch_GNoneR_R.
-        eapply multi_trans. eapply GRepeat_NumIt_R. eapply idx_soundness; eauto.
+        apply GMatch_GNoneR_R.
+        eapply multi_trans. apply GRepeat_NumIt_R. eapply idx_soundness; eauto.
         destruct (H n None) as [ gNone [ Hnone [ Hsv Heq ] ] ]; auto. inversion Heq; subst. auto.
       * assert (forall k st1'',
                k <= n ->
@@ -2417,7 +2294,14 @@ Proof.
   - inversion HsImp; subst.
     exists (GSomeR (GMap m2)); split; auto. apply GSome_R; auto.
   - inversion HsImp; subst. exists GNoneR; auto.
-Unshelve. apply st1.
+Qed.
+
+Theorem soundness : forall s fuel st1,
+  evalStmt s σ0 PRoot (S fuel) = Some st1 ->
+    exists g, (trans_stmts s GEmpty PRoot) ==>* g /\ store_value g /\ oeq seq st1 g.
+Proof.
+  intros.
+  eapply soundness_stmts; try apply multi_refl; eauto. apply seq_empty.
 Qed.
 
 End Translation.

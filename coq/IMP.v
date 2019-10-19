@@ -12,25 +12,6 @@ Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Utf8.
 Import ListNotations.
 
-Lemma succ_eq : forall x y : nat, x + 1 = y + 1 <-> x = y.
-Proof.
-  intros. split.
-  - intros. induction x. inversion H. omega. omega.
-  - intros. subst. reflexivity.
-Qed.
-
-Fixpoint ble_nat (n m : nat) : bool :=
-  match n with
-  | O => true
-  | S n' =>
-    match m with
-    | O => false
-    | S m' => ble_nat n' m'
-    end
-  end.
-
-Definition blt_nat (n m : nat) : bool := andb (negb (beq_nat n m)) (ble_nat n m).
-
 Lemma beq_reflect : ∀ x y, reflect (x = y) (x =? y).
 Proof.
   intros x y.
@@ -48,8 +29,8 @@ Proof.
   intros x y.
   apply iff_reflect. symmetry. apply Nat.leb_le.
 Qed.
-
 Hint Resolve blt_reflect ble_reflect beq_reflect : bdestruct.
+
 Ltac bdestruct X :=
   let H := fresh in let e := fresh "e" in
                     evar (e: Prop);
@@ -77,28 +58,6 @@ Definition t_update {A B : Type} (beq : A -> A -> bool)
            (m : total_map A B) (x : A) (v : B) :=
   fun x' => if beq x x' then v else m x'.
 
-Lemma t_update_eq : forall { A B : Type } beq (m : total_map A B) x v,
-  (t_update beq m x v) x = v.
-Proof. Admitted.
-
-Lemma t_update_neq : forall { A B : Type } beq (m : total_map A B) x y v,
-  x <> y ->
-  (t_update beq m x v) y = m y.
-Proof. Admitted.
-
-Lemma t_update_shadow : forall { A B : Type } beq (m : total_map A B) x v1 v2,
-  (t_update beq (t_update beq m x v1) x v2) = t_update beq m x v2.
-Proof. Admitted.
-
-Lemma t_update_same : forall { A B : Type } beq (m : total_map A B) x,
-  t_update beq m x (m x) = m.
-Proof. Admitted.
-
-Lemma t_update_permute : forall { A B : Type } beq (m : total_map A B) x y v1 v2,
-  x <> y ->
-  (t_update beq (t_update beq m x v1) y v2) = (t_update beq (t_update beq m y v2) x v1).
-Proof. Admitted.
-
 Definition partial_map (A : Type) (B : Type) := total_map A (option B).
 
 Notation "a '⇀' b" := (partial_map a b) (at level 60, right associativity).
@@ -112,7 +71,7 @@ Definition update {A B : Type} (beq : A -> A -> bool)
 
 (* Source language IMP *)
 
-(* IMP Syntax *)
+(* IMP Syntax (Figure 3) *)
 
 Inductive exp : Type :=
 (* Constants *)
@@ -134,7 +93,7 @@ Inductive exp : Type :=
 .
 
 Inductive stmt : Type :=
-| SAlloc : id -> stmt (* TODO: size? *)
+| SAlloc : id -> stmt
 | SAssign : exp -> exp -> exp -> stmt
 | SIf : exp -> stmt -> stmt -> stmt
 | SWhile : exp -> stmt -> stmt
@@ -205,10 +164,6 @@ Inductive loc : Type :=
 | LNew : path -> loc
 .
 
-Lemma loc_dec : forall (l1 l2 : loc), l1 = l2 \/ l1 <> l2.
-Proof.
-Admitted.
-
 (* Context path equivalence *)
 
 Fixpoint beq_path c1 c2 : bool :=
@@ -232,10 +187,6 @@ Fixpoint beq_loc l1 l2 : bool :=
   | _, _ => false
   end.
 
-Lemma beq_loc_eq: forall l, beq_loc l l = true.
-Proof.
-Admitted.
-
 (* Values *)
 
 Inductive val : Type :=
@@ -246,7 +197,7 @@ Inductive val : Type :=
 
 (* Objects *)
 
-Definition obj := nat ⇀ val. (* TODO: model partialness? *)
+Definition obj := nat ⇀ val.
 
 Definition mt_obj : obj := t_empty None.
 Definition o0 : obj := mt_obj.
@@ -274,6 +225,95 @@ Definition store_update (st : store) (x : loc) (v : obj) :=
 Notation "x 'st↦' v ';' m" := (store_update m x v)
                                 (at level 15, v at next level, right associativity).
 Notation "x 'st↦' v" := (store_update mt_store x v) (at level 15).
+
+Lemma nat_dec : forall (n1 n2 : nat), n1 = n2 \/ n1 <> n2.
+Proof. intros. omega. Qed.
+
+Lemma id_dec : forall (i1 i2 : id), i1 = i2 \/ i1 <> i2.
+Proof.
+  intros i1 i2.
+  destruct i1; destruct i2; auto.
+  destruct (nat_dec n n0); auto.
+  right. intro contra. apply H. inversion contra. auto.
+Qed.
+
+Lemma path_dec : forall (p1 p2 : path), p1 = p2 \/ p1 <> p2.
+  induction p1; destruct p2; try (right; discriminate); auto;
+    try (destruct (IHp1 p2); [ subst; auto | right; intro contra; apply H; inversion contra; auto ]).
+  destruct (nat_dec n n0); [ subst; auto | right; intro contra; apply H; inversion contra; auto ].
+Qed.
+
+Lemma loc_dec : forall (l1 l2 : loc), l1 = l2 \/ l1 <> l2.
+Proof.
+  intros l1 l2.
+  destruct l1; destruct l2; auto; try (right; discriminate).
+  destruct (id_dec i i0); subst; auto. right. intro contra. apply H. inversion contra. auto.
+  destruct (path_dec p p0); subst; auto. right. intro contra. apply H. inversion contra. auto.
+Qed.
+
+Lemma beq_loc_eq: forall l, beq_loc l l = true.
+Proof.
+  intro l. destruct l; simpl.
+  - destruct i. apply Nat.eqb_refl.
+  - induction p; auto. simpl. rewrite IHp. simpl. apply Nat.eqb_refl.
+Qed.
+
+Lemma beq_id_neq : forall i1 i2, i1 <> i2 -> beq_id i1 i2 = false.
+Proof.
+  intros. destruct i1; destruct i2; auto.
+  destruct (nat_dec n n0); subst; auto. apply False_rec; auto.
+  simpl. apply Nat.eqb_neq; auto.
+Qed.
+
+Lemma beq_path_neq : forall p1 p2, p1 <> p2 -> beq_path p1 p2 = false.
+Proof.
+  induction p1; destruct p2; auto; intros; try (apply IHp1; intro contra; subst; auto).
+  - apply False_rec. auto.
+  - destruct (nat_dec n n0); subst.
+    + simpl. replace (beq_path p1 p2) with false; auto; try (symmetry; apply IHp1; intro contra; subst; auto).
+    + simpl. replace (beq_nat n n0) with false.
+      apply andb_false_r.
+      symmetry. apply Nat.eqb_neq. assumption.
+Qed.
+
+Lemma beq_loc_neq: forall l1 l2, l1 <> l2 -> beq_loc l1 l2 = false.
+Proof.
+  intros. destruct l1; destruct l2; auto. 
+  - destruct (id_dec i i0); subst. apply False_rec. auto.
+    simpl. apply beq_id_neq; auto.
+  - destruct (path_dec p p0); subst. apply False_rec. auto.
+    simpl. apply beq_path_neq. auto.
+Qed.
+
+Lemma update_eq_loc : forall { A : Type } (m : total_map loc A) x v,
+  (t_update beq_loc m x v) x = v.
+Proof.
+  intros. unfold t_update.
+  rewrite beq_loc_eq. reflexivity.
+Qed.
+
+Lemma update_neq_loc : forall { A : Type } (m : total_map loc A) x y v,
+  x <> y ->
+  (t_update beq_loc m x v) y = m y.
+Proof.
+  intros. unfold t_update. 
+  rewrite beq_loc_neq; auto.
+Qed.
+
+Lemma update_eq_nat : forall { A : Type } (m : total_map nat A) x v,
+  (t_update Nat.eqb m x v) x = v.
+Proof.
+  intros. unfold t_update.
+  replace (x =? x) with true; auto; symmetry; apply Nat.eqb_eq; auto.
+Qed.
+
+Lemma update_neq_nat : forall { A : Type } (m : total_map nat A) x y v,
+  x <> y ->
+  (t_update Nat.eqb m x v) y = m y.
+Proof.
+  intros. unfold t_update.
+  replace (x =? y) with false; auto; symmetry; apply Nat.eqb_neq; auto.
+Qed.
 
 (* IMP Relational big-step semantics *)
 
@@ -367,7 +407,6 @@ Module IMPRel.
   Scheme evalLoopRelMut := Induction for evalLoopRel Sort Prop
     with evalStmtRelMut := Induction for evalStmt Sort Prop.
 
-  (* TODO: clean up this *)
   Theorem exp_deterministic : ∀ σ e v1 v2,
       σ ⊢ e ⇓ₑ v1 →
       σ ⊢ e ⇓ₑ v2 →
@@ -418,13 +457,6 @@ Module IMPRel.
       remember (o n0) as on. rewrite H0 in H8. inversion H8. reflexivity.
 Qed.
 
-  Lemma loop0_store_inv : ∀ σ σ' p e s,
-      (σ, p) ⊢ (e, s) 0 ⇓∞ σ' →
-      σ = σ'.
-  Proof.
-    intros. inversion H. auto.
-  Qed.
-
   Lemma skip_store_inv : ∀ p σ σ',
       (σ, p)⊢ SKIP ⇓ σ' → σ = σ'.
   Proof.
@@ -452,23 +484,19 @@ Qed.
     - assert (∀ m σ' σ'', (σ, p)⊢ (e, s) m ⇓∞ σ' →
                           (σ, p)⊢ (e, s) m ⇓∞ σ'' →
                           σ' = σ'') as loop_deterministic.
-      { intro m. induction m; intros.
-        - assert (σ = σ'0). eapply loop0_store_inv. eauto.
-          assert (σ = σ''0). eapply loop0_store_inv. eauto.
-          subst. reflexivity.
-        - inversion H1; inversion H2; subst.
-          assert (σ'1 = σ'2). eapply IHm. eauto. eauto.
-          subst. eapply IHs. eauto. eauto. }
+      { intro m. induction m; intros; inversion H1; inversion H2; subst; auto.
+        assert (σ'1 = σ'2). eapply IHm; eauto. subst. eauto.
+      }
       assert (∀ m σ' σ'', (σ, p) ⊢ (e, s) m ⇓∞ σ' →
                           σ' ⊢ e ⇓ₑ (VBool false) →
                           (σ, p) ⊢ (e, s) S m ⇓∞ σ'' →
                           False) as loop_false_mSm_contra.
       { intros. remember (S m) as sm. induction H3; subst.
         - omega.
-        - inversion Heqsm. subst.
-          assert (σ'0 = σ'1). eapply loop_deterministic. eauto. eauto. subst.
-          assert (VBool false = VBool true). eapply exp_deterministic.
-          eauto. eauto. inversion H6. }
+        - inversion Heqsm; subst.
+          assert (σ'0 = σ'1). eapply loop_deterministic; eauto. subst.
+          assert (VBool false = VBool true). eapply exp_deterministic; eauto.
+          inversion H6. }
       assert (∀ n m σ' σ'', (σ, p) ⊢ (e, s) n ⇓∞ σ' →
                             σ' ⊢ e ⇓ₑ (VBool false) →
                             (σ, p) ⊢ (e, s) m ⇓∞ σ'' →
@@ -476,8 +504,8 @@ Qed.
                             False) as loop_false_nm_contra.
       { intros. generalize dependent σ''0. induction H4; intros.
         - eapply loop_false_mSm_contra. apply H1. apply H2. apply H3.
-        - assert (n < m). omega. inversion H3; subst.
-          eapply IHle. apply H7. }
+        - inversion H3; subst. eapply IHle. apply H6.
+      }
       inversion H; inversion H0; subst.
       bdestruct (n =? n0).
       + subst. eapply loop_deterministic. eauto. eauto.
@@ -555,13 +583,14 @@ Module IMPEval.
      | None          => None
      end)
       (at level 80, right associativity).
+
+
   (* IMP Evaluation function *)
 
   Reserved Notation "'〚' e '〛' ( st ) " (at level 90, left associativity).
 
   Fixpoint evalExp (e: exp) (σ: store) : option val :=
     match e with
-    (* | EId x  => o ← (σ (LId x)) IN o 0 *)
     | ENum n => Some (VNum n)
     | EBool b => Some (VBool b)
     | ELoc x => Some (VLoc (LId x))
@@ -631,7 +660,7 @@ Module IMPEval.
       bv ↩ Some (〚cnd〛(σ') >>= toBool) IN
       if bv
       then evstmt σ' (PWhile c n') (* continue evaluation *)
-      else Some None (* error, this case should not happen if idx has guessed a correct n ??? *)
+      else Some None
     end.
 
   Reserved Notation "'〚' s '〛' ( st , c ) ( m )" (at level 90, left associativity).
@@ -728,7 +757,7 @@ Module Adequacy.
           eapply H0. eapply H1.
           inversion H1.
         * destruct v0; simpl in H1; inversion H1.
-Qed.
+  Qed.
 
   Lemma idx1_more_val_inv : ∀ m n p i x,
       m >= n →
@@ -744,30 +773,6 @@ Qed.
         apply H0. assert (m >= n). omega. eapply IHm. apply H1.
         apply H0. apply H0.
   Qed.
-
-  (*
-  Lemma idx1_more_err_inv : ∀ m n p x, m >= n → idx1 x n p = None → idx1 x m p = None.
-  Proof.
-    intro m. induction m; intros.
-    - inversion H. subst. assumption.
-    - simpl. destruct n.
-      + simpl in H0. inversion H0.
-      + simpl in H0. destruct (p x) eqn:Hpx.
-        destruct b eqn:Hb.
-        apply H0. assert (m >= n). omega. eapply IHm. apply H1.
-        apply H0. reflexivity. inversion H0.
-  Qed.
-
-  Lemma idx_more_inv : ∀ m n p x v,
-      m >= n →
-      idx1 x n p = Some v →
-      idx1 x m p = Some v.
-  Proof.
-    intros. destruct v.
-    eapply idx1_more_val_inv. apply H. apply H0.
-    eapply idx1_more_err_inv. apply H. apply H0.
-  Qed.
-   *)
 
   Lemma stmt_eval_more_val_Sn : ∀ s n σ c v,
       evalStmt s σ c n = Some v →
@@ -909,16 +914,16 @@ Qed.
         destruct o; eauto. destruct (〚 e 〛 (s0)); eauto. destruct v0; eauto. destruct b; eauto.
         simpl. simpl in H0. eapply stmt_eval_more_val_nm; eauto.
       + simpl. simpl in H0. rewrite <- Heqhyp in H0; simpl in H0. inversion H0.
-Qed.
+  Qed.
 
 
-Definition evalLoop_monotone_lower (e : exp) (s : stmt) (sigma : store) (p: path) (k n m : nat): Prop :=
- forall i, k <= i -> i < n ->
-  exists sigma', evalLoop e s sigma p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) =
-  Some (Some sigma') /\ evalExp e sigma' = Some (VBool true).
+  Definition evalLoop_monotone_lower (e : exp) (s : stmt) (sigma : store) (p: path) (k n m : nat): Prop :=
+   forall i, k <= i -> i < n ->
+    exists sigma', evalLoop e s sigma p i (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m)) =
+    Some (Some sigma') /\ evalExp e sigma' = Some (VBool true).
 
-Definition evalLoop_monotone (e : exp) (s : stmt) (sigma : store) (p: path) (k : nat) (m : nat): Prop :=
-  evalLoop_monotone_lower e s sigma p 0 k m.
+  Definition evalLoop_monotone (e : exp) (s : stmt) (sigma : store) (p: path) (k : nat) (m : nat): Prop :=
+    evalLoop_monotone_lower e s sigma p 0 k m.
 
   Lemma evalLoop_monotone_Sk : forall e s sigma p k m sigma',
     evalLoop_monotone e s sigma p k m ->
@@ -977,7 +982,7 @@ Definition evalLoop_monotone (e : exp) (s : stmt) (sigma : store) (p: path) (k :
      replace (n - S k + 1) with (n - k); try omega.
      replace (m + S k) with (S m + k); try omega.
      apply IHk. omega.
-Qed.
+  Qed.
 
   Lemma idx_evalLoop_terminate : forall e s sigma sigma' p n m,
     evalLoop_monotone e s sigma p n m ->
@@ -1001,14 +1006,6 @@ Qed.
    eapply loop_eval_more_val_nm with (n := m); eauto.
   Qed.
 
-  Lemma loop_run_cond_true : ∀ e s p σ n σ',
-    (σ, p)⊢ (e, s) S n ⇓∞ σ' -> σ ⊢ e ⇓ₑ (VBool true).
-  Proof.
-    induction n; intros; inversion H; subst.
-    - inversion H1; subst. auto.
-    - eauto.
-  Qed.
-
   Theorem stmt_adequacy_1 : ∀ s σ σ' p,
       (σ, p) ⊢ s ⇓ σ' -> ∃ m,〚s〛(σ, p)(m) = Some (Some σ').
   Proof.
@@ -1025,7 +1022,7 @@ Qed.
     - assert (forall k sigma, (σ, p)⊢ (e, s) k ⇓∞ sigma ->
         exists m, evalLoop_monotone e s σ p k m
           /\ evalLoop e s σ p k (λ (σ'' : store) (c1 : path), 〚 s 〛 (σ'', c1)(m))
-          = Some (Some sigma)). { (* requires IHs can't be own theorem *)
+          = Some (Some sigma)). {
       intro k. induction k.
       + intros sigma Hlo. inversion Hlo; subst. exists 1. split.
         unfold evalLoop_monotone. unfold evalLoop_monotone_lower. intros. apply False_rec. omega.  reflexivity.
@@ -1076,75 +1073,75 @@ Qed.
     - exists 1. inversion H; subst. reflexivity.
    Qed.
 
-Lemma idx1_val_min : forall m i p n,
-  idx1 i m p = Some n -> n >= i.
-Proof.
-  intro m.
-  induction m.
-  - intros. inversion H.
-  - intros. simpl in H.
-    destruct (p i); try inversion H; clear H; auto.
-    destruct b; try inversion H1; clear H1.
-    auto.
-    assert (n >= i + 1). eapply IHm; eauto. omega.
-Qed.
-
-Lemma idx1_evalLoop_some : forall k e s sigma p n m,
-  k <= n ->
-  idx1 (n - k) (m + k) (fun i =>
-                          match sigma' ↩ evalLoop e s sigma p i (fun σ'' c1 => evalStmt s σ'' c1 m) IN
-                                 b  ← evalExp e sigma' >>= toBool IN
-                                 Some (Some (negb b)) with
-                            | Some (Some b) => Some b
-                            | Some None => Some true
-                            | None => None
-                            end) = Some n ->
-  and (evalLoop_monotone_lower e s sigma p (n - k) n m)
-      (or (or (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = None)
-              (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some None))
-          (exists sigma', and (or (evalExp e sigma' = Some (VBool false)) (match evalExp e sigma' with Some v => toBool v | None => None end = None))
-                              (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some (Some sigma')))).
-Proof.
-  intro k.
-  induction k.
-  - intros.
-    split.
-    + intros k Hk Hn. apply False_rec. omega.
-    + destruct m. inversion H0. simpl in H0.
-      replace (n - 0) with n in H0; try omega.
-      remember (evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S m))) as loop.
-      destruct loop; auto.
-      destruct o; auto.
-      right. exists s0; split; auto.
-      remember (〚 e 〛 (s0)) as cond.
-      destruct cond; auto.
-      destruct v; try (right; reflexivity).
-      destruct b; inversion H0.
-      assert (n >= n + 1). eapply idx1_val_min; eauto. apply False_rec. omega.
+  Lemma idx1_val_min : forall m i p n,
+    idx1 i m p = Some n -> n >= i.
+  Proof.
+    intro m.
+    induction m.
+    - intros. inversion H.
+    - intros. simpl in H.
+      destruct (p i); try inversion H; clear H; auto.
+      destruct b; try inversion H1; clear H1.
       auto.
-  - intros. replace (m + S k) with (S m + k) in H0; try omega.
-    simpl in H0.
-    remember (evalLoop e s sigma p (n - S k) (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m))) as loop.
-    destruct loop; inversion H0; clear H0; try (apply False_rec; omega).
-    destruct o; inversion H2; clear H2; try (apply False_rec; omega).
-    remember (〚 e 〛 (s0)) as cond.
-    destruct cond; inversion H1; clear H1; try (apply False_rec; omega).
-    destruct v; inversion H2; clear H2; try (apply False_rec; omega).
-    destruct b; simpl in H1; inversion H1; clear H1; try (apply False_rec; omega).
-    replace (n - S k + 1) with (n - k) in H2; try omega.
-    apply IHk in H2; try omega.
-    destruct H2 as [ Hmon Hlast ].
-    split; auto.
-    intros j Hj Hn.
-    inversion Hj; subst.
-    + exists s0. split; auto.
-    + unfold evalLoop_monotone_lower in Hmon.
-      destruct (Hmon (S m0)); try omega.
-      destruct H1.
-      exists x; split; auto.
-Qed.
+      assert (n >= i + 1). eapply IHm; eauto. omega.
+  Qed.
 
- Lemma idx_more_val_inv : forall m n p i x,
+  Lemma idx1_evalLoop_some : forall k e s sigma p n m,
+    k <= n ->
+    idx1 (n - k) (m + k) (fun i =>
+                            match sigma' ↩ evalLoop e s sigma p i (fun σ'' c1 => evalStmt s σ'' c1 m) IN
+                                   b  ← evalExp e sigma' >>= toBool IN
+                                   Some (Some (negb b)) with
+                              | Some (Some b) => Some b
+                              | Some None => Some true
+                              | None => None
+                              end) = Some n ->
+    and (evalLoop_monotone_lower e s sigma p (n - k) n m)
+        (or (or (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = None)
+                (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some None))
+            (exists sigma', and (or (evalExp e sigma' = Some (VBool false)) (match evalExp e sigma' with Some v => toBool v | None => None end = None))
+                                (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some (Some sigma')))).
+  Proof.
+    intro k.
+    induction k.
+    - intros.
+      split.
+      + intros k Hk Hn. apply False_rec. omega.
+      + destruct m. inversion H0. simpl in H0.
+        replace (n - 0) with n in H0; try omega.
+        remember (evalLoop e s sigma p n (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(S m))) as loop.
+        destruct loop; auto.
+        destruct o; auto.
+        right. exists s0; split; auto.
+        remember (〚 e 〛 (s0)) as cond.
+        destruct cond; auto.
+        destruct v; try (right; reflexivity).
+        destruct b; inversion H0.
+        assert (n >= n + 1). eapply idx1_val_min; eauto. apply False_rec. omega.
+        auto.
+    - intros. replace (m + S k) with (S m + k) in H0; try omega.
+      simpl in H0.
+      remember (evalLoop e s sigma p (n - S k) (fun (σ'' : store) (c1 : path) => 〚 s 〛 (σ'', c1)(m))) as loop.
+      destruct loop; inversion H0; clear H0; try (apply False_rec; omega).
+      destruct o; inversion H2; clear H2; try (apply False_rec; omega).
+      remember (〚 e 〛 (s0)) as cond.
+      destruct cond; inversion H1; clear H1; try (apply False_rec; omega).
+      destruct v; inversion H2; clear H2; try (apply False_rec; omega).
+      destruct b; simpl in H1; inversion H1; clear H1; try (apply False_rec; omega).
+      replace (n - S k + 1) with (n - k) in H2; try omega.
+      apply IHk in H2; try omega.
+      destruct H2 as [ Hmon Hlast ].
+      split; auto.
+      intros j Hj Hn.
+      inversion Hj; subst.
+      + exists s0. split; auto.
+      + unfold evalLoop_monotone_lower in Hmon.
+        destruct (Hmon (S m0)); try omega.
+        destruct H1.
+        exists x; split; auto.
+  Qed.
+
+  Lemma idx_more_val_inv : forall m n p i x,
       m >= n ->
       idx1 x n p = Some i ->
       idx1 x m p = Some i.
@@ -1159,28 +1156,28 @@ Qed.
         apply H0. apply H0.
   Qed.
 
-Lemma idx_evalLoop_some : forall e s sigma p n m,
-  idx m (fun i =>
-                match sigma' ↩ evalLoop e s sigma p i (fun σ'' c1 => evalStmt s σ'' c1 m) IN
-                       b  ← evalExp e sigma' >>= toBool IN
-                       Some (Some (negb b)) with
-                  | Some (Some b) => Some b
-                  | Some None => Some true
-                  | None => None
-                  end) = Some n ->
-  and (evalLoop_monotone e s sigma p n m)
-      (or (or (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = None)
-              (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some None))
-          (exists sigma', and (or (evalExp e sigma' = Some (VBool false)) (match evalExp e sigma' with Some v => toBool v | None => None end = None))
-                              (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some (Some sigma')))).
-Proof.
-  intros.
-  destruct (idx1_evalLoop_some n e s sigma p n m); eauto.
-  replace (n - n) with 0; eauto; try omega.
-  eapply idx_more_val_inv with (n := m); eauto; try omega.
-  split; auto.
-  replace (n - n) with 0 in H0; auto; omega.
-Qed.
+  Lemma idx_evalLoop_some : forall e s sigma p n m,
+    idx m (fun i =>
+                  match sigma' ↩ evalLoop e s sigma p i (fun σ'' c1 => evalStmt s σ'' c1 m) IN
+                         b  ← evalExp e sigma' >>= toBool IN
+                         Some (Some (negb b)) with
+                    | Some (Some b) => Some b
+                    | Some None => Some true
+                    | None => None
+                    end) = Some n ->
+    and (evalLoop_monotone e s sigma p n m)
+        (or (or (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = None)
+                (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some None))
+            (exists sigma', and (or (evalExp e sigma' = Some (VBool false)) (match evalExp e sigma' with Some v => toBool v | None => None end = None))
+                                (evalLoop e s sigma p n (fun (sigma'' : store) (c1 : path) => evalStmt s sigma'' c1 m) = Some (Some sigma')))).
+  Proof.
+    intros.
+    destruct (idx1_evalLoop_some n e s sigma p n m); eauto.
+    replace (n - n) with 0; eauto; try omega.
+    eapply idx_more_val_inv with (n := m); eauto; try omega.
+    split; auto.
+    replace (n - n) with 0 in H0; auto; omega.
+  Qed.
 
   Theorem stmt_adequacy_2 : ∀ s σ σ' p,
       ex (fun m =>〚s〛(σ, p)(m) = Some (Some σ')) -> (σ, p) ⊢ s ⇓ σ'.
@@ -1262,772 +1259,3 @@ Qed.
   Qed.
 
 End Adequacy.
-
-(* Module Translation.
-  Import IMPEval.
-
-Inductive gxp : Type :=
-  | GNum : nat -> gxp
-  | GLoc: loc -> gxp
-  | GObj: (total_map nat (option gxp)) -> gxp
-  | GMap : (total_map loc (option gxp)) -> gxp
-  | GHasField: gxp -> gxp -> gxp
-  | GGet : gxp -> gxp -> gxp
-  | GPut : gxp -> gxp -> gxp -> gxp
-
-  | GPlus : gxp -> gxp -> gxp
-  | GMinus : gxp -> gxp -> gxp
-  | GMult : gxp -> gxp -> gxp
-
-  | GBool : bool -> gxp
-  | GEq : gxp -> gxp -> gxp
-  | GLt : gxp -> gxp -> gxp
-  | GNot : gxp -> gxp
-  | GAnd : gxp -> gxp -> gxp
-
-  | GIf : gxp -> gxp -> gxp -> gxp.
-
-Definition fvalid : gxp := GLoc (LId (Id 0)). (* "$valid" *)
-Definition fdata :  gxp := GLoc (LId (Id 1)). (* "$data"  *)
-Definition ftpe :   gxp := GNum 0. (* "$tpe"   *)
-Definition fval :   gxp := GNum 1. (* "$val"   *)
-
-Definition tnat :   gxp := GNum 0.
-Definition tbool :  gxp := GNum 1.
-Definition tloc :   gxp := GNum 2.
-
-Definition GEmpty : gxp := GMap (fun k =>
-                           match k with
-                           | LId x => Some (GObj (t_empty None))
-                           | LNew p => None
-                           end).
-
-Definition OEmpty : gxp := GObj(t_empty None).
-
-Definition GNone :  gxp := GPut GEmpty fvalid (GBool false).
-Definition GSome a : gxp := GPut (GPut GEmpty fvalid (GBool true)) fdata a.
-
-Definition GMatch (scrutinee: gxp) (none: gxp) (some: gxp -> gxp): gxp :=
-  GIf (GGet scrutinee fvalid) (some (GGet scrutinee fdata)) none.
-
-Definition GVSelect (addr: gxp) (field: gxp): gxp :=
-  GIf (GHasField addr field) (GSome (GGet addr field)) GNone.
-
-Definition GVNum (a: gxp): gxp :=
-  GPut (GPut OEmpty ftpe tnat) fval a.
-
-Definition GVBool (a: gxp): gxp :=
-  GPut (GPut OEmpty ftpe tbool) fval a.
-
-Definition GVLoc (a: gxp): gxp :=
-  GPut (GPut OEmpty ftpe tloc) fval a.
-
-Definition sym_store := total_map (option gxp).
-
-Definition toNatG (v:gxp): gxp :=
-  GIf (GEq (GGet v ftpe) tnat) (GSome (GGet v fval)) GNone.
-
-Definition toBoolG (v:gxp): gxp :=
-  GIf (GEq (GGet v ftpe) tbool) (GSome (GGet v fval)) GNone.
-
-Definition toLocG (v:gxp): gxp :=
-  GIf (GEq (GGet v ftpe) tloc) (GSome (GGet v fval)) GNone.
-
-Notation "'LETG' x <-- e1 'IN' e2"
-   := (GMatch e1 GNone (fun x => e2))
-   (right associativity, at level 60).
-(* Notation "'LETG' x <--- e1 'IN' e2"
-   := (match e1 with
-         | Some (Some x) => e2
-         | Some None => Some None
-         | None => None
-       end)
-   (right associativity, at level 60). *)
-
-Notation "e1 '>>g=' e2"
-   := (GMatch e1 GNone e2)
-   (right associativity, at level 80).
-
-(* ---------- translation (exp only for now) --------- *)
-Fixpoint trans_exp (e: exp) (sto: gxp): gxp :=
-  match e with
-  (* | AId x => GGet sto x (* fixme: check error *) *)
-  | ELoc id => GSome (GVLoc (GLoc (LId id)))
-  | ENum n => GSome (GVNum (GNum n))
-  | EPlus a b =>  LETG a <-- trans_exp a sto >>g= toNatG IN
-                  LETG b <-- trans_exp b sto >>g= toNatG IN
-                  GSome (GVNum (GPlus a b))
-  | EMinus a b => LETG a <-- trans_exp a sto >>g= toNatG IN
-                  LETG b <-- trans_exp b sto >>g= toNatG IN
-                  GSome (GVNum (GMinus a b))
-  | EMult a b =>  LETG a <-- trans_exp a sto >>g= toNatG IN
-                  LETG b <-- trans_exp b sto >>g= toNatG IN
-                  GSome (GVNum (GMult a b))
-  | EBool b =>      GSome (GVBool (GBool b))
-  | EEq a b =>    LETG a <-- trans_exp a sto >>g= toNatG IN
-                  LETG b <-- trans_exp b sto >>g= toNatG IN
-                  GSome (GVBool (GEq a b))
-  | ELt a b =>    LETG a <-- trans_exp a sto >>g= toNatG IN
-                  LETG b <-- trans_exp b sto >>g= toNatG IN
-                  GSome (GVBool (GLt a b))
-  | EAnd a b =>   LETG a <-- trans_exp a sto >>g= toBoolG IN
-                  LETG b <-- trans_exp b sto >>g= toBoolG IN
-                  GSome (GVBool (GAnd a b))
-  | ENeg a =>     LETG a <-- trans_exp a sto >>g= toBoolG IN
-                  GSome (GVBool (GNot a))
-  | EFieldRead s n =>
-                  LETG s' <-- trans_exp s sto >>g= toLocG IN
-                  LETG n' <-- trans_exp n sto >>g= toNatG IN
-                  LETG o <-- GVSelect sto s' IN
-                  GVSelect o n'
-  end.
-
-
-Fixpoint trans_loop (e: exp) (s: stmt) (sto: gxp) (c: path) (n: nat) (* How to use GFixIndex? *)
-    (evstmt : gxp → path → gxp) : gxp:=
-  match n with
-  | O => GSome sto
-  | S n' =>
-    LETG b <-- trans_exp e sto >>g= toBoolG IN
-    LETG sto' <-- trans_loop e s sto c n' evstmt IN
-    GIf b (evstmt sto' (PWhile c n')) GNone
-  end.
-
-Fixpoint trans_stmts (s: stmt) (sto: gxp) (c: path) { struct s }: gxp :=
-  match s with
-  | x ::= ALLOC =>
-    GPut (GPut sto (GLoc (LNew c)) OEmpty) (GLoc (LId x)) (GPut OEmpty (GLoc (LId (Id 0))) (GLoc (LNew c)))
-  | e1[[e2]] ::= e3 =>
-    LETG l <-- trans_exp e1 sto >>g= toLocG IN
-    LETG n <-- trans_exp e2 sto >>g= toNatG IN
-    LETG v <-- trans_exp e3 sto IN
-    LETG o <-- GVSelect sto l IN
-    GPut sto l (GPut o n v)
-  | IF e THEN s1 ELSE s2 FI =>
-    LETG b <-- trans_exp e sto >>g= toBoolG IN
-    GIf b (trans_stmts s1 sto (PThen c)) (trans_stmts s2 sto (PElse c))
-  | WHILE cnd DO s END =>
-      trans_loop cnd s sto c 3 (fun sto' c' => trans_stmts s sto' c')
-  | s1 ;; s2 =>
-      LETG sto' <-- trans_stmts s1 sto (PFst c) IN
-      trans_stmts s2 sto' (PSnd c)
-  | SKIP => GSome sto
-  | SAbort => GNone
-  end.
-
-
-(* simplification / normalization *)
-
-Definition hasField {X Y : Type} (m: total_map X (option Y)) (x : X): gxp := match m x with
-    | Some _ => GBool true
-    | None => GBool false
-end.
-
-(* Fixpoint simpl_map (e: gxp): gxp := match e with
-  | GGet (GPut m x v1) y => if beq_loc x y
-                            then v1
-                            else *)
-
-(* | GPut m y v => match sms_eval_exp x with
-          | GLoc x' => match sms_eval_exp y with
-                       | GLoc y' => if beq_loc x' y'
-                                      then GBool true
-                                       else GBool false
-                       | y' => GHasField (GPut m y' v) (GLoc x') end
-          | x' => GHasField (GPut m y v) x' end *)
-
-(* Fixpoint beq_gxp (l : gxp) (r : gxp): bool := match l, r with
-  | GNum n, GNum m => beq_nat n m
-  | GBool n, GBool m => eqb n m
-  | GLoc n, GLoc m => beq_nat n m
-  | GMap m =>
-  | GObj n => e
-  | GHasField a x =>
-  | GGet a x =>
-  | GPut a x b =>
-  | GPlus a b =>
-  | GMinus a b =>
-  | GMult a b =>
-  | GEq a b =>
-  | GIf c a b =>
-  | GLt a b =>
-  | GAnd a b =>
-  | GNot a => *)
-
-Fixpoint sms_eval_exp (e: gxp): gxp :=
-  match e with
-  | GNum n => e
-  | GBool n => e
-  | GLoc n => e
-  | GMap m => e (* simpl in Map? *)
-  | GObj n => e
-  | GHasField a x => match sms_eval_exp a, sms_eval_exp x with
-                     | GMap m, GLoc x => hasField m x
-                     | GObj m, GNum x => hasField m x
-(*                      | GPut m y v, x' => GIf (GEq x' y) (GBool true) (GHasField m x') *)
-                     | a', x' => GHasField a' x'
-                     end
-  | GGet a x => match sms_eval_exp a, sms_eval_exp x with
-                | GMap m, GLoc x => match m x with Some y => y | None => GNone end
-(*                 | GPut m y v, x' => GIf (GEq x' y) v (GGet m x') *)
-                | GObj m, GNum x => match m x with Some y => y | None => GNone end
-                | a', x' => GGet a' x'
-                end
-  | GPut a x b => match sms_eval_exp a, sms_eval_exp x, sms_eval_exp b with
-                  | GMap m, GLoc x', b' => GMap (t_update beq_loc m x' (Some b'))
-                  | GObj m, GNum x', b' => GObj (t_update beq_nat m x' (Some b'))
-                  | a', x', b' => GPut a' x' b'
-                  end
-  | GPlus a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GNum (a' + b')
-                 | a', b' => GPlus a' b'
-                 end
-  | GMinus a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GNum (a' - b')
-                 | a', b' => GMinus a' b'
-                 end
-  | GMult a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GNum (a' * b')
-                 | a', b' => GMult a' b'
-                 end
-  | GEq a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GBool (Nat.eqb a' b')
-                 | GLoc a', GLoc b' => GBool (beq_loc a' b')
-                 | a', b' => GEq a' b'
-                 end
-  | GIf c a b => match sms_eval_exp c with
-                 | GBool c' => if c' then sms_eval_exp a else sms_eval_exp b
-                 | c' => GIf c' (sms_eval_exp a) (sms_eval_exp b)
-                 end
-  | GLt a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GNum a', GNum b' => GBool (Nat.ltb a' b')
-                 | a', b' => GLt a' b'
-                 end
-  | GAnd a b => match sms_eval_exp a, sms_eval_exp b with
-                 | GBool a', GBool b' => GBool (andb a' b')
-                 | a', b' => GAnd a' b'
-                 end
-  | GNot a => match sms_eval_exp a with
-                 | GBool a' => GBool (negb a')
-                 | a' => GNot a'
-                 end
-  end.
-
-(* examples, sanity checks *)
-
-Definition testprog := (trans_exp (EPlus (ENum 2) (ENum 3)) (GMap (t_empty None))).
-
-Definition testprog2 := fun e1 e2 => (trans_exp (EPlus e1 e2) (GMap (t_empty None))).
-
-Definition testprog1 := (trans_exp (ENum 2)) (GMap (t_empty None)).
-
-(* WARNING: computing of GMao unfolds string comparison (<-- huge term!!!) *)
-Compute testprog.
-Compute testprog1.
-Compute testprog2.
-
-Compute (sms_eval_exp (GPut GEmpty fvalid (GBool true))).
-
-Definition geq a b := sms_eval_exp a = sms_eval_exp b.
-
-Definition fgeq f1 f2 := forall b1 b2, geq b1 b2 -> geq (f1 b1) (f2 b2).
-
-Lemma GEQ_trans: forall a b c, geq a b -> geq b c -> geq a c.
-Proof.
-  intros. unfold geq in *. simpl. rewrite H. simpl. auto.
-Qed.
-
-Lemma FGEQ_refl: forall f, (forall b1 b2, geq b1 b2 -> geq (f b1) (f b2)) -> fgeq f f.
-Proof. intros. unfold fgeq. intros. eapply H. eauto. Qed.
-
-(* ----- prove some congruence rules ----- *)
-
-Lemma GEQ_IfC: forall c1 c2 a1 a2 b1 b2,
-    geq c1 c2 -> geq a1 a2 -> geq b1 b2 -> geq (GIf c1 a1 b1) (GIf c2 a2 b2).
-Proof. intros. unfold geq in *. simpl. rewrite H. rewrite H0. rewrite H1. simpl. auto. Qed.
-
-Lemma GEQ_GetC: forall a1 a2 x1 x2,
-    geq a1 a2 -> geq x1 x2 -> geq (GGet a1 x1) (GGet a2 x2).
-Proof. intros. unfold geq in *. simpl. rewrite H. rewrite H0. reflexivity.  Qed.
-
-Lemma GEQ_PlusC: forall a1 a2 b1 b2,
-    geq a1 a2 -> geq b1 b2 -> geq (GPlus a1 b1) (GPlus a2 b2).
-Proof. intros. unfold geq in *. simpl. rewrite H. rewrite H0. simpl. auto. Qed.
-
-Lemma GEQ_MinusC : forall a1 a2 b1 b2,
-    geq a1 a2 -> geq b1 b2 -> geq (GMinus a1 b1) (GMinus a2 b2).
-Proof.
-  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
-Qed.
-
-Lemma GEQ_MultC : forall a1 a2 b1 b2,
-    geq a1 a2 -> geq b1 b2 -> geq (GMult a1 b1) (GMult a2 b2).
-Proof.
-  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
-Qed.
-
-Lemma GEQ_LtC : forall a1 a2 b1 b2,
-    geq a1 a2 -> geq b1 b2 -> geq (GLt a1 b1) (GLt a2 b2).
-Proof.
-  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
-Qed.
-
-Lemma GEQ_EqC : forall a1 a2 b1 b2,
-    geq a1 a2 -> geq b1 b2 -> geq (GEq a1 b1) (GEq a2 b2).
-Proof.
-  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
-Qed.
-
-Lemma GEQ_AndC : forall a1 a2 b1 b2,
-    geq a1 a2 -> geq b1 b2 -> geq (GAnd a1 b1) (GAnd a2 b2).
-Proof.
-  intros. unfold geq in *. simpl. rewrite H. rewrite H0. auto.
-Qed.
-
-Lemma GEQ_NotC : forall a1 a2,
-    geq a1 a2 -> geq (GNot a1) (GNot a2).
-Proof.
-  intros. unfold geq in *. simpl. rewrite H. auto.
-Qed.
-
-Lemma GEQ_HasFieldC : forall a1 a2 b1 b2,
-    geq a1 a2 -> geq b1 b2 -> geq (GHasField a1 b1) (GHasField a2 b2).
-Proof.
-  intros. unfold geq in *. simpl. rewrite H. rewrite H0. reflexivity.
-Qed.
-
-Lemma GEQ_SomeC: forall a b, geq a b -> geq (GSome a) (GSome b).
-Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
-
-Lemma GEQ_VNumC: forall a b, geq a b -> geq (GVNum a) (GVNum b).
-Proof.  intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
-
-Lemma GEQ_VBoolC: forall a b, geq a b -> geq (GVBool a) (GVBool b).
-Proof.  intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
-
-Lemma GEQ_toNatC: forall a b, geq a b -> geq (toNatG a) (toNatG b).
-Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
-
-Lemma GEQ_toBoolC: forall a b, geq a b -> geq (toBoolG a) (toBoolG b).
-Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
-
-Lemma GEQ_toLocC: forall a b, geq a b -> geq (toLocG a) (toLocG b).
-Proof. intros. unfold geq in *. simpl. rewrite H. simpl. auto. Qed.
-
-Lemma GEQ_BindC: forall a1 a2 f1 f2,
-    geq a1 a2 -> fgeq f1 f2 ->
-    geq (a1 >>g= f1) (a2 >>g= f2).
-Proof.
-  intros.
-  unfold GMatch. eapply GEQ_IfC. eapply GEQ_GetC. eauto. reflexivity. eapply H0. eapply GEQ_GetC. eauto. reflexivity. reflexivity.
-Qed.
-
-Lemma GEQ_GVSelectC : forall a1 a2 b1 b2,
-    geq a1 a2 -> geq b1 b2 -> geq (GVSelect a1 b1) (GVSelect a2 b2).
-Proof.
-  intros. unfold GVSelect. eapply GEQ_IfC; eauto; try reflexivity. apply GEQ_HasFieldC; auto.
-  apply GEQ_SomeC. apply GEQ_GetC; eauto; try reflexivity.
-Qed.
-
-(* ----- and reduction rules ----- *)
-
-
-Lemma GEQ_PlusR: forall a1 a2 n1 n2,
-    geq a1 (GNum n1) ->
-    geq a2 (GNum n2) ->
-    geq (GPlus a1 a2) (GNum (n1 + n2)).
-Proof.
-  intros. eapply GEQ_trans. eapply GEQ_PlusC; eauto.  unfold geq in *. simpl. reflexivity.
-Qed.
-
-Lemma GEQ_MinusR : forall a1 a2 n1 n2,
-    geq a1 (GNum n1) ->
-    geq a2 (GNum n2) ->
-    geq (GMinus a1 a2) (GNum (n1 - n2)).
-Proof.
-  intros. eapply GEQ_trans.
-  - eapply GEQ_MinusC; eauto.
-  - unfold geq in *. simpl. reflexivity.
-Qed.
-
-
-Lemma GEQ_MultR : forall a1 a2 n1 n2,
-    geq a1 (GNum n1) ->
-    geq a2 (GNum n2) ->
-    geq (GMult a1 a2) (GNum (n1 * n2)).
-Proof.
-  intros. eapply GEQ_trans.
-  - eapply GEQ_MultC; eauto.
-  - unfold geq in *. simpl. reflexivity.
-Qed.
-
-Lemma GEQ_LtR : forall a1 a2 n1 n2,
-    geq a1 (GNum n1) ->
-    geq a2 (GNum n2) ->
-    geq (GLt a1 a2) (GBool (n1 <? n2)).
-Proof.
-  intros. eapply GEQ_trans.
-  - eapply GEQ_LtC; eauto.
-  - unfold geq in *. simpl. reflexivity.
-Qed.
-
-Lemma GEQ_EqR : forall a1 a2 n1 n2,
-    geq a1 (GNum n1) ->
-    geq a2 (GNum n2) ->
-    geq (GEq a1 a2) (GBool (n1 =? n2)).
-Proof.
-  intros. eapply GEQ_trans.
-  - eapply GEQ_EqC; eauto.
-  - unfold geq in *. simpl. reflexivity.
-Qed.
-
-Lemma GEQ_AndR : forall a1 a2 n1 n2,
-    geq a1 (GBool n1) ->
-    geq a2 (GBool n2) ->
-    geq (GAnd a1 a2) (GBool (andb n1 n2)).
-Proof.
-  intros. eapply GEQ_trans.
-  - eapply GEQ_AndC; eauto.
-  - unfold geq in *. simpl. reflexivity.
-Qed.
-
-Lemma GEQ_NotR : forall a1 n1,
-    geq a1 (GBool n1) ->
-    geq (GNot a1) (GBool (negb n1)).
-Proof.
-  intros. eapply GEQ_trans.
-  - eapply GEQ_NotC; eauto.
-  - unfold geq in *. simpl. reflexivity.
-Qed.
-
-Lemma GEQ_PutObjR: forall s1 l1 m n x y,
-   geq s1 (GObj m) ->
-   geq l1 (GNum n) ->
-   y = sms_eval_exp x ->
-   geq (GPut s1 l1 x) (GObj (t_update beq_nat m n (Some y))).
-Proof.
- intros.
- unfold geq. simpl. rewrite H. rewrite H0. simpl. subst. reflexivity.
-Qed.
-
-Lemma GEQ_SomeR: forall a b,
-    geq a (GSome b) -> geq (GGet a fdata) b.
-Proof.
-  intros. eapply GEQ_trans. eapply GEQ_GetC; eauto. reflexivity. unfold GSome.
-  unfold geq in *. simpl. reflexivity.
-Qed.
-
-Lemma GEQ_BindSomeR: forall a b c f,
-    geq a (GSome b) ->
-    geq (f b) c ->
-    fgeq f f ->
-    geq (a >>g= f) c.
-Proof. intros. eapply GEQ_trans. eapply GEQ_BindC; eauto.
-       unfold GMatch. unfold fgeq in *. unfold geq in *. simpl. rewrite <-H0.
-       eapply H1. eapply GEQ_SomeR. reflexivity. Qed.
-
-Lemma GEQ_BindNoneR: forall a f,
-    geq a GNone -> geq (a >>g= f) GNone.
-Proof.
-  intros. unfold GMatch. unfold geq in *. simpl. rewrite H. simpl. reflexivity.
-Qed.
-
-Lemma GEQ_toNatR: forall a b,
-    geq a (GVNum b) -> geq (toNatG a) (GSome b).
-Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed.
-
-Lemma GEQ_toNatBoolR: forall a b,
-    geq a (GVBool b) -> geq (toNatG a) GNone.
-Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed.
-
-Lemma GEQ_toNatLocR: forall a b,
-    geq a (GVLoc b) -> geq (toNatG a) GNone.
-Proof. intros. eapply GEQ_trans. eapply GEQ_toNatC. eauto. unfold geq in *. simpl. reflexivity. Qed.
-
-Lemma GEQ_toBoolR: forall a b,
-    geq a (GVBool b) -> geq (toBoolG a) (GSome b).
-Proof. intros. eapply GEQ_trans. eapply GEQ_toBoolC. eauto. unfold geq in *. simpl. reflexivity. Qed.
-
-Lemma GEQ_toBoolNatR: forall a b,
-    geq a (GVNum b) -> geq (toBoolG a) GNone.
-Proof. intros. eapply GEQ_trans. eapply GEQ_toBoolC. eauto. unfold geq in *. simpl. reflexivity. Qed.
-
-Lemma GEQ_toBoolLocR: forall a b,
-    geq a (GVLoc b) -> geq (toBoolG a) GNone.
-Proof. intros. eapply GEQ_trans. eapply GEQ_toBoolC. eauto. unfold geq in *. simpl. reflexivity. Qed.
-
-Lemma GEQ_toLocR: forall a b,
-    geq a (GVLoc b) -> geq (toLocG a) (GSome b).
-Proof. intros. eapply GEQ_trans. eapply GEQ_toLocC. eauto. unfold geq in *. simpl. reflexivity. Qed.
-
-Lemma GEQ_toLocNatR: forall a b,
-    geq a (GVNum b) -> geq (toLocG a) GNone.
-Proof. intros. eapply GEQ_trans. eapply GEQ_toLocC. eauto. unfold geq in *. simpl. reflexivity. Qed.
-
-Lemma GEQ_toLocBoolR: forall a b,
-    geq a (GVBool b) -> geq (toLocG a) GNone.
-Proof. intros. eapply GEQ_trans. eapply GEQ_toLocC. eauto. unfold geq in *. simpl. reflexivity. Qed.
-
-(* ----- equivalence between IMP and FUN ----- *)
-
-Inductive veq : val -> gxp -> Prop :=
-| VEQ_Num : forall n r,
-    geq r (GVNum (GNum n)) ->
-    veq (VNum n) r
-| VEQ_Bool : forall n r,
-    geq  r (GVBool (GBool n)) ->
-    veq (VBool n) r
-| VEQ_Loc : forall l r,
-    geq  r (GVLoc (GLoc l)) ->
-    veq (VLoc l) r.
-
-Inductive oeq {X:Type} (peq: X -> gxp -> Prop): option X -> gxp -> Prop :=
-| REQ_Some : forall v g r,
-    peq v g ->
-    geq r (GSome g) ->
-    oeq peq (Some v) r
-| REQ_None : forall r,
-    geq r GNone ->
-    oeq peq None r.
-
-Definition req := oeq veq.
-
-Definition neq (n1: nat) (n2: gxp) := n2 = (GNum n1).
-Definition beq (n1: bool) (n2: gxp) := n2 = (GBool n1).
-Definition leq (n1: loc) (n2: gxp) := n2 = (GLoc n1).
-
-Definition objeq (o1 : obj) (o2 : gxp): Prop :=
-  forall n1 n2, neq n1 n2 -> oeq veq (o1 n1) (GVSelect o2 n2).
-
-Definition seq (s1 : store) (s2 : gxp): Prop :=
-  forall l1 l2, leq l1 l2 -> oeq objeq (s1 l1) (GVSelect s2 l2).
-
-Lemma REQ_BindC: forall X Y (peq: X -> gxp -> Prop)  (qeq: Y -> gxp -> Prop) a1 a2 f1 f2,
-    oeq peq a1 a2 ->
-    (forall b1 b2, peq b1 b2 -> oeq qeq (f1 b1) (f2 b2)) ->
-    (forall b c, geq b c -> geq (f2 b) (f2 c)) ->
-    oeq qeq (a1 >>= f1) (a2 >>g= f2).
-Proof.
-  intros. inversion H; subst a1 r.
-  - specialize (H0 _ _ H2). inversion H0; subst r.
-    + eapply REQ_Some. eauto. eapply GEQ_BindSomeR; eauto.
-    + eapply REQ_None. eapply GEQ_BindSomeR; eauto.
-  - eapply REQ_None. eapply GEQ_BindNoneR; eauto.
-Qed.
-
-
-Lemma REQ_toNatC: forall (b0 : val) (b3 : gxp), veq b0 b3 -> oeq neq (toNat b0) (toNatG b3).
-Proof.
-  intros. inversion H; subst b0 r.
-  - eapply REQ_Some. reflexivity. eapply GEQ_toNatR. eauto.
-  - eapply REQ_None. eapply GEQ_toNatBoolR. eauto.
-  - eapply REQ_None. eapply GEQ_toNatLocR. eauto.
-Qed.
-
-Lemma REQ_toBoolC: forall (b0 : val) (b3 : gxp), veq b0 b3 -> oeq beq (toBool b0) (toBoolG b3).
-Proof.
-  intros. inversion H; subst b0 r.
-  - eapply REQ_None. eapply GEQ_toBoolNatR. eauto.
-  - eapply REQ_Some. reflexivity. eapply GEQ_toBoolR. eauto.
-  - eapply REQ_None. eapply GEQ_toBoolLocR. eauto.
-Qed.
-
-Lemma REQ_toLocC: forall (b0 : val) (b3 : gxp), veq b0 b3 -> oeq leq (toLoc b0) (toLocG b3).
-Proof.
-  intros. inversion H; subst b0 r.
-  - eapply REQ_None. eapply GEQ_toLocNatR. eauto.
-  - eapply REQ_None. eapply GEQ_toLocBoolR. eauto.
-  - eapply REQ_Some. reflexivity. eapply GEQ_toLocR. eauto.
-Qed.
-
-Lemma OEQ_toNatC: forall (a1 : option val) (b1: gxp),
-    oeq veq a1 b1 -> oeq neq (a1 >>= toNat) (b1 >>g= toNatG).
-Proof.
-  intros.
-  eapply REQ_BindC with (peq := veq). try assumption.
-  intros.
-  - eapply REQ_toNatC. assumption.
-  - intros. eapply GEQ_toNatC. assumption.
-Qed.
-
-Definition test22 := sms_eval_exp (GGet (GMap (t_empty None)) fvalid >>g= (λ o : gxp, GGet o ftpe)).
-Compute test22.
-
-Definition empty_store : store :=
-  t_empty None.
-
-Theorem soundness_exp: forall e s1 s2,
-    seq s1 s2 ->
-    req (evalExp e s1) (trans_exp e s2).
-Proof.
-  intros. induction e.
-  - (* num *) simpl. eapply REQ_Some. eapply VEQ_Num. reflexivity. reflexivity.
-  - (* bool *) simpl. eapply REQ_Some. eapply VEQ_Bool. reflexivity. reflexivity.
-  - (* loc *) simpl. eapply REQ_Some. eapply VEQ_Loc. reflexivity. reflexivity.
-  - (* plus *) simpl.
-    remember (evalExp e1 s1) as a1.
-    remember (evalExp e2 s1) as a2.
-    remember (trans_exp e1 s2) as b1.
-    remember (trans_exp e2 s2) as b2.
-    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
-    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
-    eapply REQ_BindC.
-    + eauto.
-    + intros. eapply REQ_BindC.
-      * eauto.
-      * intros. eapply REQ_Some.
-        ** eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_PlusR. reflexivity. reflexivity.
-        ** rewrite H2. rewrite H3. reflexivity.
-      * intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_PlusC. reflexivity. apply H3.
-    + intros. eapply GEQ_BindC.
-      * reflexivity.
-      * intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC.
-        eapply GEQ_PlusC. eauto. eauto.
-  - (* minus *) simpl.
-    remember (evalExp e1 s1) as a1.
-    remember (evalExp e2 s1) as a2.
-    remember (trans_exp e1 s2) as b1.
-    remember (trans_exp e2 s2) as b2.
-    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
-    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
-    eapply REQ_BindC.
-    + eauto.
-    + intros. eapply REQ_BindC.
-      * eauto.
-      * intros. eapply REQ_Some.
-        ** eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_MinusR. reflexivity. reflexivity.
-           ** rewrite H2. rewrite H3. reflexivity.
-      * intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_MinusC. reflexivity. apply H3.
-    + intros. eapply GEQ_BindC.
-      ** reflexivity.
-      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC.
-         eapply GEQ_MinusC. eauto. eauto.
-  - (* mult *) simpl.
-    remember (evalExp e1 s1) as a1.
-    remember (evalExp e2 s1) as a2.
-    remember (trans_exp e1 s2) as b1.
-    remember (trans_exp e2 s2) as b2.
-    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
-    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
-    eapply REQ_BindC.
-    + eauto.
-    + intros. eapply REQ_BindC.
-      * eauto.
-      * intros. eapply REQ_Some.
-        ** eapply VEQ_Num. eapply GEQ_VNumC. eapply GEQ_MultR. reflexivity. reflexivity.
-           ** rewrite H2. rewrite H3. reflexivity.
-      * intros. eapply GEQ_SomeC. eapply GEQ_VNumC. eapply GEQ_MultC. reflexivity. apply H3.
-    + intros. eapply GEQ_BindC.
-      ** reflexivity.
-      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VNumC.
-         eapply  GEQ_MultC. eauto. eauto.
-  - (* lt *) simpl.
-    remember (evalExp e1 s1) as a1.
-    remember (evalExp e2 s1) as a2.
-    remember (trans_exp e1 s2) as b1.
-    remember (trans_exp e2 s2) as b2.
-    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
-    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
-    eapply REQ_BindC.
-    + eauto.
-    + intros. eapply REQ_BindC.
-      * eauto.
-      * intros. eapply REQ_Some.
-        ** eapply VEQ_Bool. eapply GEQ_VBoolC. eapply GEQ_LtR. reflexivity. reflexivity.
-           ** rewrite H2. rewrite H3. reflexivity.
-      * intros. eapply GEQ_SomeC. eapply GEQ_VBoolC. eapply GEQ_LtC. reflexivity. apply H3.
-    + intros. eapply GEQ_BindC.
-      ** reflexivity.
-      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VBoolC.
-         eapply  GEQ_LtC. eauto. eauto.
-  - (* eq *) simpl.
-    remember (evalExp e1 s1) as a1.
-    remember (evalExp e2 s1) as a2.
-    remember (trans_exp e1 s2) as b1.
-    remember (trans_exp e2 s2) as b2.
-    assert (oeq neq (a1 >>= toNat) (b1 >>g= toNatG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
-    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
-    eapply REQ_BindC.
-    + eauto.
-    + intros. eapply REQ_BindC.
-      * eauto.
-      * intros. eapply REQ_Some.
-        ** eapply VEQ_Bool. eapply GEQ_VBoolC. eapply GEQ_EqR. reflexivity. reflexivity.
-           ** rewrite H2. rewrite H3. reflexivity.
-      * intros. eapply GEQ_SomeC. eapply GEQ_VBoolC. eapply GEQ_EqC. reflexivity. eauto.
-    + intros. eapply GEQ_BindC.
-      ** reflexivity.
-      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VBoolC.
-         eapply  GEQ_EqC. eauto. eauto.
-  - (* and *) simpl.
-    remember (evalExp e1 s1) as a1.
-    remember (evalExp e2 s1) as a2.
-    remember (trans_exp e1 s2) as b1.
-    remember (trans_exp e2 s2) as b2.
-    assert (oeq beq (a1 >>= toBool) (b1 >>g= toBoolG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toBoolC. eapply GEQ_toBoolC. }
-    assert (oeq beq (a2 >>= toBool) (b2 >>g= toBoolG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toBoolC. eapply GEQ_toBoolC. }
-    eapply REQ_BindC.
-    + eauto.
-    + intros. eapply REQ_BindC.
-      * eauto.
-      * intros. eapply REQ_Some.
-        ** eapply VEQ_Bool. eapply GEQ_VBoolC. eapply GEQ_AndR. reflexivity. reflexivity.
-          ** rewrite H2. rewrite H3. reflexivity.
-      * intros. eapply GEQ_SomeC. eapply GEQ_VBoolC. eapply GEQ_AndC. reflexivity. eauto.
-    + intros. eapply GEQ_BindC.
-      ** reflexivity.
-      ** intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VBoolC.
-         eapply  GEQ_AndC. eauto. eauto.
-  - (* not *) simpl.
-    remember (evalExp e s1) as a1.
-    remember (trans_exp e s2) as b1.
-    assert (oeq beq (a1 >>= toBool) (b1 >>g= toBoolG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toBoolC. eapply GEQ_toBoolC. }
-    eapply REQ_BindC.
-    + eauto.
-    + intros. eapply REQ_Some.
-       ** eapply VEQ_Bool. eapply GEQ_VBoolC. eapply GEQ_NotR. reflexivity.
-       ** eapply GEQ_SomeC. eapply GEQ_VBoolC. rewrite H1. reflexivity.
-    + intros ? ? ?. eapply GEQ_SomeC. eapply GEQ_VBoolC.
-         eapply  GEQ_NotC. eauto.
-  - (* field read *) simpl.
-    remember (evalExp e1 s1) as a1.
-    remember (evalExp e2 s1) as a2.
-    remember (trans_exp e1 s2) as b1.
-    remember (trans_exp e2 s2) as b2.
-    assert (oeq leq (a1 >>= toLoc) (b1 >>g= toLocG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toLocC. eapply GEQ_toLocC. }
-    assert (oeq neq (a2 >>= toNat) (b2 >>g= toNatG)).
-    { eapply REQ_BindC. eauto. eapply REQ_toNatC. eapply GEQ_toNatC. }
-    eapply REQ_BindC.
-    + eauto.
-    + intros. eapply REQ_BindC.
-      * eauto.
-      * intros. eapply REQ_BindC.
-        ++ unfold seq in H. eapply H. assumption.
-        ++ intros. unfold objeq in H4. eapply H4. assumption.
-        ++ intros. eapply GEQ_GVSelectC; eauto; try reflexivity.
-      * intros. eapply GEQ_BindC.
-        ++ eapply GEQ_GVSelectC; eauto; try reflexivity.
-        ++ intros ? ? ?. eapply GEQ_GVSelectC; eauto; try reflexivity.
-    + intros. eapply GEQ_BindC; eauto; try reflexivity.
-      intros ? ? ?. eapply GEQ_BindC; eauto; try reflexivity.
-      * eapply GEQ_GVSelectC; eauto; try reflexivity.
-      * intros ? ? ?. eapply GEQ_GVSelectC; eauto; try reflexivity.
-Qed.
-
-
-
-End Translation. *)
